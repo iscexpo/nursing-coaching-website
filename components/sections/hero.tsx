@@ -1,0 +1,79 @@
+import Link from 'next/link'
+import Image from 'next/image'
+import { Check, PlayCircle, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { HERO_FEATURES } from '@/lib/site-data'
+
+export function Hero() {
+  return (
+    <section className="relative overflow-hidden bg-brand">
+      <div className="absolute inset-0 opacity-10">
+        <Image src="/images/classroom.png" alt="" fill className="object-cover" priority />
+      </div>
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 md:py-20 lg:grid-cols-2">
+        <div className="text-brand-foreground">
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-foreground/15 px-4 py-1.5 text-sm font-medium">
+            <span className="size-2 rounded-full bg-gold" />
+            BNMC ভর্তি পরীক্ষার সম্পূর্ণ প্রস্তুতি
+          </span>
+          <h1 className="mt-5 font-heading text-3xl font-extrabold leading-tight text-balance sm:text-4xl md:text-5xl">
+            খুলনার অন্যতম বিশ্বস্ত
+            <span className="mt-1 block text-gold">নার্সিং ভর্তি কোচিং</span>
+          </h1>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-brand-foreground/85 text-pretty">
+            অভিজ্ঞ শিক্ষক, আপডেটেড নোট ও নিয়মিত মডেল টেস্টের মাধ্যমে আপনার নার্সিং ক্যারিয়ারের
+            নিশ্চিত প্রস্তুতি।
+          </p>
+
+          <ul className="mt-6 grid max-w-lg grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3">
+            {HERO_FEATURES.map((f) => (
+              <li key={f} className="flex items-center gap-2 text-sm text-brand-foreground/90">
+                <Check className="size-4 shrink-0 text-gold" />
+                {f}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button
+              render={<Link href="/admission" />}
+              size="lg"
+              className="h-11 bg-gold px-6 text-base font-semibold text-gold-foreground hover:bg-gold/90"
+            >
+              ভর্তি হোন
+              <ArrowRight className="size-4" />
+            </Button>
+            <Button
+              render={<Link href="/#free-class" />}
+              size="lg"
+              className="h-11 border border-brand-foreground/30 bg-brand-foreground/10 px-6 text-base font-semibold text-brand-foreground hover:bg-brand-foreground/20"
+            >
+              <PlayCircle className="size-4" />
+              ফ্রি ক্লাস
+            </Button>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="relative aspect-4/5 overflow-hidden rounded-3xl border-4 border-brand-foreground/20 shadow-2xl sm:aspect-square lg:aspect-4/5">
+            <Image
+              src="/images/hero-nursing.png"
+              alt="কর্নিয়া নার্সিং কোচিং-এর একজন শিক্ষার্থী"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute -bottom-4 -left-4 hidden rounded-2xl bg-card p-4 shadow-xl sm:block">
+            <p className="font-heading text-2xl font-bold text-brand">৯৫%</p>
+            <p className="text-xs text-muted-foreground">সাফল্যের হার</p>
+          </div>
+          <div className="absolute -right-3 top-6 hidden rounded-2xl bg-green px-4 py-3 text-green-foreground shadow-xl sm:block">
+            <p className="font-heading text-xl font-bold">৫০০০+</p>
+            <p className="text-xs opacity-90">সফল শিক্ষার্থী</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

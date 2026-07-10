@@ -1,0 +1,227 @@
+export const SITE = {
+  nameBn: 'কর্নিয়া নার্সিং কোচিং',
+  city: 'খুলনা',
+  phone: '01322-926464',
+  phoneHref: 'tel:+8801322926464',
+  whatsapp: 'https://wa.me/8801322926464',
+  messenger: 'https://m.me/cornianursing',
+  email: 'info@cornianursing.com',
+  facebook: 'https://facebook.com/cornianursing',
+  youtube: 'https://youtube.com/@cornianursing',
+  addressBn: 'কলাবাগান মোড়, খুলনা মেডিকেল কলেজ হাসপাতালের সামনে, খুলনা।',
+}
+
+export const NAV_LINKS = [
+  { label: 'হোম', href: '/' },
+  { label: 'কোর্স', href: '/courses' },
+  { label: 'ভর্তি', href: '/admission' },
+  { label: 'মডেল টেস্ট', href: '/model-test' },
+  { label: 'সাফল্য', href: '/#success' },
+  { label: 'শিক্ষক', href: '/#teachers' },
+  { label: 'নোটিশ', href: '/notice' },
+  { label: 'গ্যালারি', href: '/gallery' },
+  { label: 'যোগাযোগ', href: '/contact' },
+]
+
+export const HERO_FEATURES = [
+  'ভর্তি কোচিং',
+  'কাউন্সিল পরীক্ষা',
+  'B.Sc. Nursing',
+  'Post Basic B.Sc.',
+  'চাকরি প্রস্তুতি',
+  'মডেল টেস্ট',
+  'MCQ ব্যাংক',
+  'লাইভ ক্লাস',
+  'Recorded Class',
+]
+
+export const WHY_CORNIA = [
+  {
+    icon: 'trophy',
+    title: 'অভিজ্ঞ শিক্ষকমণ্ডলী',
+    desc: 'দীর্ঘদিনের অভিজ্ঞ ও দক্ষ শিক্ষকদের সরাসরি তত্ত্বাবধান।',
+  },
+  {
+    icon: 'book',
+    title: 'আপডেটেড নোট',
+    desc: 'সর্বশেষ সিলেবাস অনুযায়ী হালনাগাদ লেকচার শীট ও নোট।',
+  },
+  {
+    icon: 'file',
+    title: 'সাপ্তাহিক পরীক্ষা',
+    desc: 'প্রতি সপ্তাহে মডেল টেস্ট ও পারফরম্যান্স বিশ্লেষণ।',
+  },
+  {
+    icon: 'target',
+    title: 'ব্যক্তিগত যত্ন',
+    desc: 'প্রতিটি শিক্ষার্থীর জন্য আলাদা কেয়ার ও ফলোআপ।',
+  },
+]
+
+export const COUNTERS = [
+  { value: 5000, suffix: '+', label: 'শিক্ষার্থী' },
+  { value: 95, suffix: '%', label: 'সাফল্যের হার' },
+  { value: 150, suffix: '+', label: 'মডেল টেস্ট' },
+  { value: 300, suffix: '+', label: 'লেকচার শীট' },
+  { value: 10, suffix: '+', label: 'বছরের অভিজ্ঞতা' },
+]
+
+export const COURSES = [
+  {
+    slug: 'nursing-admission',
+    title: 'নার্সিং অ্যাডমিশন কোচিং',
+    duration: '৪ মাস',
+    image: '/images/course-admission.png',
+    desc: 'BNMC ভর্তি পরীক্ষার সম্পূর্ণ প্রস্তুতি — বাংলা, ইংরেজি, বিজ্ঞান ও সাধারণ জ্ঞান।',
+    fee: '৳ ৮,০০০',
+  },
+  {
+    slug: 'council-exam',
+    title: 'নার্সিং কাউন্সিল পরীক্ষা',
+    duration: '৩ মাস',
+    image: '/images/course-council.png',
+    desc: 'লাইসেন্সিং পরীক্ষার জন্য বিষয়ভিত্তিক MCQ ও রিটেন প্রস্তুতি।',
+    fee: '৳ ৬,০০০',
+  },
+  {
+    slug: 'bsc-nursing',
+    title: 'B.Sc Nursing প্রস্তুতি',
+    duration: '৬ মাস',
+    image: '/images/course-bsc.png',
+    desc: 'বিএসসি ইন নার্সিং ভর্তি ও একাডেমিক সহায়তা প্রোগ্রাম।',
+    fee: '৳ ১০,০০০',
+  },
+  {
+    slug: 'post-basic-bsc',
+    title: 'Post Basic B.Sc',
+    duration: '৫ মাস',
+    image: '/images/course-postbasic.png',
+    desc: 'পোস্ট বেসিক বিএসসি ভর্তির জন্য টার্গেটেড কোর্স।',
+    fee: '৳ ৯,০০০',
+  },
+  {
+    slug: 'job-preparation',
+    title: 'চাকরি প্রস্তুতি',
+    duration: '৪ মাস',
+    image: '/images/course-job.png',
+    desc: 'সরকারি ও বেসরকারি নার্সিং নিয়োগ পরীক্ষার পূর্ণাঙ্গ প্রস্তুতি।',
+    fee: '৳ ৭,০০০',
+  },
+  {
+    slug: 'online-batch',
+    title: 'অনলাইন ব্যাচ',
+    duration: 'চলমান',
+    image: '/images/course-online.png',
+    desc: 'ঘরে বসে লাইভ ও রেকর্ডেড ক্লাসে সম্পূর্ণ প্রস্তুতি।',
+    fee: '৳ ৫,০০০',
+  },
+]
+
+export const STORIES = [
+  {
+    name: 'সাদিয়া আফরিন',
+    college: 'ঢাকা নার্সিং কলেজ',
+    rank: 'মেধা তালিকায় ১২তম',
+    image: '/images/student-1.png',
+    quote:
+      'কর্নিয়ার নিয়মিত মডেল টেস্ট আর শিক্ষকদের গাইডলাইন ছাড়া আমার এই ফলাফল সম্ভব হতো না।',
+  },
+  {
+    name: 'রাকিব হাসান',
+    college: 'রাজশাহী নার্সিং কলেজ',
+    rank: 'মেধা তালিকায় ৪৫তম',
+    image: '/images/student-2.png',
+    quote: 'প্রতিটি বিষয়ের বেসিক থেকে শুরু করে অ্যাডভান্স — সব কিছু খুব সহজভাবে বুঝিয়েছেন।',
+  },
+  {
+    name: 'নুসরাত জাহান',
+    college: 'খুলনা নার্সিং কলেজ',
+    rank: 'মেধা তালিকায় ৮তম',
+    image: '/images/student-3.png',
+    quote: 'ব্যক্তিগত যত্ন আর MCQ ব্যাংক প্র্যাকটিস আমাকে আত্মবিশ্বাসী করে তুলেছিল।',
+  },
+]
+
+export const TEACHERS = [
+  {
+    name: 'ডা. তাসনিম আরা',
+    subject: 'অ্যানাটমি ও ফিজিওলজি',
+    qualification: 'MBBS, BCS (স্বাস্থ্য)',
+    experience: '৮ বছরের অভিজ্ঞতা',
+    image: '/images/teacher-1.png',
+  },
+  {
+    name: 'মোঃ সাইফুল ইসলাম',
+    subject: 'ইংরেজি',
+    qualification: 'MA in English',
+    experience: '১০ বছরের অভিজ্ঞতা',
+    image: '/images/teacher-2.png',
+  },
+  {
+    name: 'রেহানা পারভীন',
+    subject: 'নার্সিং ফাউন্ডেশন',
+    qualification: 'B.Sc in Nursing',
+    experience: '৭ বছরের অভিজ্ঞতা',
+    image: '/images/teacher-3.png',
+  },
+  {
+    name: 'আব্দুল্লাহ আল মামুন',
+    subject: 'বিজ্ঞান ও সাধারণ জ্ঞান',
+    qualification: 'M.Sc in Zoology',
+    experience: '৯ বছরের অভিজ্ঞতা',
+    image: '/images/teacher-4.png',
+  },
+]
+
+export const NOTICES = [
+  {
+    tag: 'ভর্তি',
+    title: 'নার্সিং অ্যাডমিশন ২০২৬ ব্যাচে ভর্তি চলছে',
+    date: '১০ জুলাই ২০২৬',
+    urgent: true,
+  },
+  {
+    tag: 'ক্লাস',
+    title: 'আগামী সপ্তাহের ক্লাস রুটিন প্রকাশিত হয়েছে',
+    date: '০৮ জুলাই ২০২৬',
+    urgent: false,
+  },
+  {
+    tag: 'পরীক্ষা',
+    title: 'সাপ্তাহিক মডেল টেস্ট শুক্রবার সকাল ১০টায়',
+    date: '০৭ জুলাই ২০২৬',
+    urgent: false,
+  },
+  {
+    tag: 'ডেডলাইন',
+    title: 'ভর্তির শেষ তারিখ ২৫ জুলাই ২০২৬',
+    date: '০৫ জুলাই ২০২৬',
+    urgent: true,
+  },
+]
+
+export const GALLERY = [
+  { image: '/images/gallery-1.png', caption: 'সেমিনার' },
+  { image: '/images/gallery-2.png', caption: 'পুরস্কার বিতরণী' },
+  { image: '/images/gallery-3.png', caption: 'ব্যাচ ফটো' },
+  { image: '/images/gallery-4.png', caption: 'ফ্রি ক্লাস' },
+]
+
+export const FAQS = [
+  {
+    q: 'ভর্তি কিভাবে করবো?',
+    a: 'আপনি সরাসরি আমাদের কলাবাগান মোড়ের অফিসে এসে অথবা ওয়েবসাইটের "ভর্তি" পেজ থেকে অনলাইনে ফরম পূরণ করে ভর্তি হতে পারবেন।',
+  },
+  {
+    q: 'ক্লাস কখন হয়?',
+    a: 'সকাল ও বিকাল — দুটি ব্যাচে ক্লাস পরিচালিত হয়। এছাড়া অনলাইন ব্যাচের জন্য আলাদা সময়সূচি রয়েছে।',
+  },
+  {
+    q: 'কোর্স ফি কত?',
+    a: 'কোর্সভেদে ফি ৫,০০০ থেকে ১০,০০০ টাকা পর্যন্ত। কিস্তিতে পরিশোধের সুবিধাও রয়েছে।',
+  },
+  {
+    q: 'অনলাইন ক্লাসের সুবিধা আছে কি?',
+    a: 'হ্যাঁ, লাইভ ও রেকর্ডেড উভয় ধরনের অনলাইন ক্লাস, MCQ ব্যাংক ও PDF নোট ডাউনলোডের সুবিধা রয়েছে।',
+  },
+]
