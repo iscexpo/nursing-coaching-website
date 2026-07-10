@@ -8,7 +8,7 @@ export function Director() {
         <div className="grid items-center gap-8 rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-10 lg:grid-cols-[280px_1fr]">
           <div className="mx-auto w-full max-w-[280px]">
             <div className="relative aspect-square overflow-hidden rounded-2xl">
-              <Image src="/images/director.png" alt="মোঃ মিরাজ ইসলাম" fill className="object-cover" />
+              <Image src="/images/md.jpeg" alt="মোঃ মিরাজ ইসলাম" fill className="object-cover" />
             </div>
             <div className="mt-4 text-center">
               <p className="font-heading text-lg font-bold text-foreground">মোঃ মিরাজ ইসলাম</p>
