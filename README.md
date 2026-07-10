@@ -1,33 +1,112 @@
-# nursing-coaching-website
+# কর্নিয়া নার্সিং কোচিং ওয়েবসাইট
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+খুলনার কর্নিয়া নার্সিং কোচিং-এর অফিসিয়াল ওয়েবসাইট — BNMC ভর্তি পরীক্ষা, B.Sc Nursing, কাউন্সিল, ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।
 
-## Built with v0
+## Features
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+### Public Pages
+- **হোম** — Hero, কোর্স, সাফল্য, শিক্ষক, গ্যালারি, যোগাযোগ, FAQ
+- **কোর্স** — 6টি কোর্সের বিস্তারিত (ফি, সময়কাল, বিবরণ)
+- **ভর্তি** — অনলাইন ভর্তি ফরম + যোগাযোগ তথ্য
+- **মডেল টেস্ট** — সাপ্তাহিক পরীক্ষার সময়সূচি
+- **নোটিশ** — সর্বশেষ নোটিশ ও আপডেট
+- **গ্যালারি** — ছবি গ্যালারি (hover reveal)
+- **যোগাযোগ** — যোগাযোগ ফরম + অফিস তথ্য
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_5MpFWD5QXkWSmHX2gkH45hkaMHFV)
+### Student Dashboard (`/dashboard`)
+- ওভারভিউ — পরিসংখ্যান, সর্বশেষ ফলাফল/উপস্থিতি
+- এডমিট কার্ড — পরীক্ষার্থীর কার্ড (ডাউনলোডযোগ্য)
+- ফলাফল — স্কোর টেবিল, র‍্যাঙ্ক ব্যাজ, পারফরম্যান্স বার
+- উপস্থিতি — উপস্থিত/বিলম্বিত/অনুপস্থিত হিসাব
+
+### Admin Dashboard (`/admin`)
+- ওভারভিউ — পরিসংখ্যান, আসন্ন পরীক্ষা/নোটিশ
+- নোটিশ — তৈরি/সম্পাদনা/মুছুন
+- পরীক্ষা — পরীক্ষা তৈরি, অবস্থা পরিবর্তন
+- **প্রশ্নব্যাংক** — MCQ প্রশ্ন তৈরি/সম্পাদনা/মুছুন (6 বিষয়)
+- ফলাফল — ফলাফল যোগ, বিষয় ফিল্টার
+- শিক্ষার্থী — সার্চযোগ্য শিক্ষার্থী তালিকা
+
+### Online Exam System (`/exam`)
+- বিষয়ভিত্তিক মডেল টেস্ট (বাংলা, ইংরেজি, পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান, সাধারণ জ্ঞান)
+- ১৫ মিনিট টাইমার, অটো-সাবমিট
+- প্রশ্ন নেভিগেশন গ্রিড
+- ফলাফল: গ্রেড, স্কোর বার, উত্তর পর্যালোচনা
+
+### Authentication (Better Auth)
+- ফোন নম্বর + পাসওয়ার্ড দিয়ে সাইন ইন/সাইন আপ
+- OTP যাচাইকরণ
+- Role-based access (student / admin)
+- Middleware দিয়ে রুট সুরক্ষা
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS v4, shadcn/ui (base-nova)
+- **Auth:** Better Auth + Phone Number plugin
+- **Database:** Neon (PostgreSQL) + Drizzle ORM
+- **Language:** TypeScript
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Neon DATABASE_URL and BETTER_AUTH_SECRET
+
+# Push database schema
+pnpm drizzle-kit push
+
+# Run development server
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-## Learn More
+```
+app/
+├── page.tsx                 # Homepage
+├── layout.tsx               # Root layout (fonts, metadata)
+├── courses/page.tsx         # Course listing
+├── admission/page.tsx       # Admission form
+├── model-test/page.tsx      # Model test schedule
+├── notice/page.tsx          # Notice board
+├── gallery/page.tsx         # Photo gallery
+├── contact/page.tsx         # Contact form + info
+├── exam/
+│   ├── page.tsx             # Exam listing
+│   ├── [id]/page.tsx        # Exam taking (timer, MCQ)
+│   └── result/page.tsx      # Exam results + review
+├── auth/
+│   ├── sign-in/page.tsx     # Phone + password sign-in
+│   └── sign-up/page.tsx     # OTP → sign-up flow
+├── dashboard/page.tsx       # Student dashboard
+├── admin/page.tsx           # Admin dashboard
+└── api/auth/[...all]/       # Better Auth API handler
 
-To learn more, take a look at the following resources:
+components/
+├── site-header.tsx          # Sticky header + mobile nav
+├── site-footer.tsx          # 4-column footer
+├── section-heading.tsx      # Reusable section header
+├── floating-whatsapp.tsx    # WhatsApp chat button
+├── ui/button.tsx            # shadcn Button
+└── sections/                # Homepage sections
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+lib/
+├── site-data.ts             # All site data + question bank
+├── auth.ts                  # Better Auth server config
+├── auth-client.ts           # Better Auth client
+├── permissions.ts           # Role helpers
+└── db/
+    ├── schema.ts            # Drizzle schema
+    └── index.ts             # Neon connection
+```
+
+## License
+
+private
