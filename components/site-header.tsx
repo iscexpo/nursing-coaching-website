@@ -56,7 +56,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-2">
             <Button
-              render={<Link href="/login" />}
+              render={<Link href="/auth/sign-in" />}
               variant="outline"
               size="lg"
               className="hidden sm:inline-flex"
@@ -97,7 +97,7 @@ export function SiteHeader() {
               </Link>
             ))}
             <div className="mt-2 flex gap-2">
-              <Button render={<Link href="/login" />} variant="outline" className="flex-1" size="lg">
+              <Button render={<Link href="/auth/sign-in" />} variant="outline" className="flex-1" size="lg">
                 লগইন
               </Button>
               <Button render={<Link href="/admission" />} className="flex-1" size="lg">
