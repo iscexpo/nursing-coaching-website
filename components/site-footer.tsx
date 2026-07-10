@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Stethoscope, Share2, Video, MessageCircle, Phone, MapPin } from 'lucide-react'
+import Image from 'next/image'
+import { Share2, Video, MessageCircle, Phone, MapPin } from 'lucide-react'
 import { SITE } from '@/lib/site-data'
 
 const QUICK = [
@@ -27,9 +28,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-brand text-brand-foreground">
-              <Stethoscope className="size-5" />
-            </span>
+            <Image src="/logo.png" alt="কর্নিয়া নার্সিং কোচিং" width={36} height={22} className="object-contain" />
             <span className="font-heading text-base font-bold">{SITE.nameBn}</span>
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-background/70">

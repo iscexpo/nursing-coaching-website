@@ -1,12 +1,12 @@
 export const SITE = {
   nameBn: 'কর্নিয়া নার্সিং কোচিং',
   city: 'খুলনা',
-  phone: '01322-926464',
-  phoneHref: 'tel:+8801322926464',
-  whatsapp: 'https://wa.me/8801322926464',
+  phone: '01784-176442',
+  phoneHref: 'tel:+8801784176442',
+  whatsapp: 'https://wa.me/8801784176442',
   messenger: 'https://m.me/cornianursing',
   email: 'info@cornianursing.com',
-  facebook: 'https://facebook.com/cornianursing',
+  facebook: 'https://www.facebook.com/CorniaNursingKhulna',
   youtube: 'https://youtube.com/@cornianursing',
   addressBn: 'কলাবাগান মোড়, খুলনা মেডিকেল কলেজ হাসপাতালের সামনে, খুলনা।',
 }

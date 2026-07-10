@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Menu, X, Phone, Stethoscope } from 'lucide-react'
+import Image from 'next/image'
+import { Menu, X, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { NAV_LINKS, SITE } from '@/lib/site-data'
 import { cn } from '@/lib/utils'
@@ -32,9 +33,7 @@ export function SiteHeader() {
       <div className="border-b border-border bg-card/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-brand text-brand-foreground">
-              <Stethoscope className="size-5" />
-            </span>
+            <Image src="/logo.png" alt="কর্নিয়া নার্সিং কোচিং" width={40} height={25} className="object-contain" />
             <span className="flex flex-col leading-tight">
               <span className="font-heading text-base font-bold text-foreground sm:text-lg">
                 {SITE.nameBn}
