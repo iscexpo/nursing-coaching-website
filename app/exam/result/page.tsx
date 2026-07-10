@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/site-header'
@@ -18,7 +18,7 @@ interface ExamResult {
   timestamp: number
 }
 
-export default function ExamResultPage() {
+function ExamResultContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const examId = searchParams.get('id')
@@ -43,7 +43,6 @@ export default function ExamResultPage() {
   }
 
   const pct = Math.round((result.score / result.total) * 100)
-  const subjectIndex = SUBJECTS.indexOf(result.subject)
   const allQuestions = QUESTION_BANK.filter((q) => q.subject === result.subject)
 
   function getGrade(score: number, total: number) {
@@ -63,7 +62,6 @@ export default function ExamResultPage() {
       <SiteHeader />
       <main className="min-h-screen bg-secondary/20 py-8">
         <div className="mx-auto max-w-3xl px-4">
-          {/* Score card */}
           <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
             <div className="bg-brand p-6 text-center text-brand-foreground">
               <Trophy className="mx-auto size-12" />
@@ -103,7 +101,6 @@ export default function ExamResultPage() {
             </div>
           </div>
 
-          {/* Answer review */}
           <h2 className="mt-8 mb-4 font-heading text-lg font-bold text-foreground">উত্তর পর্যালোচনা</h2>
           <div className="space-y-4">
             {allQuestions.map((q, i) => {
@@ -149,5 +146,20 @@ export default function ExamResultPage() {
       </main>
       <SiteFooter />
     </>
+  )
+}
+
+export default function ExamResultPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <SiteHeader />
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-muted-foreground">লোড হচ্ছে...</p>
+        </div>
+      </>
+    }>
+      <ExamResultContent />
+    </Suspense>
   )
 }
