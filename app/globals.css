@@ -6,7 +6,8 @@
 
 @theme inline {
   --font-sans: var(--font-hind), 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-poppins), 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-hind), var(--font-poppins), 'Hind Siliguri', 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), var(--font-hind), 'Poppins', ui-sans-serif, system-ui, sans-serif;
 
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
@@ -123,14 +124,5 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-  .font-heading,
-  .font-sans {
-    font-family:
-      var(--font-hind), 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
-  }
-  .font-heading {
-    font-family:
-      var(--font-poppins), var(--font-hind), 'Poppins', ui-sans-serif, sans-serif;
   }
 }
