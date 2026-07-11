@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { enrollments } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
+import { updateEnrollmentSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     return NextResponse.json(enrollment)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch enrollment' }, { status: 500 })
   }
 }
@@ -32,14 +33,19 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const body = await request.json()
+    const parsed = updateEnrollmentSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+    }
+
     const [updated] = await db.update(enrollments).set({
-      ...body,
+      ...parsed.data,
       updatedAt: new Date(),
     }).where(eq(enrollments.id, id)).returning()
 
     if (!updated) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
     return NextResponse.json(updated)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to update enrollment' }, { status: 500 })
   }
 }

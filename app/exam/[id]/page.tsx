@@ -4,25 +4,64 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/site-header'
-import { QUESTION_BANK, SUBJECTS, type Question } from '@/lib/site-data'
-import { Clock, ChevronLeft, ChevronRight, CheckCircle2, AlertCircle, Send } from 'lucide-react'
+import { Clock, ChevronLeft, ChevronRight, AlertCircle, Send, Loader2 } from 'lucide-react'
+
+interface Question {
+  id: string
+  question: string
+  options: string[]
+}
+
+interface Exam {
+  id: string
+  title: string
+  subject: string
+  duration: number
+  difficulty: string
+}
 
 export default function ExamPage() {
   const router = useRouter()
   const params = useParams()
   const examId = params.id as string
 
-  const subjectIndex = parseInt(examId.replace('exam-', '')) - 1
-  const subject = SUBJECTS[subjectIndex]
-  const questions = QUESTION_BANK.filter((q) => q.subject === subject)
-
+  const [exam, setExam] = useState<Exam | null>(null)
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [loading, setLoading] = useState(true)
   const [current, setCurrent] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, number>>({})
+  const [answers, setAnswers] = useState<Record<string, number>>({})
   const [timeLeft, setTimeLeft] = useState(15 * 60)
-  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    if (submitted) return
+    async function loadExam() {
+      try {
+        const [examRes, questionsRes] = await Promise.all([
+          fetch(`/api/exams/${examId}`),
+          fetch(`/api/questions?examId=${examId}&limit=100`),
+        ])
+
+        if (!examRes.ok) return
+        const examData = await examRes.json()
+        setExam(examData)
+        setTimeLeft(examData.duration * 60)
+
+        if (questionsRes.ok) {
+          const qData = await questionsRes.json()
+          setQuestions(qData.data || [])
+        }
+      } catch {
+        // exam not found
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadExam()
+  }, [examId])
+
+  useEffect(() => {
+    if (submitting || questions.length === 0) return
     const timer = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) { handleSubmit(); return 0 }
@@ -30,29 +69,60 @@ export default function ExamPage() {
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [submitted])
+  }, [submitting, questions.length])
 
-  const handleSubmit = useCallback(() => {
-    if (submitted) return
-    setSubmitted(true)
-    let score = 0
-    questions.forEach((q) => {
-      if (answers[q.id] === q.correct) score++
-    })
-    const result = {
-      examId,
-      subject,
-      score,
-      total: questions.length,
-      answers: { ...answers },
-      questions: questions.map((q) => ({ id: q.id, correct: q.correct })),
-      timestamp: Date.now(),
+  const handleSubmit = useCallback(async () => {
+    if (submitting) return
+    setSubmitting(true)
+
+    try {
+      const res = await fetch('/api/exam-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          examId,
+          answers,
+          timeTaken: (exam?.duration || 15) * 60 - timeLeft,
+        }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Submission failed')
+        setSubmitting(false)
+        return
+      }
+
+      const result = await res.json()
+      localStorage.setItem(`exam-result-${examId}`, JSON.stringify({
+        examId,
+        subject: exam?.subject,
+        score: result.score,
+        total: result.total,
+        answers,
+        questions: result.questions,
+        timestamp: Date.now(),
+      }))
+
+      router.push(`/exam/result?id=${examId}`)
+    } catch {
+      setError('Network error. Please try again.')
+      setSubmitting(false)
     }
-    localStorage.setItem(`exam-result-${examId}`, JSON.stringify(result))
-    router.push(`/exam/result?id=${examId}`)
-  }, [submitted, answers, questions, examId, subject, router])
+  }, [submitting, answers, questions, examId, exam, timeLeft, router])
 
-  if (!subject || questions.length === 0) {
+  if (loading) {
+    return (
+      <>
+        <SiteHeader />
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      </>
+    )
+  }
+
+  if (!exam || questions.length === 0) {
     return (
       <>
         <SiteHeader />
@@ -79,11 +149,10 @@ export default function ExamPage() {
     <>
       <SiteHeader />
       <main className="min-h-screen bg-secondary/20">
-        {/* Top bar */}
         <div className="sticky top-16 z-40 border-b border-border bg-card shadow-sm">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
             <div>
-              <h1 className="font-heading text-sm font-bold text-foreground sm:text-base">{subject} মডেল টেস্ট</h1>
+              <h1 className="font-heading text-sm font-bold text-foreground sm:text-base">{exam.title}</h1>
               <p className="text-xs text-muted-foreground">প্রশ্ন {current + 1}/{questions.length}</p>
             </div>
             <div className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-bold ${
@@ -93,14 +162,16 @@ export default function ExamPage() {
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
           </div>
-          {/* Progress */}
           <div className="h-1 bg-secondary">
             <div className="h-full bg-brand transition-all" style={{ width: `${((current + 1) / questions.length) * 100}%` }} />
           </div>
         </div>
 
         <div className="mx-auto max-w-3xl px-4 py-8">
-          {/* Question */}
+          {error && (
+            <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+          )}
+
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-start gap-3">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
@@ -131,7 +202,6 @@ export default function ExamPage() {
             </div>
           </div>
 
-          {/* Navigation */}
           <div className="mt-6 flex items-center justify-between">
             <button
               onClick={() => setCurrent((c) => Math.max(0, c - 1))}
@@ -161,10 +231,11 @@ export default function ExamPage() {
             {current === questions.length - 1 ? (
               <button
                 onClick={handleSubmit}
-                className="flex items-center gap-1.5 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green/90"
+                disabled={submitting}
+                className="flex items-center gap-1.5 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green/90 disabled:opacity-50"
               >
-                <Send className="size-4" />
-                জমা দিন
+                {submitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                {submitting ? 'জমা হচ্ছে...' : 'জমা দিন'}
               </button>
             ) : (
               <button
@@ -177,7 +248,6 @@ export default function ExamPage() {
             )}
           </div>
 
-          {/* Submit reminder */}
           <div className="mt-6 rounded-xl border border-gold/30 bg-gold/5 p-4 text-center text-sm text-muted-foreground">
             <AlertCircle className="mx-auto mb-1 size-4 text-gold" />
             {answeredCount}/{questions.length} প্রশ্নের উত্তর দেওয়া হয়েছে

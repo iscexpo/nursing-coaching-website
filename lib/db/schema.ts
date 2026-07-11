@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, jsonb, integer, decimal } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, jsonb, integer, index, uniqueIndex } from 'drizzle-orm/pg-core'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -30,7 +30,9 @@ export const session = pgTable('session', {
     .references(() => user.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+}, (table) => [
+  index('session_user_id_idx').on(table.userId),
+])
 
 export const account = pgTable('account', {
   id: text('id').primaryKey(),
@@ -66,7 +68,9 @@ export const otp = pgTable('otp', {
   expiresAt: timestamp('expires_at').notNull(),
   attempts: jsonb('attempts').$type<{ count: number; lastAttempt: Date }>().default({ count: 0, lastAttempt: new Date() }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (table) => [
+  index('otp_phone_number_idx').on(table.phoneNumber),
+])
 
 export const courses = pgTable('courses', {
   id: text('id').primaryKey(),
@@ -105,7 +109,11 @@ export const enrollments = pgTable('enrollments', {
   notes: text('notes'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+}, (table) => [
+  index('enrollments_user_id_idx').on(table.userId),
+  index('enrollments_course_id_idx').on(table.courseId),
+  index('enrollments_user_created_idx').on(table.userId, table.createdAt),
+])
 
 export const payments = pgTable('payments', {
   id: text('id').primaryKey(),
@@ -121,12 +129,16 @@ export const payments = pgTable('payments', {
   senderNumber: text('sender_number'),
   status: text('status').$type<'pending' | 'verified' | 'rejected'>().default('pending').notNull(),
   notes: text('notes'),
-  verifiedBy: text('verified_by'),
+  verifiedBy: text('verified_by').references(() => user.id, { onDelete: 'set null' }),
   verifiedAt: timestamp('verified_at'),
   paidAt: timestamp('paid_at').notNull().defaultNow(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+}, (table) => [
+  index('payments_user_id_idx').on(table.userId),
+  index('payments_enrollment_id_idx').on(table.enrollmentId),
+  index('payments_user_created_idx').on(table.userId, table.createdAt),
+])
 
 export const invoices = pgTable('invoices', {
   id: text('id').primaryKey(),
@@ -145,7 +157,11 @@ export const invoices = pgTable('invoices', {
   description: text('description'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+}, (table) => [
+  index('invoices_user_id_idx').on(table.userId),
+  index('invoices_enrollment_id_idx').on(table.enrollmentId),
+  index('invoices_user_created_idx').on(table.userId, table.createdAt),
+])
 
 export const notifications = pgTable('notifications', {
   id: text('id').primaryKey(),
@@ -158,4 +174,76 @@ export const notifications = pgTable('notifications', {
   isRead: boolean('is_read').notNull().default(false),
   link: text('link'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (table) => [
+  index('notifications_user_id_idx').on(table.userId),
+  index('notifications_user_created_idx').on(table.userId, table.createdAt),
+])
+
+export const notices = pgTable('notices', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content'),
+  tag: text('tag').notNull(),
+  isUrgent: boolean('is_urgent').notNull().default(false),
+  isPublished: boolean('is_published').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => [
+  index('notices_created_idx').on(table.createdAt),
+])
+
+export const exams = pgTable('exams', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  subject: text('subject').notNull(),
+  duration: integer('duration').notNull().default(15),
+  difficulty: text('difficulty').$type<'easy' | 'medium' | 'hard'>().default('medium').notNull(),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => [
+  index('exams_subject_idx').on(table.subject),
+])
+
+export const questions = pgTable('questions', {
+  id: text('id').primaryKey(),
+  examId: text('exam_id')
+    .notNull()
+    .references(() => exams.id, { onDelete: 'cascade' }),
+  question: text('question').notNull(),
+  options: jsonb('options').$type<string[]>().notNull(),
+  correctIndex: integer('correct_index').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('questions_exam_id_idx').on(table.examId),
+])
+
+export const examSubmissions = pgTable('exam_submissions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  examId: text('exam_id')
+    .notNull()
+    .references(() => exams.id, { onDelete: 'cascade' }),
+  score: integer('score').notNull(),
+  total: integer('total').notNull(),
+  answers: jsonb('answers').$type<Record<number, number>>().notNull(),
+  timeTaken: integer('time_taken'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('exam_submissions_user_id_idx').on(table.userId),
+  index('exam_submissions_exam_id_idx').on(table.examId),
+  index('exam_submissions_user_exam_idx').on(table.userId, table.examId),
+])
+
+export const contactInquiries = pgTable('contact_inquiries', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  phone: text('phone').notNull(),
+  message: text('message').notNull(),
+  isResolved: boolean('is_resolved').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('contact_inquiries_created_idx').on(table.createdAt),
+])

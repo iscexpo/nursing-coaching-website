@@ -6,15 +6,38 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { SITE } from '@/lib/site-data'
-import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react'
+import { MapPin, Phone, Mail, MessageCircle, Loader2 } from 'lucide-react'
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', phone: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSubmitted(true)
+    setLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।')
+        return
+      }
+
+      setSubmitted(true)
+    } catch {
+      setError('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const infoItems = [
@@ -101,6 +124,13 @@ export default function ContactPage() {
                     <h3 className="font-heading text-lg font-bold text-foreground">
                       বার্তা পাঠান
                     </h3>
+
+                    {error && (
+                      <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                        {error}
+                      </div>
+                    )}
+
                     <div>
                       <label htmlFor="c-name" className="block text-sm font-medium text-foreground">
                         নাম
@@ -145,9 +175,11 @@ export default function ContactPage() {
                     </div>
                     <button
                       type="submit"
-                      className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+                      disabled={loading}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 disabled:opacity-50"
                     >
-                      বার্তা পাঠান
+                      {loading && <Loader2 className="size-4 animate-spin" />}
+                      {loading ? 'পাঠানো হচ্ছে...' : 'বার্তা পাঠান'}
                     </button>
                   </form>
                 )}

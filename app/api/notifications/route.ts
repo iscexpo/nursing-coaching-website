@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
+import { createNotificationSchema } from '@/lib/validations'
 
 export async function GET() {
   try {
@@ -14,7 +15,7 @@ export async function GET() {
       .orderBy(desc(notifications.createdAt))
 
     return NextResponse.json(data)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
   }
 }
@@ -25,31 +26,26 @@ export async function POST(request: NextRequest) {
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
-    const { title, message, type, link, targetUserId } = body
-
-    if (session.user.role === 'admin' && targetUserId) {
-      const [notification] = await db.insert(notifications).values({
-        id: crypto.randomUUID(),
-        userId: targetUserId,
-        title,
-        message,
-        type,
-        link,
-      }).returning()
-      return NextResponse.json(notification, { status: 201 })
+    const parsed = createNotificationSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
     }
+
+    const { title, message, type, link, targetUserId } = parsed.data
+
+    const userId = (session.user.role === 'admin' && targetUserId) ? targetUserId : session.user.id
 
     const [notification] = await db.insert(notifications).values({
       id: crypto.randomUUID(),
-      userId: session.user.id,
+      userId,
       title,
       message,
-      type,
+      type: type || 'info',
       link,
     }).returning()
 
     return NextResponse.json(notification, { status: 201 })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 })
   }
 }

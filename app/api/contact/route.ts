@@ -1,0 +1,57 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import { contactInquiries } from '@/lib/db/schema'
+import { createContactInquirySchema, paginationSchema } from '@/lib/validations'
+import { desc } from 'drizzle-orm'
+import { getSession } from '@/lib/permissions'
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getSession()
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const parsed = paginationSchema.safeParse({
+      page: searchParams.get('page'),
+      limit: searchParams.get('limit'),
+    })
+    const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
+
+    const data = await db.select().from(contactInquiries)
+      .orderBy(desc(contactInquiries.createdAt))
+      .limit(limit)
+      .offset((page - 1) * limit)
+
+    return NextResponse.json({ data, page, limit })
+  } catch {
+    return NextResponse.json({ error: 'Failed to fetch inquiries' }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const parsed = createContactInquirySchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+    }
+
+    const { name, phone, message } = parsed.data
+
+    await db.insert(contactInquiries).values({
+      id: crypto.randomUUID(),
+      name,
+      phone,
+      message,
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'আপনার বার্তা পাঠানো হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।',
+    }, { status: 201 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to submit inquiry' }, { status: 500 })
+  }
+}
