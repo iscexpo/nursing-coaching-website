@@ -11,6 +11,15 @@ function generateInvoiceNumber(): string {
   return `INV-${now.toString(36).toUpperCase()}${random.toString(36).toUpperCase().padStart(3, '0')}`
 }
 
+async function generateUniqueInvoiceNumber(): Promise<string> {
+  for (let attempts = 0; attempts < 10; attempts++) {
+    const invoiceNumber = generateInvoiceNumber()
+    const [existing] = await db.select({ id: invoices.id }).from(invoices).where(eq(invoices.invoiceNumber, invoiceNumber))
+    if (!existing) return invoiceNumber
+  }
+  throw new Error('Failed to generate unique invoice number after 10 attempts')
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
@@ -51,15 +60,7 @@ export async function POST(request: NextRequest) {
 
     const { userId, enrollmentId, amount, dueDate, description } = parsed.data
 
-    let invoiceNumber: string
-    let attempts = 0
-    do {
-      invoiceNumber = generateInvoiceNumber()
-      attempts++
-      if (attempts > 10) {
-        return NextResponse.json({ error: 'Failed to generate unique invoice number' }, { status: 500 })
-      }
-    } while (true)
+    const invoiceNumber = await generateUniqueInvoiceNumber()
 
     const [invoice] = await db.insert(invoices).values({
       id: crypto.randomUUID(),

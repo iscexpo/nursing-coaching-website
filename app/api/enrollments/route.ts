@@ -97,21 +97,25 @@ export async function POST(request: NextRequest) {
 
     const fee = course.discountFee || course.fee
 
-    const [enrollment] = await db.insert(enrollments).values({
-      id: crypto.randomUUID(),
-      userId: session.user.id,
-      courseId,
-      totalFee: fee,
-      dueAmount: fee,
-      notes,
-    }).returning()
+    const result = await db.transaction(async (tx) => {
+      const [enrollment] = await tx.insert(enrollments).values({
+        id: crypto.randomUUID(),
+        userId: session.user.id,
+        courseId,
+        totalFee: fee,
+        dueAmount: fee,
+        notes,
+      }).returning()
 
-    await db.update(courses).set({
-      currentStudents: course.currentStudents + 1,
-      updatedAt: new Date(),
-    }).where(eq(courses.id, courseId))
+      await tx.update(courses).set({
+        currentStudents: course.currentStudents + 1,
+        updatedAt: new Date(),
+      }).where(eq(courses.id, courseId))
 
-    return NextResponse.json(enrollment, { status: 201 })
+      return enrollment
+    })
+
+    return NextResponse.json(result, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Failed to create enrollment' }, { status: 500 })
   }

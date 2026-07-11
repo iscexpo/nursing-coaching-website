@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
 import { submitExamSchema, paginationSchema } from '@/lib/validations'
 
@@ -17,11 +17,19 @@ export async function GET(request: NextRequest) {
     })
     const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
 
-    const data = await db.select().from(examSubmissions)
-      .where(eq(examSubmissions.userId, session.user.id))
-      .orderBy(desc(examSubmissions.createdAt))
-      .limit(limit)
-      .offset((page - 1) * limit)
+    let data
+    if (session.user.role === 'admin') {
+      data = await db.select().from(examSubmissions)
+        .orderBy(desc(examSubmissions.createdAt))
+        .limit(limit)
+        .offset((page - 1) * limit)
+    } else {
+      data = await db.select().from(examSubmissions)
+        .where(eq(examSubmissions.userId, session.user.id))
+        .orderBy(desc(examSubmissions.createdAt))
+        .limit(limit)
+        .offset((page - 1) * limit)
+    }
 
     return NextResponse.json({ data, page, limit })
   } catch {
@@ -71,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       ...submission,
-      questions: examQuestions.map((q) => ({ id: q.id, correctIndex: q.correctIndex })),
+      total: examQuestions.length,
     }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Failed to submit exam' }, { status: 500 })

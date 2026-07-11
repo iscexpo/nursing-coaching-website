@@ -50,7 +50,9 @@ export const account = pgTable('account', {
   password: text('password'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+}, (table) => [
+  index('account_user_id_idx').on(table.userId),
+])
 
 export const verification = pgTable('verification', {
   id: text('id').primaryKey(),
@@ -113,6 +115,7 @@ export const enrollments = pgTable('enrollments', {
   index('enrollments_user_id_idx').on(table.userId),
   index('enrollments_course_id_idx').on(table.courseId),
   index('enrollments_user_created_idx').on(table.userId, table.createdAt),
+  uniqueIndex('enrollments_user_course_idx').on(table.userId, table.courseId),
 ])
 
 export const payments = pgTable('payments', {
@@ -138,6 +141,7 @@ export const payments = pgTable('payments', {
   index('payments_user_id_idx').on(table.userId),
   index('payments_enrollment_id_idx').on(table.enrollmentId),
   index('payments_user_created_idx').on(table.userId, table.createdAt),
+  index('payments_status_idx').on(table.status),
 ])
 
 export const invoices = pgTable('invoices', {
@@ -161,6 +165,7 @@ export const invoices = pgTable('invoices', {
   index('invoices_user_id_idx').on(table.userId),
   index('invoices_enrollment_id_idx').on(table.enrollmentId),
   index('invoices_user_created_idx').on(table.userId, table.createdAt),
+  index('invoices_status_idx').on(table.status),
 ])
 
 export const notifications = pgTable('notifications', {
@@ -172,11 +177,14 @@ export const notifications = pgTable('notifications', {
   message: text('message').notNull(),
   type: text('type').$type<'info' | 'success' | 'warning' | 'payment' | 'enrollment'>().default('info').notNull(),
   isRead: boolean('is_read').notNull().default(false),
+  readAt: timestamp('read_at'),
   link: text('link'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => [
   index('notifications_user_id_idx').on(table.userId),
   index('notifications_user_created_idx').on(table.userId, table.createdAt),
+  index('notifications_user_read_idx').on(table.userId, table.isRead),
 ])
 
 export const notices = pgTable('notices', {
@@ -186,6 +194,7 @@ export const notices = pgTable('notices', {
   tag: text('tag').notNull(),
   isUrgent: boolean('is_urgent').notNull().default(false),
   isPublished: boolean('is_published').notNull().default(true),
+  authorId: text('author_id').references(() => user.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => [
@@ -203,6 +212,7 @@ export const exams = pgTable('exams', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => [
   index('exams_subject_idx').on(table.subject),
+  index('exams_is_active_idx').on(table.isActive),
 ])
 
 export const questions = pgTable('questions', {
@@ -243,7 +253,49 @@ export const contactInquiries = pgTable('contact_inquiries', {
   phone: text('phone').notNull(),
   message: text('message').notNull(),
   isResolved: boolean('is_resolved').notNull().default(false),
+  resolvedAt: timestamp('resolved_at'),
+  resolvedBy: text('resolved_by').references(() => user.id, { onDelete: 'set null' }),
+  response: text('response'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (table) => [
   index('contact_inquiries_created_idx').on(table.createdAt),
+])
+
+export const attendance = pgTable('attendance', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  date: timestamp('date').notNull(),
+  status: text('status').$type<'present' | 'late' | 'absent'>().notNull(),
+  time: text('time'),
+  markedBy: text('marked_by').references(() => user.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => [
+  index('attendance_user_id_idx').on(table.userId),
+  index('attendance_date_idx').on(table.date),
+  index('attendance_user_date_idx').on(table.userId, table.date),
+  uniqueIndex('attendance_user_date_unique').on(table.userId, table.date),
+])
+
+export const admitCards = pgTable('admit_cards', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  examId: text('exam_id')
+    .notNull()
+    .references(() => exams.id, { onDelete: 'cascade' }),
+  examName: text('exam_name').notNull(),
+  examDate: text('exam_date').notNull(),
+  examTime: text('exam_time').notNull(),
+  center: text('center').notNull(),
+  seatNumber: text('seat_number'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => [
+  index('admit_cards_user_id_idx').on(table.userId),
+  index('admit_cards_exam_id_idx').on(table.examId),
+  uniqueIndex('admit_cards_user_exam_unique').on(table.userId, table.examId),
 ])

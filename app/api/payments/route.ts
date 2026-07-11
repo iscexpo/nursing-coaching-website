@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
-import { eq, desc, and } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
 import { createPaymentSchema, paginationSchema } from '@/lib/validations'
 
@@ -48,6 +48,10 @@ export async function POST(request: NextRequest) {
 
     if (session.user.role !== 'admin' && enrollment.userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    if (enrollment.status !== 'active' && enrollment.status !== 'approved') {
+      return NextResponse.json({ error: 'Cannot make payment for enrollment with status: ' + enrollment.status }, { status: 400 })
     }
 
     if (amount > enrollment.dueAmount) {

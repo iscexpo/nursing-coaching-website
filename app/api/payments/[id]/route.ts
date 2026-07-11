@@ -86,3 +86,25 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: 'Failed to update payment' }, { status: 500 })
   }
 }
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params
+    const session = await getSession()
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const [existing] = await db.select().from(payments).where(eq(payments.id, id))
+    if (!existing) return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
+
+    if (existing.status !== 'pending') {
+      return NextResponse.json({ error: 'Can only delete pending payments' }, { status: 400 })
+    }
+
+    await db.delete(payments).where(eq(payments.id, id))
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: 'Failed to delete payment' }, { status: 500 })
+  }
+}

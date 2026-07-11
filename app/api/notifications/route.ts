@@ -33,7 +33,11 @@ export async function POST(request: NextRequest) {
 
     const { title, message, type, link, targetUserId } = parsed.data
 
-    const userId = (session.user.role === 'admin' && targetUserId) ? targetUserId : session.user.id
+    if (session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Only admins can create notifications' }, { status: 403 })
+    }
+
+    const userId = targetUserId || session.user.id
 
     const [notification] = await db.insert(notifications).values({
       id: crypto.randomUUID(),

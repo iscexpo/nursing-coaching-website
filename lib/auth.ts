@@ -33,10 +33,9 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
 }
 
 export const auth = betterAuth({
-  trustedOrigins: [
-    'http://localhost:3000',
-    'https://v0-cornia.vercel.app',
-  ],
+  trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS
+    ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(',')
+    : ['http://localhost:3000'],
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema,

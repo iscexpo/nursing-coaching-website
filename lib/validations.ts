@@ -117,3 +117,38 @@ export const createContactInquirySchema = z.object({
   phone: z.string().min(10).max(20),
   message: z.string().min(1).max(5000),
 })
+
+export const updateContactInquirySchema = z.object({
+  isResolved: z.boolean().optional(),
+  response: z.string().max(5000).optional(),
+})
+
+export const createAttendanceSchema = z.object({
+  userId: z.string().uuid(),
+  date: z.coerce.date(),
+  status: z.enum(['present', 'late', 'absent']),
+  time: z.string().max(50).optional(),
+})
+
+export const updateAttendanceSchema = z.object({
+  status: z.enum(['present', 'late', 'absent']).optional(),
+  time: z.string().max(50).optional(),
+})
+
+export const createAdmitCardSchema = z.object({
+  userId: z.string().uuid(),
+  examId: z.string().uuid(),
+  examName: z.string().min(1).max(200),
+  examDate: z.string().min(1).max(100),
+  examTime: z.string().min(1).max(100),
+  center: z.string().min(1).max(200),
+  seatNumber: z.string().max(50).optional(),
+})
+
+export const updateAdmitCardSchema = z.object({
+  examName: z.string().min(1).max(200).optional(),
+  examDate: z.string().min(1).max(100).optional(),
+  examTime: z.string().min(1).max(100).optional(),
+  center: z.string().min(1).max(200).optional(),
+  seatNumber: z.string().max(50).optional(),
+})

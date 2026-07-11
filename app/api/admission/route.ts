@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { enrollments, courses, contactInquiries } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { courses, contactInquiries } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { createAdmissionSchema } from '@/lib/validations'
 
 export async function POST(request: NextRequest) {

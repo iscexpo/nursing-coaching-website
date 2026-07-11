@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { questions } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { admitCards } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
-import { createQuestionSchema, paginationSchema } from '@/lib/validations'
+import { createAdmitCardSchema, paginationSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,30 +16,17 @@ export async function GET(request: NextRequest) {
       limit: searchParams.get('limit'),
     })
     const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
-    const examId = searchParams.get('examId')
 
-    if (!examId) {
-      return NextResponse.json({ error: 'examId is required' }, { status: 400 })
+    let data
+    if (session.user.role === 'admin') {
+      data = await db.select().from(admitCards).orderBy(desc(admitCards.createdAt)).limit(limit).offset((page - 1) * limit)
+    } else {
+      data = await db.select().from(admitCards).where(eq(admitCards.userId, session.user.id)).orderBy(desc(admitCards.createdAt)).limit(limit).offset((page - 1) * limit)
     }
 
-    const isAdmin = session.user.role === 'admin'
-
-    const data = await db.select().from(questions)
-      .where(eq(questions.examId, examId))
-      .limit(limit)
-      .offset((page - 1) * limit)
-
-    const sanitized = data.map((q) => {
-      if (!isAdmin) {
-        const { correctIndex, ...rest } = q
-        return rest
-      }
-      return q
-    })
-
-    return NextResponse.json({ data: sanitized, page, limit })
+    return NextResponse.json({ data, page, limit })
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch questions' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch admit cards' }, { status: 500 })
   }
 }
 
@@ -51,18 +38,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const parsed = createQuestionSchema.safeParse(body)
+    const parsed = createAdmitCardSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
     }
 
-    const [question] = await db.insert(questions).values({
+    const [card] = await db.insert(admitCards).values({
       id: crypto.randomUUID(),
       ...parsed.data,
     }).returning()
 
-    return NextResponse.json(question, { status: 201 })
+    return NextResponse.json(card, { status: 201 })
   } catch {
-    return NextResponse.json({ error: 'Failed to create question' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create admit card' }, { status: 500 })
   }
 }
