@@ -6,6 +6,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { COURSES, SITE } from '@/lib/site-data'
+import { Loader2 } from 'lucide-react'
 
 export default function AdmissionPage() {
   const [form, setForm] = useState({
@@ -15,10 +16,38 @@ export default function AdmissionPage() {
     message: '',
   })
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSubmitted(true)
+    setLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/admission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          courseSlug: form.course,
+          message: form.message || undefined,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।')
+        return
+      }
+
+      setSubmitted(true)
+    } catch {
+      setError('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -56,6 +85,12 @@ export default function AdmissionPage() {
                 <h3 className="font-heading text-lg font-bold text-foreground">
                   ভর্তি ফরম
                 </h3>
+
+                {error && (
+                  <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                    {error}
+                  </div>
+                )}
 
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground">
@@ -123,9 +158,11 @@ export default function AdmissionPage() {
 
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 disabled:opacity-50"
                 >
-                  আবেদন জমা দিন
+                  {loading && <Loader2 className="size-4 animate-spin" />}
+                  {loading ? 'জমা হচ্ছে...' : 'আবেদন জমা দিন'}
                 </button>
               </form>
             )}
@@ -136,13 +173,13 @@ export default function AdmissionPage() {
               </h3>
               <div className="mt-4 space-y-3 text-sm text-muted-foreground">
                 <p>
-                  📞 ফোন: <a href={SITE.phoneHref} className="font-medium text-brand hover:underline">{SITE.phone}</a>
+                  ফোন: <a href={SITE.phoneHref} className="font-medium text-brand hover:underline">{SITE.phone}</a>
                 </p>
                 <p>
-                  💬 WhatsApp: <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-brand hover:underline">চ্যাট করুন</a>
+                  WhatsApp: <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-brand hover:underline">চ্যাট করুন</a>
                 </p>
                 <p>
-                  📍 ঠিকানা: {SITE.addressBn}
+                  ঠিকানা: {SITE.addressBn}
                 </p>
               </div>
             </div>

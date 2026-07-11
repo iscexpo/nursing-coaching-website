@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
+import { updateCourseSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
 
     return NextResponse.json(course)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch course' }, { status: 500 })
   }
 }
@@ -28,11 +29,19 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const body = await request.json()
-    const [updated] = await db.update(courses).set(body).where(eq(courses.id, id)).returning()
+    const parsed = updateCourseSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+    }
+
+    const [updated] = await db.update(courses).set({
+      ...parsed.data,
+      updatedAt: new Date(),
+    }).where(eq(courses.id, id)).returning()
 
     if (!updated) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     return NextResponse.json(updated)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to update course' }, { status: 500 })
   }
 }
@@ -49,7 +58,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     if (!deleted) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to delete course' }, { status: 500 })
   }
 }

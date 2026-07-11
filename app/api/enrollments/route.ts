@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { enrollments, courses, user } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, and } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
+import { createEnrollmentSchema, paginationSchema } from '@/lib/validations'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { searchParams } = new URL(request.url)
+    const parsed = paginationSchema.safeParse({
+      page: searchParams.get('page'),
+      limit: searchParams.get('limit'),
+    })
+    const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
 
     let data
     if (session.user.role === 'admin') {
@@ -29,6 +37,8 @@ export async function GET() {
         .leftJoin(user, eq(enrollments.userId, user.id))
         .leftJoin(courses, eq(enrollments.courseId, courses.id))
         .orderBy(desc(enrollments.createdAt))
+        .limit(limit)
+        .offset((page - 1) * limit)
     } else {
       data = await db.select({
         id: enrollments.id,
@@ -47,10 +57,12 @@ export async function GET() {
         .leftJoin(courses, eq(enrollments.courseId, courses.id))
         .where(eq(enrollments.userId, session.user.id))
         .orderBy(desc(enrollments.createdAt))
+        .limit(limit)
+        .offset((page - 1) * limit)
     }
 
-    return NextResponse.json(data)
-  } catch (error) {
+    return NextResponse.json({ data, page, limit })
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch enrollments' }, { status: 500 })
   }
 }
@@ -61,10 +73,27 @@ export async function POST(request: NextRequest) {
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
-    const { courseId, notes } = body
+    const parsed = createEnrollmentSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+    }
+
+    const { courseId, notes } = parsed.data
 
     const [course] = await db.select().from(courses).where(eq(courses.id, courseId))
     if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+    if (!course.isActive) return NextResponse.json({ error: 'Course is not active' }, { status: 400 })
+
+    const existingEnrollment = await db.select().from(enrollments).where(
+      and(eq(enrollments.userId, session.user.id), eq(enrollments.courseId, courseId))
+    )
+    if (existingEnrollment.length > 0) {
+      return NextResponse.json({ error: 'Already enrolled in this course' }, { status: 409 })
+    }
+
+    if (course.maxStudents && course.currentStudents >= course.maxStudents) {
+      return NextResponse.json({ error: 'Course is full' }, { status: 400 })
+    }
 
     const fee = course.discountFee || course.fee
 
@@ -77,8 +106,13 @@ export async function POST(request: NextRequest) {
       notes,
     }).returning()
 
+    await db.update(courses).set({
+      currentStudents: course.currentStudents + 1,
+      updatedAt: new Date(),
+    }).where(eq(courses.id, courseId))
+
     return NextResponse.json(enrollment, { status: 201 })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to create enrollment' }, { status: 500 })
   }
 }
