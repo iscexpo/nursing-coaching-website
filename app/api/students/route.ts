@@ -71,10 +71,17 @@ export async function POST(request: NextRequest) {
     if (profileData.phoneNumber) updateData.phoneNumber = profileData.phoneNumber
     if (profileData.studentId) updateData.studentId = profileData.studentId
     if (profileData.address) updateData.address = profileData.address
+    if (profileData.village) updateData.village = profileData.village
+    if (profileData.post) updateData.post = profileData.post
+    if (profileData.policeStation) updateData.policeStation = profileData.policeStation
+    if (profileData.district) updateData.district = profileData.district
     if (profileData.dateOfBirth) updateData.dateOfBirth = profileData.dateOfBirth
     if (profileData.guardianName) updateData.guardianName = profileData.guardianName
     if (profileData.guardianPhone) updateData.guardianPhone = profileData.guardianPhone
     if (profileData.institution) updateData.institution = profileData.institution
+    if (profileData.ssc) updateData.ssc = profileData.ssc
+    if (profileData.hsc) updateData.hsc = profileData.hsc
+    if (profileData.honors) updateData.honors = profileData.honors
 
     if (Object.keys(updateData).length > 0) {
       await db.update(user).set(updateData).where(eq(user.id, userId))

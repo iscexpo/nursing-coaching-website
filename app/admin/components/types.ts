@@ -112,10 +112,17 @@ export interface Student {
   role: 'admin' | 'student'
   studentId: string | null
   address: string | null
+  village: string | null
+  post: string | null
+  policeStation: string | null
+  district: string | null
   dateOfBirth: string | null
   guardianName: string | null
   guardianPhone: string | null
   institution: string | null
+  ssc: { result: string; institution: string; year: string } | null
+  hsc: { result: string; institution: string; year: string } | null
+  honors: { result: string; institution: string; year: string } | null
   createdAt: string
   updatedAt: string
 }
