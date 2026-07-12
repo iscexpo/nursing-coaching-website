@@ -1,5 +1,5 @@
 import { db } from './db'
-import { auditLogs } from './db/schema'
+import { auditLogs, studentLifecycleEvents } from './db/schema'
 import type { Session } from './permissions'
 
 export type AuditAction =
@@ -29,6 +29,13 @@ export interface AuditEntry {
   ipAddress?: string
 }
 
+export interface LifecycleEntry {
+  studentId: string
+  enrollmentId?: string
+  eventType: string
+  details?: Record<string, unknown>
+}
+
 export async function writeAudit(entry: AuditEntry) {
   await db.insert(auditLogs).values({
     id: crypto.randomUUID(),
@@ -40,6 +47,16 @@ export async function writeAudit(entry: AuditEntry) {
     action: entry.action,
     details: entry.details ?? {},
     ipAddress: entry.ipAddress ?? null,
+  })
+}
+
+export async function writeLifecycleEvent(entry: LifecycleEntry) {
+  await db.insert(studentLifecycleEvents).values({
+    id: crypto.randomUUID(),
+    studentId: entry.studentId,
+    enrollmentId: entry.enrollmentId ?? null,
+    eventType: entry.eventType,
+    details: entry.details ?? {},
   })
 }
 

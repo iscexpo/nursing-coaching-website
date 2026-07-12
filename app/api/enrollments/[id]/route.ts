@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { enrollments, courses } from '@/lib/db/schema'
+import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { updateEnrollmentSchema } from '@/lib/validations'
+import { buildAuditEntry, writeAudit, writeLifecycleEvent } from '@/lib/audit'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -38,10 +39,40 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
     }
 
+    const [existing] = await db.select().from(enrollments).where(eq(enrollments.id, id))
+    if (!existing) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
+
     const [updated] = await db.update(enrollments).set({
       ...parsed.data,
       updatedAt: new Date(),
     }).where(eq(enrollments.id, id)).returning()
+
+    const eventType = parsed.data.status ? `enrollment.${parsed.data.status}` : 'enrollment.updated'
+    await writeLifecycleEvent({
+      studentId: existing.userId,
+      enrollmentId: existing.id,
+      eventType,
+      details: {
+        ...parsed.data,
+        previousStatus: existing.status,
+      },
+    })
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'enrollment',
+          resourceId: id,
+          action: 'update',
+          details: {
+            ...parsed.data,
+            previousStatus: existing.status,
+          },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
 
     if (!updated) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
     return NextResponse.json(updated)
@@ -71,6 +102,34 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
           updatedAt: new Date(),
         }).where(eq(courses.id, existing.courseId))
       }
+
+      await tx.insert(studentLifecycleEvents).values({
+        id: crypto.randomUUID(),
+        studentId: existing.userId,
+        enrollmentId: existing.id,
+        eventType: 'enrollment.deleted',
+        details: { previousStatus: existing.status },
+      })
+    })
+
+    await writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'enrollment',
+          resourceId: id,
+          action: 'delete',
+          details: { previousStatus: existing.status },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
+
+    await writeLifecycleEvent({
+      studentId: existing.userId,
+      enrollmentId: existing.id,
+      eventType: 'enrollment.deleted',
+      details: { previousStatus: existing.status },
     })
 
     return NextResponse.json({ success: true })

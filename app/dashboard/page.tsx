@@ -22,7 +22,7 @@ import { AccountSection } from './components/account-tab'
 import { AdmitCardSection } from './components/admit-card-tab'
 import { ResultsTable } from './components/results-tab'
 import { AttendanceView } from './components/attendance-tab'
-import type { Course, Enrollment, Payment, Invoice, UserProfile, ExamSubmission, AttendanceRecord, AdmitCard } from './components/types'
+import type { Course, Enrollment, Payment, Invoice, UserProfile, ExamSubmission, AttendanceRecord, AdmitCard, LifecycleEvent } from './components/types'
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -48,11 +48,12 @@ export default function DashboardPage() {
   const [examSubmissions, setExamSubmissions] = useState<ExamSubmission[]>([])
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([])
   const [admitCards, setAdmitCards] = useState<AdmitCard[]>([])
+  const [lifecycleEvents, setLifecycleEvents] = useState<LifecycleEvent[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, profileRes, submissionsRes, attendanceRes, admitCardsRes] = await Promise.all([
+      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, profileRes, submissionsRes, attendanceRes, admitCardsRes, lifecycleRes] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
@@ -61,6 +62,7 @@ export default function DashboardPage() {
         fetch('/api/exam-submissions'),
         fetch('/api/attendance'),
         fetch('/api/admit-cards'),
+        fetch('/api/lifecycle-events'),
       ])
       if (coursesRes.ok) {
         const d = await coursesRes.json()
@@ -93,6 +95,10 @@ export default function DashboardPage() {
       if (admitCardsRes.ok) {
         const data = await admitCardsRes.json()
         setAdmitCards(data.data || data)
+      }
+      if (lifecycleRes.ok) {
+        const data = await lifecycleRes.json()
+        setLifecycleEvents(data.data || data)
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -147,7 +153,14 @@ export default function DashboardPage() {
       onSignOut={handleSignOut}
     >
       {tab === 'overview' && (
-        <OverviewTab examSubmissions={examSubmissions} attendance={attendance} enrollments={enrollments} totalDue={totalDue} totalPaid={totalPaid} />
+        <OverviewTab
+          examSubmissions={examSubmissions}
+          attendance={attendance}
+          enrollments={enrollments}
+          lifecycleEvents={lifecycleEvents}
+          totalDue={totalDue}
+          totalPaid={totalPaid}
+        />
       )}
       {tab === 'courses' && <CourseSection courses={courses} enrollments={enrollments} onRefresh={fetchData} />}
       {tab === 'billing' && <BillingSection enrollments={enrollments} payments={payments} invoices={invoices} onRefresh={fetchData} />}

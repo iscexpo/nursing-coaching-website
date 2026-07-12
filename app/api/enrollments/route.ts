@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { enrollments, courses, user } from '@/lib/db/schema'
+import { enrollments, courses, user, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq, desc, and } from 'drizzle-orm'
 import { getSession } from '@/lib/permissions'
 import { createEnrollmentSchema, paginationSchema } from '@/lib/validations'
+import { writeLifecycleEvent } from '@/lib/audit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -112,7 +113,22 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date(),
       }).where(eq(courses.id, courseId))
 
+      await tx.insert(studentLifecycleEvents).values({
+        id: crypto.randomUUID(),
+        studentId: session.user.id,
+        enrollmentId: enrollment.id,
+        eventType: 'enrollment.pending',
+        details: { courseId, totalFee: fee },
+      })
+
       return enrollment
+    })
+
+    await writeLifecycleEvent({
+      studentId: session.user.id,
+      enrollmentId: result.id,
+      eventType: 'enrollment.created',
+      details: { courseId, totalFee: fee },
     })
 
     return NextResponse.json(result, { status: 201 })

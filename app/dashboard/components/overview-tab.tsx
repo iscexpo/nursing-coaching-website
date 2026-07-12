@@ -1,20 +1,22 @@
 'use client'
 
-import { BarChart3, Receipt, GraduationCap } from 'lucide-react'
+import { BarChart3, Receipt, GraduationCap, CalendarCheck } from 'lucide-react'
 import { AttendanceStatusBadge, EnrollmentStatusBadge } from '@/components/ui/badges'
 import { StatCard } from '@/components/ui/stat-card'
-import type { Enrollment, ExamSubmission, AttendanceRecord } from './types'
+import type { Enrollment, ExamSubmission, AttendanceRecord, LifecycleEvent } from './types'
 
 export function OverviewTab({
   examSubmissions,
   attendance,
   enrollments,
+  lifecycleEvents,
   totalDue,
   totalPaid,
 }: {
   examSubmissions: ExamSubmission[]
   attendance: AttendanceRecord[]
   enrollments: Enrollment[]
+  lifecycleEvents: LifecycleEvent[]
   totalDue: number
   totalPaid: number
 }) {
@@ -29,7 +31,7 @@ export function OverviewTab({
         <StatCard label="সক্রিয় কোর্স" value={`${activeEnrollments.length}টি`} icon={GraduationCap} color="brand" />
         <StatCard label="গড় স্কোর" value={`${avgScore}%`} icon={BarChart3} color="green" />
         <StatCard label="মোট পেমেন্ট" value={`৳${totalPaid.toLocaleString()}`} icon={Receipt} color="green" />
-        <StatCard label="বকেয়" value={totalDue > 0 ? `৳${totalDue.toLocaleString()}` : '০'} icon={Receipt} color={totalDue > 0 ? 'gold' : 'green'} />
+        <StatCard label="লাইফসাইকেল ইভেন্ট" value={`${lifecycleEvents.length}`} icon={CalendarCheck} color="gold" />
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -72,6 +74,23 @@ export function OverviewTab({
                   <span className="ml-2 text-muted-foreground">({e.courseDuration || ''})</span>
                 </div>
                 <EnrollmentStatusBadge status={e.status} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {lifecycleEvents.length > 0 && (
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <h3 className="font-heading text-base font-bold text-foreground">স্টুডেন্ট লাইফসাইকেল</h3>
+          <div className="mt-3 space-y-3">
+            {lifecycleEvents.slice(0, 3).map((event) => (
+              <div key={event.id} className="flex flex-col gap-1 rounded-lg border border-border bg-muted p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-medium text-foreground">{event.eventType.replace('enrollment.', '').replaceAll('.', ' ')}</span>
+                  <span className="text-xs text-muted-foreground">{new Date(event.createdAt).toLocaleDateString('bn-BD')}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{event.enrollmentId ? `এনরোলমেন্ট: ${event.enrollmentId.slice(0, 8)}` : 'এনরোলমেন্ট আইডি নেই'}</p>
+                <pre className="text-xs text-muted-foreground whitespace-pre-wrap break-words">{JSON.stringify(event.details || {}, null, 0)}</pre>
               </div>
             ))}
           </div>

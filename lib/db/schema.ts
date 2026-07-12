@@ -143,6 +143,20 @@ export const enrollments = pgTable('enrollments', {
   uniqueIndex('enrollments_user_course_idx').on(table.userId, table.courseId),
 ])
 
+export const studentLifecycleEvents = pgTable('student_lifecycle_events', {
+  id: text('id').primaryKey(),
+  studentId: text('student_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  enrollmentId: text('enrollment_id').references(() => enrollments.id, { onDelete: 'set null' }),
+  eventType: text('event_type').notNull(),
+  details: jsonb('details').$type<Record<string, unknown>>().default({}),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('student_lifecycle_events_student_id_idx').on(table.studentId),
+  index('student_lifecycle_events_enrollment_id_idx').on(table.enrollmentId),
+])
+
 export const payments = pgTable('payments', {
   id: text('id').primaryKey(),
   userId: text('user_id')

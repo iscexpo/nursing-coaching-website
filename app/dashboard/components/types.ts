@@ -114,3 +114,12 @@ export interface AdmitCard {
   seatNumber: string | null
   createdAt: string
 }
+
+export interface LifecycleEvent {
+  id: string
+  studentId: string
+  enrollmentId: string | null
+  eventType: string
+  details: Record<string, unknown>
+  createdAt: string
+}
