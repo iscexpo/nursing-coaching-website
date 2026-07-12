@@ -1,9 +1,27 @@
 import Link from 'next/link'
 import { FileText, ArrowRight, Bell, Megaphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { NOTICES } from '@/lib/site-data'
+import { db } from '@/lib/db'
+import { notices } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 
-export function ModelTestAndNotice() {
+export async function ModelTestAndNotice() {
+  let data: { id: string; title: string; tag: string; isUrgent: boolean; createdAt: Date }[] = []
+  try {
+    data = await db.select({
+      id: notices.id,
+      title: notices.title,
+      tag: notices.tag,
+      isUrgent: notices.isUrgent,
+      createdAt: notices.createdAt,
+    }).from(notices)
+      .where(eq(notices.isPublished, true))
+      .orderBy(desc(notices.isUrgent), desc(notices.createdAt))
+      .limit(5)
+  } catch {
+    // fallback to empty
+  }
+
   return (
     <section id="notice" className="bg-secondary/50 py-16 md:py-20">
       <div className="mx-auto grid max-w-7xl gap-6 px-4 lg:grid-cols-2">
@@ -27,7 +45,7 @@ export function ModelTestAndNotice() {
             </ul>
           </div>
           <Button
-            render={<Link href="/model-test" />}
+            render={<Link href="/exam" />}
             size="lg"
             className="mt-8 h-11 w-fit bg-gold px-6 text-base font-semibold text-gold-foreground hover:bg-gold/90"
           >
@@ -48,32 +66,36 @@ export function ModelTestAndNotice() {
             </Button>
           </div>
           <ul className="mt-5 divide-y divide-border">
-            {NOTICES.map((n) => (
-              <li key={n.title} className="flex items-start gap-3 py-3.5">
-                <span
-                  className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
-                    n.urgent ? 'bg-destructive/10 text-destructive' : 'bg-secondary text-brand'
-                  }`}
-                >
-                  <Bell className="size-4" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ${
-                        n.urgent
-                          ? 'bg-destructive/10 text-destructive'
-                          : 'bg-green/10 text-green'
-                      }`}
-                    >
-                      {n.tag}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{n.date}</span>
+            {data.length === 0 ? (
+              <li className="py-8 text-center text-sm text-muted-foreground">কোনো নোটিশ নেই</li>
+            ) : (
+              data.map((n) => (
+                <li key={n.id} className="flex items-start gap-3 py-3.5">
+                  <span
+                    className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
+                      n.isUrgent ? 'bg-destructive/10 text-destructive' : 'bg-secondary text-brand'
+                    }`}
+                  >
+                    <Bell className="size-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ${
+                          n.isUrgent
+                            ? 'bg-destructive/10 text-destructive'
+                            : 'bg-green/10 text-green'
+                        }`}
+                      >
+                        {n.tag}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleDateString('bn-BD')}</span>
+                    </div>
+                    <p className="mt-1 text-sm font-medium text-foreground">{n.title}</p>
                   </div>
-                  <p className="mt-1 text-sm font-medium text-foreground">{n.title}</p>
-                </div>
-              </li>
-            ))}
+                </li>
+              ))
+            )}
           </ul>
         </div>
       </div>

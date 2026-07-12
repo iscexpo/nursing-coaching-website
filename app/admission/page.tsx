@@ -1,14 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
-import { COURSES, SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/site-data'
 import { Loader2 } from 'lucide-react'
 
+interface CourseOption {
+  slug: string
+  title: string
+  fee: number
+}
+
 export default function AdmissionPage() {
+  const [coursesList, setCoursesList] = useState<CourseOption[]>([])
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -18,6 +25,16 @@ export default function AdmissionPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetch('/api/courses')
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => {
+        const list = Array.isArray(data) ? data : data.data || []
+        setCoursesList(list.filter((c: { isActive: boolean }) => c.isActive).map((c: { slug: string; title: string; fee: number }) => ({ slug: c.slug, title: c.title, fee: c.fee })))
+      })
+      .catch(() => {})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -134,9 +151,9 @@ export default function AdmissionPage() {
                     className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                   >
                     <option value="">কোর্স বাছাই করুন</option>
-                    {COURSES.map((c) => (
+                    {coursesList.map((c) => (
                       <option key={c.slug} value={c.slug}>
-                        {c.title} — {c.fee}
+                        {c.title} — ৳{c.fee.toLocaleString()}
                       </option>
                     ))}
                   </select>
