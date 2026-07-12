@@ -19,7 +19,9 @@ export const createCourseSchema = z.object({
   schedule: z.string().max(500).optional(),
 })
 
-export const updateCourseSchema = createCourseSchema.partial()
+export const updateCourseSchema = createCourseSchema.partial().extend({
+  isActive: z.boolean().optional(),
+})
 
 export const createEnrollmentSchema = z.object({
   courseId: z.string().uuid(),

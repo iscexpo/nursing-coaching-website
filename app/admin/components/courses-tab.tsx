@@ -14,6 +14,7 @@ export function CoursesPanel({
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Course | null>(null)
   const [saving, setSaving] = useState(false)
+  const [formError, setFormError] = useState('')
   const [form, setForm] = useState({
     slug: '',
     title: '',
@@ -29,18 +30,27 @@ export function CoursesPanel({
 
   function resetForm() {
     setForm({ slug: '', title: '', description: '', shortDescription: '', duration: '', fee: 0, discountFee: 0, image: '', maxStudents: 0, schedule: '' })
+    setFormError('')
   }
 
   async function handleSave() {
     if (!form.title.trim() || !form.slug.trim()) return
     setSaving(true)
+    setFormError('')
     try {
-      const body = {
-        ...form,
+      const body: Record<string, unknown> = {
+        slug: form.slug.trim(),
+        title: form.title.trim(),
+        description: form.description.trim(),
+        duration: form.duration.trim(),
         fee: Number(form.fee),
-        discountFee: form.discountFee ? Number(form.discountFee) : undefined,
-        maxStudents: form.maxStudents ? Number(form.maxStudents) : undefined,
       }
+      if (form.shortDescription.trim()) body.shortDescription = form.shortDescription.trim()
+      if (form.discountFee) body.discountFee = Number(form.discountFee)
+      if (form.image.trim()) body.image = form.image.trim()
+      if (form.maxStudents) body.maxStudents = Number(form.maxStudents)
+      if (form.schedule.trim()) body.schedule = form.schedule.trim()
+
       const url = editing ? `/api/courses/${editing.id}` : '/api/courses'
       const method = editing ? 'PUT' : 'POST'
       const res = await fetch(url, {
@@ -53,8 +63,12 @@ export function CoursesPanel({
         setShowForm(false)
         setEditing(null)
         resetForm()
+      } else {
+        const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
+        setFormError(err.details ? Object.values(err.details).flat().join(', ') : err.error || 'সংরক্ষণ ব্যর্থ')
       }
     } catch (error) {
+      setFormError('সংরক্ষণ ব্যর্থ')
       console.error('Failed to save course:', error)
     } finally {
       setSaving(false)
@@ -89,12 +103,12 @@ export function CoursesPanel({
   }
 
   async function toggleActive(course: Course) {
-    await fetch(`/api/courses/${course.id}`, {
+    const res = await fetch(`/api/courses/${course.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive: !course.isActive }),
     })
-    onRefresh()
+    if (res.ok) onRefresh()
   }
 
   return (
@@ -121,6 +135,9 @@ export function CoursesPanel({
             </button>
           </div>
           <div className="space-y-3">
+            {formError && (
+              <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{formError}</div>
+            )}
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">কোর্সের নাম</label>
