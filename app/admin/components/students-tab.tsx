@@ -42,7 +42,7 @@ export function StudentsPanel({ enrollments }: { enrollments: Enrollment[] }) {
             </thead>
             <tbody>
               {filtered.map((e) => (
-                <tr key={e.id} className="border-b border-border last:border-0">
+                <tr key={e.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                   <td className="px-4 py-3 font-medium text-foreground">{e.userName || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground">{e.userPhone || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground">{e.courseTitle || '—'}</td>

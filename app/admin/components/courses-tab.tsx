@@ -196,7 +196,7 @@ export function CoursesPanel({
             </thead>
             <tbody>
               {courses.map((c) => (
-                <tr key={c.id} className="border-b border-border last:border-0">
+                <tr key={c.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                   <td className="px-4 py-3 font-medium text-foreground">{c.title}</td>
                   <td className="px-4 py-3 text-muted-foreground">{c.duration}</td>
                   <td className="px-4 py-3 text-center text-foreground">৳{c.fee.toLocaleString()}</td>

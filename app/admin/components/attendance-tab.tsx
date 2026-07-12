@@ -142,7 +142,7 @@ export function AttendancePanel({ enrollments, attendance, onRefresh }: { enroll
               {filtered.map((a) => {
                 const student = enrollments.find((e) => e.userId === a.userId)
                 return (
-                  <tr key={a.id} className="border-b border-border last:border-0">
+                   <tr key={a.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                     <td className="px-4 py-3 text-muted-foreground">{new Date(a.date).toLocaleDateString('bn-BD')}</td>
                     <td className="px-4 py-3 font-medium text-foreground">{student?.userName || a.userStudentId || a.userId.slice(0, 8)}</td>
                     <td className="px-4 py-3 text-center">

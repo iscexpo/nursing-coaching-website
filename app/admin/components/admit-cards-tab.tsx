@@ -144,7 +144,7 @@ export function AdmitCardsPanel({ enrollments, exams, admitCards, onRefresh }: {
               {admitCards.map((card) => {
                 const student = enrollments.find((e) => e.userId === card.userId)
                 return (
-                  <tr key={card.id} className="border-b border-border last:border-0">
+                   <tr key={card.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                     <td className="px-4 py-3 font-medium text-foreground">{student?.userName || card.userId.slice(0, 8)}</td>
                     <td className="px-4 py-3 text-muted-foreground">{card.examName}</td>
                     <td className="px-4 py-3 text-muted-foreground">{card.examDate}</td>

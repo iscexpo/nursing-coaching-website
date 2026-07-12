@@ -188,7 +188,7 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                 </thead>
                 <tbody>
                   {questions.map((q, i) => (
-                    <tr key={q.id} className="border-b border-border last:border-0">
+                    <tr key={q.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                       <td className="px-4 py-3 text-center text-muted-foreground">{i + 1}</td>
                       <td className="px-4 py-3 text-foreground max-w-xs truncate">{q.question}</td>
                       <td className="px-4 py-3 text-center">
@@ -219,9 +219,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
       )}
 
       {!selectedExamId && (
-        <p className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-          প্রশ্ন দেখতে একটি পরীক্ষা বাছাই করুন
-        </p>
+        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center">
+          <p className="text-sm text-muted-foreground">প্রশ্ন দেখতে একটি পরীক্ষা বাছাই করুন</p>
+        </div>
       )}
     </div>
   )

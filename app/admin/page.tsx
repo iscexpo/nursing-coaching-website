@@ -89,34 +89,49 @@ export default function AdminPage() {
         fetch('/api/admit-cards'),
       ])
 
-      if (coursesRes.ok) setCourses(await coursesRes.json())
-      if (enrollmentsRes.ok) setEnrollments(await enrollmentsRes.json())
-      if (paymentsRes.ok) setPayments(await paymentsRes.json())
-      if (invoicesRes.ok) setInvoices(await invoicesRes.json())
+      if (coursesRes.ok) {
+        const d = await coursesRes.json()
+        setCourses(d.data || d)
+      }
+      if (enrollmentsRes.ok) {
+        const d = await enrollmentsRes.json()
+        setEnrollments(d.data || d)
+      }
+      if (paymentsRes.ok) {
+        const d = await paymentsRes.json()
+        setPayments(d.data || d)
+      }
+      if (invoicesRes.ok) {
+        const d = await invoicesRes.json()
+        setInvoices(d.data || d)
+      }
       if (noticesRes.ok) {
-        const data = await noticesRes.json()
-        setNotices(data.data || data)
+        const d = await noticesRes.json()
+        setNotices(d.data || d)
       }
       if (examsRes.ok) {
-        const data = await examsRes.json()
-        setExams(data.data || data)
+        const d = await examsRes.json()
+        setExams(d.data || d)
       }
       if (contactsRes.ok) {
-        const data = await contactsRes.json()
-        setContacts(data.data || data)
+        const d = await contactsRes.json()
+        setContacts(d.data || d)
       }
-      if (notificationsRes.ok) setNotifications(await notificationsRes.json())
+      if (notificationsRes.ok) {
+        const d = await notificationsRes.json()
+        setNotifications(d.data || d)
+      }
       if (submissionsRes.ok) {
-        const data = await submissionsRes.json()
-        setExamSubmissions(data.data || data)
+        const d = await submissionsRes.json()
+        setExamSubmissions(d.data || d)
       }
       if (attendanceRes.ok) {
-        const data = await attendanceRes.json()
-        setAttendance(data.data || data)
+        const d = await attendanceRes.json()
+        setAttendance(d.data || d)
       }
       if (admitCardsRes.ok) {
-        const data = await admitCardsRes.json()
-        setAdmitCards(data.data || data)
+        const d = await admitCardsRes.json()
+        setAdmitCards(d.data || d)
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)

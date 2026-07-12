@@ -135,7 +135,7 @@ export function ExamsPanel({ exams, submissions, onRefresh }: { exams: Exam[]; s
               </thead>
               <tbody>
                 {exams.map((e) => (
-                  <tr key={e.id} className="border-b border-border last:border-0">
+                  <tr key={e.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                     <td className="px-4 py-3 font-medium text-foreground">{e.title}</td>
                     <td className="px-4 py-3">
                       <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-brand">{e.subject}</span>
@@ -204,7 +204,7 @@ export function ExamsPanel({ exams, submissions, onRefresh }: { exams: Exam[]; s
                   const pct = s.total > 0 ? Math.round((s.score / s.total) * 100) : 0
                   const exam = exams.find((e) => e.id === s.examId)
                   return (
-                    <tr key={s.id} className="border-b border-border last:border-0">
+                    <tr key={s.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                       <td className="px-4 py-3 font-medium text-foreground">{s.userStudentId || s.userId.slice(0, 8)}</td>
                       <td className="px-4 py-3 text-muted-foreground">{exam?.title || s.examId.slice(0, 8)}</td>
                       <td className="px-4 py-3 text-center">

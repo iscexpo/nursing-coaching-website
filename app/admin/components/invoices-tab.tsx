@@ -31,7 +31,7 @@ export function InvoicesPanel({
             </thead>
             <tbody>
               {invoices.map((inv) => (
-                <tr key={inv.id} className="border-b border-border last:border-0">
+                <tr key={inv.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                   <td className="px-4 py-3 font-mono text-xs text-foreground">{inv.invoiceNumber}</td>
                   <td className="px-4 py-3 font-medium text-foreground">৳{inv.amount.toLocaleString()}</td>
                   <td className="px-4 py-3 text-green">৳{inv.paidAmount.toLocaleString()}</td>

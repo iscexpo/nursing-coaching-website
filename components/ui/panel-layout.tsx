@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
-import { LogOut } from 'lucide-react'
+import { LogOut, Menu, X, ChevronRight } from 'lucide-react'
 
 interface Tab {
   id: string
@@ -31,58 +32,132 @@ export function PanelLayout({
   onSignOut: () => void
   children: React.ReactNode
 }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const activeTabData = tabs.find((t) => t.id === activeTab)
+
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="font-heading text-lg font-bold text-foreground">
-              {siteName}
-            </Link>
-            <span className="hidden text-sm text-muted-foreground sm:inline">|</span>
-            <span className="hidden text-sm font-medium text-brand sm:inline">{panelTitle}</span>
+    <div className="min-h-screen bg-secondary/30">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-card transition-transform duration-200 lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Sidebar header */}
+        <div className="flex h-16 items-center justify-between border-b border-border px-4">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-brand text-sm font-bold text-brand-foreground">
+              {siteName.charAt(0)}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-foreground">{siteName}</p>
+              <p className="text-xs text-brand">{panelTitle}</p>
+            </div>
+          </Link>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground lg:hidden"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        {/* Nav tabs */}
+        <nav className="flex-1 overflow-y-auto px-3 py-3">
+          <div className="space-y-0.5">
+            {tabs.map((t) => {
+              const isActive = activeTab === t.id
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => {
+                    onTabChange(t.id)
+                    setSidebarOpen(false)
+                  }}
+                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                    isActive
+                      ? 'bg-brand text-brand-foreground shadow-sm'
+                      : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  }`}
+                >
+                  <t.icon className="size-[18px] shrink-0" />
+                  <span className="truncate">{t.label}</span>
+                  {t.badge !== undefined && t.badge > 0 && (
+                    <span
+                      className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                        isActive
+                          ? 'bg-brand-foreground/20 text-brand-foreground'
+                          : 'bg-gold/15 text-gold'
+                      }`}
+                    >
+                      {t.badge}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </nav>
+
+        {/* Sidebar footer */}
+        <div className="border-t border-border p-3">
+          <div className="mb-2 rounded-xl bg-secondary/50 px-3 py-2">
+            <p className="truncate text-sm font-medium text-foreground">{userName}</p>
+            <p className="text-xs text-muted-foreground">{welcomeMessage}</p>
           </div>
           <button
             onClick={onSignOut}
-            className="flex items-center gap-1.5 rounded-lg bg-destructive/10 px-3 py-1.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/20"
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
           >
-            <LogOut className="size-4" />
-            <span className="hidden sm:inline">সাইন আউট</span>
+            <LogOut className="size-[18px]" />
+            সাইন আউট
           </button>
         </div>
-      </header>
+      </aside>
 
-      <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="mb-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="font-heading text-xl font-bold text-foreground">
-            স্বাগতম, {userName}!
-          </h2>
-          {welcomeMessage && (
-            <p className="mt-1 text-sm text-muted-foreground">{welcomeMessage}</p>
-          )}
+      {/* Main content */}
+      <div className="lg:ml-64">
+        {/* Top bar (mobile) */}
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur-sm lg:hidden">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+          >
+            <Menu className="size-5" />
+          </button>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-bold text-foreground">{siteName}</p>
+          </div>
+          <button
+            onClick={onSignOut}
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          >
+            <LogOut className="size-5" />
+          </button>
+        </header>
+
+        {/* Breadcrumb */}
+        <div className="hidden px-6 py-4 lg:block">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Link href="/" className="hover:text-foreground transition-colors">{siteName}</Link>
+            <ChevronRight className="size-3.5" />
+            <span className="font-medium text-foreground">{activeTabData?.label}</span>
+          </div>
         </div>
 
-        <div className="mb-6 flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1 shadow-sm">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => onTabChange(t.id)}
-              className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
-                activeTab === t.id
-                  ? 'bg-brand text-brand-foreground shadow-sm'
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-              }`}
-            >
-              <t.icon className="size-4" />
-              {t.label}
-              {t.badge !== undefined && t.badge > 0 && (
-                <span className="rounded-full bg-gold/20 px-1.5 py-0.5 text-xs font-bold text-gold">{t.badge}</span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {children}
+        {/* Page content */}
+        <main className="px-4 pb-8 pt-2 lg:px-6 lg:pt-0">
+          {children}
+        </main>
       </div>
     </div>
   )

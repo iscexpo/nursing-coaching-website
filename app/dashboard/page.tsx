@@ -62,11 +62,26 @@ export default function DashboardPage() {
         fetch('/api/attendance'),
         fetch('/api/admit-cards'),
       ])
-      if (coursesRes.ok) setCourses(await coursesRes.json())
-      if (enrollmentsRes.ok) setEnrollments(await enrollmentsRes.json())
-      if (paymentsRes.ok) setPayments(await paymentsRes.json())
-      if (invoicesRes.ok) setInvoices(await invoicesRes.json())
-      if (profileRes.ok) setProfile(await profileRes.json())
+      if (coursesRes.ok) {
+        const d = await coursesRes.json()
+        setCourses(d.data || d)
+      }
+      if (enrollmentsRes.ok) {
+        const d = await enrollmentsRes.json()
+        setEnrollments(d.data || d)
+      }
+      if (paymentsRes.ok) {
+        const d = await paymentsRes.json()
+        setPayments(d.data || d)
+      }
+      if (invoicesRes.ok) {
+        const d = await invoicesRes.json()
+        setInvoices(d.data || d)
+      }
+      if (profileRes.ok) {
+        const d = await profileRes.json()
+        setProfile(d.data || d)
+      }
       if (submissionsRes.ok) {
         const data = await submissionsRes.json()
         setExamSubmissions(data.data || data)

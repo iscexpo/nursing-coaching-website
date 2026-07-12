@@ -65,7 +65,7 @@ export function PaymentsPanel({
             </thead>
             <tbody>
               {filtered.map((p) => (
-                <tr key={p.id} className="border-b border-border last:border-0">
+                <tr key={p.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                   <td className="px-4 py-3 text-foreground">
                     {new Date(p.paidAt).toLocaleDateString('bn-BD')}
                   </td>

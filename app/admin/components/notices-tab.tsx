@@ -140,7 +140,7 @@ export function NoticesPanel({ notices, onRefresh }: { notices: Notice[]; onRefr
           </div>
         ))}
         {notices.length === 0 && (
-          <p className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+          <p className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center text-sm text-muted-foreground">
             কোনো নোটিশ নেই
           </p>
         )}
