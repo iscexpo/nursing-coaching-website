@@ -1,0 +1,47 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod/v3'
+import { getSession } from '@/lib/permissions'
+import { extractPhoneNumbersFromSheet } from '@/lib/sheet-sms'
+import { buildBroadcastMessage } from '@/lib/sms'
+
+const marketingSchema = z.object({
+  title: z.string().min(1).max(200),
+  content: z.string().min(1).max(5000),
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getSession()
+    if (!session || (session.user.role !== 'admin' && session.user.role !== 'super-admin')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const formData = await request.formData()
+    const title = formData.get('title')?.toString() || ''
+    const content = formData.get('content')?.toString() || ''
+    const file = formData.get('file')
+
+    const parsed = marketingSchema.safeParse({ title, content })
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+    }
+
+    if (!(file instanceof File)) {
+      return NextResponse.json({ error: 'CSV/Excel file is required' }, { status: 400 })
+    }
+
+    const recipients = await extractPhoneNumbersFromSheet(file)
+    const message = buildBroadcastMessage(parsed.data.title, parsed.data.content)
+
+    return NextResponse.json({
+      sent: recipients.length,
+      recipients,
+      message,
+      provider: 'sheet-upload',
+      skipped: recipients.length === 0,
+      reason: recipients.length === 0 ? 'No valid phone numbers found in the uploaded sheet' : 'Sheet-based SMS broadcast prepared',
+    })
+  } catch {
+    return NextResponse.json({ error: 'Failed to process sheet-based SMS marketing' }, { status: 500 })
+  }
+}

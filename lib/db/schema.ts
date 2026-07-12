@@ -8,7 +8,7 @@ export const user = pgTable('user', {
   image: text('image'),
   phoneNumber: text('phone_number').unique(),
   phoneNumberVerified: boolean('phone_number_verified').notNull().default(false),
-  role: text('role').$type<'admin' | 'student'>().default('student').notNull(),
+  role: text('role').$type<'super-admin' | 'admin' | 'student'>().default('student').notNull(),
   studentId: text('student_id').unique(),
   address: text('address'),
   village: text('village'),
@@ -174,6 +174,21 @@ export const invoices = pgTable('invoices', {
   index('invoices_user_created_idx').on(table.userId, table.createdAt),
   index('invoices_status_idx').on(table.status),
 ])
+
+export const settings = pgTable('settings', {
+  id: text('id').primaryKey(),
+  siteName: text('site_name').notNull().default('কর্ণিয়া নার্সিং কোচিং'),
+  siteTagline: text('site_tagline').notNull().default('সাফল্যের জন্য প্রস্তুতি'),
+  smsProvider: text('sms_provider').notNull().default('none'),
+  smsApiKey: text('sms_api_key').default(''),
+  smsSenderId: text('sms_sender_id').default(''),
+  paymentGateway: text('payment_gateway').notNull().default('none'),
+  paymentGatewayApiKey: text('payment_gateway_api_key').default(''),
+  paymentGatewaySecret: text('payment_gateway_secret').default(''),
+  paymentGatewayWebhookSecret: text('payment_gateway_webhook_secret').default(''),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
 
 export const notifications = pgTable('notifications', {
   id: text('id').primaryKey(),

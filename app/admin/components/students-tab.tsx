@@ -9,7 +9,7 @@ const labelCls = "block text-sm font-medium text-foreground"
 
 type EducationField = { result: string; institution: string; year: string }
 type FormState = {
-  name: string; email: string; password: string; phoneNumber: string; studentId: string
+  name: string; email: string; password: string; phoneNumber: string; studentId: string; image: string
   address: string; village: string; post: string; policeStation: string; district: string
   dateOfBirth: string; guardianName: string; guardianPhone: string; institution: string
   ssc: EducationField; hsc: EducationField; honors: EducationField
@@ -19,7 +19,7 @@ function emptyEducation(): EducationField { return { result: '', institution: ''
 
 function emptyForm(): FormState {
   return {
-    name: '', email: '', password: '', phoneNumber: '', studentId: '',
+    name: '', email: '', password: '', phoneNumber: '', studentId: '', image: '',
     address: '', village: '', post: '', policeStation: '', district: '',
     dateOfBirth: '', guardianName: '', guardianPhone: '', institution: '',
     ssc: emptyEducation(), hsc: emptyEducation(), honors: emptyEducation(),
@@ -63,7 +63,7 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
     setEditing(s)
     setForm({
       name: s.name, email: s.email, password: '',
-      phoneNumber: s.phoneNumber || '', studentId: s.studentId || '',
+      phoneNumber: s.phoneNumber || '', studentId: s.studentId || '', image: s.image || '',
       address: s.address || '', village: s.village || '', post: s.post || '',
       policeStation: s.policeStation || '', district: s.district || '',
       dateOfBirth: s.dateOfBirth || '', guardianName: s.guardianName || '',
@@ -86,6 +86,7 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
       if (!editing) body.password = form.password
       if (form.phoneNumber.trim()) body.phoneNumber = form.phoneNumber.trim()
       if (form.studentId.trim()) body.studentId = form.studentId.trim()
+      if (form.image.trim()) body.image = form.image.trim()
       if (form.address.trim()) body.address = form.address.trim()
       if (form.village.trim()) body.village = form.village.trim()
       if (form.post.trim()) body.post = form.post.trim()
@@ -181,6 +182,10 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
                   <input type="text" value={form.dateOfBirth} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })} placeholder="01/01/2000" className={inputCls} />
                 </div>
               </div>
+              <div className="mt-3">
+                <label className={labelCls}>ছবির লিঙ্ক</label>
+                <input type="url" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://example.com/photo.jpg" className={inputCls} />
+              </div>
             </div>
 
             {/* ঠিকানা */}
@@ -272,7 +277,18 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
                 </td></tr>
               ) : filtered.map((s) => (
                 <tr key={s.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
-                  <td className="px-4 py-3 font-medium text-foreground">{s.name}</td>
+                  <td className="px-4 py-3 font-medium text-foreground">
+                    <div className="flex items-center gap-3">
+                      {s.image ? (
+                        <img src={s.image} alt={s.name} className="size-10 rounded-full object-cover border border-border" />
+                      ) : (
+                        <div className="flex size-10 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-muted-foreground">
+                          {s.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span>{s.name}</span>
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">{s.email}</td>
                   <td className="px-4 py-3 text-muted-foreground">{s.phoneNumber || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground">{s.district || '—'}</td>

@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
     const updateData: Record<string, unknown> = {}
     if (profileData.phoneNumber) updateData.phoneNumber = profileData.phoneNumber
     if (profileData.studentId) updateData.studentId = profileData.studentId
+    if (profileData.image) updateData.image = profileData.image
     if (profileData.address) updateData.address = profileData.address
     if (profileData.village) updateData.village = profileData.village
     if (profileData.post) updateData.post = profileData.post

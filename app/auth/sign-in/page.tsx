@@ -34,7 +34,7 @@ export default function SignInPage() {
         return
       }
 
-      if (data?.user?.role === 'admin') {
+      if (data?.user?.role === 'super-admin' || data?.user?.role === 'admin') {
         router.push('/admin')
       } else {
         router.push('/dashboard')
@@ -64,7 +64,7 @@ export default function SignInPage() {
         return
       }
 
-      if (data?.user?.role === 'admin') {
+      if (data?.user?.role === 'super-admin' || data?.user?.role === 'admin') {
         router.push('/admin')
       } else {
         router.push('/dashboard')

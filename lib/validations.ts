@@ -161,6 +161,7 @@ export const createStudentSchema = z.object({
   password: z.string().min(6, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর'),
   phoneNumber: z.string().max(20).optional(),
   studentId: z.string().max(50).optional(),
+  image: z.string().url().optional(),
   address: z.string().max(500).optional(),
   village: z.string().max(200).optional(),
   post: z.string().max(200).optional(),
@@ -180,6 +181,7 @@ export const updateStudentSchema = z.object({
   email: z.string().email().optional(),
   phoneNumber: z.string().max(20).optional(),
   studentId: z.string().max(50).optional(),
+  image: z.string().url().nullable().optional(),
   address: z.string().max(500).optional(),
   village: z.string().max(200).optional(),
   post: z.string().max(200).optional(),
@@ -192,5 +194,17 @@ export const updateStudentSchema = z.object({
   ssc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10) }).nullable().optional(),
   hsc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10) }).nullable().optional(),
   honors: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10) }).nullable().optional(),
-  role: z.enum(['admin', 'student']).optional(),
+  role: z.enum(['super-admin', 'admin', 'student']).optional(),
+})
+
+export const settingsSchema = z.object({
+  siteName: z.string().min(1).max(200).optional(),
+  siteTagline: z.string().max(500).optional(),
+  smsProvider: z.enum(['none', 'bulk', 'twilio']).optional(),
+  smsApiKey: z.string().max(500).optional(),
+  smsSenderId: z.string().max(100).optional(),
+  paymentGateway: z.enum(['none', 'sslcommerz', 'stripe']).optional(),
+  paymentGatewayApiKey: z.string().max(500).optional(),
+  paymentGatewaySecret: z.string().max(500).optional(),
+  paymentGatewayWebhookSecret: z.string().max(500).optional(),
 })

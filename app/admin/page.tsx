@@ -35,6 +35,7 @@ import { ContactsPanel } from './components/contacts-tab'
 import { NotificationsPanel } from './components/notifications-tab'
 import { AttendancePanel } from './components/attendance-tab'
 import { AdmitCardsPanel } from './components/admit-cards-tab'
+import { SettingsPanel } from './components/settings-tab'
 import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student } from './components/types'
 
 const TABS = [
@@ -52,6 +53,7 @@ const TABS = [
   { id: 'admit-cards', label: 'এডমিট কার্ড', icon: CreditCard },
   { id: 'contacts', label: 'যোগাযোগ', icon: Users },
   { id: 'notifications', label: 'নোটিফিকেশন', icon: Bell },
+  { id: 'settings', label: 'সেটিংস', icon: BarChart3 },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -172,7 +174,7 @@ export default function AdminPage() {
     return null
   }
 
-  if (session.data.user.role !== 'admin') {
+  if (session.data.user.role !== 'admin' && session.data.user.role !== 'super-admin') {
     router.push('/dashboard')
     return null
   }
@@ -201,7 +203,7 @@ export default function AdminPage() {
       )}
       {tab === 'courses' && <CoursesPanel courses={courses} onRefresh={fetchData} />}
       {tab === 'enrollments' && <EnrollmentsPanel enrollments={enrollments} onRefresh={fetchData} />}
-      {tab === 'payments' && <PaymentsPanel payments={payments} onRefresh={fetchData} />}
+      {tab === 'payments' && <PaymentsPanel payments={payments} enrollments={enrollments} students={students} onRefresh={fetchData} />}
       {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
       {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}
       {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
@@ -212,6 +214,7 @@ export default function AdminPage() {
       {tab === 'admit-cards' && <AdmitCardsPanel enrollments={enrollments} exams={exams} admitCards={admitCards} onRefresh={fetchData} />}
       {tab === 'contacts' && <ContactsPanel contacts={contacts} onRefresh={fetchData} />}
       {tab === 'notifications' && <NotificationsPanel notifications={notifications} onRefresh={fetchData} />}
+      {tab === 'settings' && <SettingsPanel onRefresh={fetchData} />}
     </PanelLayout>
   )
 }
