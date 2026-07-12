@@ -3,11 +3,13 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { SITE } from '@/lib/site-data'
+import { Breadcrumb } from '@/components/breadcrumb'
 import { CalendarDays, Clock, Users, FileCheck } from 'lucide-react'
 
 export const metadata = {
   title: 'মডেল টেস্ট | কর্নিয়া নার্সিং কোচিং',
   description: 'কর্নিয়া নার্সিং কোচিং-এর সাপ্তাহিক মডেল টেস্টে অংশ নিন। BNMC ভর্তি পরীক্ষার প্রস্তুতি নিন।',
+  alternates: { canonical: '/model-test' },
 }
 
 const SCHEDULES = [
@@ -37,6 +39,7 @@ export default function ModelTestPage() {
     <>
       <SiteHeader />
       <main>
+        <Breadcrumb items={[{ label: 'মডেল টেস্ট' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
             <SectionHeading

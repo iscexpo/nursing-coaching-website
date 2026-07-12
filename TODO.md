@@ -36,6 +36,7 @@ Tracking against the audit's P0 recommendations. Code changes are committed to `
 - [x] **Course management** — already present (CRUD API + `courses-tab` admin UI + public course cards).
 - [x] **Student management** — already present (CRUD API + `students-tab` admin UI with full profile/education fields).
 - [x] **Teacher management** — implemented from scratch: `teachers` table + migration `0004_teachers.sql`, `teacher.manage` RBAC permission, `/api/teachers` CRUD routes, `Teacher` type, and `teachers-tab` admin UI wired into the admin panel.
+- [x] **SEO foundation** — robots.txt (`app/robots.ts`), sitemap (`app/sitemap.ts` with static + dynamic course/notice URLs), `metadataBase` + per-route canonical tags, Organization + LocalBusiness JSON-LD in root layout, generated Open Graph image (`app/opengraph-image.tsx`), Breadcrumb UI + BreadcrumbList JSON-LD on inner pages, FAQPage JSON-LD on homepage, Course/Article structured data, and new `courses/[slug]` + `notice/[id]` detail pages with dynamic `generateMetadata`.
 
 ### Next recommended (P0)
 - [ ] **Audit logs** — `audit_logs` table + `writeAudit()` helper, wired into settings/role/payment/student mutations.

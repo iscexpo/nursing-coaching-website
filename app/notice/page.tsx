@@ -4,6 +4,8 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
+import Link from 'next/link'
+import { Breadcrumb } from '@/components/breadcrumb'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
@@ -11,6 +13,7 @@ import { desc, eq } from 'drizzle-orm'
 export const metadata = {
   title: 'নোটিশ | কর্নিয়া নার্সিং কোচিং',
   description: 'কর্নিয়া নার্সিং কোচিং-এর সর্বশেষ নোটিশ ও আপডেট।',
+  alternates: { canonical: '/notice' },
 }
 
 async function getNotices() {
@@ -36,6 +39,7 @@ export default async function NoticePage() {
     <>
       <SiteHeader />
       <main>
+        <Breadcrumb items={[{ label: 'নোটিশ' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
             <SectionHeading
@@ -60,9 +64,10 @@ export default async function NoticePage() {
             ) : (
               <div className="space-y-4">
                 {allNotices.map((n) => (
-                  <div
+                  <Link
                     key={n.id}
-                    className={`rounded-2xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6 ${
+                    href={`/notice/${n.id}`}
+                    className={`block rounded-2xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6 ${
                       n.isUrgent ? 'border-gold/50' : 'border-border'
                     }`}
                   >
@@ -93,7 +98,7 @@ export default async function NoticePage() {
                         {n.content}
                       </p>
                     )}
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

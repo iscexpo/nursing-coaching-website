@@ -4,10 +4,12 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { GALLERY } from '@/lib/site-data'
+import { Breadcrumb } from '@/components/breadcrumb'
 
 export const metadata = {
   title: 'গ্যালারি | কর্নিয়া নার্সিং কোচিং',
   description: 'কর্নিয়া নার্সিং কোচিং-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
+  alternates: { canonical: '/gallery' },
 }
 
 export default function GalleryPage() {
@@ -15,6 +17,7 @@ export default function GalleryPage() {
     <>
       <SiteHeader />
       <main>
+        <Breadcrumb items={[{ label: 'গ্যালারি' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
             <SectionHeading

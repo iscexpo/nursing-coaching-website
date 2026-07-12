@@ -6,6 +6,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { SITE } from '@/lib/site-data'
+import { Breadcrumb } from '@/components/breadcrumb'
 import { MapPin, Phone, Mail, MessageCircle, Loader2 } from 'lucide-react'
 
 export default function ContactPage() {
@@ -51,6 +52,7 @@ export default function ContactPage() {
     <>
       <SiteHeader />
       <main>
+        <Breadcrumb items={[{ label: 'যোগাযোগ' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
             <SectionHeading

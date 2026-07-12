@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { Breadcrumb } from '@/components/breadcrumb'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
@@ -13,6 +14,7 @@ import { eq } from 'drizzle-orm'
 export const metadata = {
   title: 'কোর্স সমূহ | কর্নিয়া নার্সিং কোচিং',
   description: 'কর্নিয়া নার্সিং কোচিং-এর সকল কোর্স — নার্সিং ভর্তি, কাউন্সিল, B.Sc Nursing, Post Basic, চাকরি প্রস্তুতি ও অনলাইন ব্যাচ।',
+  alternates: { canonical: '/courses' },
 }
 
 export default async function CoursesPage() {
@@ -38,6 +40,7 @@ export default async function CoursesPage() {
     <>
       <SiteHeader />
       <main>
+        <Breadcrumb items={[{ label: 'কোর্স' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
             <SectionHeading
@@ -57,7 +60,7 @@ export default async function CoursesPage() {
                 {data.map((c) => (
                   <Link
                     key={c.slug}
-                    href={`/admission?course=${c.slug}`}
+                    href={`/courses/${c.slug}`}
                     className="group rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
                   >
                     <div className="relative aspect-[16/10] overflow-hidden rounded-t-2xl">

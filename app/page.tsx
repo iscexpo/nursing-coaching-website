@@ -15,10 +15,23 @@ import { ModelTestAndNotice } from '@/components/sections/model-test-notice'
 import { Gallery } from '@/components/sections/gallery'
 import { Faq } from '@/components/sections/faq'
 import { Contact } from '@/components/sections/contact'
+import { JsonLd } from '@/components/json-ld'
+import { defaultCmsContent } from '@/lib/content-cms'
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: defaultCmsContent.faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+}
 
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={faqJsonLd} />
       <SiteHeader />
       <main>
         <Hero />
