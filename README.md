@@ -69,7 +69,11 @@
 
 ```bash
 # Install dependencies
-pnpm install
+pnpm install --no-frozen-lockfile
+
+# If pnpm reports ignored build scripts:
+pnpm approve-builds --all
+pnpm install --no-frozen-lockfile
 
 # Set up environment variables
 cp .env.example .env.local
@@ -80,6 +84,16 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+### GitHub Actions CI
+
+This repo uses `.github/workflows/ci.yml` to run:
+- Node 24
+- `pnpm approve-builds --all`
+- `pnpm install --no-frozen-lockfile`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm test -- --coverage`
 
 ### Database Migrations & Seed
 
