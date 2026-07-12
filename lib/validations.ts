@@ -48,6 +48,21 @@ export const verifyPaymentSchema = z.object({
   status: z.enum(['verified', 'rejected']),
 })
 
+export const createTeacherSchema = z.object({
+  name: z.string().min(1).max(200),
+  email: z.string().email().max(200).optional().or(z.literal('')),
+  phone: z.string().max(30).optional(),
+  designation: z.string().max(200).optional(),
+  subject: z.string().max(200).optional(),
+  bio: z.string().max(2000).optional(),
+  image: z.string().url().optional().or(z.literal('')),
+  isActive: z.boolean().optional(),
+})
+
+export const updateTeacherSchema = createTeacherSchema.partial().extend({
+  isActive: z.boolean().optional(),
+})
+
 export const createInvoiceSchema = z.object({
   userId: z.string().uuid(),
   enrollmentId: z.string().uuid(),

@@ -25,6 +25,7 @@ export type Permission =
   | 'question.manage'
   | 'content.publish'
   | 'content.manage'
+  | 'teacher.manage'
   | 'branch.manage'
   | 'user.manage'
   | 'admission.manage'
@@ -44,6 +45,7 @@ const ADMIN_PERMISSIONS: Permission[] = [
   'question.manage',
   'content.publish',
   'content.manage',
+  'teacher.manage',
   'user.manage',
   'admission.manage',
   'communication.manage',

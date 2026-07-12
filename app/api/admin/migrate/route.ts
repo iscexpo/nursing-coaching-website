@@ -9,6 +9,7 @@ const MIGRATION_FILES = [
   '0001_windy_nomad.sql',
   '0002_add_attendance_admit_cards.sql',
   '0003_add_student_address_education.sql',
+  '0004_teachers.sql',
 ]
 
 export async function POST(request: NextRequest) {

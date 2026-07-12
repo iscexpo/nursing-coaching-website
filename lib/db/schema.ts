@@ -101,6 +101,23 @@ export const courses = pgTable('courses', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
+export const teachers = pgTable('teachers', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email'),
+  phone: text('phone'),
+  designation: text('designation'),
+  subject: text('subject'),
+  bio: text('bio'),
+  image: text('image'),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => [
+  index('teachers_is_active_idx').on(table.isActive),
+  index('teachers_subject_idx').on(table.subject),
+])
+
 export const enrollments = pgTable('enrollments', {
   id: text('id').primaryKey(),
   userId: text('user_id')

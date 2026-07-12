@@ -19,6 +19,7 @@ import {
   Bell,
   CalendarCheck,
   CreditCard,
+  Presentation,
 } from 'lucide-react'
 
 import { PanelLayout } from '@/components/ui/panel-layout'
@@ -36,7 +37,8 @@ import { NotificationsPanel } from './components/notifications-tab'
 import { AttendancePanel } from './components/attendance-tab'
 import { AdmitCardsPanel } from './components/admit-cards-tab'
 import { SettingsPanel } from './components/settings-tab'
-import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student } from './components/types'
+import { TeachersPanel } from './components/teachers-tab'
+import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student, Teacher } from './components/types'
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -48,6 +50,7 @@ const TABS = [
   { id: 'exams', label: 'পরীক্ষা', icon: FileText },
   { id: 'questions', label: 'প্রশ্নব্যাংক', icon: HelpCircle },
   { id: 'results', label: 'ফলাফল', icon: BarChart3 },
+  { id: 'teachers', label: 'শিক্ষক', icon: Presentation },
   { id: 'students', label: 'শিক্ষার্থী', icon: Users },
   { id: 'attendance', label: 'উপস্থিতি', icon: CalendarCheck },
   { id: 'admit-cards', label: 'এডমিট কার্ড', icon: CreditCard },
@@ -74,11 +77,12 @@ export default function AdminPage() {
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([])
   const [admitCards, setAdmitCards] = useState<AdmitCard[]>([])
   const [students, setStudents] = useState<Student[]>([])
+  const [teachers, setTeachers] = useState<Teacher[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, examsRes, contactsRes, notificationsRes, submissionsRes, attendanceRes, admitCardsRes, studentsRes] = await Promise.all([
+      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, examsRes, contactsRes, notificationsRes, submissionsRes, attendanceRes, admitCardsRes, studentsRes, teachersRes] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
@@ -91,6 +95,7 @@ export default function AdminPage() {
         fetch('/api/attendance'),
         fetch('/api/admit-cards'),
         fetch('/api/students'),
+        fetch('/api/teachers'),
       ])
 
       if (coursesRes.ok) {
@@ -140,6 +145,10 @@ export default function AdminPage() {
       if (studentsRes.ok) {
         const d = await studentsRes.json()
         setStudents(d.data || d)
+      }
+      if (teachersRes.ok) {
+        const d = await teachersRes.json()
+        setTeachers(d.data || d)
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -210,6 +219,7 @@ export default function AdminPage() {
       {tab === 'questions' && <QuestionsPanel exams={exams} />}
       {tab === 'results' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
       {tab === 'students' && <StudentsPanel students={students} onRefresh={fetchData} />}
+      {tab === 'teachers' && <TeachersPanel teachers={teachers} onRefresh={fetchData} />}
       {tab === 'attendance' && <AttendancePanel enrollments={enrollments} attendance={attendance} onRefresh={fetchData} />}
       {tab === 'admit-cards' && <AdmitCardsPanel enrollments={enrollments} exams={exams} admitCards={admitCards} onRefresh={fetchData} />}
       {tab === 'contacts' && <ContactsPanel contacts={contacts} onRefresh={fetchData} />}

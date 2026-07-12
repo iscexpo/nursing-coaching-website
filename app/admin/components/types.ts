@@ -167,6 +167,20 @@ export interface AdmitCard {
   userStudentId?: string | null
 }
 
+export interface Teacher {
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  designation: string | null
+  subject: string | null
+  bio: string | null
+  image: string | null
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface ContactInquiry {
   id: string
   name: string

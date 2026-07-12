@@ -23,6 +23,29 @@ This is a strong foundation for Phase 2 growth, but not yet investment-grade ent
 
 ---
 
+## 1.1 Implementation Progress (updated 2026-07-12)
+
+Tracking against the audit's P0 recommendations. Code changes are committed to `main`.
+
+### Completed
+- [x] **Restrict OTP console logging to non-production** — `lib/auth.ts` only logs OTP codes when `NODE_ENV !== 'production'`; production logs an error instead of leaking the code.
+- [x] **Lock down admin bootstrap routes in production** — `/api/admin/seed` and `/api/admin/migrate` return `404` when `NODE_ENV === 'production'`.
+- [x] **Startup env validation** — `lib/env.ts` (zod) validates `DATABASE_URL` / `BETTER_AUTH_SECRET` (≥32 chars); `instrumentation.ts` runs it on server boot (guarded so `next build` never fails).
+- [x] **RBAC permissions engine** — `lib/permissions.ts` defines a granular `Permission` model, `ROLE_PERMISSIONS` map (super-admin = all, admin = management set, teacher/student scoped), and `requireAdmin()` / `requireSuperAdmin()` / `requirePermission()` guards.
+- [x] **RBAC rollout** — all 19 management API routes migrated from ad-hoc `role === 'admin'` checks to the permission guards; ownership-scoping checks preserved.
+- [x] **Course management** — already present (CRUD API + `courses-tab` admin UI + public course cards).
+- [x] **Student management** — already present (CRUD API + `students-tab` admin UI with full profile/education fields).
+- [x] **Teacher management** — implemented from scratch: `teachers` table + migration `0004_teachers.sql`, `teacher.manage` RBAC permission, `/api/teachers` CRUD routes, `Teacher` type, and `teachers-tab` admin UI wired into the admin panel.
+
+### Next recommended (P0)
+- [ ] **Audit logs** — `audit_logs` table + `writeAudit()` helper, wired into settings/role/payment/student mutations.
+- [ ] **Rate limiting** on auth and form endpoints.
+
+### Backlog (not started)
+- Enterprise CMS (Payload/Directus), full admissions lifecycle, payments/refunds workflows, SEO (sitemap/robots/JSON-LD), analytics, multi-campus, client-side permission-based UI gating.
+
+---
+
 ## 2. Architecture Review
 
 ### What is working well
