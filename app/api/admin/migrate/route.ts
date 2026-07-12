@@ -7,6 +7,7 @@ import { db } from '@/lib/db'
 const MIGRATION_FILES = [
   '0000_curly_trish_tilby.sql',
   '0001_windy_nomad.sql',
+  '0002_add_attendance_admit_cards.sql',
 ]
 
 export async function POST(request: NextRequest) {
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     const migrationsDir = join(process.cwd(), 'lib', 'db', 'migrations')
-    const results: { file: string; statements: number }[] = []
+    const results: { file: string; statements: number; errors: string[] }[] = []
 
     for (const fileName of MIGRATION_FILES) {
       const filePath = join(migrationsDir, fileName)
@@ -27,11 +28,20 @@ export async function POST(request: NextRequest) {
         .map((s) => s.trim())
         .filter((s) => s.length > 0)
 
+      const errors: string[] = []
       for (const statement of statements) {
-        await db.execute(sql.raw(statement))
+        try {
+          await db.execute(sql.raw(statement))
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e)
+          if (msg.includes('already exists') || msg.includes('does not exist') || msg.includes('column') && msg.includes('already')) {
+            continue
+          }
+          errors.push(msg.substring(0, 100))
+        }
       }
 
-      results.push({ file: fileName, statements: statements.length })
+      results.push({ file: fileName, statements: statements.length, errors })
     }
 
     return NextResponse.json({ success: true, migrations: results })

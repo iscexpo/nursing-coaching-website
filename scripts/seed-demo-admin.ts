@@ -14,7 +14,7 @@ async function main() {
   // Step 1: Run migrations
   console.log('Running migrations...')
   const migrationsDir = join(process.cwd(), 'lib', 'db', 'migrations')
-  const migrationFiles = ['0000_curly_trish_tilby.sql', '0001_windy_nomad.sql']
+  const migrationFiles = ['0000_curly_trish_tilby.sql', '0001_windy_nomad.sql', '0002_add_attendance_admit_cards.sql']
 
   for (const fileName of migrationFiles) {
     const content = readFileSync(join(migrationsDir, fileName), 'utf-8')
