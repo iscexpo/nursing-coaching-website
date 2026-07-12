@@ -6,6 +6,10 @@ import { auth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
     const authHeader = request.headers.get('authorization')
     const seedKey = process.env.ADMIN_SEED_KEY
 

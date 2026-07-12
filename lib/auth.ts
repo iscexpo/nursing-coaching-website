@@ -9,8 +9,12 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    console.warn('[OTP] Supabase credentials not configured, falling back to console log')
-    console.log(`[OTP] Code for ${phoneNumber}: ${code}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[OTP] Supabase credentials not configured; dev-only OTP fallback')
+      console.log(`[OTP] Code for ${phoneNumber}: ${code}`)
+    } else {
+      console.error('[OTP] OTP delivery is not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY). Cannot send code.')
+    }
     return
   }
 
