@@ -6,10 +6,10 @@
 
 ### Public Pages
 - **হোম** — Hero, কোর্স, সাফল্য, শিক্ষক, গ্যালারি, যোগাযোগ, FAQ
-- **কোর্স** — 6টি কোর্সের বিস্তারিত (ফি, সময়কাল, বিবরণ)
-- **ভর্তি** — অনলাইন ভর্তি ফরম + যোগাযোগ তথ্য
-- **মডেল টেস্ট** — সাপ্তাহিক পরীক্ষার সময়সূচি
-- **নোটিশ** — সর্বশেষ নোটিশ ও আপডেট
+- **কোর্স** — কোর্সের বিস্তারিত (ফি, সময়কাল, বিবরণ) — DB থেকে ডায়নামিক
+- **ভর্তি** — অনলাইন ভর্তি ফরম + যোগাযোগ তথ্য — DB থেকে কোর্স ড্রপডাউন
+- **মডেল টেস্ট** — সাপ্তাহিক পরীক্ষার সময়সূচি — DB থেকে ডায়নামিক
+- **নোটিশ** — সর্বশেষ নোটিশ ও আপডেট — DB থেকে ডায়নামিক
 - **গ্যালারি** — ছবি গ্যালারি (hover reveal)
 - **যোগাযোগ** — যোগাযোগ ফরম + অফিস তথ্য
 
@@ -29,9 +29,12 @@
 - **পেমেন্ট** — bKash/Nagad/নগদ পেমেন্ট যাচাইকরণ/প্রত্যাখ্যান
 - **ইনভয়েস** — ইনভয়েস তালিকা ও স্ট্যাটাস
 - **নোটিশ** — তৈরি/সম্পাদনা/মুছুন
-- **পরীক্ষা** — পরীক্ষা তৈরি, অবস্থা পরিবর্তন
+- **পরীক্ষা** — পরীক্ষা তৈরি, অবস্থা পরিবর্তন, সাবমিশন দেখুন
 - **প্রশ্নব্যাংক** — MCQ প্রশ্ন তৈরি/সম্পাদনা/মুছুন (6 বিষয়)
-- **ফলাফল** — ফলাফল যোগ, বিষয় ফিল্টার
+- **যোগাযোগ** — শিক্ষার্থীদের যোগাযোগ অনুরোধ, সমাধান
+- **নোটিফিকেশন** — শিক্ষার্থীদের নোটিফিকেশন পাঠানো/দেখুন
+- **উপস্থিতি** — উপস্থিতি মার্ক, রেকর্ড দেখুন/মুছুন
+- **এডমিট কার্ড** — এডমিট কার্ড তৈরি/দেখুন/মুছুন
 - **শিক্ষার্থী** — সার্চযোগ্য শিক্ষার্থী তালিকা
 
 ### Online Exam System (`/exam`)
@@ -47,18 +50,20 @@
 - স্বয়ংক্রিয় ব্যালেন্স আপডেট
 
 ### Authentication (Better Auth)
-- ফোন নম্বর + পাসওয়ার্ড দিয়ে সাইন ইন/সাইন আপ
-- OTP যাচাইকরণ
+- ইমেইল + পাসওয়ার্ড দিয়ে সাইন ইন/সাইন আপ
+- ফোন নম্বর + OTP যাচাইকরণ
 - Role-based access (student / admin)
 - Middleware দিয়ে রুট সুরক্ষা
 
 ## Tech Stack
 
-- **Framework:** Next.js 16 (App Router)
+- **Framework:** Next.js 16 (App Router, Turbopack)
 - **Styling:** Tailwind CSS v4, shadcn/ui (base-nova)
-- **Auth:** Better Auth + Phone Number plugin
-- **Database:** Neon (PostgreSQL) + Drizzle ORM
-- **Language:** TypeScript
+- **Auth:** Better Auth + Phone Number plugin (email/password)
+- **Database:** Supabase (PostgreSQL) + Drizzle ORM
+- **Language:** TypeScript 5.7
+- **Validation:** Zod v4
+- **Deployment:** Vercel
 
 ## Getting Started
 
@@ -67,11 +72,8 @@
 pnpm install
 
 # Set up environment variables
-cp .env.example .env
-# Edit .env with your Neon DATABASE_URL and BETTER_AUTH_SECRET
-
-# Push database schema
-pnpm drizzle-kit push
+cp .env.example .env.local
+# Edit .env.local with your DATABASE_URL and BETTER_AUTH_SECRET
 
 # Run development server
 pnpm dev
@@ -79,58 +81,112 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-### Create Admin User
-```sql
--- After signing up, make the first user an admin:
-UPDATE "user" SET role = 'admin' WHERE phone_number = '01XXXXXXXXX';
+### Database Migrations & Seed
+
+```bash
+# Start dev server (migrations run via API)
+pnpm dev
+
+# Run migrations (requires dev server running)
+curl -X POST http://localhost:3000/api/admin/migrate \
+  -H "Authorization: Bearer seed-admin-2024"
+
+# Seed demo admin user (standalone script)
+npx tsx scripts/seed-demo-admin.ts
 ```
+
+### Demo Admin Credentials
+
+| Field    | Value              |
+|----------|--------------------|
+| Email    | `admin@cornia.co`  |
+| Password | `Admin123!`        |
+| Phone    | `+8801784176442`   |
 
 ## Project Structure
 
 ```
 app/
-├── page.tsx                 # Homepage
-├── layout.tsx               # Root layout (fonts, metadata)
-├── courses/page.tsx         # Course listing
-├── admission/page.tsx       # Admission form
-├── model-test/page.tsx      # Model test schedule
-├── notice/page.tsx          # Notice board
-├── gallery/page.tsx         # Photo gallery
-├── contact/page.tsx         # Contact form + info
+├── page.tsx                     # Homepage
+├── layout.tsx                   # Root layout (fonts, metadata)
+├── courses/page.tsx             # Course listing (server component, DB)
+├── admission/page.tsx           # Admission form (API-driven)
+├── model-test/page.tsx          # Model test schedule
+├── notice/page.tsx              # Notice board
+├── gallery/page.tsx             # Photo gallery
+├── contact/page.tsx             # Contact form + info
+├── login/page.tsx               # Email + password sign-in
 ├── exam/
-│   ├── page.tsx             # Exam listing
-│   ├── [id]/page.tsx        # Exam taking (timer, MCQ)
-│   └── result/page.tsx      # Exam results + review
-├── auth/
-│   ├── sign-in/page.tsx     # Phone + password sign-in
-│   └── sign-up/page.tsx     # OTP → sign-up flow
-├── dashboard/page.tsx       # Student dashboard (7 tabs)
-├── admin/page.tsx           # Admin dashboard (10 tabs)
+│   ├── page.tsx                 # Exam listing
+│   ├── [id]/page.tsx            # Exam taking (timer, MCQ)
+│   └── result/page.tsx          # Exam results + review
+├── dashboard/
+│   ├── page.tsx                 # Student dashboard (7 tabs)
+│   └── components/
+│       ├── overview-tab.tsx     # Stats, recent activity
+│       ├── course-tab.tsx       # Browse/enroll courses
+│       ├── billing-tab.tsx      # Payments & invoices
+│       ├── account-tab.tsx      # Profile & password
+│       ├── admit-card-tab.tsx   # Admit cards
+│       ├── results-tab.tsx      # Exam results
+│       └── attendance-tab.tsx   # Attendance records
+├── admin/
+│   ├── page.tsx                 # Admin dashboard (13 tabs)
+│   └── components/
+│       ├── overview-tab.tsx     # Stats overview
+│       ├── courses-tab.tsx      # Course CRUD
+│       ├── enrollments-tab.tsx  # Enrollment management
+│       ├── payments-tab.tsx     # Payment verification
+│       ├── invoices-tab.tsx     # Invoice tracking
+│       ├── notices-tab.tsx      # Notice CRUD
+│       ├── exams-tab.tsx        # Exam management
+│       ├── questions-tab.tsx    # Question bank
+│       ├── contacts-tab.tsx     # Contact inquiries
+│       ├── notifications-tab.tsx# Send notifications
+│       ├── attendance-tab.tsx   # Attendance management
+│       ├── admit-cards-tab.tsx  # Admit card management
+│       └── students-tab.tsx     # Student list
 └── api/
-    ├── auth/[...all]/       # Better Auth API handler
-    ├── courses/             # Course CRUD API
-    ├── enrollments/         # Enrollment API
-    ├── payments/            # Payment API
-    ├── invoices/            # Invoice API
-    ├── account/             # Profile + password API
-    └── notifications/       # Notification API
+    ├── auth/[...all]/           # Better Auth API handler
+    ├── courses/                 # Course CRUD API
+    ├── enrollments/             # Enrollment API
+    ├── payments/                # Payment API
+    ├── invoices/                # Invoice API
+    ├── admission/               # Admission form API
+    ├── notices/                 # Notice CRUD API
+    ├── exams/                   # Exam API
+    ├── exam-submissions/        # Exam submission API
+    ├── questions/               # Question bank API
+    ├── contact/                 # Contact inquiries API
+    ├── notifications/           # Notification API
+    ├── attendance/              # Attendance API
+    ├── admit-cards/             # Admit card API
+    ├── account/                 # Profile + password API
+    └── admin/
+        ├── migrate/             # DB migration endpoint
+        └── seed/                # Admin user seed endpoint
 
 components/
-├── site-header.tsx          # Sticky header + mobile nav
-├── site-footer.tsx          # 4-column footer
-├── section-heading.tsx      # Reusable section header
-├── floating-whatsapp.tsx    # WhatsApp chat button
-├── ui/button.tsx            # shadcn Button
-└── sections/                # Homepage sections
+├── site-header.tsx              # Sticky header + mobile nav
+├── site-footer.tsx              # 4-column footer
+├── section-heading.tsx          # Reusable section header
+├── floating-whatsapp.tsx        # WhatsApp chat button
+├── ui/button.tsx                # shadcn Button
+└── sections/                    # Homepage sections (DB-powered)
 
 lib/
-├── site-data.ts             # All site data + question bank
-├── auth.ts                  # Better Auth server config
-├── auth-client.ts           # Better Auth client
-├── permissions.ts           # Role helpers
+├── site-data.ts                 # Static site data
+├── auth.ts                      # Better Auth server config
+├── auth-client.ts               # Better Auth client
+├── permissions.ts               # Role helpers
+├── validations.ts               # Zod schemas for API validation
 └── db/
-    ├── schema.ts            # Drizzle schema (10 tables)
-    └── index.ts             # Neon connection
+    ├── schema.ts                # Drizzle schema (18 tables)
+    ├── index.ts                 # Postgres connection
+    └── migrations/              # SQL migration files
+
+scripts/
+└── seed-demo-admin.ts           # Standalone admin seed script
 ```
 
 ## Database Schema
@@ -147,7 +203,14 @@ lib/
 | `payments` | Payment records (bKash/Nagad/cash/bank) |
 | `invoices` | Invoice tracking |
 | `notifications` | User notifications |
+| `notices` | Notice board entries |
+| `exams` | Model test exams |
+| `questions` | MCQ question bank (6 subjects) |
+| `exam_submissions` | Student exam attempts & scores |
+| `contact_inquiries` | Contact form submissions |
+| `attendance` | Student attendance records |
+| `admit_cards` | Exam admit cards |
 
 ## License
 
-private
+Private
