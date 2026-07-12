@@ -85,6 +85,26 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
+### Docker
+
+This repository includes a `Dockerfile` and `docker-compose.yml` for local development.
+
+```bash
+docker compose up --build
+```
+
+Then open `http://localhost:3000`.
+
+Stop containers with:
+
+```bash
+docker compose down
+```
+
+### Installation Guide
+
+See `docs/installation.md` for the recommended local install workflow and CI compatibility steps.
+
 ### GitHub Actions CI
 
 This repo uses `.github/workflows/ci.yml` to run:
