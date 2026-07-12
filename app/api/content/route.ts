@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/lib/permissions'
+import { getSession, requireAdmin } from '@/lib/permissions'
 import { getSystemSettings, saveSystemSettings } from '@/lib/settings'
 import { settingsSchema } from '@/lib/validations'
 import { mergeCmsContent } from '@/lib/content-cms'
@@ -16,9 +16,9 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session || session.user.role !== 'super-admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const authz = await requireAdmin()
+    if (!authz.ok) return authz.response
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
     const parsed = settingsSchema.safeParse(body)

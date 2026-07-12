@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { getSession, requireAdmin } from '@/lib/permissions'
 import { updateNoticeSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -24,9 +24,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const authz = await requireAdmin()
+    if (!authz.ok) return authz.response
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
     const parsed = updateNoticeSchema.safeParse(body)
@@ -50,9 +50,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const authz = await requireAdmin()
+    if (!authz.ok) return authz.response
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const [deleted] = await db.delete(notices).where(eq(notices.id, id)).returning()
     if (!deleted) return NextResponse.json({ error: 'Notice not found' }, { status: 404 })
