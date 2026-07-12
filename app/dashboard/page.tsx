@@ -22,7 +22,7 @@ import { AccountSection } from './components/account-tab'
 import { AdmitCardSection } from './components/admit-card-tab'
 import { ResultsTable } from './components/results-tab'
 import { AttendanceView } from './components/attendance-tab'
-import type { Course, Enrollment, Payment, Invoice, UserProfile, MockResult, MockAttendance } from './components/types'
+import type { Course, Enrollment, Payment, Invoice, UserProfile, ExamSubmission, AttendanceRecord, AdmitCard } from './components/types'
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -36,26 +36,6 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id']
 
-const MOCK_RESULTS: MockResult[] = [
-  { exam: 'মডেল টেস্ট #১', date: '১২ জুলাই ২০২৬', score: 78, total: 100, rank: 12 },
-  { exam: 'মডেল টেস্ট #২', date: '১৯ জুলাই ২০২৬', score: 85, total: 100, rank: 8 },
-  { exam: 'মডেল টেস্ট #৩', date: '২৬ জুলাই ২০২৬', score: 72, total: 100, rank: 18 },
-  { exam: 'সাপ্তাহিক পরীক্ষা', date: '০২ আগস্ট ২০২৬', score: 91, total: 100, rank: 3 },
-]
-
-const MOCK_ATTENDANCE: MockAttendance[] = [
-  { date: '১০ জুলাই', status: 'present', time: 'সকাল ১০:০০' },
-  { date: '১১ জুলাই', status: 'present', time: 'সকাল ১০:০০' },
-  { date: '১২ জুলাই', status: 'absent', time: '—' },
-  { date: '১৩ জুলাই', status: 'present', time: 'সকাল ১০:০০' },
-  { date: '১৪ জুলাই', status: 'present', time: 'সকাল ১০:০০' },
-  { date: '১৫ জুলাই', status: 'late', time: 'সকাল ১০:১৫' },
-  { date: '১৬ জুলাই', status: 'present', time: 'সকাল ১০:০০' },
-  { date: '১৭ জুলাই', status: 'present', time: 'সকাল ১০:০০' },
-  { date: '১৮ জুলাই', status: 'absent', time: '—' },
-  { date: '১৯ জুলাই', status: 'present', time: 'সকাল ১০:০০' },
-]
-
 export default function DashboardPage() {
   const router = useRouter()
   const session = authClient.useSession()
@@ -65,22 +45,40 @@ export default function DashboardPage() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [examSubmissions, setExamSubmissions] = useState<ExamSubmission[]>([])
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([])
+  const [admitCards, setAdmitCards] = useState<AdmitCard[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, profileRes] = await Promise.all([
+      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, profileRes, submissionsRes, attendanceRes, admitCardsRes] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
         fetch('/api/invoices'),
         fetch('/api/account/profile'),
+        fetch('/api/exam-submissions'),
+        fetch('/api/attendance'),
+        fetch('/api/admit-cards'),
       ])
       if (coursesRes.ok) setCourses(await coursesRes.json())
       if (enrollmentsRes.ok) setEnrollments(await enrollmentsRes.json())
       if (paymentsRes.ok) setPayments(await paymentsRes.json())
       if (invoicesRes.ok) setInvoices(await invoicesRes.json())
       if (profileRes.ok) setProfile(await profileRes.json())
+      if (submissionsRes.ok) {
+        const data = await submissionsRes.json()
+        setExamSubmissions(data.data || data)
+      }
+      if (attendanceRes.ok) {
+        const data = await attendanceRes.json()
+        setAttendance(data.data || data)
+      }
+      if (admitCardsRes.ok) {
+        const data = await admitCardsRes.json()
+        setAdmitCards(data.data || data)
+      }
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -134,14 +132,14 @@ export default function DashboardPage() {
       onSignOut={handleSignOut}
     >
       {tab === 'overview' && (
-        <OverviewTab results={MOCK_RESULTS} attendance={MOCK_ATTENDANCE} enrollments={enrollments} totalDue={totalDue} totalPaid={totalPaid} />
+        <OverviewTab examSubmissions={examSubmissions} attendance={attendance} enrollments={enrollments} totalDue={totalDue} totalPaid={totalPaid} />
       )}
       {tab === 'courses' && <CourseSection courses={courses} enrollments={enrollments} onRefresh={fetchData} />}
       {tab === 'billing' && <BillingSection enrollments={enrollments} payments={payments} invoices={invoices} onRefresh={fetchData} />}
       {tab === 'account' && <AccountSection profile={profile} onRefresh={fetchData} />}
-      {tab === 'admit-card' && <AdmitCardSection user={user} enrollments={enrollments} />}
-      {tab === 'results' && <ResultsTable results={MOCK_RESULTS} />}
-      {tab === 'attendance' && <AttendanceView attendance={MOCK_ATTENDANCE} />}
+      {tab === 'admit-card' && <AdmitCardSection user={user} enrollments={enrollments} admitCards={admitCards} />}
+      {tab === 'results' && <ResultsTable examSubmissions={examSubmissions} />}
+      {tab === 'attendance' && <AttendanceView attendance={attendance} />}
     </PanelLayout>
   )
 }

@@ -1,19 +1,32 @@
 export interface Notice {
-  id: number
-  tag: string
+  id: string
   title: string
-  date: string
-  urgent: boolean
+  content: string | null
+  tag: string
+  isUrgent: boolean
+  isPublished: boolean
+  authorId: string | null
+  createdAt: string
 }
 
 export interface Exam {
-  id: number
+  id: string
   title: string
-  date: string
-  time: string
-  duration: string
-  totalMarks: number
-  status: 'upcoming' | 'ongoing' | 'completed'
+  subject: string
+  duration: number
+  difficulty: 'easy' | 'medium' | 'hard'
+  isActive: boolean
+  createdAt: string
+  questionCount?: number
+}
+
+export interface Question {
+  id: string
+  examId: string
+  question: string
+  options: string[]
+  correctIndex: number
+  createdAt: string
 }
 
 export interface Result {
@@ -95,4 +108,68 @@ export interface Student {
   course: string
   enrolled: string
   status: 'active' | 'inactive'
+}
+
+export interface ExamSubmission {
+  id: string
+  userId: string
+  examId: string
+  score: number
+  total: number
+  answers: Record<number, number>
+  timeTaken: number | null
+  createdAt: string
+  userName?: string | null
+  userStudentId?: string | null
+  examTitle?: string | null
+}
+
+export interface AttendanceRecord {
+  id: string
+  userId: string
+  date: string
+  status: 'present' | 'late' | 'absent'
+  time: string | null
+  markedBy: string | null
+  createdAt: string
+  userName?: string | null
+  userStudentId?: string | null
+}
+
+export interface AdmitCard {
+  id: string
+  userId: string
+  examId: string
+  examName: string
+  examDate: string
+  examTime: string
+  center: string
+  seatNumber: string | null
+  createdAt: string
+  userName?: string | null
+  userStudentId?: string | null
+}
+
+export interface ContactInquiry {
+  id: string
+  name: string
+  phone: string
+  message: string
+  isResolved: boolean
+  resolvedAt: string | null
+  resolvedBy: string | null
+  response: string | null
+  createdAt: string
+}
+
+export interface NotificationRecord {
+  id: string
+  userId: string
+  title: string
+  message: string
+  type: 'info' | 'success' | 'warning' | 'payment' | 'enrollment'
+  isRead: boolean
+  readAt: string | null
+  link: string | null
+  createdAt: string
 }

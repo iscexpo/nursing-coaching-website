@@ -2,14 +2,14 @@
 
 import { Clock } from 'lucide-react'
 import { AttendanceStatusBadge } from '@/components/ui/badges'
-import type { MockAttendance } from './types'
+import type { AttendanceRecord } from './types'
 
-export function AttendanceView({ attendance }: { attendance: MockAttendance[] }) {
+export function AttendanceView({ attendance }: { attendance: AttendanceRecord[] }) {
   const presentDays = attendance.filter((a) => a.status === 'present').length
   const lateDays = attendance.filter((a) => a.status === 'late').length
   const absentDays = attendance.filter((a) => a.status === 'absent').length
   const totalDays = attendance.length
-  const pct = Math.round(((presentDays + lateDays) / totalDays) * 100)
+  const pct = totalDays > 0 ? Math.round(((presentDays + lateDays) / totalDays) * 100) : 0
 
   return (
     <div className="space-y-6">
@@ -52,18 +52,21 @@ export function AttendanceView({ attendance }: { attendance: MockAttendance[] })
               </tr>
             </thead>
             <tbody>
-              {attendance.map((a, i) => (
-                <tr key={i} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3 font-medium text-foreground">{a.date}</td>
+              {attendance.map((a) => (
+                <tr key={a.id} className="border-b border-border last:border-0">
+                  <td className="px-4 py-3 font-medium text-foreground">{new Date(a.date).toLocaleDateString('bn-BD')}</td>
                   <td className="px-4 py-3 text-muted-foreground flex items-center gap-1.5">
                     <Clock className="size-3.5" />
-                    {a.time}
+                    {a.time || '—'}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <AttendanceStatusBadge status={a.status} />
                   </td>
                 </tr>
               ))}
+              {attendance.length === 0 && (
+                <tr><td colSpan={3} className="px-4 py-8 text-center text-sm text-muted-foreground">কোনো উপস্থিতি রেকর্ড নেই</td></tr>
+              )}
             </tbody>
           </table>
         </div>

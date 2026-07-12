@@ -3,22 +3,24 @@
 import { BarChart3, Receipt, GraduationCap } from 'lucide-react'
 import { AttendanceStatusBadge, EnrollmentStatusBadge } from '@/components/ui/badges'
 import { StatCard } from '@/components/ui/stat-card'
-import type { Enrollment, MockResult, MockAttendance } from './types'
+import type { Enrollment, ExamSubmission, AttendanceRecord } from './types'
 
 export function OverviewTab({
-  results,
+  examSubmissions,
   attendance,
   enrollments,
   totalDue,
   totalPaid,
 }: {
-  results: MockResult[]
-  attendance: MockAttendance[]
+  examSubmissions: ExamSubmission[]
+  attendance: AttendanceRecord[]
   enrollments: Enrollment[]
   totalDue: number
   totalPaid: number
 }) {
-  const avgScore = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length)
+  const avgScore = examSubmissions.length > 0
+    ? Math.round(examSubmissions.reduce((s, r) => s + (r.total > 0 ? (r.score / r.total) * 100 : 0), 0) / examSubmissions.length)
+    : 0
   const activeEnrollments = enrollments.filter((e) => e.status === 'active' || e.status === 'approved')
 
   return (
@@ -33,23 +35,29 @@ export function OverviewTab({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">সর্বশেষ ফলাফল</h3>
           <div className="mt-3 space-y-2">
-            {results.slice(0, 3).map((r, i) => (
-              <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-foreground">{r.exam}</span>
+            {examSubmissions.slice(0, 3).map((r) => (
+              <div key={r.id} className="flex items-center justify-between text-sm">
+                <span className="text-foreground">{r.examTitle || 'পরীক্ষা'}</span>
                 <span className="font-semibold text-brand">{r.score}/{r.total}</span>
               </div>
             ))}
+            {examSubmissions.length === 0 && (
+              <p className="text-xs text-muted-foreground">কোনো ফলাফল নেই</p>
+            )}
           </div>
         </div>
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">সাম্প্রতিক উপস্থিতি</h3>
           <div className="mt-3 space-y-2">
-            {attendance.slice(-5).reverse().map((a, i) => (
-              <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-foreground">{a.date}</span>
+            {attendance.slice(-5).reverse().map((a) => (
+              <div key={a.id} className="flex items-center justify-between text-sm">
+                <span className="text-foreground">{new Date(a.date).toLocaleDateString('bn-BD')}</span>
                 <AttendanceStatusBadge status={a.status} />
               </div>
             ))}
+            {attendance.length === 0 && (
+              <p className="text-xs text-muted-foreground">কোনো উপস্থিতি রেকর্ড নেই</p>
+            )}
           </div>
         </div>
       </div>

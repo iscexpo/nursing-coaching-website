@@ -83,3 +83,34 @@ export interface MockAttendance {
   status: 'present' | 'absent' | 'late'
   time: string
 }
+
+export interface ExamSubmission {
+  id: string
+  examId: string
+  score: number
+  total: number
+  answers: Record<number, number>
+  timeTaken: number | null
+  createdAt: string
+  examTitle?: string | null
+  examSubject?: string | null
+}
+
+export interface AttendanceRecord {
+  id: string
+  date: string
+  status: 'present' | 'late' | 'absent'
+  time: string | null
+  createdAt: string
+}
+
+export interface AdmitCard {
+  id: string
+  examId: string
+  examName: string
+  examDate: string
+  examTime: string
+  center: string
+  seatNumber: string | null
+  createdAt: string
+}

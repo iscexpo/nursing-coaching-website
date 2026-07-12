@@ -16,6 +16,7 @@ import {
   HelpCircle,
   BarChart3,
   Users,
+  Bell,
 } from 'lucide-react'
 
 import { PanelLayout } from '@/components/ui/panel-layout'
@@ -29,7 +30,8 @@ import { NoticesPanel } from './components/notices-tab'
 import { ExamsPanel } from './components/exams-tab'
 import { QuestionsPanel } from './components/questions-tab'
 import { ContactsPanel } from './components/contacts-tab'
-import type { Course, Enrollment, Payment, Invoice } from './components/types'
+import { NotificationsPanel } from './components/notifications-tab'
+import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission } from './components/types'
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -43,6 +45,7 @@ const TABS = [
   { id: 'results', label: 'ফলাফল', icon: BarChart3 },
   { id: 'students', label: 'শিক্ষার্থী', icon: Users },
   { id: 'contacts', label: 'যোগাযোগ', icon: Users },
+  { id: 'notifications', label: 'নোটিফিকেশন', icon: Bell },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -55,21 +58,48 @@ export default function AdminPage() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
   const [payments, setPayments] = useState<Payment[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [notices, setNotices] = useState<Notice[]>([])
+  const [exams, setExams] = useState<Exam[]>([])
+  const [contacts, setContacts] = useState<ContactInquiry[]>([])
+  const [notifications, setNotifications] = useState<NotificationRecord[]>([])
+  const [examSubmissions, setExamSubmissions] = useState<ExamSubmission[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes] = await Promise.all([
+      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, examsRes, contactsRes, notificationsRes, submissionsRes] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
         fetch('/api/invoices'),
+        fetch('/api/notices'),
+        fetch('/api/exams'),
+        fetch('/api/contact'),
+        fetch('/api/notifications'),
+        fetch('/api/exam-submissions'),
       ])
 
       if (coursesRes.ok) setCourses(await coursesRes.json())
       if (enrollmentsRes.ok) setEnrollments(await enrollmentsRes.json())
       if (paymentsRes.ok) setPayments(await paymentsRes.json())
       if (invoicesRes.ok) setInvoices(await invoicesRes.json())
+      if (noticesRes.ok) {
+        const data = await noticesRes.json()
+        setNotices(data.data || data)
+      }
+      if (examsRes.ok) {
+        const data = await examsRes.json()
+        setExams(data.data || data)
+      }
+      if (contactsRes.ok) {
+        const data = await contactsRes.json()
+        setContacts(data.data || data)
+      }
+      if (notificationsRes.ok) setNotifications(await notificationsRes.json())
+      if (submissionsRes.ok) {
+        const data = await submissionsRes.json()
+        setExamSubmissions(data.data || data)
+      }
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -134,12 +164,13 @@ export default function AdminPage() {
       {tab === 'enrollments' && <EnrollmentsPanel enrollments={enrollments} onRefresh={fetchData} />}
       {tab === 'payments' && <PaymentsPanel payments={payments} onRefresh={fetchData} />}
       {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
-      {tab === 'notices' && <NoticesPanel />}
-      {tab === 'exams' && <ExamsPanel />}
-      {tab === 'questions' && <QuestionsPanel />}
-      {tab === 'results' && <ExamsPanel />}
+      {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}
+      {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
+      {tab === 'questions' && <QuestionsPanel exams={exams} />}
+      {tab === 'results' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
       {tab === 'students' && <StudentsPanel enrollments={enrollments} />}
-      {tab === 'contacts' && <ContactsPanel />}
+      {tab === 'contacts' && <ContactsPanel contacts={contacts} onRefresh={fetchData} />}
+      {tab === 'notifications' && <NotificationsPanel notifications={notifications} onRefresh={fetchData} />}
     </PanelLayout>
   )
 }

@@ -1,43 +1,56 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Pencil, Save, X } from 'lucide-react'
-import { NOTICES } from '@/lib/site-data'
+import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import type { Notice } from './types'
 
-export function NoticesPanel() {
-  const [notices, setNotices] = useState<Notice[]>(
-    NOTICES.map((n, i) => ({ ...n, id: i + 1 }))
-  )
+export function NoticesPanel({ notices, onRefresh }: { notices: Notice[]; onRefresh: () => void }) {
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Notice | null>(null)
   const [form, setForm] = useState({ tag: 'ভর্তি', title: '', urgent: false })
+  const [saving, setSaving] = useState(false)
 
-  function handleSave() {
+  async function handleSave() {
     if (!form.title.trim()) return
-    if (editing) {
-      setNotices((prev) => prev.map((n) => n.id === editing.id ? { ...n, ...form, date: n.date } : n))
-    } else {
-      const newNotice: Notice = {
-        id: Date.now(),
-        ...form,
-        date: 'আজ',
+    setSaving(true)
+    try {
+      if (editing) {
+        await fetch(`/api/notices/${editing.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: form.title, tag: form.tag, isUrgent: form.urgent }),
+        })
+      } else {
+        await fetch('/api/notices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: form.title, tag: form.tag, isUrgent: form.urgent }),
+        })
       }
-      setNotices((prev) => [newNotice, ...prev])
+      setForm({ tag: 'ভর্তি', title: '', urgent: false })
+      setEditing(null)
+      setShowForm(false)
+      onRefresh()
+    } catch (error) {
+      console.error('Failed to save notice:', error)
+    } finally {
+      setSaving(false)
     }
-    setForm({ tag: 'ভর্তি', title: '', urgent: false })
-    setEditing(null)
-    setShowForm(false)
   }
 
   function handleEdit(n: Notice) {
     setEditing(n)
-    setForm({ tag: n.tag, title: n.title, urgent: n.urgent })
+    setForm({ tag: n.tag, title: n.title, urgent: n.isUrgent })
     setShowForm(true)
   }
 
-  function handleDelete(id: number) {
-    setNotices((prev) => prev.filter((n) => n.id !== id))
+  async function handleDelete(id: string) {
+    try {
+      await fetch(`/api/notices/${id}`, { method: 'DELETE' })
+      onRefresh()
+    } catch (error) {
+      console.error('Failed to delete notice:', error)
+    }
   }
 
   return (
@@ -101,8 +114,8 @@ export function NoticesPanel() {
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
-            <button onClick={handleSave} className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
-              <Save className="size-4" />
+            <button onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50">
+              {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
               {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
             </button>
           </div>
@@ -111,11 +124,11 @@ export function NoticesPanel() {
 
       <div className="space-y-3">
         {notices.map((n) => (
-          <div key={n.id} className={`rounded-2xl border bg-card p-4 shadow-sm ${n.urgent ? 'border-gold/50' : 'border-border'}`}>
+          <div key={n.id} className={`rounded-2xl border bg-card p-4 shadow-sm ${n.isUrgent ? 'border-gold/50' : 'border-border'}`}>
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-brand">{n.tag}</span>
-              {n.urgent && <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">জরুরি</span>}
-              <span className="ml-auto text-xs text-muted-foreground">{n.date}</span>
+              {n.isUrgent && <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">জরুরি</span>}
+              <span className="ml-auto text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleDateString('bn-BD')}</span>
               <button onClick={() => handleEdit(n)} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground">
                 <Pencil className="size-4" />
               </button>
@@ -126,6 +139,11 @@ export function NoticesPanel() {
             <p className="mt-2 text-sm font-medium text-foreground">{n.title}</p>
           </div>
         ))}
+        {notices.length === 0 && (
+          <p className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+            কোনো নোটিশ নেই
+          </p>
+        )}
       </div>
     </div>
   )
