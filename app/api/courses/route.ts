@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { getSession, requireAdmin } from '@/lib/permissions'
 import { createCourseSchema, paginationSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
@@ -30,10 +30,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession()
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const auth = await requireAdmin()
+    if (!auth.ok) return auth.response
 
     const body = await request.json()
     const parsed = createCourseSchema.safeParse(body)

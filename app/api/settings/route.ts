@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/lib/permissions'
+import { requireAdmin, requireSuperAdmin } from '@/lib/permissions'
 import { getSystemSettings, saveSystemSettings } from '@/lib/settings'
 import { settingsSchema } from '@/lib/validations'
 
 export async function GET() {
   try {
-    const session = await getSession()
-    if (!session || (session.user.role !== 'super-admin' && session.user.role !== 'admin')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const auth = await requireAdmin()
+    if (!auth.ok) return auth.response
 
     return NextResponse.json(await getSystemSettings())
   } catch {
@@ -18,10 +16,8 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getSession()
-    if (!session || session.user.role !== 'super-admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const auth = await requireSuperAdmin()
+    if (!auth.ok) return auth.response
 
     const body = await request.json()
     const parsed = settingsSchema.safeParse(body)
