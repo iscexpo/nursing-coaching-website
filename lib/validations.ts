@@ -148,9 +148,35 @@ export const createAdmitCardSchema = z.object({
 })
 
 export const updateAdmitCardSchema = z.object({
-  examName: z.string().min(1).max(200).optional(),
-  examDate: z.string().min(1).max(100).optional(),
-  examTime: z.string().min(1).max(100).optional(),
-  center: z.string().min(1).max(200).optional(),
+  examName: z.string().min(1, 'পরীক্ষার নাম আবশ্যক').max(200).optional(),
+  examDate: z.string().min(1, 'তারিখ আবশ্যক').max(100).optional(),
+  examTime: z.string().min(1, 'সময় আবশ্যক').max(100).optional(),
+  center: z.string().min(1, 'কেন্দ্র আবশ্যক').max(200).optional(),
   seatNumber: z.string().max(50).optional(),
+})
+
+export const createStudentSchema = z.object({
+  name: z.string().min(1, 'নাম আবশ্যক').max(200),
+  email: z.string().email('সঠিক ইমেইল দিন'),
+  password: z.string().min(6, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর'),
+  phoneNumber: z.string().max(20).optional(),
+  studentId: z.string().max(50).optional(),
+  address: z.string().max(500).optional(),
+  dateOfBirth: z.string().max(20).optional(),
+  guardianName: z.string().max(200).optional(),
+  guardianPhone: z.string().max(20).optional(),
+  institution: z.string().max(200).optional(),
+})
+
+export const updateStudentSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  email: z.string().email().optional(),
+  phoneNumber: z.string().max(20).optional(),
+  studentId: z.string().max(50).optional(),
+  address: z.string().max(500).optional(),
+  dateOfBirth: z.string().max(20).optional(),
+  guardianName: z.string().max(200).optional(),
+  guardianPhone: z.string().max(20).optional(),
+  institution: z.string().max(200).optional(),
+  role: z.enum(['admin', 'student']).optional(),
 })

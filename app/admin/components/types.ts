@@ -104,10 +104,20 @@ export interface Invoice {
 export interface Student {
   id: string
   name: string
-  phone: string
-  course: string
-  enrolled: string
-  status: 'active' | 'inactive'
+  email: string
+  emailVerified: boolean
+  image: string | null
+  phoneNumber: string | null
+  phoneNumberVerified: boolean
+  role: 'admin' | 'student'
+  studentId: string | null
+  address: string | null
+  dateOfBirth: string | null
+  guardianName: string | null
+  guardianPhone: string | null
+  institution: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ExamSubmission {

@@ -35,7 +35,7 @@ import { ContactsPanel } from './components/contacts-tab'
 import { NotificationsPanel } from './components/notifications-tab'
 import { AttendancePanel } from './components/attendance-tab'
 import { AdmitCardsPanel } from './components/admit-cards-tab'
-import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard } from './components/types'
+import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student } from './components/types'
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -71,11 +71,12 @@ export default function AdminPage() {
   const [examSubmissions, setExamSubmissions] = useState<ExamSubmission[]>([])
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([])
   const [admitCards, setAdmitCards] = useState<AdmitCard[]>([])
+  const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, examsRes, contactsRes, notificationsRes, submissionsRes, attendanceRes, admitCardsRes] = await Promise.all([
+      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, examsRes, contactsRes, notificationsRes, submissionsRes, attendanceRes, admitCardsRes, studentsRes] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
@@ -87,6 +88,7 @@ export default function AdminPage() {
         fetch('/api/exam-submissions'),
         fetch('/api/attendance'),
         fetch('/api/admit-cards'),
+        fetch('/api/students'),
       ])
 
       if (coursesRes.ok) {
@@ -132,6 +134,10 @@ export default function AdminPage() {
       if (admitCardsRes.ok) {
         const d = await admitCardsRes.json()
         setAdmitCards(d.data || d)
+      }
+      if (studentsRes.ok) {
+        const d = await studentsRes.json()
+        setStudents(d.data || d)
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -201,7 +207,7 @@ export default function AdminPage() {
       {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
       {tab === 'questions' && <QuestionsPanel exams={exams} />}
       {tab === 'results' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
-      {tab === 'students' && <StudentsPanel enrollments={enrollments} />}
+      {tab === 'students' && <StudentsPanel students={students} onRefresh={fetchData} />}
       {tab === 'attendance' && <AttendancePanel enrollments={enrollments} attendance={attendance} onRefresh={fetchData} />}
       {tab === 'admit-cards' && <AdmitCardsPanel enrollments={enrollments} exams={exams} admitCards={admitCards} onRefresh={fetchData} />}
       {tab === 'contacts' && <ContactsPanel contacts={contacts} onRefresh={fetchData} />}
