@@ -44,7 +44,11 @@ export async function getSystemSettings() {
   return created as SystemSettings
 }
 
-export async function saveSystemSettings(input: Partial<SystemSettings> & { cmsContent?: CmsContentInput }) {
+export type SystemSettingsUpdate = Partial<Omit<SystemSettings, 'cmsContent'>> & {
+  cmsContent?: CmsContentInput
+}
+
+export async function saveSystemSettings(input: SystemSettingsUpdate) {
   const nextCmsContent = mergeCmsContent(input.cmsContent || undefined)
 
   const [updated] = await db.update(settings).set({

@@ -4,14 +4,24 @@ import { useEffect, useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
 import { cn } from '@/lib/utils'
-import { getCmsContent } from '@/lib/content-server'
+
+type FaqItem = { question: string; answer: string }
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0)
-  const [faqs, setFaqs] = useState<{ question: string; answer: string }[]>([])
+  const [faqs, setFaqs] = useState<FaqItem[]>([])
 
   useEffect(() => {
-    void getCmsContent().then((content) => setFaqs(content.faqs))
+    void fetch('/api/content')
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (data?.cmsContent?.faqs) {
+          setFaqs(data.cmsContent.faqs)
+        }
+      })
+      .catch(() => {
+        // ignore load failures
+      })
   }, [])
 
   return (

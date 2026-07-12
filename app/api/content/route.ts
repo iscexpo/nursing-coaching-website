@@ -6,11 +6,6 @@ import { mergeCmsContent } from '@/lib/content-cms'
 
 export async function GET() {
   try {
-    const session = await getSession()
-    if (!session || (session.user.role !== 'super-admin' && session.user.role !== 'admin')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
     const settings = await getSystemSettings()
     return NextResponse.json({ cmsContent: settings.cmsContent })
   } catch {
