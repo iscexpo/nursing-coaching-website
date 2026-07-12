@@ -302,6 +302,19 @@ export const contactInquiries = pgTable('contact_inquiries', {
   index('contact_inquiries_created_idx').on(table.createdAt),
 ])
 
+export const auditLogs = pgTable('audit_logs', {
+  id: text('id').primaryKey(),
+  actorId: text('actor_id').references(() => user.id, { onDelete: 'set null' }),
+  actorEmail: text('actor_email'),
+  actorRole: text('actor_role'),
+  resourceType: text('resource_type').notNull(),
+  resourceId: text('resource_id'),
+  action: text('action').notNull(),
+  details: jsonb('details').$type<Record<string, unknown>>().notNull().default({}),
+  ipAddress: text('ip_address'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
 export const attendance = pgTable('attendance', {
   id: text('id').primaryKey(),
   userId: text('user_id')

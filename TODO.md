@@ -23,27 +23,31 @@ This is a strong foundation for Phase 2 growth, but not yet investment-grade ent
 
 ---
 
-## 1.1 Implementation Progress (updated 2026-07-12)
+## 1.1 Implementation Phase (updated 2026-07-12)
 
-Tracking against the audit's P0 recommendations. Code changes are committed to `main`.
+Tracking current security, audit, and governance work in progress.
 
 ### Completed
-- [x] **Restrict OTP console logging to non-production** — `lib/auth.ts` only logs OTP codes when `NODE_ENV !== 'production'`; production logs an error instead of leaking the code.
-- [x] **Lock down admin bootstrap routes in production** — `/api/admin/seed` and `/api/admin/migrate` return `404` when `NODE_ENV === 'production'`.
-- [x] **Startup env validation** — `lib/env.ts` (zod) validates `DATABASE_URL` / `BETTER_AUTH_SECRET` (≥32 chars); `instrumentation.ts` runs it on server boot (guarded so `next build` never fails).
-- [x] **RBAC permissions engine** — `lib/permissions.ts` defines a granular `Permission` model, `ROLE_PERMISSIONS` map (super-admin = all, admin = management set, teacher/student scoped), and `requireAdmin()` / `requireSuperAdmin()` / `requirePermission()` guards.
-- [x] **RBAC rollout** — all 19 management API routes migrated from ad-hoc `role === 'admin'` checks to the permission guards; ownership-scoping checks preserved.
-- [x] **Course management** — already present (CRUD API + `courses-tab` admin UI + public course cards).
-- [x] **Student management** — already present (CRUD API + `students-tab` admin UI with full profile/education fields).
-- [x] **Teacher management** — implemented from scratch: `teachers` table + migration `0004_teachers.sql`, `teacher.manage` RBAC permission, `/api/teachers` CRUD routes, `Teacher` type, and `teachers-tab` admin UI wired into the admin panel.
-- [x] **SEO foundation** — robots.txt (`app/robots.ts`), sitemap (`app/sitemap.ts` with static + dynamic course/notice URLs), `metadataBase` + per-route canonical tags, Organization + LocalBusiness JSON-LD in root layout, generated Open Graph image (`app/opengraph-image.tsx`), Breadcrumb UI + BreadcrumbList JSON-LD on inner pages, FAQPage JSON-LD on homepage, Course/Article structured data, and new `courses/[slug]` + `notice/[id]` detail pages with dynamic `generateMetadata`.
+- [x] Audit logging foundation: `lib/db/schema.ts`, `lib/db/migrations/0005_audit_logs.sql`
+- [x] Audit helper and types: `lib/audit.ts`
+- [x] Route-side rate limiting helper: `lib/rate-limit.ts`
+- [x] Audit log writes for `contact`, `admission`, `settings`, `students`, and `payments`
+- [x] Rate limiting on auth, public form, and student creation endpoints
+- [x] Basic validation: `pnpm exec tsc --noEmit`
 
-### Next recommended (P0)
-- [ ] **Audit logs** — `audit_logs` table + `writeAudit()` helper, wired into settings/role/payment/student mutations.
-- [ ] **Rate limiting** on auth and form endpoints.
+### In progress
+- [ ] Extend audit coverage to remaining admin mutation endpoints
+- [ ] Enforce rate limits consistently across all sensitive API routes
+- [ ] Add targeted tests for audit persistence and rate limiting behavior
+- [ ] Commit and document the current implementation phase
+
+### Priority
+1. Finish audit wiring for admin/student/settings/payment actions
+2. Harden rate limiting across auth and public submission routes
+3. Add regression tests for the new security controls
 
 ### Backlog (not started)
-- Enterprise CMS (Payload/Directus), full admissions lifecycle, payments/refunds workflows, SEO (sitemap/robots/JSON-LD), analytics, multi-campus, client-side permission-based UI gating.
+- Enterprise CMS (Payload/Directus), full admissions lifecycle, payments/refunds workflows, analytics, multi-campus, client-side permission-based UI gating.
 
 ---
 

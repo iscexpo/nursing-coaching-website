@@ -5,6 +5,8 @@ import { eq, desc, like, or, count } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { createStudentSchema, paginationSchema } from '@/lib/validations'
 import { auth } from '@/lib/auth'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,6 +40,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const limiter = rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'students.create' })
+  if (limiter) return limiter
+
   try {
     const session = await getSession()
     const authz = await requireAdmin()
@@ -89,6 +94,19 @@ export async function POST(request: NextRequest) {
     }
 
     const [created] = await db.select().from(user).where(eq(user.id, userId))
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'student',
+          resourceId: userId,
+          action: 'student.create',
+          details: { email: parsed.data.email, studentId: profileData.studentId },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
+
     return NextResponse.json(created, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create student'

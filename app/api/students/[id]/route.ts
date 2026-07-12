@@ -4,6 +4,7 @@ import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { updateStudentSchema } from '@/lib/validations'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -42,6 +43,19 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       updatedAt: new Date(),
     }).where(eq(user.id, id)).returning()
 
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'student',
+          resourceId: id,
+          action: 'student.update',
+          details: parsed.data,
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
+
     return NextResponse.json(updated)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to update student'
@@ -65,6 +79,20 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     if (!existing) return NextResponse.json({ error: 'Student not found' }, { status: 404 })
 
     await db.delete(user).where(eq(user.id, id))
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'student',
+          resourceId: id,
+          action: 'student.delete',
+          details: {},
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
+
     return NextResponse.json({ success: true })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to delete student'

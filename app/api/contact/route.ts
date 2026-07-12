@@ -4,6 +4,8 @@ import { contactInquiries } from '@/lib/db/schema'
 import { createContactInquirySchema, paginationSchema } from '@/lib/validations'
 import { desc } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,6 +33,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const limiter = rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'contact' })
+  if (limiter) return limiter
+
   try {
     const body = await request.json()
     const parsed = createContactInquirySchema.safeParse(body)
@@ -46,6 +51,18 @@ export async function POST(request: NextRequest) {
       phone,
       message,
     })
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'contact_inquiry',
+          action: 'contact.submit',
+          details: { name, phone },
+        },
+        null,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
 
     return NextResponse.json({
       success: true,

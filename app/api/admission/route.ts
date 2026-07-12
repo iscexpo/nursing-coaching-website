@@ -3,8 +3,13 @@ import { db } from '@/lib/db'
 import { courses, contactInquiries } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { createAdmissionSchema } from '@/lib/validations'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  const limiter = rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'admission' })
+  if (limiter) return limiter
+
   try {
     const body = await request.json()
     const parsed = createAdmissionSchema.safeParse(body)
@@ -24,6 +29,18 @@ export async function POST(request: NextRequest) {
       phone,
       message: `ভর্তি আবেদন: ${course.title} | ${message || 'কোনো বিশেষ বার্তা নেই'}`,
     })
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'admission',
+          action: 'admission.submit',
+          details: { name, phone, courseSlug },
+        },
+        null,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
 
     return NextResponse.json({
       success: true,

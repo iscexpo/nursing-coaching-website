@@ -4,6 +4,7 @@ import { payments, enrollments, invoices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { verifyPaymentSchema } from '@/lib/validations'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -81,6 +82,19 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return updated
     })
 
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'payment',
+          resourceId: id,
+          action: status === 'verified' ? 'payment.verify' : 'payment.reject',
+          details: { status },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
+
     return NextResponse.json(result)
   } catch {
     return NextResponse.json({ error: 'Failed to update payment' }, { status: 500 })
@@ -103,6 +117,20 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     }
 
     await db.delete(payments).where(eq(payments.id, id))
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'payment',
+          resourceId: id,
+          action: 'payment.delete',
+          details: { status: existing.status },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
+
     return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json({ error: 'Failed to delete payment' }, { status: 500 })
