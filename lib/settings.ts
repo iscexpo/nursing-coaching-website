@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { settings } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { defaultCmsContent, mergeCmsContent, type CmsContent, type CmsContentInput } from '@/lib/content-cms'
 
 export type SystemSettings = {
   id: string
@@ -13,13 +14,17 @@ export type SystemSettings = {
   paymentGatewayApiKey: string
   paymentGatewaySecret: string
   paymentGatewayWebhookSecret: string
+  cmsContent: CmsContent | null
   updatedAt: Date | null
 }
 
 export async function getSystemSettings() {
   const [setting] = await db.select().from(settings).where(eq(settings.id, 'primary'))
   if (setting) {
-    return setting as SystemSettings
+    return {
+      ...(setting as SystemSettings),
+      cmsContent: mergeCmsContent((setting as SystemSettings).cmsContent || undefined),
+    } as SystemSettings
   }
 
   const [created] = await db.insert(settings).values({
@@ -33,16 +38,23 @@ export async function getSystemSettings() {
     paymentGatewayApiKey: '',
     paymentGatewaySecret: '',
     paymentGatewayWebhookSecret: '',
+    cmsContent: defaultCmsContent,
   }).returning()
 
   return created as SystemSettings
 }
 
-export async function saveSystemSettings(input: Partial<SystemSettings>) {
+export async function saveSystemSettings(input: Partial<SystemSettings> & { cmsContent?: CmsContentInput }) {
+  const nextCmsContent = mergeCmsContent(input.cmsContent || undefined)
+
   const [updated] = await db.update(settings).set({
     ...input,
+    cmsContent: nextCmsContent,
     updatedAt: new Date(),
   }).where(eq(settings.id, 'primary')).returning()
 
-  return updated as SystemSettings
+  return {
+    ...(updated as SystemSettings),
+    cmsContent: mergeCmsContent((updated as SystemSettings).cmsContent || undefined),
+  } as SystemSettings
 }

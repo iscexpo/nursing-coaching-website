@@ -1,6 +1,6 @@
 import { Trophy, BookOpen, FileText, Target, type LucideIcon } from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
-import { WHY_CORNIA } from '@/lib/site-data'
+import { getCmsContent } from '@/lib/content-server'
 
 const ICONS: Record<string, LucideIcon> = {
   trophy: Trophy,
@@ -9,7 +9,8 @@ const ICONS: Record<string, LucideIcon> = {
   target: Target,
 }
 
-export function WhyCornia() {
+export async function WhyCornia() {
+  const content = await getCmsContent()
   return (
     <section className="bg-background py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4">
@@ -19,8 +20,8 @@ export function WhyCornia() {
           description="যে কারণে খুলনার শিক্ষার্থীরা নার্সিং প্রস্তুতির জন্য কর্নিয়াকে বেছে নেয়।"
         />
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {WHY_CORNIA.map((item) => {
-            const Icon = ICONS[item.icon]
+          {content.whyCornia.map((item) => {
+            const Icon = ICONS.trophy
             return (
               <div
                 key={item.title}
@@ -32,7 +33,7 @@ export function WhyCornia() {
                 <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
               </div>
             )
           })}

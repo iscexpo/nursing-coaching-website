@@ -1,24 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
-import { FAQS } from '@/lib/site-data'
 import { cn } from '@/lib/utils'
+import { getCmsContent } from '@/lib/content-server'
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0)
+  const [faqs, setFaqs] = useState<{ question: string; answer: string }[]>([])
+
+  useEffect(() => {
+    void getCmsContent().then((content) => setFaqs(content.faqs))
+  }, [])
 
   return (
     <section className="bg-secondary/50 py-16 md:py-20">
       <div className="mx-auto max-w-3xl px-4">
         <SectionHeading eyebrow="সাধারণ জিজ্ঞাসা" title="আপনার প্রশ্ন, আমাদের উত্তর" />
         <div className="mt-10 space-y-3">
-          {FAQS.map((faq, i) => {
+          {faqs.map((faq, i) => {
             const isOpen = open === i
             return (
               <div
-                key={faq.q}
+                key={`${faq.question}-${i}`}
                 className="overflow-hidden rounded-2xl border border-border bg-card"
               >
                 <button
@@ -27,7 +32,7 @@ export function Faq() {
                   aria-expanded={isOpen}
                 >
                   <span className="font-heading text-base font-semibold text-foreground">
-                    {faq.q}
+                    {faq.question}
                   </span>
                   <span
                     className={cn(
@@ -46,7 +51,7 @@ export function Faq() {
                 >
                   <div className="overflow-hidden">
                     <p className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground">
-                      {faq.a}
+                      {faq.answer}
                     </p>
                   </div>
                 </div>

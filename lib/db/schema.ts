@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, boolean, jsonb, integer, index, uniqueIndex } from 'drizzle-orm/pg-core'
+import { defaultCmsContent, type CmsContent } from '@/lib/content-cms'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -186,6 +187,7 @@ export const settings = pgTable('settings', {
   paymentGatewayApiKey: text('payment_gateway_api_key').default(''),
   paymentGatewaySecret: text('payment_gateway_secret').default(''),
   paymentGatewayWebhookSecret: text('payment_gateway_webhook_secret').default(''),
+  cmsContent: jsonb('cms_content').$type<CmsContent>().default(defaultCmsContent),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })

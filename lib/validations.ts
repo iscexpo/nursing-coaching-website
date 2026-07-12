@@ -207,4 +207,25 @@ export const settingsSchema = z.object({
   paymentGatewayApiKey: z.string().max(500).optional(),
   paymentGatewaySecret: z.string().max(500).optional(),
   paymentGatewayWebhookSecret: z.string().max(500).optional(),
+  cmsContent: z.object({
+    site: z.object({
+      nameBn: z.string().optional(),
+      tagline: z.string().optional(),
+      city: z.string().optional(),
+      phone: z.string().optional(),
+      whatsapp: z.string().optional(),
+      email: z.string().optional(),
+      addressBn: z.string().optional(),
+    }).partial().optional(),
+    hero: z.object({
+      eyebrow: z.string().optional(),
+      title: z.string().optional(),
+      subtitle: z.string().optional(),
+      primaryCta: z.string().optional(),
+      secondaryCta: z.string().optional(),
+    }).partial().optional(),
+    whyCornia: z.array(z.object({ title: z.string(), description: z.string() })).optional(),
+    counters: z.array(z.object({ value: z.string(), label: z.string() })).optional(),
+    faqs: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
+  }).optional(),
 })

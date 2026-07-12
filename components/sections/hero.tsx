@@ -2,9 +2,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Check, PlayCircle, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { HERO_FEATURES } from '@/lib/site-data'
+import { getCmsContent } from '@/lib/content-server'
 
-export function Hero() {
+export async function Hero() {
+  const content = await getCmsContent()
+  const hero = content.hero
   return (
     <section className="relative overflow-hidden bg-brand">
       <div className="absolute inset-0 opacity-10">
@@ -14,19 +16,18 @@ export function Hero() {
         <div className="text-brand-foreground">
           <span className="inline-flex items-center gap-2 rounded-full bg-brand-foreground/15 px-4 py-1.5 text-sm font-medium">
             <span className="size-2 rounded-full bg-gold" />
-            BNMC ভর্তি পরীক্ষার সম্পূর্ণ প্রস্তুতি
+            {hero.eyebrow}
           </span>
           <h1 className="mt-5 font-heading text-3xl font-extrabold leading-tight text-balance sm:text-4xl md:text-5xl">
-            খুলনার অন্যতম বিশ্বস্ত
-            <span className="mt-1 block text-gold">নার্সিং ভর্তি কোচিং</span>
+            {hero.title.split(' ')[0]}
+            <span className="mt-1 block text-gold">{hero.title.split(' ').slice(1).join(' ')}</span>
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-brand-foreground/85 text-pretty">
-            অভিজ্ঞ শিক্ষক, আপডেটেড নোট ও নিয়মিত মডেল টেস্টের মাধ্যমে আপনার নার্সিং ক্যারিয়ারের
-            নিশ্চিত প্রস্তুতি।
+            {hero.subtitle}
           </p>
 
           <ul className="mt-6 grid max-w-lg grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3">
-            {HERO_FEATURES.map((f) => (
+            {['ভর্তি কোচিং', 'কাউন্সিল পরীক্ষা', 'B.Sc. Nursing', 'Post Basic B.Sc.', 'চাকরি প্রস্তুতি', 'মডেল টেস্ট'].map((f) => (
               <li key={f} className="flex items-center gap-2 text-sm text-brand-foreground/90">
                 <Check className="size-4 shrink-0 text-gold" />
                 {f}
@@ -40,7 +41,7 @@ export function Hero() {
               size="lg"
               className="h-11 bg-gold px-6 text-base font-semibold text-gold-foreground hover:bg-gold/90"
             >
-              ভর্তি হোন
+              {hero.primaryCta}
               <ArrowRight className="size-4" />
             </Button>
             <Button
@@ -49,7 +50,7 @@ export function Hero() {
               className="h-11 border border-brand-foreground/30 bg-brand-foreground/10 px-6 text-base font-semibold text-brand-foreground hover:bg-brand-foreground/20"
             >
               <PlayCircle className="size-4" />
-              ফ্রি ক্লাস
+              {hero.secondaryCta}
             </Button>
           </div>
         </div>
