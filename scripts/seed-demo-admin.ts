@@ -1,6 +1,10 @@
 import postgres from 'postgres'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { config } from 'dotenv'
+
+config({ path: '.env' })
+config({ path: '.env.local' })
 
 const DATABASE_URL = process.env.DATABASE_URL
 if (!DATABASE_URL) {

@@ -32,10 +32,35 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
   }
 }
 
+function getTrustedOrigins() {
+  const configured = process.env.BETTER_AUTH_TRUSTED_ORIGINS
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean) ?? []
+
+  const defaults = [
+    'http://localhost:3000',
+    'https://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://127.0.0.1:3000',
+    'http://0.0.0.0:3000',
+    'https://0.0.0.0:3000',
+    'http://[::1]:3000',
+    'https://[::1]:3000',
+  ]
+  const normalized = new Set<string>()
+
+  for (const origin of [...configured, ...defaults, process.env.BETTER_AUTH_URL || '']) {
+    const trimmed = origin.trim().replace(/\/$/, '')
+    if (trimmed) normalized.add(trimmed)
+  }
+
+  return Array.from(normalized)
+}
+
 export const auth = betterAuth({
-  trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS
-    ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(',')
-    : ['http://localhost:3000'],
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+  trustedOrigins: getTrustedOrigins(),
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema,

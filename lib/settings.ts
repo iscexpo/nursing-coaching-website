@@ -18,16 +18,8 @@ export type SystemSettings = {
   updatedAt: Date | null
 }
 
-export async function getSystemSettings() {
-  const [setting] = await db.select().from(settings).where(eq(settings.id, 'primary'))
-  if (setting) {
-    return {
-      ...(setting as SystemSettings),
-      cmsContent: mergeCmsContent((setting as SystemSettings).cmsContent || undefined),
-    } as SystemSettings
-  }
-
-  const [created] = await db.insert(settings).values({
+function createDefaultSystemSettings(): SystemSettings {
+  return {
     id: 'primary',
     siteName: 'কর্ণিয়া নার্সিং কোচিং',
     siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
@@ -38,10 +30,46 @@ export async function getSystemSettings() {
     paymentGatewayApiKey: '',
     paymentGatewaySecret: '',
     paymentGatewayWebhookSecret: '',
-    cmsContent: defaultCmsContent,
-  }).returning()
+    cmsContent: mergeCmsContent(),
+    updatedAt: null,
+  }
+}
 
-  return created as SystemSettings
+export async function getSystemSettings() {
+  try {
+    const [setting] = await db.select().from(settings).where(eq(settings.id, 'primary'))
+    if (setting) {
+      return {
+        ...(setting as SystemSettings),
+        cmsContent: mergeCmsContent((setting as SystemSettings).cmsContent || undefined),
+      } as SystemSettings
+    }
+
+    const [created] = await db.insert(settings).values({
+      id: 'primary',
+      siteName: 'কর্ণিয়া নার্সিং কোচিং',
+      siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
+      smsProvider: 'none',
+      smsApiKey: '',
+      smsSenderId: '',
+      paymentGateway: 'none',
+      paymentGatewayApiKey: '',
+      paymentGatewaySecret: '',
+      paymentGatewayWebhookSecret: '',
+      cmsContent: defaultCmsContent,
+    }).returning()
+
+    if (created) {
+      return {
+        ...(created as SystemSettings),
+        cmsContent: mergeCmsContent((created as SystemSettings).cmsContent || undefined),
+      } as SystemSettings
+    }
+  } catch (error) {
+    console.warn('Unable to load system settings, using defaults:', error)
+  }
+
+  return createDefaultSystemSettings()
 }
 
 export type SystemSettingsUpdate = Partial<Omit<SystemSettings, 'cmsContent'>> & {

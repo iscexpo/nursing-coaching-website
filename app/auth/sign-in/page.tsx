@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { authClient } from '@/lib/auth-client'
@@ -16,6 +16,11 @@ export default function SignInPage() {
   const [emailPassword, setEmailPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
 
   async function handlePhoneSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -77,8 +82,10 @@ export default function SignInPage() {
     }
   }
 
+  const resolvedMode = hydrated ? mode : 'phone'
+
   return (
-    <div suppressHydrationWarning className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="font-heading text-2xl font-bold text-foreground">
@@ -93,8 +100,9 @@ export default function SignInPage() {
           <button
             type="button"
             onClick={() => { setMode('phone'); setError('') }}
+            suppressHydrationWarning
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              mode === 'phone'
+              resolvedMode === 'phone'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
@@ -104,8 +112,9 @@ export default function SignInPage() {
           <button
             type="button"
             onClick={() => { setMode('email'); setError('') }}
+            suppressHydrationWarning
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              mode === 'email'
+              resolvedMode === 'email'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
@@ -120,7 +129,7 @@ export default function SignInPage() {
           </div>
         )}
 
-        {mode === 'phone' && (
+        {resolvedMode === 'phone' && (
           <form onSubmit={handlePhoneSubmit} className="space-y-4">
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-foreground">
@@ -129,6 +138,7 @@ export default function SignInPage() {
               <input
                 id="phone"
                 type="tel"
+                suppressHydrationWarning
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="01XXXXXXXXX"
@@ -144,6 +154,7 @@ export default function SignInPage() {
               <input
                 id="phone-password"
                 type="password"
+                suppressHydrationWarning
                 value={phonePassword}
                 onChange={(e) => setPhonePassword(e.target.value)}
                 placeholder="••••••••"
@@ -155,6 +166,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
+              suppressHydrationWarning
               className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? 'লোড হচ্ছে...' : 'সাইন ইন'}
@@ -162,7 +174,7 @@ export default function SignInPage() {
           </form>
         )}
 
-        {mode === 'email' && (
+        {resolvedMode === 'email' && (
           <form onSubmit={handleEmailSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground">
@@ -171,6 +183,7 @@ export default function SignInPage() {
               <input
                 id="email"
                 type="email"
+                suppressHydrationWarning
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@example.com"
@@ -186,6 +199,7 @@ export default function SignInPage() {
               <input
                 id="email-password"
                 type="password"
+                suppressHydrationWarning
                 value={emailPassword}
                 onChange={(e) => setEmailPassword(e.target.value)}
                 placeholder="••••••••"
@@ -197,6 +211,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
+              suppressHydrationWarning
               className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? 'লোড হচ্ছে...' : 'সাইন ইন'}
