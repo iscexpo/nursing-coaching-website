@@ -316,6 +316,41 @@ export const contactInquiries = pgTable('contact_inquiries', {
   index('contact_inquiries_created_idx').on(table.createdAt),
 ])
 
+export const admissions = pgTable('admissions', {
+  id: text('id').primaryKey(),
+  reference: text('reference').notNull().unique(),
+  name: text('name').notNull(),
+  phone: text('phone').notNull(),
+  courseId: text('course_id')
+    .notNull()
+    .references(() => courses.id, { onDelete: 'cascade' }),
+  message: text('message'),
+  status: text('status').$type<'pending' | 'received' | 'processing' | 'approved' | 'rejected'>().notNull().default('pending'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => [
+  index('admissions_phone_idx').on(table.phone),
+  index('admissions_course_id_idx').on(table.courseId),
+  index('admissions_created_idx').on(table.createdAt),
+])
+
+export const mediaFiles = pgTable('media_files', {
+  id: text('id').primaryKey(),
+  filename: text('filename').notNull(),
+  originalFilename: text('original_filename').notNull(),
+  url: text('url').notNull(),
+  contentType: text('content_type').notNull(),
+  size: integer('size').notNull(),
+  altText: text('alt_text'),
+  description: text('description'),
+  uploadedBy: text('uploaded_by').references(() => user.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => [
+  index('media_files_uploaded_by_idx').on(table.uploadedBy),
+  index('media_files_created_idx').on(table.createdAt),
+])
+
 export const auditLogs = pgTable('audit_logs', {
   id: text('id').primaryKey(),
   actorId: text('actor_id').references(() => user.id, { onDelete: 'set null' }),

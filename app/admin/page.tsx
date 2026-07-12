@@ -20,6 +20,7 @@ import {
   CalendarCheck,
   CreditCard,
   Presentation,
+  Image,
 } from 'lucide-react'
 
 import { PanelLayout } from '@/components/ui/panel-layout'
@@ -38,7 +39,8 @@ import { AttendancePanel } from './components/attendance-tab'
 import { AdmitCardsPanel } from './components/admit-cards-tab'
 import { SettingsPanel } from './components/settings-tab'
 import { TeachersPanel } from './components/teachers-tab'
-import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student, Teacher } from './components/types'
+import { MediaPanel } from './components/media-tab'
+import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student, Teacher, MediaFile } from './components/types'
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -47,6 +49,7 @@ const TABS = [
   { id: 'payments', label: 'পেমেন্ট', icon: Wallet },
   { id: 'invoices', label: 'ইনভয়েস', icon: Receipt },
   { id: 'notices', label: 'নোটিশ', icon: Megaphone },
+  { id: 'media', label: 'মিডিয়া', icon: Image },
   { id: 'exams', label: 'পরীক্ষা', icon: FileText },
   { id: 'questions', label: 'প্রশ্নব্যাংক', icon: HelpCircle },
   { id: 'results', label: 'ফলাফল', icon: BarChart3 },
@@ -72,6 +75,7 @@ export default function AdminPage() {
   const [notices, setNotices] = useState<Notice[]>([])
   const [exams, setExams] = useState<Exam[]>([])
   const [contacts, setContacts] = useState<ContactInquiry[]>([])
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [notifications, setNotifications] = useState<NotificationRecord[]>([])
   const [examSubmissions, setExamSubmissions] = useState<ExamSubmission[]>([])
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([])
@@ -82,12 +86,13 @@ export default function AdminPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, examsRes, contactsRes, notificationsRes, submissionsRes, attendanceRes, admitCardsRes, studentsRes, teachersRes] = await Promise.all([
+      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, mediaRes, examsRes, contactsRes, notificationsRes, submissionsRes, attendanceRes, admitCardsRes, studentsRes, teachersRes] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
         fetch('/api/invoices'),
         fetch('/api/notices'),
+        fetch('/api/media'),
         fetch('/api/exams'),
         fetch('/api/contact'),
         fetch('/api/notifications'),
@@ -125,6 +130,10 @@ export default function AdminPage() {
       if (contactsRes.ok) {
         const d = await contactsRes.json()
         setContacts(d.data || d)
+      }
+      if (mediaRes.ok) {
+        const d = await mediaRes.json()
+        setMediaFiles(d.data || d)
       }
       if (notificationsRes.ok) {
         const d = await notificationsRes.json()
@@ -215,6 +224,7 @@ export default function AdminPage() {
       {tab === 'payments' && <PaymentsPanel payments={payments} enrollments={enrollments} students={students} onRefresh={fetchData} />}
       {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
       {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}
+      {tab === 'media' && <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />}
       {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
       {tab === 'questions' && <QuestionsPanel exams={exams} />}
       {tab === 'results' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}

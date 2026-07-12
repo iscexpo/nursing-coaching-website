@@ -193,6 +193,20 @@ export interface ContactInquiry {
   createdAt: string
 }
 
+export interface MediaFile {
+  id: string
+  filename: string
+  originalFilename: string
+  url: string
+  contentType: string
+  size: number
+  altText: string | null
+  description: string | null
+  uploadedBy: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 export interface NotificationRecord {
   id: string
   userId: string
