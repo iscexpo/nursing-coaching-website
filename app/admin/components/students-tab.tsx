@@ -103,6 +103,45 @@ function EduFields({ label, value, onChange }: { label: string; value: Education
   )
 }
 
+function StudentPhotoUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await fetch('/api/media', { method: 'POST', body: formData })
+      if (res.ok) {
+        const data = await res.json()
+        onChange(data.url)
+      }
+    } catch { /* ignore */ }
+    finally { setUploading(false) }
+  }
+
+  return (
+    <div className="flex items-center gap-3 w-full">
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+      <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+        className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary transition-colors disabled:opacity-50">
+        {uploading ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
+        {uploading ? 'আপলোড হচ্ছে...' : 'ছবি আপলোড'}
+      </button>
+      <input type="url" value={value} onChange={(e) => onChange(e.target.value)} placeholder="অথবা URL পেস্ট করুন" className={inputCls} />
+      {value && (
+        <div className="flex items-center gap-2 shrink-0">
+          <img src={value} alt="" className="h-10 w-10 rounded object-cover border border-border" />
+          <button type="button" onClick={() => onChange('')} className="text-xs text-destructive hover:underline">মুছুন</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function StudentsPanel({ students, onRefresh }: { students: Student[]; onRefresh: () => void }) {
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Student | null>(null)
@@ -235,8 +274,10 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
                 </div>
               </div>
               <div className="mt-3">
-                <label className={labelCls}>ছবির লিঙ্ক</label>
-                <input type="url" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://example.com/photo.jpg" className={inputCls} />
+                <label className={labelCls}>ছবি</label>
+                <div className="flex items-center gap-3 mt-1">
+                  <StudentPhotoUpload value={form.image} onChange={(url) => setForm({ ...form, image: url })} />
+                </div>
               </div>
             </div>
 
