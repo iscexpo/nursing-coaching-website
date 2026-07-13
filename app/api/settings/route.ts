@@ -1,15 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession, requireAdmin, requireSuperAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin, requireSuperAdmin, isSuperAdmin } from '@/lib/permissions'
 import { getSystemSettings, saveSystemSettings } from '@/lib/settings'
 import { settingsSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
+
+const MASK = '********'
 
 export async function GET() {
   try {
     const auth = await requireAdmin()
     if (!auth.ok) return auth.response
 
-    return NextResponse.json(await getSystemSettings())
+    const settings = await getSystemSettings()
+
+    // Only super-admins can view raw secrets; mask them for regular admins.
+    if (isSuperAdmin(auth.session.user.role)) {
+      return NextResponse.json(settings)
+    }
+
+    return NextResponse.json({
+      ...settings,
+      smsApiKey: settings.smsApiKey ? MASK : '',
+      paymentGatewayApiKey: settings.paymentGatewayApiKey ? MASK : '',
+      paymentGatewaySecret: settings.paymentGatewaySecret ? MASK : '',
+      paymentGatewayWebhookSecret: settings.paymentGatewayWebhookSecret ? MASK : '',
+    })
   } catch {
     return NextResponse.json({ error: 'Failed to load settings' }, { status: 500 })
   }

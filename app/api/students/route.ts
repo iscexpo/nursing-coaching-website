@@ -10,8 +10,8 @@ import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const authz = await requireAdmin()
+    if (!authz.ok) return authz.response
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
