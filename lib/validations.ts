@@ -5,6 +5,14 @@ export const paginationSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 })
 
+export const createSubjectSchema = z.object({
+  name: z.string().min(1, 'বিষয়ের নাম আবশ্যক').max(100),
+  sortOrder: z.number().int().optional(),
+  isActive: z.boolean().optional(),
+})
+
+export const updateSubjectSchema = createSubjectSchema.partial()
+
 export const createCourseSchema = z.object({
   slug: z.string().min(1).max(200).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug format'),
   title: z.string().min(1).max(200),

@@ -218,3 +218,11 @@ export interface NotificationRecord {
   link: string | null
   createdAt: string
 }
+
+export interface Subject {
+  id: string
+  name: string
+  sortOrder: number
+  isActive: boolean
+  createdAt: string
+}
