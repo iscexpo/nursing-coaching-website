@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { updateAdmitCardSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const [card] = await db.select().from(admitCards).where(eq(admitCards.id, id))
     if (!card) return NextResponse.json({ error: 'Admit card not found' }, { status: 404 })
 
-    if (session.user.role !== 'admin' && card.userId !== session.user.id) {
+    if (!isAdmin(session.user.role) && card.userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

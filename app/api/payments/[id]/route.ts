@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { verifyPaymentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const [payment] = await db.select().from(payments).where(eq(payments.id, id))
     if (!payment) return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
 
-    if (session.user.role !== 'admin' && payment.userId !== session.user.id) {
+    if (!isAdmin(session.user.role) && payment.userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

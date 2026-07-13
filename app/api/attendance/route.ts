@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
-import { eq, desc, and, gte, lte } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { eq, desc, and, gte, lte, count } from 'drizzle-orm'
+import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { createAttendanceSchema, paginationSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
@@ -20,10 +20,9 @@ export async function GET(request: NextRequest) {
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
 
-    let query = db.select().from(attendance).$dynamic()
     const conditions = []
 
-    if (session.user.role === 'admin') {
+    if (isAdmin(session.user.role)) {
       if (userId) conditions.push(eq(attendance.userId, userId))
     } else {
       conditions.push(eq(attendance.userId, session.user.id))
@@ -32,16 +31,17 @@ export async function GET(request: NextRequest) {
     if (startDate) conditions.push(gte(attendance.date, new Date(startDate)))
     if (endDate) conditions.push(lte(attendance.date, new Date(endDate)))
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions))
-    }
+    const where = conditions.length > 0 ? and(...conditions) : undefined
 
-    const data = await query
+    const data = await db.select().from(attendance)
+      .where(where)
       .orderBy(desc(attendance.date))
       .limit(limit)
       .offset((page - 1) * limit)
 
-    return NextResponse.json({ data, page, limit })
+    const [totalRow] = await db.select({ count: count() }).from(attendance).where(where)
+
+    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch attendance' }, { status: 500 })
   }

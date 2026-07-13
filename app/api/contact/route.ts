@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const limiter = rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'contact' })
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'contact' })
   if (limiter) return limiter
 
   try {

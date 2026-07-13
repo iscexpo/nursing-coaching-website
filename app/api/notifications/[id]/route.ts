@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { getSession, isAdmin } from '@/lib/permissions'
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -41,7 +41,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const [existing] = await db.select().from(notifications).where(eq(notifications.id, id))
     if (!existing) return NextResponse.json({ error: 'Notification not found' }, { status: 404 })
 
-    if (existing.userId !== session.user.id && session.user.role !== 'admin') {
+    if (existing.userId !== session.user.id && !isAdmin(session.user.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { updateEnrollmentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit, writeLifecycleEvent } from '@/lib/audit'
 
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const [enrollment] = await db.select().from(enrollments).where(eq(enrollments.id, id))
     if (!enrollment) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
 
-    if (session.user.role !== 'admin' && enrollment.userId !== session.user.id) {
+    if (!isAdmin(session.user.role) && enrollment.userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

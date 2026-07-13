@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { enrollments, courses, user, studentLifecycleEvents } from '@/lib/db/schema'
-import { eq, desc, and } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { eq, desc, and, count } from 'drizzle-orm'
+import { getSession, isAdmin } from '@/lib/permissions'
 import { createEnrollmentSchema, paginationSchema } from '@/lib/validations'
 import { writeLifecycleEvent } from '@/lib/audit'
 
@@ -18,8 +18,9 @@ export async function GET(request: NextRequest) {
     })
     const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
 
+    const admin = isAdmin(session.user.role)
     let data
-    if (session.user.role === 'admin') {
+    if (admin) {
       data = await db.select({
         id: enrollments.id,
         userId: enrollments.userId,
@@ -62,7 +63,10 @@ export async function GET(request: NextRequest) {
         .offset((page - 1) * limit)
     }
 
-    return NextResponse.json({ data, page, limit })
+    const countWhere = admin ? undefined : eq(enrollments.userId, session.user.id)
+    const [totalRow] = await db.select({ count: count() }).from(enrollments).where(countWhere)
+
+    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch enrollments' }, { status: 500 })
   }
