@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
     }
 
-    const { name, phone, courseSlug, message } = parsed.data
+    const { name, phone, courseSlug, message, ssc, hsc, honors } = parsed.data
 
     const [course] = await db.select().from(courses).where(eq(courses.slug, courseSlug))
     if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
@@ -33,6 +33,9 @@ export async function POST(request: NextRequest) {
         phone,
         courseId: course.id,
         message,
+        ssc: ssc || null,
+        hsc: hsc || null,
+        honors: honors || null,
         status: 'pending',
       })
 

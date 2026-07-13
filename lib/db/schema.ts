@@ -335,6 +335,9 @@ export const admissions = pgTable('admissions', {
     .notNull()
     .references(() => courses.id, { onDelete: 'cascade' }),
   message: text('message'),
+  ssc: jsonb('ssc').$type<{ result: string; institution: string; year: string; roll: string; registrationNo: string; board: string }>(),
+  hsc: jsonb('hsc').$type<{ result: string; institution: string; year: string; roll: string; registrationNo: string; board: string }>(),
+  honors: jsonb('honors').$type<{ result: string; institution: string; year: string; roll: string; registrationNo: string; board: string }>(),
   status: text('status').$type<'pending' | 'received' | 'processing' | 'approved' | 'rejected'>().notNull().default('pending'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

@@ -9,7 +9,7 @@ import { SectionHeading } from '@/components/section-heading'
 import { useSiteData } from '@/hooks/use-site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { FadeIn } from '@/components/ui/fade-in'
-import { Loader2, CheckCircle2, ArrowRight, ArrowLeft, User, BookOpen, FileText } from 'lucide-react'
+import { Loader2, CheckCircle2, ArrowRight, ArrowLeft, User, BookOpen, GraduationCap, FileText } from 'lucide-react'
 
 interface CourseOption {
   slug: string
@@ -17,9 +17,57 @@ interface CourseOption {
   fee: number
 }
 
-type AdmissionStep = 1 | 2 | 3
+type EducationField = { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string }
 
-const STEP_ICONS = [User, BookOpen, FileText]
+function emptyEducation(): EducationField {
+  return { result: '', institution: '', year: '', roll: '', registrationNo: '', board: '' }
+}
+
+type AdmissionStep = 1 | 2 | 3 | 4
+
+const STEP_ICONS = [User, GraduationCap, BookOpen, FileText]
+const BOARDS = ['বোর্ড নির্বাচন করুন', 'ঢাকা বোর্ড', 'রাজশাহী বোর্ড', 'চট্টগ্রাম বোর্ড', 'খুলনা বোর্ড', 'বরিশাল বোর্ড', 'সিলেট বোর্ড', 'রংপুর বোর্ড', 'ময়মনসিংহ বোর্ড']
+
+const inputCls = "mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+const smallInputCls = "mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+
+function EduFields({ label, value, onChange }: { label: string; value: EducationField; onChange: (v: EducationField) => void }) {
+  return (
+    <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+      <p className="text-sm font-semibold text-foreground">{label}</p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">ফলাফল</label>
+          <input type="text" value={value.result} onChange={(e) => onChange({ ...value, result: e.target.value })} placeholder="যেমন: GPA 5.00" className={smallInputCls} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">প্রতিষ্ঠান</label>
+          <input type="text" value={value.institution} onChange={(e) => onChange({ ...value, institution: e.target.value })} placeholder="কলেজ/বিশ্ববিদ্যালয়" className={smallInputCls} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">সাল</label>
+          <input type="text" value={value.year} onChange={(e) => onChange({ ...value, year: e.target.value })} placeholder="যেমন: 2020" className={smallInputCls} />
+        </div>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">রোল নম্বর</label>
+          <input type="text" value={value.roll} onChange={(e) => onChange({ ...value, roll: e.target.value })} placeholder="রোল নম্বর" className={smallInputCls} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">রেজিস্ট্রেশন নম্বর</label>
+          <input type="text" value={value.registrationNo} onChange={(e) => onChange({ ...value, registrationNo: e.target.value })} placeholder="রেজিস্ট্রেশন নম্বর" className={smallInputCls} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">বোর্ড</label>
+          <select value={value.board} onChange={(e) => onChange({ ...value, board: e.target.value })} className={smallInputCls}>
+            {BOARDS.map((b, i) => <option key={b} value={i === 0 ? '' : b}>{b}</option>)}
+          </select>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function AdmissionPage() {
   const searchParams = useSearchParams()
@@ -31,6 +79,9 @@ export default function AdmissionPage() {
     phone: '',
     course: '',
     message: '',
+    ssc: emptyEducation(),
+    hsc: emptyEducation(),
+    honors: emptyEducation(),
   })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -55,10 +106,11 @@ export default function AdmissionPage() {
       .catch(() => {})
   }, [searchParams])
 
-  const stepLabels = ['ব্যক্তিগত তথ্য', 'কোর্স নির্বাচন', 'সারাংশ']
+  const stepLabels = ['ব্যক্তিগত তথ্য', 'শিক্ষাগত যোগ্যতা', 'কোর্স নির্বাচন', 'সারাংশ']
 
   const hasStepOneValues = form.name.trim().length > 0 && form.phone.trim().length > 0
-  const hasStepTwoValues = form.course.length > 0
+  const hasStepTwoValues = true
+  const hasStepThreeValues = form.course.length > 0
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -74,6 +126,9 @@ export default function AdmissionPage() {
           phone: form.phone,
           courseSlug: form.course,
           message: form.message || undefined,
+          ssc: form.ssc.roll || form.ssc.registrationNo ? form.ssc : undefined,
+          hsc: form.hsc.roll || form.hsc.registrationNo ? form.hsc : undefined,
+          honors: form.honors.roll || form.honors.registrationNo ? form.honors : undefined,
         }),
       })
 
@@ -93,8 +148,8 @@ export default function AdmissionPage() {
 
   function handleNext() {
     if (step === 1 && !hasStepOneValues) return
-    if (step === 2 && !hasStepTwoValues) return
-    setStep((current) => Math.min(current + 1, 3) as AdmissionStep)
+    if (step === 3 && !hasStepThreeValues) return
+    setStep((current) => Math.min(current + 1, 4) as AdmissionStep)
   }
 
   function handlePrevious() {
@@ -172,7 +227,7 @@ export default function AdmissionPage() {
                                 {label}
                               </span>
                             </div>
-                            {index < 2 && (
+                            {index < 3 && (
                               <div className={`mx-3 h-0.5 flex-1 rounded-full transition-all duration-500 ${
                                 isCompleted ? 'bg-green' : isCurrent ? 'bg-brand/30' : 'bg-border'
                               }`} style={{ marginTop: '-1.5rem' }} />
@@ -221,6 +276,18 @@ export default function AdmissionPage() {
                   {step === 2 && (
                     <div className="space-y-5 animate-fade-in">
                       <div>
+                        <p className="text-sm font-medium text-foreground mb-1">শিক্ষাগত যোগ্যতা (ঐচ্ছিক)</p>
+                        <p className="text-xs text-muted-foreground mb-4">আপনার SSC, HSC এবং অনার্স তথ্য প্রদান করুন।</p>
+                      </div>
+                      <EduFields label="SSC (মাধ্যমিক সার্টিফিকেট)" value={form.ssc} onChange={(ssc) => setForm({ ...form, ssc })} />
+                      <EduFields label="HSC (উচ্চ মাধ্যমিক সার্টিফিকেট)" value={form.hsc} onChange={(hsc) => setForm({ ...form, hsc })} />
+                      <EduFields label="অনার্স (স্নাতক)" value={form.honors} onChange={(honors) => setForm({ ...form, honors })} />
+                    </div>
+                  )}
+
+                  {step === 3 && (
+                    <div className="space-y-5 animate-fade-in">
+                      <div>
                         <p className="text-sm font-medium text-foreground">আপনার আগ্রহী কোর্স নির্বাচন করুন *</p>
                         <select
                           id="course"
@@ -244,7 +311,7 @@ export default function AdmissionPage() {
                     </div>
                   )}
 
-                  {step === 3 && (
+                  {step === 4 && (
                     <div className="space-y-5 animate-fade-in">
                       <div>
                         <label htmlFor="message" className="block text-sm font-medium text-foreground">বার্তা (ঐচ্ছিক)</label>
@@ -276,6 +343,24 @@ export default function AdmissionPage() {
                             <dt className="font-medium text-foreground">বার্তা</dt>
                             <dd className="text-muted-foreground">{form.message || 'কোনো বার্তা নেই'}</dd>
                           </div>
+                          {form.ssc.roll && (
+                            <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
+                              <dt className="font-medium text-foreground">SSC</dt>
+                              <dd className="text-muted-foreground text-right">রোল: {form.ssc.roll}, রেজি: {form.ssc.registrationNo}, বোর্ড: {form.ssc.board || '-'}</dd>
+                            </div>
+                          )}
+                          {form.hsc.roll && (
+                            <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
+                              <dt className="font-medium text-foreground">HSC</dt>
+                              <dd className="text-muted-foreground text-right">রোল: {form.hsc.roll}, রেজি: {form.hsc.registrationNo}, বোর্ড: {form.hsc.board || '-'}</dd>
+                            </div>
+                          )}
+                          {form.honors.roll && (
+                            <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
+                              <dt className="font-medium text-foreground">অনার্স</dt>
+                              <dd className="text-muted-foreground text-right">রোল: {form.honors.roll}, রেজি: {form.honors.registrationNo}, বোর্ড: {form.honors.board || '-'}</dd>
+                            </div>
+                          )}
                         </dl>
                       </div>
                     </div>
@@ -291,11 +376,11 @@ export default function AdmissionPage() {
                       <ArrowLeft className="size-4" />
                       পূর্ববর্তী
                     </button>
-                    {step < 3 ? (
+                    {step < 4 ? (
                       <button
                         type="button"
                         onClick={handleNext}
-                        disabled={step === 1 ? !hasStepOneValues || loading : !hasStepTwoValues || loading}
+                        disabled={(step === 1 ? !hasStepOneValues : step === 3 ? !hasStepThreeValues : false) || loading}
                         className="flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
                       >
                         পরের ধাপ
