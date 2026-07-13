@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Loader2, Save, Upload, X } from 'lucide-react'
+import { Loader2, Save, Upload, X, Plus, GripVertical, Trash2 } from 'lucide-react'
 
 type SiteSettings = {
   nameBn: string
@@ -19,6 +19,20 @@ type SiteSettings = {
   addressBn: string
 }
 
+type FaqItem = { question: string; answer: string }
+
+type HeroSettings = {
+  eyebrow: string
+  title: string
+  subtitle: string
+  primaryCta: string
+  secondaryCta: string
+}
+
+type WhyCorniaItem = { title: string; description: string }
+
+type CounterItem = { value: string; label: string }
+
 type FormState = {
   siteName: string
   siteTagline: string
@@ -30,6 +44,10 @@ type FormState = {
   paymentGatewaySecret: string
   paymentGatewayWebhookSecret: string
   site: SiteSettings
+  hero: HeroSettings
+  whyCornia: WhyCorniaItem[]
+  counters: CounterItem[]
+  faqs: FaqItem[]
 }
 
 const defaultSite: SiteSettings = {
@@ -48,6 +66,14 @@ const defaultSite: SiteSettings = {
   addressBn: '',
 }
 
+const defaultHero: HeroSettings = {
+  eyebrow: '',
+  title: '',
+  subtitle: '',
+  primaryCta: '',
+  secondaryCta: '',
+}
+
 const defaultForm: FormState = {
   siteName: '',
   siteTagline: '',
@@ -59,6 +85,10 @@ const defaultForm: FormState = {
   paymentGatewaySecret: '',
   paymentGatewayWebhookSecret: '',
   site: defaultSite,
+  hero: defaultHero,
+  whyCornia: [],
+  counters: [],
+  faqs: [],
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -107,6 +137,10 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             paymentGatewaySecret: data.paymentGatewaySecret || '',
             paymentGatewayWebhookSecret: data.paymentGatewayWebhookSecret || '',
             site: { ...defaultSite, ...(data.cmsContent?.site || {}) },
+            hero: { ...defaultHero, ...(data.cmsContent?.hero || {}) },
+            whyCornia: data.cmsContent?.whyCornia || [],
+            counters: data.cmsContent?.counters || [],
+            faqs: data.cmsContent?.faqs || [],
           })
         }
       } catch {
@@ -173,7 +207,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           paymentGatewayApiKey: form.paymentGatewayApiKey,
           paymentGatewaySecret: form.paymentGatewaySecret,
           paymentGatewayWebhookSecret: form.paymentGatewayWebhookSecret,
-          cmsContent: { site: form.site },
+          cmsContent: { site: form.site, hero: form.hero, whyCornia: form.whyCornia, counters: form.counters, faqs: form.faqs },
         }),
       })
 
@@ -366,6 +400,269 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           <Field label="Webhook Secret">
             <TextInput value={form.paymentGatewayWebhookSecret} onChange={(v) => setForm({ ...form, paymentGatewayWebhookSecret: v })} />
           </Field>
+        </div>
+      </div>
+
+      {/* Hero Section */}
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
+        <div>
+          <h4 className="font-heading font-semibold text-foreground">হিরো সেকশন</h4>
+          <p className="mt-1 text-sm text-muted-foreground">হোমপেজের শীর্ষে প্রদর্শিত প্রধান ব্যানার কনটেন্ট</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="আইব্রো (ছোট শিরোনাম)">
+            <TextInput value={form.hero.eyebrow} onChange={(v) => setForm((prev) => ({ ...prev, hero: { ...prev.hero, eyebrow: v } }))} placeholder="BNMC ভর্তি পরীক্ষার সম্পূর্ণ প্রস্তুতি" />
+          </Field>
+          <Field label="শিরোনাম">
+            <TextInput value={form.hero.title} onChange={(v) => setForm((prev) => ({ ...prev, hero: { ...prev.hero, title: v } }))} placeholder="খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং" />
+          </Field>
+        </div>
+        <Field label="বিবরণ">
+          <textarea
+            value={form.hero.subtitle}
+            onChange={(e) => setForm((prev) => ({ ...prev, hero: { ...prev.hero, subtitle: e.target.value } }))}
+            placeholder="অভিজ্ঞ শিক্ষক, আপডেটেড নোট..."
+            rows={2}
+            className={inputClass + ' resize-none'}
+          />
+        </Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="প্রাথমিক বোতাম টেক্সট">
+            <TextInput value={form.hero.primaryCta} onChange={(v) => setForm((prev) => ({ ...prev, hero: { ...prev.hero, primaryCta: v } }))} placeholder="ভর্তি হোন" />
+          </Field>
+          <Field label="সেকেন্ডারি বোতাম টেক্সট">
+            <TextInput value={form.hero.secondaryCta} onChange={(v) => setForm((prev) => ({ ...prev, hero: { ...prev.hero, secondaryCta: v } }))} placeholder="ফ্রি ক্লাস" />
+          </Field>
+        </div>
+      </div>
+
+      {/* Why Cornia Section */}
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-heading font-semibold text-foreground">কেন কর্নিয়া?</h4>
+            <p className="mt-1 text-sm text-muted-foreground">হোমপেজে প্রদর্শিত "কেন কর্নিয়া" কার্ড পরিচালনা করুন</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setForm((prev) => ({ ...prev, whyCornia: [...prev.whyCornia, { title: '', description: '' }] }))}
+            className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 transition-colors"
+          >
+            <Plus className="size-4" /> নতুন যোগ করুন
+          </button>
+        </div>
+
+        {form.whyCornia.length === 0 && (
+          <p className="text-sm text-muted-foreground py-4 text-center">কোনো কার্ড নেই। উপরের বোতামে ক্লিক করে যোগ করুন।</p>
+        )}
+
+        <div className="space-y-3">
+          {form.whyCornia.map((item, index) => (
+            <div key={index} className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <GripVertical className="size-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">কার্ড {index + 1}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {index > 0 && (
+                    <button type="button" onClick={() => setForm((prev) => {
+                      const arr = [...prev.whyCornia]; [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]]; return { ...prev, whyCornia: arr }
+                    })} className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors" title="উপরে সরান">
+                      <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 15l-6-6-6 6"/></svg>
+                    </button>
+                  )}
+                  {index < form.whyCornia.length - 1 && (
+                    <button type="button" onClick={() => setForm((prev) => {
+                      const arr = [...prev.whyCornia]; [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]]; return { ...prev, whyCornia: arr }
+                    })} className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors" title="নিচে সরান">
+                      <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                  )}
+                  <button type="button" onClick={() => setForm((prev) => ({ ...prev, whyCornia: prev.whyCornia.filter((_, i) => i !== index) }))}
+                    className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">শিরোনাম</label>
+                <input type="text" value={item.title} onChange={(e) => setForm((prev) => {
+                  const arr = [...prev.whyCornia]; arr[index] = { ...arr[index], title: e.target.value }; return { ...prev, whyCornia: arr }
+                })} placeholder="শিরোনাম লিখুন" className={inputClass} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">বিবরণ</label>
+                <textarea value={item.description} onChange={(e) => setForm((prev) => {
+                  const arr = [...prev.whyCornia]; arr[index] = { ...arr[index], description: e.target.value }; return { ...prev, whyCornia: arr }
+                })} placeholder="বিবরণ লিখুন" rows={2} className={inputClass + ' resize-none'} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Counters Section */}
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-heading font-semibold text-foreground">পরিসংখ্যান (Counters)</h4>
+            <p className="mt-1 text-sm text-muted-foreground">হোমপেজে প্রদর্শিত পরিসংখ্যান সংখ্যা পরিচালনা করুন</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setForm((prev) => ({ ...prev, counters: [...prev.counters, { value: '', label: '' }] }))}
+            className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 transition-colors"
+          >
+            <Plus className="size-4" /> নতুন যোগ করুন
+          </button>
+        </div>
+
+        {form.counters.length === 0 && (
+          <p className="text-sm text-muted-foreground py-4 text-center">কোনো পরিসংখ্যান নেই। উপরের বোতামে ক্লিক করে যোগ করুন।</p>
+        )}
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {form.counters.map((counter, index) => (
+            <div key={index} className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground">পরিসংখ্যান {index + 1}</span>
+                <div className="flex items-center gap-1">
+                  {index > 0 && (
+                    <button type="button" onClick={() => setForm((prev) => {
+                      const arr = [...prev.counters]; [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]]; return { ...prev, counters: arr }
+                    })} className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors" title="উপরে সরান">
+                      <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 15l-6-6-6 6"/></svg>
+                    </button>
+                  )}
+                  {index < form.counters.length - 1 && (
+                    <button type="button" onClick={() => setForm((prev) => {
+                      const arr = [...prev.counters]; [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]]; return { ...prev, counters: arr }
+                    })} className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors" title="নিচে সরান">
+                      <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                  )}
+                  <button type="button" onClick={() => setForm((prev) => ({ ...prev, counters: prev.counters.filter((_, i) => i !== index) }))}
+                    className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">মান</label>
+                  <input type="text" value={counter.value} onChange={(e) => setForm((prev) => {
+                    const arr = [...prev.counters]; arr[index] = { ...arr[index], value: e.target.value }; return { ...prev, counters: arr }
+                  })} placeholder="৫০০০+" className={inputClass} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">লেবেল</label>
+                  <input type="text" value={counter.label} onChange={(e) => setForm((prev) => {
+                    const arr = [...prev.counters]; arr[index] = { ...arr[index], label: e.target.value }; return { ...prev, counters: arr }
+                  })} placeholder="শিক্ষার্থী" className={inputClass} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* FAQ Management */}
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-heading font-semibold text-foreground">সাধারণ জিজ্ঞাসা (FAQ)</h4>
+            <p className="mt-1 text-sm text-muted-foreground">হোমপেজে প্রদর্শিত প্রশ্নোত্তর পরিচালনা করুন</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setForm((prev) => ({ ...prev, faqs: [...prev.faqs, { question: '', answer: '' }] }))}
+            className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 transition-colors"
+          >
+            <Plus className="size-4" /> নতুন যোগ করুন
+          </button>
+        </div>
+
+        {form.faqs.length === 0 && (
+          <p className="text-sm text-muted-foreground py-4 text-center">কোনো FAQ নেই। উপরের বোতামে ক্লিক করে যোগ করুন।</p>
+        )}
+
+        <div className="space-y-3">
+          {form.faqs.map((faq, index) => (
+            <div key={index} className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <GripVertical className="size-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">প্রশ্ন {index + 1}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setForm((prev) => {
+                        const faqs = [...prev.faqs]
+                        ;[faqs[index - 1], faqs[index]] = [faqs[index], faqs[index - 1]]
+                        return { ...prev, faqs }
+                      })}
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
+                      title="উপরে সরান"
+                    >
+                      <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 15l-6-6-6 6"/></svg>
+                    </button>
+                  )}
+                  {index < form.faqs.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setForm((prev) => {
+                        const faqs = [...prev.faqs]
+                        ;[faqs[index], faqs[index + 1]] = [faqs[index + 1], faqs[index]]
+                        return { ...prev, faqs }
+                      })}
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
+                      title="নিচে সরান"
+                    >
+                      <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, faqs: prev.faqs.filter((_, i) => i !== index) }))}
+                    className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">প্রশ্ন</label>
+                <input
+                  type="text"
+                  value={faq.question}
+                  onChange={(e) => setForm((prev) => {
+                    const faqs = [...prev.faqs]
+                    faqs[index] = { ...faqs[index], question: e.target.value }
+                    return { ...prev, faqs }
+                  })}
+                  placeholder="প্রশ্ন লিখুন"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">উত্তর</label>
+                <textarea
+                  value={faq.answer}
+                  onChange={(e) => setForm((prev) => {
+                    const faqs = [...prev.faqs]
+                    faqs[index] = { ...faqs[index], answer: e.target.value }
+                    return { ...prev, faqs }
+                  })}
+                  placeholder="উত্তর লিখুন"
+                  rows={3}
+                  className={inputClass + ' resize-none'}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
