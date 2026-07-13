@@ -1,20 +1,40 @@
-import { getCmsContent } from '@/lib/content-server'
+'use client'
 
-export async function Counters() {
-  const content = await getCmsContent()
+import { useEffect, useRef, useState } from 'react'
+
+export function AnimatedCounter({ value, label, delay = 0 }: { value: string; label: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.3 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <section className="bg-brand py-14 md:py-16">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 sm:grid-cols-3 lg:grid-cols-4">
-        {content.counters.map((c) => (
-          <div key={c.label} className="text-center">
-            <p className="font-heading text-3xl font-extrabold text-brand-foreground sm:text-4xl md:text-5xl">
-              {c.value}
-            </p>
-            <p className="mt-1.5 text-sm text-brand-foreground/80">{c.label}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <div ref={ref} className="text-center">
+      <p
+        className="font-heading text-3xl font-extrabold text-brand-foreground transition-all duration-700 sm:text-4xl md:text-5xl"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(8px)',
+          transitionDelay: `${delay}ms`,
+        }}
+      >
+        {value}
+      </p>
+      <p className="mt-1.5 text-sm text-brand-foreground/80">{label}</p>
+    </div>
   )
 }

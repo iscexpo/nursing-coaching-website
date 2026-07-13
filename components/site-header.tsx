@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DarkModeToggle } from '@/components/dark-mode-toggle'
 import { NAV_LINKS, SITE } from '@/lib/site-data'
 import { cn } from '@/lib/utils'
 
@@ -30,7 +31,7 @@ export function SiteHeader() {
       </div>
 
       {/* Main nav */}
-      <div className="border-b border-border bg-card/95 backdrop-blur">
+      <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-2.5">
             <Image src="/logo.png" alt="কর্নিয়া নার্সিং কোচিং" width={40} height={25} className="object-contain" />
@@ -54,7 +55,8 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <DarkModeToggle />
             <Button
               render={<Link href="/auth/sign-in" />}
               variant="outline"
@@ -78,29 +80,44 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu - slide in panel */}
+        {open && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+            onClick={() => setOpen(false)}
+          />
+        )}
         <div
           className={cn(
-            'overflow-hidden border-t border-border transition-all lg:hidden',
-            open ? 'max-h-[32rem]' : 'max-h-0',
+            'fixed inset-y-0 right-0 z-50 w-72 border-l border-border bg-card p-4 shadow-2xl transition-transform duration-300 ease-out lg:hidden',
+            open ? 'translate-x-0' : 'translate-x-full',
           )}
         >
-          <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="font-heading text-sm font-bold text-foreground">মেনু</span>
+            <button
+              onClick={() => setOpen(false)}
+              className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+          <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-brand"
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-secondary hover:text-brand"
               >
                 {link.label}
               </Link>
             ))}
-            <div className="mt-2 flex gap-2">
-              <Button render={<Link href="/auth/sign-in" />} variant="outline" className="flex-1" size="lg">
+            <div className="mt-4 flex flex-col gap-2">
+              <Button render={<Link href="/auth/sign-in" onClick={() => setOpen(false)} />} variant="outline" className="w-full" size="lg">
                 লগইন
               </Button>
-              <Button render={<Link href="/admission" />} className="flex-1" size="lg">
+              <Button render={<Link href="/admission" onClick={() => setOpen(false)} />} className="w-full" size="lg">
                 ভর্তি হোন
               </Button>
             </div>
