@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { MapPin, Phone, Mail, MessageCircle, Loader2 } from 'lucide-react'
 
@@ -14,6 +14,7 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const site = useSiteData()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -42,10 +43,10 @@ export default function ContactPage() {
   }
 
   const infoItems = [
-    { icon: MapPin, label: 'ঠিকানা', value: SITE.addressBn },
-    { icon: Phone, label: 'ফোন', value: SITE.phone, href: SITE.phoneHref },
-    { icon: Mail, label: 'ইমেইল', value: SITE.email, href: `mailto:${SITE.email}` },
-    { icon: MessageCircle, label: 'WhatsApp', value: 'চ্যাট করুন', href: SITE.whatsapp },
+    { icon: MapPin, label: 'ঠিকানা', value: site.addressBn },
+    { icon: Phone, label: 'ফোন', value: site.phone, href: site.phoneHref },
+    { icon: Mail, label: 'ইমেইল', value: site.email, href: `mailto:${site.email}` },
+    { icon: MessageCircle, label: 'WhatsApp', value: 'চ্যাট করুন', href: site.whatsapp },
   ]
 
   return (

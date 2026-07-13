@@ -1,7 +1,8 @@
+'use client'
+
 import Link from 'next/link'
-import Image from 'next/image'
 import { Share2, Video, MessageCircle, Phone, MapPin } from 'lucide-react'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 
 const QUICK = [
   { label: 'কোর্স', href: '/courses' },
@@ -16,26 +17,27 @@ const POLICIES = [
   { label: 'শর্তাবলী', href: '/terms' },
 ]
 
-const SOCIALS = [
-  { icon: Share2, href: SITE.facebook, label: 'Facebook' },
-  { icon: Video, href: SITE.youtube, label: 'YouTube' },
-  { icon: MessageCircle, href: SITE.whatsapp, label: 'WhatsApp' },
-]
-
 export function SiteFooter() {
+  const site = useSiteData()
+
+  const socials = [
+    { icon: Share2, href: site.facebook, label: 'Facebook' },
+    { icon: Video, href: site.youtube, label: 'YouTube' },
+    { icon: MessageCircle, href: site.whatsapp, label: 'WhatsApp' },
+  ]
   return (
     <footer className="bg-foreground text-background">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/logo.png" alt="কর্নিয়া নার্সিং কোচিং" width={36} height={22} className="object-contain" />
-            <span className="font-heading text-base font-bold">{SITE.nameBn}</span>
+            <img src={site.logo || '/logo.png'} alt={site.nameBn} width={36} height={22} className="object-contain" />
+            <span className="font-heading text-base font-bold">{site.nameBn}</span>
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-background/70">
             খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। মানসম্মত শিক্ষায় গড়ছি আগামীর নার্স।
           </p>
           <div className="mt-5 flex gap-2">
-            {SOCIALS.map((s) => (
+            {socials.map((s) => (
               <a
                 key={s.label}
                 href={s.href}
@@ -87,12 +89,12 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm text-background/80">
             <li className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 size-4 shrink-0 text-brand" />
-              {SITE.addressBn}
+              {site.addressBn}
             </li>
             <li className="flex items-center gap-2.5">
               <Phone className="size-4 shrink-0 text-brand" />
-              <a href={SITE.phoneHref} className="hover:text-background">
-                {SITE.phone}
+              <a href={site.phoneHref} className="hover:text-background">
+                {site.phone}
               </a>
             </li>
           </ul>
@@ -101,7 +103,7 @@ export function SiteFooter() {
 
       <div className="border-t border-background/10">
         <div className="mx-auto max-w-7xl px-4 py-5 text-center text-xs text-background/60">
-          © {new Date().getFullYear()} {SITE.nameBn}, {SITE.city}. সর্বস্বত্ব সংরক্ষিত।
+          © {new Date().getFullYear()} {site.nameBn}, {site.city}. সর্বস্বত্ব সংরক্ষিত।
         </div>
       </div>
     </footer>

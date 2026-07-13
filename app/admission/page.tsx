@@ -6,7 +6,7 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { FadeIn } from '@/components/ui/fade-in'
 import { Loader2, CheckCircle2, ArrowRight, ArrowLeft, User, BookOpen, FileText } from 'lucide-react'
@@ -23,6 +23,7 @@ const STEP_ICONS = [User, BookOpen, FileText]
 
 export default function AdmissionPage() {
   const searchParams = useSearchParams()
+  const site = useSiteData()
   const [coursesList, setCoursesList] = useState<CourseOption[]>([])
   const [step, setStep] = useState<AdmissionStep>(1)
   const [form, setForm] = useState({
@@ -321,13 +322,13 @@ export default function AdmissionPage() {
                 <h3 className="font-heading text-lg font-bold text-foreground">সরাসরি যোগাযোগ</h3>
                 <div className="mt-4 space-y-3 text-sm text-muted-foreground">
                   <p>
-                    ফোন: <a href={SITE.phoneHref} className="font-medium text-brand hover:underline">{SITE.phone}</a>
+                    ফোন: <a href={site.phoneHref} className="font-medium text-brand hover:underline">{site.phone}</a>
                   </p>
                   <p>
-                    WhatsApp: <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-brand hover:underline">চ্যাট করুন</a>
+                    WhatsApp: <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-brand hover:underline">চ্যাট করুন</a>
                   </p>
                   <p>
-                    ঠিকানা: {SITE.addressBn}
+                    ঠিকানা: {site.addressBn}
                   </p>
                 </div>
               </div>

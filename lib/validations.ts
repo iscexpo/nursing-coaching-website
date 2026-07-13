@@ -233,11 +233,17 @@ export const settingsSchema = z.object({
   cmsContent: z.object({
     site: z.object({
       nameBn: z.string().optional(),
+      nameEn: z.string().optional(),
       tagline: z.string().optional(),
+      logo: z.string().optional(),
       city: z.string().optional(),
       phone: z.string().optional(),
+      phoneHref: z.string().optional(),
       whatsapp: z.string().optional(),
+      messenger: z.string().optional(),
       email: z.string().optional(),
+      facebook: z.string().optional(),
+      youtube: z.string().optional(),
       addressBn: z.string().optional(),
     }).partial().optional(),
     hero: z.object({

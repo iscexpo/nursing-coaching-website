@@ -1,16 +1,20 @@
+'use client'
+
 import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
-import { SITE } from '@/lib/site-data'
-
-const CONTACTS = [
-  { icon: MapPin, label: 'ঠিকানা', value: SITE.addressBn, href: undefined },
-  { icon: Phone, label: 'ফোন', value: SITE.phone, href: SITE.phoneHref },
-  { icon: MessageCircle, label: 'হোয়াটসঅ্যাপ', value: SITE.phone, href: SITE.whatsapp },
-  { icon: Mail, label: 'ইমেইল', value: SITE.email, href: `mailto:${SITE.email}` },
-]
+import { useSiteData } from '@/hooks/use-site-data'
 
 export function Contact() {
+  const site = useSiteData()
+
+  const CONTACTS = [
+    { icon: MapPin, label: 'ঠিকানা', value: site.addressBn, href: undefined },
+    { icon: Phone, label: 'ফোন', value: site.phone, href: site.phoneHref },
+    { icon: MessageCircle, label: 'হোয়াটসঅ্যাপ', value: site.phone, href: site.whatsapp },
+    { icon: Mail, label: 'ইমেইল', value: site.email, href: `mailto:${site.email}` },
+  ]
+
   return (
     <section id="contact" className="bg-background py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4">

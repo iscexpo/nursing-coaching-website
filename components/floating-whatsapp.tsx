@@ -1,10 +1,13 @@
+'use client'
+
 import { MessageCircle } from 'lucide-react'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 
 export function FloatingWhatsApp() {
+  const site = useSiteData()
   return (
     <a
-      href={SITE.whatsapp}
+      href={site.whatsapp}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="হোয়াটসঅ্যাপে চ্যাট করুন"

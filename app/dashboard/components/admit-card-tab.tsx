@@ -1,7 +1,7 @@
 'use client'
 
 import { Download, AlertCircle } from 'lucide-react'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 import type { Enrollment, AdmitCard } from './types'
 
 export function AdmitCardSection({
@@ -13,6 +13,7 @@ export function AdmitCardSection({
   enrollments: Enrollment[]
   admitCards: AdmitCard[]
 }) {
+  const site = useSiteData()
   const activeEnrollment = enrollments.find((e) => e.status === 'active' || e.status === 'approved')
   const admitCard = admitCards[0]
 
@@ -34,8 +35,8 @@ export function AdmitCardSection({
     <div className="mx-auto max-w-lg space-y-6">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="bg-brand p-4 text-center text-brand-foreground">
-          <h3 className="font-heading text-lg font-bold">{SITE.nameBn}</h3>
-          <p className="text-xs opacity-80">নার্সিং ভর্তি কোচিং, {SITE.city}</p>
+          <h3 className="font-heading text-lg font-bold">{site.nameBn}</h3>
+          <p className="text-xs opacity-80">নার্সিং ভর্তি কোচিং, {site.city}</p>
         </div>
 
         <div className="p-6">
@@ -91,7 +92,7 @@ export function AdmitCardSection({
         </div>
 
         <div className="border-t border-border bg-secondary/20 px-6 py-3 text-center text-xs text-muted-foreground">
-          {SITE.nameBn} · {SITE.phone}
+          {site.nameBn} · {site.phone}
         </div>
       </div>
 

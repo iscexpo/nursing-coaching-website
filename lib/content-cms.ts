@@ -1,11 +1,17 @@
 export type CmsContent = {
   site: {
     nameBn: string
+    nameEn: string
     tagline: string
+    logo: string
     city: string
     phone: string
+    phoneHref: string
     whatsapp: string
+    messenger: string
     email: string
+    facebook: string
+    youtube: string
     addressBn: string
   }
   hero: {
@@ -31,11 +37,17 @@ export type CmsContentInput = {
 export const defaultCmsContent: CmsContent = {
   site: {
     nameBn: 'কর্নিয়া নার্সিং কোচিং',
+    nameEn: 'Cornia Nursing Coaching',
     tagline: 'সাফল্যের জন্য প্রস্তুতি',
+    logo: '/logo.png',
     city: 'খুলনা',
     phone: '01784-176442',
+    phoneHref: 'tel:+8801784176442',
     whatsapp: 'https://wa.me/8801784176442',
+    messenger: 'https://m.me/cornianursing',
     email: 'info@cornianursing.com',
+    facebook: 'https://www.facebook.com/CorniaNursingKhulna',
+    youtube: 'https://youtube.com/@cornianursing',
     addressBn: 'কলাবাগান মোড়, খুলনা মেডিকেল কলেজ হাসপাতালের সামনে, খুলনা।',
   },
   hero: {

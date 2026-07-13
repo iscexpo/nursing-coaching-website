@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SectionHeading } from '@/components/section-heading'
 import { Button } from '@/components/ui/button'
-import { SITE } from '@/lib/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { Loader2 } from 'lucide-react'
 
