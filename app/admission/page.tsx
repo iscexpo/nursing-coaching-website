@@ -280,8 +280,8 @@ export default function AdmissionPage() {
                         <p className="text-xs text-muted-foreground mb-4">আপনার SSC, HSC এবং অনার্স তথ্য প্রদান করুন।</p>
                       </div>
                       <EduFields label="SSC (মাধ্যমিক সার্টিফিকেট)" value={form.ssc} onChange={(ssc) => setForm({ ...form, ssc })} />
-                      <EduFields label="HSC (উচ্চ মাধ্যমিক সার্টিফিকেট)" value={form.hsc} onChange={(hsc) => setForm({ ...form, hsc })} />
-                      <EduFields label="অনার্স (স্নাতক)" value={form.honors} onChange={(honors) => setForm({ ...form, honors })} />
+                      <EduFields label="HSC (উচ্চ মাধ্যমিক সার্টিফিকেট) (ঐচ্ছিক)" value={form.hsc} onChange={(hsc) => setForm({ ...form, hsc })} />
+                      <EduFields label="অনার্স (স্নাতক) (ঐচ্ছিক)" value={form.honors} onChange={(honors) => setForm({ ...form, honors })} />
                     </div>
                   )}
 
