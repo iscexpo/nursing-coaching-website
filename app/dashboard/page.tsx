@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 import {
   LayoutDashboard,
   GraduationCap,
@@ -39,6 +39,7 @@ type TabId = (typeof TABS)[number]['id']
 export default function DashboardPage() {
   const router = useRouter()
   const session = authClient.useSession()
+  const site = useSiteData()
   const [tab, setTab] = useState<TabId>('overview')
   const [courses, setCourses] = useState<Course[]>([])
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
@@ -143,7 +144,7 @@ export default function DashboardPage() {
 
   return (
     <PanelLayout
-      siteName={SITE.nameBn}
+      siteName={site.nameBn}
       panelTitle="শিক্ষার্থী প্যানেল"
       userName={user.name}
       welcomeMessage={welcomeParts.join(' | ')}

@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { authClient } from '@/lib/auth-client'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 import { GraduationCap, Phone, Mail, ArrowRight, Loader2 } from 'lucide-react'
 
 type LoginMode = 'phone' | 'email'
 
 export default function SignInPage() {
   const router = useRouter()
+  const site = useSiteData()
   const [mode, setMode] = useState<LoginMode>('phone')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [phonePassword, setPhonePassword] = useState('')
@@ -98,7 +99,7 @@ export default function SignInPage() {
         <div className="relative z-10 max-w-md px-8 text-brand-foreground animate-fade-in-up">
           <div className="flex items-center gap-3 mb-8">
             <Image src="/logo.png" alt="কর্নিয়া" width={48} height={30} className="object-contain" />
-            <span className="font-heading text-2xl font-bold">{SITE.nameBn}</span>
+            <span className="font-heading text-2xl font-bold">{site.nameBn}</span>
           </div>
           <h2 className="font-heading text-3xl font-extrabold leading-tight">
             আপনার নার্সিং ক্যারিয়ারের
@@ -130,7 +131,7 @@ export default function SignInPage() {
           <div>
             <Link href="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
               <Image src="/logo.png" alt="কর্নিয়া" width={36} height={22} className="object-contain" />
-              <span className="font-heading text-lg font-bold text-foreground">{SITE.nameBn}</span>
+              <span className="font-heading text-lg font-bold text-foreground">{site.nameBn}</span>
             </Link>
             <h1 className="font-heading text-2xl font-bold text-foreground">
               সাইন ইন করুন

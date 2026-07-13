@@ -1,9 +1,54 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Loader2, Save } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Loader2, Save, Upload, X } from 'lucide-react'
 
-const initialState = {
+type SiteSettings = {
+  nameBn: string
+  nameEn: string
+  tagline: string
+  logo: string
+  city: string
+  phone: string
+  phoneHref: string
+  whatsapp: string
+  messenger: string
+  email: string
+  facebook: string
+  youtube: string
+  addressBn: string
+}
+
+type FormState = {
+  siteName: string
+  siteTagline: string
+  smsProvider: string
+  smsApiKey: string
+  smsSenderId: string
+  paymentGateway: string
+  paymentGatewayApiKey: string
+  paymentGatewaySecret: string
+  paymentGatewayWebhookSecret: string
+  site: SiteSettings
+}
+
+const defaultSite: SiteSettings = {
+  nameBn: '',
+  nameEn: '',
+  tagline: '',
+  logo: '',
+  city: '',
+  phone: '',
+  phoneHref: '',
+  whatsapp: '',
+  messenger: '',
+  email: '',
+  facebook: '',
+  youtube: '',
+  addressBn: '',
+}
+
+const defaultForm: FormState = {
   siteName: '',
   siteTagline: '',
   smsProvider: 'none',
@@ -13,13 +58,37 @@ const initialState = {
   paymentGatewayApiKey: '',
   paymentGatewaySecret: '',
   paymentGatewayWebhookSecret: '',
+  site: defaultSite,
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-foreground">{label}</label>
+      {children}
+    </div>
+  )
+}
+
+function TextInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+    />
+  )
 }
 
 export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
-  const [form, setForm] = useState(initialState)
+  const [form, setForm] = useState<FormState>(defaultForm)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
+  const [messageType, setMessageType] = useState<'success' | 'error'>('success')
+  const logoInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     async function load() {
@@ -37,10 +106,12 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             paymentGatewayApiKey: data.paymentGatewayApiKey || '',
             paymentGatewaySecret: data.paymentGatewaySecret || '',
             paymentGatewayWebhookSecret: data.paymentGatewayWebhookSecret || '',
+            site: { ...defaultSite, ...(data.cmsContent?.site || {}) },
           })
         }
       } catch {
         setMessage('লোড করতে ব্যর্থ হয়েছে')
+        setMessageType('error')
       } finally {
         setLoading(false)
       }
@@ -48,6 +119,41 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
 
     load()
   }, [])
+
+  function updateSite(field: keyof SiteSettings, value: string) {
+    setForm((prev) => ({ ...prev, site: { ...prev.site, [field]: value } }))
+  }
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setMessage('')
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('altText', 'সাইট লোগো')
+
+      const res = await fetch('/api/media', { method: 'POST', body: formData })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || 'আপলোড ব্যর্থ')
+      }
+
+      const media = await res.json()
+      updateSite('logo', media.url)
+      setMessage('লোগো আপলোড হয়েছে')
+      setMessageType('success')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'আপলোড ব্যর্থ')
+      setMessageType('error')
+    } finally {
+      setUploading(false)
+      if (logoInputRef.current) logoInputRef.current.value = ''
+    }
+  }
 
   async function handleSave() {
     setSaving(true)
@@ -57,7 +163,18 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
       const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          siteName: form.site.nameBn || form.siteName,
+          siteTagline: form.site.tagline || form.siteTagline,
+          smsProvider: form.smsProvider,
+          smsApiKey: form.smsApiKey,
+          smsSenderId: form.smsSenderId,
+          paymentGateway: form.paymentGateway,
+          paymentGatewayApiKey: form.paymentGatewayApiKey,
+          paymentGatewaySecret: form.paymentGatewaySecret,
+          paymentGatewayWebhookSecret: form.paymentGatewayWebhookSecret,
+          cmsContent: { site: form.site },
+        }),
       })
 
       if (!res.ok) {
@@ -66,9 +183,11 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
       }
 
       setMessage('সেটিংস সফলভাবে সংরক্ষিত হয়েছে')
+      setMessageType('success')
       onRefresh()
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'সংরক্ষণ ব্যর্থ')
+      setMessageType('error')
     } finally {
       setSaving(false)
     }
@@ -82,76 +201,171 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
     )
   }
 
+  const inputClass = 'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm'
+  const selectClass = 'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm'
+
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <h3 className="font-heading text-lg font-bold text-foreground">সুপার অ্যাডমিন সেটিংস</h3>
-        <p className="mt-1 text-sm text-muted-foreground">কনটেন্ট, SMS এবং পেমেন্ট গেটওয়ে কনফিগার করুন</p>
+        <h3 className="font-heading text-lg font-bold text-foreground">সাইট সেটিংস</h3>
+        <p className="mt-1 text-sm text-muted-foreground">সাইটের নাম, লোগো, যোগাযোগ ও সোশ্যাল লিংক কনফিগার করুন</p>
       </div>
 
       {message && (
-        <div className="rounded-xl border border-brand/20 bg-brand/5 px-4 py-3 text-sm text-brand">
+        <div className={`rounded-xl border px-4 py-3 text-sm ${
+          messageType === 'success'
+            ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300'
+            : 'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300'
+        }`}>
           {message}
         </div>
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
+        {/* Logo + Site Name */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
-          <h4 className="font-heading font-semibold text-foreground">সাইট কনটেন্ট</h4>
+          <h4 className="font-heading font-semibold text-foreground">সাইট পরিচিতি</h4>
+
           <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">সাইটের নাম</label>
-            <input value={form.siteName} onChange={(e) => setForm({ ...form, siteName: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+            <label className="mb-1 block text-sm font-medium text-foreground">লোগো</label>
+            <div className="flex items-center gap-4">
+              <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-muted flex items-center justify-center">
+                {form.site.logo ? (
+                  <img src={form.site.logo} alt="লোগো" className="size-full object-contain" />
+                ) : (
+                  <span className="text-xs text-muted-foreground">নেই</span>
+                )}
+              </div>
+              <div className="flex-1">
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  disabled={uploading}
+                  onClick={() => logoInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted disabled:opacity-50"
+                >
+                  {uploading ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
+                  {uploading ? 'আপলোড হচ্ছে...' : 'লোগো আপলোড'}
+                </button>
+                {form.site.logo && (
+                  <button
+                    type="button"
+                    onClick={() => updateSite('logo', '')}
+                    className="ml-2 inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
+                  >
+                    <X className="size-3.5" />
+                    সরান
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">সাইটের ট্যাগলাইন</label>
-            <input value={form.siteTagline} onChange={(e) => setForm({ ...form, siteTagline: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
-          </div>
+
+          <Field label="সাইটের নাম (বাংলা)">
+            <TextInput value={form.site.nameBn} onChange={(v) => updateSite('nameBn', v)} placeholder="কর্নিয়া নার্সিং কোচিং" />
+          </Field>
+
+          <Field label="সাইটের নাম (English)">
+            <TextInput value={form.site.nameEn} onChange={(v) => updateSite('nameEn', v)} placeholder="Cornia Nursing Coaching" />
+          </Field>
+
+          <Field label="ট্যাগলাইন">
+            <TextInput value={form.site.tagline} onChange={(v) => updateSite('tagline', v)} placeholder="সাফল্যের জন্য প্রস্তুতি" />
+          </Field>
+
+          <Field label="শহর">
+            <TextInput value={form.site.city} onChange={(v) => updateSite('city', v)} placeholder="খুলনা" />
+          </Field>
+
+          <Field label="পূর্ণ ঠিকানা">
+            <textarea
+              value={form.site.addressBn}
+              onChange={(e) => updateSite('addressBn', e.target.value)}
+              placeholder="কলাবাগান মোড়, খুলনা মেডিকেল কলেজ হাসপাতালের সামনে, খুলনা।"
+              rows={2}
+              className={inputClass + ' resize-none'}
+            />
+          </Field>
         </div>
 
+        {/* Contact Info */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
+          <h4 className="font-heading font-semibold text-foreground">যোগাযোগ</h4>
+
+          <Field label="ফোন নম্বর">
+            <TextInput value={form.site.phone} onChange={(v) => updateSite('phone', v)} placeholder="01784-176442" />
+          </Field>
+
+          <Field label="ফোন লিংক (href)">
+            <TextInput value={form.site.phoneHref} onChange={(v) => updateSite('phoneHref', v)} placeholder="tel:+8801784176442" />
+          </Field>
+
+          <Field label="ইমেইল">
+            <TextInput value={form.site.email} onChange={(v) => updateSite('email', v)} placeholder="info@cornianursing.com" />
+          </Field>
+
+          <h4 className="font-heading font-semibold text-foreground pt-2">সোশ্যাল লিংক</h4>
+
+          <Field label="WhatsApp">
+            <TextInput value={form.site.whatsapp} onChange={(v) => updateSite('whatsapp', v)} placeholder="https://wa.me/8801784176442" />
+          </Field>
+
+          <Field label="Facebook">
+            <TextInput value={form.site.facebook} onChange={(v) => updateSite('facebook', v)} placeholder="https://www.facebook.com/..." />
+          </Field>
+
+          <Field label="YouTube">
+            <TextInput value={form.site.youtube} onChange={(v) => updateSite('youtube', v)} placeholder="https://youtube.com/@..." />
+          </Field>
+
+          <Field label="Messenger">
+            <TextInput value={form.site.messenger} onChange={(v) => updateSite('messenger', v)} placeholder="https://m.me/..." />
+          </Field>
+        </div>
+
+        {/* SMS Config */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
           <h4 className="font-heading font-semibold text-foreground">SMS কনফিগারেশন</h4>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">প্রোভাইডার</label>
-            <select value={form.smsProvider} onChange={(e) => setForm({ ...form, smsProvider: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm">
+          <Field label="প্রোভাইডার">
+            <select value={form.smsProvider} onChange={(e) => setForm({ ...form, smsProvider: e.target.value })} className={selectClass}>
               <option value="none">বন্ধ</option>
               <option value="bulk">BulkSMS</option>
               <option value="twilio">Twilio</option>
             </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">API Key</label>
-            <input value={form.smsApiKey} onChange={(e) => setForm({ ...form, smsApiKey: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">Sender ID</label>
-            <input value={form.smsSenderId} onChange={(e) => setForm({ ...form, smsSenderId: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
-          </div>
+          </Field>
+          <Field label="API Key">
+            <TextInput value={form.smsApiKey} onChange={(v) => setForm({ ...form, smsApiKey: v })} />
+          </Field>
+          <Field label="Sender ID">
+            <TextInput value={form.smsSenderId} onChange={(v) => setForm({ ...form, smsSenderId: v })} />
+          </Field>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4 lg:col-span-2">
-          <h4 className="font-heading font-semibold text-foreground">পেমেন্ট গেটওয়ে কনফিগারেশন</h4>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">গেটওয়ে</label>
-              <select value={form.paymentGateway} onChange={(e) => setForm({ ...form, paymentGateway: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm">
-                <option value="none">বন্ধ</option>
-                <option value="sslcommerz">SSLCommerz</option>
-                <option value="stripe">Stripe</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">API Key</label>
-              <input value={form.paymentGatewayApiKey} onChange={(e) => setForm({ ...form, paymentGatewayApiKey: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Secret</label>
-              <input value={form.paymentGatewaySecret} onChange={(e) => setForm({ ...form, paymentGatewaySecret: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Webhook Secret</label>
-              <input value={form.paymentGatewayWebhookSecret} onChange={(e) => setForm({ ...form, paymentGatewayWebhookSecret: e.target.value })} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
-            </div>
-          </div>
+        {/* Payment Gateway */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
+          <h4 className="font-heading font-semibold text-foreground">পেমেন্ট গেটওয়ে</h4>
+          <Field label="গেটওয়ে">
+            <select value={form.paymentGateway} onChange={(e) => setForm({ ...form, paymentGateway: e.target.value })} className={selectClass}>
+              <option value="none">বন্ধ</option>
+              <option value="sslcommerz">SSLCommerz</option>
+              <option value="stripe">Stripe</option>
+            </select>
+          </Field>
+          <Field label="API Key">
+            <TextInput value={form.paymentGatewayApiKey} onChange={(v) => setForm({ ...form, paymentGatewayApiKey: v })} />
+          </Field>
+          <Field label="Secret">
+            <TextInput value={form.paymentGatewaySecret} onChange={(v) => setForm({ ...form, paymentGatewaySecret: v })} />
+          </Field>
+          <Field label="Webhook Secret">
+            <TextInput value={form.paymentGatewayWebhookSecret} onChange={(v) => setForm({ ...form, paymentGatewayWebhookSecret: v })} />
+          </Field>
         </div>
       </div>
 

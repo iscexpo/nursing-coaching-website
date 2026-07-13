@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
-import { SITE } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 import { Loader2 } from 'lucide-react'
 import {
   LayoutDashboard,
@@ -101,6 +101,7 @@ function TabSkeleton() {
 export default function AdminPage() {
   const router = useRouter()
   const session = authClient.useSession()
+  const site = useSiteData()
   const [tab, setTab] = useState<TabId>('overview')
   const [courses, setCourses] = useState<Course[]>([])
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
@@ -219,7 +220,7 @@ export default function AdminPage() {
 
   return (
     <PanelLayout
-      siteName={SITE.nameBn}
+      siteName={site.nameBn}
       panelTitle="অ্যাডমিন প্যানেল"
       userName={session.data.user.name}
       welcomeMessage="অ্যাডমিন হিসেবে লগইন করেছেন"

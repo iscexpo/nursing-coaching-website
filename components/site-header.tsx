@@ -2,26 +2,27 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Menu, X, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DarkModeToggle } from '@/components/dark-mode-toggle'
-import { NAV_LINKS, SITE } from '@/lib/site-data'
+import { NAV_LINKS } from '@/lib/site-data'
+import { useSiteData } from '@/hooks/use-site-data'
 import { cn } from '@/lib/utils'
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
+  const site = useSiteData()
 
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Top bar */}
       <div className="hidden bg-brand text-brand-foreground md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-1.5 text-xs">
-          <p>স্বাগতম কর্নিয়া নার্সিং কোচিং, খুলনা — বিশ্বস্ত নার্সিং প্রস্তুতি</p>
+          <p>স্বাগতম {site.nameBn}, {site.city} — {site.tagline}</p>
           <div className="flex items-center gap-4">
-            <a href={SITE.phoneHref} className="flex items-center gap-1.5 hover:underline">
+            <a href={site.phoneHref} className="flex items-center gap-1.5 hover:underline">
               <Phone className="size-3.5" />
-              {SITE.phone}
+              {site.phone}
             </a>
             <span className="rounded-full bg-gold px-2.5 py-0.5 font-semibold text-gold-foreground">
               ভর্তি চলমান
@@ -34,12 +35,12 @@ export function SiteHeader() {
       <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/logo.png" alt="কর্নিয়া নার্সিং কোচিং" width={40} height={25} className="object-contain" />
+            <img src={site.logo || '/logo.png'} alt={site.nameBn} width={40} height={25} className="object-contain" />
             <span className="flex flex-col leading-tight">
               <span className="font-heading text-base font-bold text-foreground sm:text-lg">
-                {SITE.nameBn}
+                {site.nameBn}
               </span>
-              <span className="text-xs text-muted-foreground">{SITE.city} · Est. 2016</span>
+              <span className="text-xs text-muted-foreground">{site.city} · Est. 2016</span>
             </span>
           </Link>
 
