@@ -133,11 +133,23 @@ export const submitExamSchema = z.object({
   timeTaken: z.number().int().min(0).optional(),
 })
 
+const educationFieldSchema = z.object({
+  result: z.string().max(100).optional().default(''),
+  institution: z.string().max(300).optional().default(''),
+  year: z.string().max(10).optional().default(''),
+  roll: z.string().max(50).optional().default(''),
+  registrationNo: z.string().max(50).optional().default(''),
+  board: z.string().max(100).optional().default(''),
+}).optional()
+
 export const createAdmissionSchema = z.object({
   name: z.string().min(1).max(200),
   phone: z.string().regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   courseSlug: z.string().min(1).max(200),
   message: z.string().max(2000).optional(),
+  ssc: educationFieldSchema,
+  hsc: educationFieldSchema,
+  honors: educationFieldSchema,
 })
 
 export const createContactInquirySchema = z.object({
