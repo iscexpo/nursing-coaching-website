@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Trash2, Save, X, Clock, Loader2 } from 'lucide-react'
 import type { Exam, ExamSubmission } from './types'
 
-const SUBJECTS = ['বাংলা', 'ইংরেজি', 'পদার্থবিজ্ঞান', 'রসায়ন', 'জীববিজ্ঞান', 'সাধারণ জ্ঞান']
 const DIFFICULTY_LABELS: Record<string, { label: string; cls: string }> = {
   easy: { label: 'সহজ', cls: 'bg-green/10 text-green' },
   medium: { label: 'মাঝারি', cls: 'bg-brand/10 text-brand' },
@@ -13,8 +12,13 @@ const DIFFICULTY_LABELS: Record<string, { label: string; cls: string }> = {
 
 export function ExamsPanel({ exams, submissions, onRefresh }: { exams: Exam[]; submissions: ExamSubmission[]; onRefresh: () => void }) {
   const [showExamForm, setShowExamForm] = useState(false)
-  const [examForm, setExamForm] = useState({ title: '', subject: 'বাংলা', duration: 15, difficulty: 'medium' as 'easy' | 'medium' | 'hard' })
+  const [examForm, setExamForm] = useState({ title: '', subject: '', duration: 15, difficulty: 'medium' as 'easy' | 'medium' | 'hard' })
   const [saving, setSaving] = useState(false)
+  const [subjects, setSubjects] = useState<{ name: string }[]>([])
+
+  useEffect(() => {
+    fetch('/api/subjects').then((r) => r.json()).then((d) => { if (d.data) setSubjects(d.data) }).catch(() => {})
+  }, [])
 
   const [filterExam, setFilterExam] = useState<string>('all')
   const filteredSubmissions = filterExam === 'all' ? submissions : submissions.filter((s) => s.examId === filterExam)
@@ -28,7 +32,7 @@ export function ExamsPanel({ exams, submissions, onRefresh }: { exams: Exam[]; s
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(examForm),
       })
-      setExamForm({ title: '', subject: 'বাংলা', duration: 15, difficulty: 'medium' })
+      setExamForm({ title: '', subject: subjects[0]?.name || '', duration: 15, difficulty: 'medium' })
       setShowExamForm(false)
       onRefresh()
     } catch (error) {
@@ -93,7 +97,7 @@ export function ExamsPanel({ exams, submissions, onRefresh }: { exams: Exam[]; s
                   <label className="block text-sm font-medium text-foreground">বিষয়</label>
                   <select value={examForm.subject} onChange={(e) => setExamForm({ ...examForm, subject: e.target.value })}
                     className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand">
-                    {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
+                    {subjects.map((s) => <option key={s.name} value={s.name}>{s.name}</option>)}
                   </select>
                 </div>
                 <div>

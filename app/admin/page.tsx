@@ -25,7 +25,7 @@ import {
 
 import { PanelLayout } from '@/components/ui/panel-layout'
 import { OverviewPanel } from './components/overview-tab'
-import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student, Teacher, MediaFile } from './components/types'
+import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student, Teacher, MediaFile, Subject } from './components/types'
 
 const CoursesPanel = lazy(() => import('./components/courses-tab').then((m) => ({ default: m.CoursesPanel })))
 const EnrollmentsPanel = lazy(() => import('./components/enrollments-tab').then((m) => ({ default: m.EnrollmentsPanel })))
@@ -43,6 +43,7 @@ const AdmitCardsPanel = lazy(() => import('./components/admit-cards-tab').then((
 const ContactsPanel = lazy(() => import('./components/contacts-tab').then((m) => ({ default: m.ContactsPanel })))
 const NotificationsPanel = lazy(() => import('./components/notifications-tab').then((m) => ({ default: m.NotificationsPanel })))
 const SettingsPanel = lazy(() => import('./components/settings-tab').then((m) => ({ default: m.SettingsPanel })))
+const SubjectsPanel = lazy(() => import('./components/subjects-tab').then((m) => ({ default: m.SubjectsPanel })))
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -53,6 +54,7 @@ const TABS = [
   { id: 'notices', label: 'নোটিশ', icon: Megaphone },
   { id: 'media', label: 'মিডিয়া', icon: Image },
   { id: 'exams', label: 'পরীক্ষা', icon: FileText },
+  { id: 'subjects', label: 'বিষয়', icon: BookOpen },
   { id: 'questions', label: 'প্রশ্নব্যাংক', icon: HelpCircle },
   { id: 'results', label: 'ফলাফল', icon: BarChart3 },
   { id: 'teachers', label: 'শিক্ষক', icon: Presentation },
@@ -84,6 +86,7 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   contacts: ['contacts'],
   notifications: ['notifications'],
   settings: [],
+  subjects: ['subjects'],
 }
 
 function TabSkeleton() {
@@ -113,6 +116,7 @@ export default function AdminPage() {
   const [admitCards, setAdmitCards] = useState<AdmitCard[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [teachers, setTeachers] = useState<Teacher[]>([])
+  const [subjectsList, setSubjectsList] = useState<Subject[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async (tabId?: string) => {
@@ -138,6 +142,7 @@ export default function AdminPage() {
       if (needed.includes('admitCards')) { fetches.push(fetch('/api/admit-cards')); fetchKeys.push('admitCards') }
       if (needed.includes('students')) { fetches.push(fetch('/api/students')); fetchKeys.push('students') }
       if (needed.includes('teachers')) { fetches.push(fetch('/api/teachers')); fetchKeys.push('teachers') }
+      if (needed.includes('subjects')) { fetches.push(fetch('/api/subjects')); fetchKeys.push('subjects') }
 
       const responses = await Promise.all(fetches)
 
@@ -162,6 +167,7 @@ export default function AdminPage() {
             case 'admitCards': setAdmitCards(data); break
             case 'students': setStudents(data); break
             case 'teachers': setTeachers(data); break
+            case 'subjects': setSubjectsList(data); break
           }
         }
       }
@@ -234,6 +240,7 @@ export default function AdminPage() {
         {tab === 'media' && <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />}
         {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
         {tab === 'questions' && <QuestionsPanel exams={exams} />}
+        {tab === 'subjects' && <SubjectsPanel subjects={subjectsList} onRefresh={fetchData} />}
         {tab === 'results' && <ResultsPanel exams={exams} submissions={examSubmissions} />}
         {tab === 'students' && <StudentsPanel students={students} onRefresh={fetchData} />}
         {tab === 'teachers' && <TeachersPanel teachers={teachers} onRefresh={fetchData} />}
