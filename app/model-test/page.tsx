@@ -5,9 +5,8 @@ import { SectionHeading } from '@/components/section-heading'
 import { SITE } from '@/lib/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { CalendarDays, Clock, Users, FileCheck } from 'lucide-react'
-import { db } from '@/lib/db'
-import { exams } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'মডেল টেস্ট | কর্নিয়া নার্সিং কোচিং',
@@ -15,7 +14,9 @@ export const metadata = {
   alternates: { canonical: '/model-test' },
 }
 
-const FALLBACK_SCHEDULES = [
+type Schedule = { day: string; time: string; topic: string; difficulty?: string; seats?: string }
+
+const FALLBACK_SCHEDULES: Schedule[] = [
   {
     day: 'শুক্রবার',
     time: 'সকাল ১০:০০টা',
@@ -38,20 +39,30 @@ const FEATURES = [
 ]
 
 export default async function ModelTestPage() {
-  const activeExams = await db
-    .select()
-    .from(exams)
-    .where(eq(exams.isActive, true))
-    .orderBy(desc(exams.createdAt))
+  let schedules: Schedule[] = FALLBACK_SCHEDULES
 
-  const schedules = activeExams.length > 0
-    ? activeExams.map((exam) => ({
+  try {
+    const { db } = await import('@/lib/db')
+    const { exams } = await import('@/lib/db/schema')
+    const { eq, desc } = await import('drizzle-orm')
+
+    const activeExams = await db
+      .select()
+      .from(exams)
+      .where(eq(exams.isActive, true))
+      .orderBy(desc(exams.createdAt))
+
+    if (activeExams.length > 0) {
+      schedules = activeExams.map((exam) => ({
         day: exam.subject,
         time: `${exam.duration} মিনিট`,
         topic: exam.title,
         difficulty: exam.difficulty,
       }))
-    : FALLBACK_SCHEDULES
+    }
+  } catch {
+    // DB unavailable at build time — fall back to static schedules
+  }
 
   return (
     <>
@@ -99,7 +110,12 @@ export default async function ModelTestPage() {
                   <h3 className="mt-3 font-heading text-lg font-semibold text-foreground">
                     {s.topic}
                   </h3>
-                  {'difficulty' in s && (
+                  {s.seats && (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      আসন সংখ্যা: {s.seats}
+                    </p>
+                  )}
+                  {'difficulty' in s && s.difficulty && (
                     <p className="mt-1 text-sm text-muted-foreground">
                       কঠিনতা: {s.difficulty === 'easy' ? 'সহজ' : s.difficulty === 'hard' ? 'কঠিন' : 'মাঝারি'}
                     </p>
