@@ -12,7 +12,8 @@ import { NextResponse, type NextRequest } from 'next/server'
  */
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const sessionToken = request.cookies.get('better-auth.session_token')?.value
+  const sessionToken = request.cookies.get('__Secure-better-auth.session_token')?.value
+    || request.cookies.get('better-auth.session_token')?.value
 
   const isAuthPage = pathname.startsWith('/auth')
   const isDashboard = pathname.startsWith('/dashboard')

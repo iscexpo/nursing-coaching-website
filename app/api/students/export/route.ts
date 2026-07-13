@@ -23,6 +23,18 @@ export async function GET() {
       'শিক্ষার্থী ID': s.studentId ?? '',
       'ঠিকানা': s.address ?? '',
       'জেলা': s.district ?? '',
+      'SSC ফলাফল': (s.ssc as Record<string, string> | null)?.result ?? '',
+      'SSC রোল': (s.ssc as Record<string, string> | null)?.roll ?? '',
+      'SSC রেজিস্ট্রেশন': (s.ssc as Record<string, string> | null)?.registrationNo ?? '',
+      'SSC বোর্ড': (s.ssc as Record<string, string> | null)?.board ?? '',
+      'HSC ফলাফল': (s.hsc as Record<string, string> | null)?.result ?? '',
+      'HSC রোল': (s.hsc as Record<string, string> | null)?.roll ?? '',
+      'HSC রেজিস্ট্রেশন': (s.hsc as Record<string, string> | null)?.registrationNo ?? '',
+      'HSC বোর্ড': (s.hsc as Record<string, string> | null)?.board ?? '',
+      'অনার্স ফলাফল': (s.honors as Record<string, string> | null)?.result ?? '',
+      'অনার্স রোল': (s.honors as Record<string, string> | null)?.roll ?? '',
+      'অনার্স রেজিস্ট্রেশন': (s.honors as Record<string, string> | null)?.registrationNo ?? '',
+      'অনার্স বোর্ড': (s.honors as Record<string, string> | null)?.board ?? '',
       'তৈরি': s.createdAt.toISOString(),
     }))
 

@@ -20,9 +20,9 @@ export const user = pgTable('user', {
   guardianName: text('guardian_name'),
   guardianPhone: text('guardian_phone'),
   institution: text('institution'),
-  ssc: jsonb('ssc').$type<{ result: string; institution: string; year: string }>(),
-  hsc: jsonb('hsc').$type<{ result: string; institution: string; year: string }>(),
-  honors: jsonb('honors').$type<{ result: string; institution: string; year: string }>(),
+  ssc: jsonb('ssc').$type<{ result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string }>(),
+  hsc: jsonb('hsc').$type<{ result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string }>(),
+  honors: jsonb('honors').$type<{ result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string }>(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })

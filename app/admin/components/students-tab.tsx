@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Trash2, Pencil, Save, X, Loader2, Search } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Plus, Trash2, Pencil, Save, X, Loader2, Search, Upload } from 'lucide-react'
 import type { Student } from './types'
 
 const inputCls = "mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
 const labelCls = "block text-sm font-medium text-foreground"
 
-type EducationField = { result: string; institution: string; year: string }
+type EducationField = { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string }
 type FormState = {
   name: string; email: string; password: string; phoneNumber: string; studentId: string; image: string
   address: string; village: string; post: string; policeStation: string; district: string
@@ -15,7 +15,7 @@ type FormState = {
   ssc: EducationField; hsc: EducationField; honors: EducationField
 }
 
-function emptyEducation(): EducationField { return { result: '', institution: '', year: '' } }
+function emptyEducation(): EducationField { return { result: '', institution: '', year: '', roll: '', registrationNo: '', board: '', photoUrl: '' } }
 
 function emptyForm(): FormState {
   return {
@@ -26,7 +26,25 @@ function emptyForm(): FormState {
   }
 }
 
+const BOARDS = ['বোর্ড নির্বাচন করুন', 'ঢাকা বোর্ড', 'রাজশাহী বোর্ড', 'চট্টগ্রাম বোর্ড', 'খুলনা বোর্ড', 'বরিশাল বোর্ড', 'সিলেট বোর্ড', 'রংপুর বোর্ড', 'ময়মনসিংহ বোর্ড']
+
 function EduFields({ label, value, onChange }: { label: string; value: EducationField; onChange: (v: EducationField) => void }) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await fetch('/api/media', { method: 'POST', body: formData })
+      if (res.ok) {
+        const data = await res.json()
+        onChange({ ...value, photoUrl: data.url })
+      }
+    } catch { /* ignore */ }
+  }
+
   return (
     <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
       <p className="text-sm font-semibold text-foreground">{label}</p>
@@ -46,6 +64,40 @@ function EduFields({ label, value, onChange }: { label: string; value: Education
           <input type="text" value={value.year} onChange={(e) => onChange({ ...value, year: e.target.value })} placeholder="যেমন: 2020"
             className={inputCls} />
         </div>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">রোল নম্বর</label>
+          <input type="text" value={value.roll} onChange={(e) => onChange({ ...value, roll: e.target.value })} placeholder="রোল নম্বর"
+            className={inputCls} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">রেজিস্ট্রেশন নম্বর</label>
+          <input type="text" value={value.registrationNo} onChange={(e) => onChange({ ...value, registrationNo: e.target.value })} placeholder="রেজিস্ট্রেশন নম্বর"
+            className={inputCls} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground">বোর্ড</label>
+          <select value={value.board} onChange={(e) => onChange({ ...value, board: e.target.value })}
+            className={inputCls}>
+            {BOARDS.map((b, i) => <option key={b} value={i === 0 ? '' : b}>{b}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <div>
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+          <button type="button" onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors">
+            <Upload className="size-3.5" /> সার্টিফিকেট ছবি আপলোড
+          </button>
+        </div>
+        {value.photoUrl && (
+          <div className="flex items-center gap-2">
+            <img src={value.photoUrl} alt="" className="h-10 w-10 rounded object-cover border border-border" />
+            <button type="button" onClick={() => onChange({ ...value, photoUrl: '' })} className="text-xs text-destructive hover:underline">মুছুন</button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -96,9 +148,9 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
       if (form.guardianName.trim()) body.guardianName = form.guardianName.trim()
       if (form.guardianPhone.trim()) body.guardianPhone = form.guardianPhone.trim()
       if (form.institution.trim()) body.institution = form.institution.trim()
-      if (form.ssc.result.trim()) body.ssc = form.ssc
-      if (form.hsc.result.trim()) body.hsc = form.hsc
-      if (form.honors.result.trim()) body.honors = form.honors
+      if (form.ssc.result.trim() || form.ssc.roll.trim() || form.ssc.institution.trim()) body.ssc = form.ssc
+      if (form.hsc.result.trim() || form.hsc.roll.trim() || form.hsc.institution.trim()) body.hsc = form.hsc
+      if (form.honors.result.trim() || form.honors.roll.trim() || form.honors.institution.trim()) body.honors = form.honors
 
       const url = editing ? `/api/students/${editing.id}` : '/api/students'
       const res = await fetch(url, {
@@ -238,8 +290,8 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
             <div className="space-y-3">
               <p className="text-sm font-semibold text-foreground border-b border-border pb-1">শিক্ষাগত যোগ্যতা</p>
               <EduFields label="S.S.C" value={form.ssc} onChange={(v) => setForm({ ...form, ssc: v })} />
-              <EduFields label="H.S.C" value={form.hsc} onChange={(v) => setForm({ ...form, hsc: v })} />
-              <EduFields label="অনার্স" value={form.honors} onChange={(v) => setForm({ ...form, honors: v })} />
+              <EduFields label="H.S.C (ঐচ্ছিক)" value={form.hsc} onChange={(v) => setForm({ ...form, hsc: v })} />
+              <EduFields label="অনার্স (ঐচ্ছিক)" value={form.honors} onChange={(v) => setForm({ ...form, honors: v })} />
             </div>
 
             <button onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50">
