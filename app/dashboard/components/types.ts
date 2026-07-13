@@ -68,6 +68,10 @@ export interface UserProfile {
   guardianName: string | null
   guardianPhone: string | null
   institution: string | null
+  image: string | null
+  ssc: { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string } | null
+  hsc: { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string } | null
+  honors: { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string } | null
 }
 
 export interface MockResult {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   CheckCircle2,
   UserCog,
@@ -13,9 +13,110 @@ import {
   Eye,
   EyeOff,
   Loader2,
+  Upload,
 } from 'lucide-react'
 import { InfoRow } from '@/components/ui/info-row'
 import type { UserProfile } from './types'
+
+type EducationData = { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string }
+const BOARDS = ['বোর্ড নির্বাচন করুন', 'ঢাকা বোর্ড', 'রাজশাহী বোর্ড', 'চট্টগ্রাম বোর্ড', 'খুলনা বোর্ড', 'বরিশাল বোর্ড', 'সিলেট বোর্ড', 'রংপুর বোর্ড', 'ময়মনসিংহ বোর্ড']
+const inputCls = "w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+
+function EduEditSection({ label, value, onChange }: { label: string; value: EducationData; onChange: (v: EducationData) => void }) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await fetch('/api/media', { method: 'POST', body: formData })
+      if (res.ok) {
+        const data = await res.json()
+        onChange({ ...value, photoUrl: data.url })
+      }
+    } catch { /* ignore */ }
+  }
+
+  return (
+    <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
+      <p className="text-sm font-semibold text-foreground">{label}</p>
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">ফলাফল</label>
+          <input type="text" value={value.result} onChange={(e) => onChange({ ...value, result: e.target.value })} placeholder="যেমন: GPA 5.00" className={inputCls} />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">প্রতিষ্ঠান</label>
+          <input type="text" value={value.institution} onChange={(e) => onChange({ ...value, institution: e.target.value })} placeholder="কলেজ/বিশ্ববিদ্যালয়" className={inputCls} />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">সাল</label>
+          <input type="text" value={value.year} onChange={(e) => onChange({ ...value, year: e.target.value })} placeholder="যেমন: 2020" className={inputCls} />
+        </div>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">রোল নম্বর</label>
+          <input type="text" value={value.roll} onChange={(e) => onChange({ ...value, roll: e.target.value })} placeholder="রোল নম্বর" className={inputCls} />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">রেজিস্ট্রেশন নম্বর</label>
+          <input type="text" value={value.registrationNo} onChange={(e) => onChange({ ...value, registrationNo: e.target.value })} placeholder="রেজিস্ট্রেশন নম্বর" className={inputCls} />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">বোর্ড</label>
+          <select value={value.board} onChange={(e) => onChange({ ...value, board: e.target.value })} className={inputCls}>
+            {BOARDS.map((b, i) => <option key={b} value={i === 0 ? '' : b}>{b}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+        <button type="button" onClick={() => fileInputRef.current?.click()}
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors">
+          <Upload className="size-3.5" /> সার্টিফিকেট ছবি আপলোড
+        </button>
+        {value.photoUrl && (
+          <div className="flex items-center gap-2">
+            <img src={value.photoUrl} alt="" className="h-10 w-10 rounded object-cover border border-border" />
+            <button type="button" onClick={() => onChange({ ...value, photoUrl: '' })} className="text-xs text-destructive hover:underline">মুছুন</button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function EduViewSection({ label, value }: { label: string; value: EducationData | null }) {
+  if (!value) return null
+  const fields = [
+    { label: 'ফলাফল', val: value.result },
+    { label: 'প্রতিষ্ঠান', val: value.institution },
+    { label: 'সাল', val: value.year },
+    { label: 'রোল', val: value.roll },
+    { label: 'রেজিস্ট্রেশন', val: value.registrationNo },
+    { label: 'বোর্ড', val: value.board },
+  ].filter(f => f.val)
+  if (fields.length === 0 && !value.photoUrl) return null
+  return (
+    <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
+      <p className="text-sm font-semibold text-foreground">{label}</p>
+      <div className="grid gap-1 sm:grid-cols-3">
+        {fields.map(f => (
+          <div key={f.label} className="text-xs">
+            <span className="text-muted-foreground">{f.label}: </span>
+            <span className="font-medium text-foreground">{f.val}</span>
+          </div>
+        ))}
+      </div>
+      {value.photoUrl && (
+        <img src={value.photoUrl} alt={`${label} সার্টিফিকেট`} className="h-16 w-16 rounded object-cover border border-border" />
+      )}
+    </div>
+  )
+}
 
 export function AccountSection({
   profile,
@@ -31,6 +132,8 @@ export function AccountSection({
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [success, setSuccess] = useState('')
 
+  const defaultEdu = { result: '', institution: '', year: '', roll: '', registrationNo: '', board: '', photoUrl: '' }
+
   const [formData, setFormData] = useState({
     name: profile?.name || '',
     email: profile?.email || '',
@@ -39,6 +142,9 @@ export function AccountSection({
     guardianName: profile?.guardianName || '',
     guardianPhone: profile?.guardianPhone || '',
     institution: profile?.institution || '',
+    ssc: profile?.ssc || defaultEdu,
+    hsc: profile?.hsc || defaultEdu,
+    honors: profile?.honors || defaultEdu,
   })
 
   const [passwordData, setPasswordData] = useState({
@@ -191,6 +297,12 @@ export function AccountSection({
                 />
               </div>
             </div>
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-foreground border-b border-border pb-1">শিক্ষাগত যোগ্যতা</p>
+              <EduEditSection label="S.S.C" value={formData.ssc} onChange={(v) => setFormData({ ...formData, ssc: v })} />
+              <EduEditSection label="H.S.C" value={formData.hsc} onChange={(v) => setFormData({ ...formData, hsc: v })} />
+              <EduEditSection label="অনার্স" value={formData.honors} onChange={(v) => setFormData({ ...formData, honors: v })} />
+            </div>
             <button
               onClick={handleSaveProfile}
               disabled={saving}
@@ -210,6 +322,15 @@ export function AccountSection({
             <InfoRow icon={GraduationCap} label="প্রতিষ্ঠান" value={profile?.institution || '—'} />
             <InfoRow icon={UserCog} label="অভিভাবক" value={profile?.guardianName || '—'} />
             <InfoRow icon={Phone} label="অভিভাবকের ফোন" value={profile?.guardianPhone || '—'} />
+          </div>
+        )}
+
+        {(!editing && (profile?.ssc || profile?.hsc || profile?.honors)) && (
+          <div className="mt-4 space-y-2 border-t border-border pt-4">
+            <p className="text-sm font-semibold text-foreground flex items-center gap-1.5"><GraduationCap className="size-4" /> শিক্ষাগত যোগ্যতা</p>
+            <EduViewSection label="S.S.C" value={profile?.ssc || null} />
+            <EduViewSection label="H.S.C" value={profile?.hsc || null} />
+            <EduViewSection label="অনার্স" value={profile?.honors || null} />
           </div>
         )}
       </div>
