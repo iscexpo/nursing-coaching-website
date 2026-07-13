@@ -35,10 +35,25 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
     }
 
-    const [updated] = await db.update(user).set({
-      ...parsed.data,
-      updatedAt: new Date(),
-    }).where(eq(user.id, session.user.id)).returning()
+    const data = { ...parsed.data }
+
+    for (const key of ['ssc', 'hsc', 'honors'] as const) {
+      const val = data[key]
+      if (val && typeof val === 'object') {
+        ;(data as Record<string, unknown>)[key] = {
+          result: val.result || '',
+          institution: val.institution || '',
+          year: val.year || '',
+          roll: val.roll || '',
+          registrationNo: val.registrationNo || '',
+          board: val.board || '',
+          photoUrl: val.photoUrl || '',
+        }
+      }
+    }
+
+    const setData: Record<string, unknown> = { ...data, updatedAt: new Date() }
+    const [updated] = await db.update(user).set(setData).where(eq(user.id, session.user.id)).returning()
 
     if (!updated) return NextResponse.json({ error: 'User not found' }, { status: 404 })
     return NextResponse.json(sanitizeProfile(updated as Record<string, unknown>))

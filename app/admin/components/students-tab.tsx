@@ -290,8 +290,8 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
             <div className="space-y-3">
               <p className="text-sm font-semibold text-foreground border-b border-border pb-1">শিক্ষাগত যোগ্যতা</p>
               <EduFields label="S.S.C" value={form.ssc} onChange={(v) => setForm({ ...form, ssc: v })} />
-              <EduFields label="H.S.C" value={form.hsc} onChange={(v) => setForm({ ...form, hsc: v })} />
-              <EduFields label="অনার্স" value={form.honors} onChange={(v) => setForm({ ...form, honors: v })} />
+              <EduFields label="H.S.C (ঐচ্ছিক)" value={form.hsc} onChange={(v) => setForm({ ...form, hsc: v })} />
+              <EduFields label="অনার্স (ঐচ্ছিক)" value={form.honors} onChange={(v) => setForm({ ...form, honors: v })} />
             </div>
 
             <button onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50">

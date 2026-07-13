@@ -300,8 +300,8 @@ export function AccountSection({
             <div className="space-y-2">
               <p className="text-sm font-semibold text-foreground border-b border-border pb-1">শিক্ষাগত যোগ্যতা</p>
               <EduEditSection label="S.S.C" value={formData.ssc} onChange={(v) => setFormData({ ...formData, ssc: v })} />
-              <EduEditSection label="H.S.C" value={formData.hsc} onChange={(v) => setFormData({ ...formData, hsc: v })} />
-              <EduEditSection label="অনার্স" value={formData.honors} onChange={(v) => setFormData({ ...formData, honors: v })} />
+              <EduEditSection label="H.S.C (ঐচ্ছিক)" value={formData.hsc} onChange={(v) => setFormData({ ...formData, hsc: v })} />
+              <EduEditSection label="অনার্স (ঐচ্ছিক)" value={formData.honors} onChange={(v) => setFormData({ ...formData, honors: v })} />
             </div>
             <button
               onClick={handleSaveProfile}

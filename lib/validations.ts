@@ -96,8 +96,8 @@ export const updateProfileSchema = z.object({
   guardianPhone: z.string().max(20).optional(),
   institution: z.string().max(200).optional(),
   ssc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
-  hsc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
-  honors: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
+  hsc: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
+  honors: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
 })
 
 export const createNoticeSchema = z.object({
@@ -198,8 +198,8 @@ export const createStudentSchema = z.object({
   guardianPhone: z.string().max(20).optional(),
   institution: z.string().max(200).optional(),
   ssc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).optional(),
-  hsc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).optional(),
-  honors: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).optional(),
+  hsc: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).optional(),
+  honors: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).optional(),
 })
 
 export const updateStudentSchema = z.object({
@@ -218,8 +218,8 @@ export const updateStudentSchema = z.object({
   guardianPhone: z.string().max(20).optional(),
   institution: z.string().max(200).optional(),
   ssc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
-  hsc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
-  honors: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
+  hsc: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
+  honors: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
   role: z.enum(['super-admin', 'admin', 'student']).optional(),
 })
 
