@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod/v3'
-import { getSession } from '@/lib/permissions'
+import { requireAdmin } from '@/lib/permissions'
 import { extractPhoneNumbersFromSheet } from '@/lib/sheet-sms'
 import { buildBroadcastMessage } from '@/lib/sms'
+import { rateLimit } from '@/lib/rate-limit'
 
 const marketingSchema = z.object({
   title: z.string().min(1).max(200),
@@ -10,11 +11,12 @@ const marketingSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'sms.marketing' })
+  if (limiter) return limiter
+
   try {
-    const session = await getSession()
-    if (!session || (session.user.role !== 'admin' && session.user.role !== 'super-admin')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const auth = await requireAdmin()
+    if (!auth.ok) return auth.response
 
     const formData = await request.formData()
     const title = formData.get('title')?.toString() || ''

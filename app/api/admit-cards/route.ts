@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { eq, desc, count } from 'drizzle-orm'
+import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { createAdmitCardSchema, paginationSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
@@ -17,14 +17,17 @@ export async function GET(request: NextRequest) {
     })
     const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
 
-    let data
-    if (session.user.role === 'admin') {
-      data = await db.select().from(admitCards).orderBy(desc(admitCards.createdAt)).limit(limit).offset((page - 1) * limit)
-    } else {
-      data = await db.select().from(admitCards).where(eq(admitCards.userId, session.user.id)).orderBy(desc(admitCards.createdAt)).limit(limit).offset((page - 1) * limit)
-    }
+    const where = isAdmin(session.user.role) ? undefined : eq(admitCards.userId, session.user.id)
 
-    return NextResponse.json({ data, page, limit })
+    const data = await db.select().from(admitCards)
+      .where(where)
+      .orderBy(desc(admitCards.createdAt))
+      .limit(limit)
+      .offset((page - 1) * limit)
+
+    const [totalRow] = await db.select({ count: count() }).from(admitCards).where(where)
+
+    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch admit cards' }, { status: 500 })
   }

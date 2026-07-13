@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { eq, desc, count } from 'drizzle-orm'
+import { getSession, isAdmin } from '@/lib/permissions'
 import { createPaymentSchema, paginationSchema } from '@/lib/validations'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,20 +18,26 @@ export async function GET(request: NextRequest) {
     })
     const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
 
-    let data
-    if (session.user.role === 'admin') {
-      data = await db.select().from(payments).orderBy(desc(payments.createdAt)).limit(limit).offset((page - 1) * limit)
-    } else {
-      data = await db.select().from(payments).where(eq(payments.userId, session.user.id)).orderBy(desc(payments.createdAt)).limit(limit).offset((page - 1) * limit)
-    }
+    const where = isAdmin(session.user.role) ? undefined : eq(payments.userId, session.user.id)
 
-    return NextResponse.json({ data, page, limit })
+    const data = await db.select().from(payments)
+      .where(where)
+      .orderBy(desc(payments.createdAt))
+      .limit(limit)
+      .offset((page - 1) * limit)
+
+    const [totalRow] = await db.select({ count: count() }).from(payments).where(where)
+
+    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch payments' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'payments.create' })
+  if (limiter) return limiter
+
   try {
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -46,7 +53,7 @@ export async function POST(request: NextRequest) {
     const [enrollment] = await db.select().from(enrollments).where(eq(enrollments.id, enrollmentId))
     if (!enrollment) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
 
-    if (session.user.role !== 'admin' && enrollment.userId !== session.user.id) {
+    if (!isAdmin(session.user.role) && enrollment.userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

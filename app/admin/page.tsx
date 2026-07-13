@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
 import { SITE } from '@/lib/site-data'
@@ -25,22 +25,24 @@ import {
 
 import { PanelLayout } from '@/components/ui/panel-layout'
 import { OverviewPanel } from './components/overview-tab'
-import { StudentsPanel } from './components/students-tab'
-import { EnrollmentsPanel } from './components/enrollments-tab'
-import { PaymentsPanel } from './components/payments-tab'
-import { InvoicesPanel } from './components/invoices-tab'
-import { CoursesPanel } from './components/courses-tab'
-import { NoticesPanel } from './components/notices-tab'
-import { ExamsPanel } from './components/exams-tab'
-import { QuestionsPanel } from './components/questions-tab'
-import { ContactsPanel } from './components/contacts-tab'
-import { NotificationsPanel } from './components/notifications-tab'
-import { AttendancePanel } from './components/attendance-tab'
-import { AdmitCardsPanel } from './components/admit-cards-tab'
-import { SettingsPanel } from './components/settings-tab'
-import { TeachersPanel } from './components/teachers-tab'
-import { MediaPanel } from './components/media-tab'
 import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student, Teacher, MediaFile } from './components/types'
+
+const CoursesPanel = lazy(() => import('./components/courses-tab').then((m) => ({ default: m.CoursesPanel })))
+const EnrollmentsPanel = lazy(() => import('./components/enrollments-tab').then((m) => ({ default: m.EnrollmentsPanel })))
+const PaymentsPanel = lazy(() => import('./components/payments-tab').then((m) => ({ default: m.PaymentsPanel })))
+const InvoicesPanel = lazy(() => import('./components/invoices-tab').then((m) => ({ default: m.InvoicesPanel })))
+const NoticesPanel = lazy(() => import('./components/notices-tab').then((m) => ({ default: m.NoticesPanel })))
+const MediaPanel = lazy(() => import('./components/media-tab').then((m) => ({ default: m.MediaPanel })))
+const ExamsPanel = lazy(() => import('./components/exams-tab').then((m) => ({ default: m.ExamsPanel })))
+const QuestionsPanel = lazy(() => import('./components/questions-tab').then((m) => ({ default: m.QuestionsPanel })))
+const ResultsPanel = lazy(() => import('./components/results-tab').then((m) => ({ default: m.ResultsPanel })))
+const StudentsPanel = lazy(() => import('./components/students-tab').then((m) => ({ default: m.StudentsPanel })))
+const TeachersPanel = lazy(() => import('./components/teachers-tab').then((m) => ({ default: m.TeachersPanel })))
+const AttendancePanel = lazy(() => import('./components/attendance-tab').then((m) => ({ default: m.AttendancePanel })))
+const AdmitCardsPanel = lazy(() => import('./components/admit-cards-tab').then((m) => ({ default: m.AdmitCardsPanel })))
+const ContactsPanel = lazy(() => import('./components/contacts-tab').then((m) => ({ default: m.ContactsPanel })))
+const NotificationsPanel = lazy(() => import('./components/notifications-tab').then((m) => ({ default: m.NotificationsPanel })))
+const SettingsPanel = lazy(() => import('./components/settings-tab').then((m) => ({ default: m.SettingsPanel })))
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -64,6 +66,35 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id']
 
+const TAB_FETCH_MAP: Record<string, string[]> = {
+  overview: ['courses', 'enrollments', 'payments'],
+  courses: ['courses'],
+  enrollments: ['enrollments', 'courses', 'students'],
+  payments: ['payments', 'enrollments', 'students'],
+  invoices: ['invoices', 'enrollments'],
+  notices: ['notices'],
+  media: ['media'],
+  exams: ['exams', 'submissions'],
+  questions: ['exams'],
+  results: ['exams', 'submissions'],
+  students: ['students'],
+  teachers: ['teachers'],
+  attendance: ['enrollments', 'attendance'],
+  'admit-cards': ['enrollments', 'exams', 'admitCards'],
+  contacts: ['contacts'],
+  notifications: ['notifications'],
+  settings: [],
+}
+
+function TabSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-8 w-48 rounded-lg bg-secondary" />
+      <div className="h-64 rounded-2xl bg-secondary/50" />
+    </div>
+  )
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const session = authClient.useSession()
@@ -84,91 +115,66 @@ export default function AdminPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [loading, setLoading] = useState(true)
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (tabId?: string) => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, noticesRes, mediaRes, examsRes, contactsRes, notificationsRes, submissionsRes, attendanceRes, admitCardsRes, studentsRes, teachersRes] = await Promise.all([
-        fetch('/api/courses'),
-        fetch('/api/enrollments'),
-        fetch('/api/payments'),
-        fetch('/api/invoices'),
-        fetch('/api/notices'),
-        fetch('/api/media'),
-        fetch('/api/exams'),
-        fetch('/api/contact'),
-        fetch('/api/notifications'),
-        fetch('/api/exam-submissions'),
-        fetch('/api/attendance'),
-        fetch('/api/admit-cards'),
-        fetch('/api/students'),
-        fetch('/api/teachers'),
-      ])
+      const activeTab = tabId || tab
 
-      if (coursesRes.ok) {
-        const d = await coursesRes.json()
-        setCourses(d.data || d)
-      }
-      if (enrollmentsRes.ok) {
-        const d = await enrollmentsRes.json()
-        setEnrollments(d.data || d)
-      }
-      if (paymentsRes.ok) {
-        const d = await paymentsRes.json()
-        setPayments(d.data || d)
-      }
-      if (invoicesRes.ok) {
-        const d = await invoicesRes.json()
-        setInvoices(d.data || d)
-      }
-      if (noticesRes.ok) {
-        const d = await noticesRes.json()
-        setNotices(d.data || d)
-      }
-      if (examsRes.ok) {
-        const d = await examsRes.json()
-        setExams(d.data || d)
-      }
-      if (contactsRes.ok) {
-        const d = await contactsRes.json()
-        setContacts(d.data || d)
-      }
-      if (mediaRes.ok) {
-        const d = await mediaRes.json()
-        setMediaFiles(d.data || d)
-      }
-      if (notificationsRes.ok) {
-        const d = await notificationsRes.json()
-        setNotifications(d.data || d)
-      }
-      if (submissionsRes.ok) {
-        const d = await submissionsRes.json()
-        setExamSubmissions(d.data || d)
-      }
-      if (attendanceRes.ok) {
-        const d = await attendanceRes.json()
-        setAttendance(d.data || d)
-      }
-      if (admitCardsRes.ok) {
-        const d = await admitCardsRes.json()
-        setAdmitCards(d.data || d)
-      }
-      if (studentsRes.ok) {
-        const d = await studentsRes.json()
-        setStudents(d.data || d)
-      }
-      if (teachersRes.ok) {
-        const d = await teachersRes.json()
-        setTeachers(d.data || d)
+      const fetches: Promise<Response>[] = []
+      const fetchKeys: string[] = []
+
+      const needed = TAB_FETCH_MAP[activeTab] || ['overview']
+
+      if (needed.includes('courses')) { fetches.push(fetch('/api/courses')); fetchKeys.push('courses') }
+      if (needed.includes('enrollments')) { fetches.push(fetch('/api/enrollments')); fetchKeys.push('enrollments') }
+      if (needed.includes('payments')) { fetches.push(fetch('/api/payments')); fetchKeys.push('payments') }
+      if (needed.includes('invoices')) { fetches.push(fetch('/api/invoices')); fetchKeys.push('invoices') }
+      if (needed.includes('notices')) { fetches.push(fetch('/api/notices')); fetchKeys.push('notices') }
+      if (needed.includes('media')) { fetches.push(fetch('/api/media')); fetchKeys.push('media') }
+      if (needed.includes('exams')) { fetches.push(fetch('/api/exams')); fetchKeys.push('exams') }
+      if (needed.includes('contacts')) { fetches.push(fetch('/api/contact')); fetchKeys.push('contacts') }
+      if (needed.includes('notifications')) { fetches.push(fetch('/api/notifications')); fetchKeys.push('notifications') }
+      if (needed.includes('submissions')) { fetches.push(fetch('/api/exam-submissions')); fetchKeys.push('submissions') }
+      if (needed.includes('attendance')) { fetches.push(fetch('/api/attendance')); fetchKeys.push('attendance') }
+      if (needed.includes('admitCards')) { fetches.push(fetch('/api/admit-cards')); fetchKeys.push('admitCards') }
+      if (needed.includes('students')) { fetches.push(fetch('/api/students')); fetchKeys.push('students') }
+      if (needed.includes('teachers')) { fetches.push(fetch('/api/teachers')); fetchKeys.push('teachers') }
+
+      const responses = await Promise.all(fetches)
+
+      for (let i = 0; i < responses.length; i++) {
+        const res = responses[i]
+        const key = fetchKeys[i]
+        if (res.ok) {
+          const d = await res.json()
+          const data = d.data || d
+          switch (key) {
+            case 'courses': setCourses(data); break
+            case 'enrollments': setEnrollments(data); break
+            case 'payments': setPayments(data); break
+            case 'invoices': setInvoices(data); break
+            case 'notices': setNotices(data); break
+            case 'media': setMediaFiles(data); break
+            case 'exams': setExams(data); break
+            case 'contacts': setContacts(data); break
+            case 'notifications': setNotifications(data); break
+            case 'submissions': setExamSubmissions(data); break
+            case 'attendance': setAttendance(data); break
+            case 'admitCards': setAdmitCards(data); break
+            case 'students': setStudents(data); break
+            case 'teachers': setTeachers(data); break
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [tab])
 
   useEffect(() => {
-    if (session.data) fetchData()
-  }, [session.data, fetchData])
+    if (session.data) fetchData(tab)
+  }, [session.data, fetchData, tab])
 
   async function handleSignOut() {
     await authClient.signOut()
@@ -219,22 +225,24 @@ export default function AdminPage() {
       {tab === 'overview' && (
         <OverviewPanel courses={courses} enrollments={enrollments} payments={payments} />
       )}
-      {tab === 'courses' && <CoursesPanel courses={courses} onRefresh={fetchData} />}
-      {tab === 'enrollments' && <EnrollmentsPanel enrollments={enrollments} onRefresh={fetchData} />}
-      {tab === 'payments' && <PaymentsPanel payments={payments} enrollments={enrollments} students={students} onRefresh={fetchData} />}
-      {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
-      {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}
-      {tab === 'media' && <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />}
-      {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
-      {tab === 'questions' && <QuestionsPanel exams={exams} />}
-      {tab === 'results' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
-      {tab === 'students' && <StudentsPanel students={students} onRefresh={fetchData} />}
-      {tab === 'teachers' && <TeachersPanel teachers={teachers} onRefresh={fetchData} />}
-      {tab === 'attendance' && <AttendancePanel enrollments={enrollments} attendance={attendance} onRefresh={fetchData} />}
-      {tab === 'admit-cards' && <AdmitCardsPanel enrollments={enrollments} exams={exams} admitCards={admitCards} onRefresh={fetchData} />}
-      {tab === 'contacts' && <ContactsPanel contacts={contacts} onRefresh={fetchData} />}
-      {tab === 'notifications' && <NotificationsPanel notifications={notifications} onRefresh={fetchData} />}
-      {tab === 'settings' && <SettingsPanel onRefresh={fetchData} />}
+      <Suspense fallback={<TabSkeleton />}>
+        {tab === 'courses' && <CoursesPanel courses={courses} onRefresh={fetchData} />}
+        {tab === 'enrollments' && <EnrollmentsPanel enrollments={enrollments} onRefresh={fetchData} />}
+        {tab === 'payments' && <PaymentsPanel payments={payments} enrollments={enrollments} students={students} onRefresh={fetchData} />}
+        {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
+        {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}
+        {tab === 'media' && <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />}
+        {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
+        {tab === 'questions' && <QuestionsPanel exams={exams} />}
+        {tab === 'results' && <ResultsPanel exams={exams} submissions={examSubmissions} />}
+        {tab === 'students' && <StudentsPanel students={students} onRefresh={fetchData} />}
+        {tab === 'teachers' && <TeachersPanel teachers={teachers} onRefresh={fetchData} />}
+        {tab === 'attendance' && <AttendancePanel enrollments={enrollments} attendance={attendance} onRefresh={fetchData} />}
+        {tab === 'admit-cards' && <AdmitCardsPanel enrollments={enrollments} exams={exams} admitCards={admitCards} onRefresh={fetchData} />}
+        {tab === 'contacts' && <ContactsPanel contacts={contacts} onRefresh={fetchData} />}
+        {tab === 'notifications' && <NotificationsPanel notifications={notifications} onRefresh={fetchData} />}
+        {tab === 'settings' && <SettingsPanel onRefresh={fetchData} />}
+      </Suspense>
     </PanelLayout>
   )
 }

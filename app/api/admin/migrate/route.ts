@@ -3,6 +3,7 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
+import { rateLimit } from '@/lib/rate-limit'
 
 const MIGRATION_FILES = [
   '0000_curly_trish_tilby.sql',
@@ -13,6 +14,9 @@ const MIGRATION_FILES = [
 ]
 
 export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'admin.migrate' })
+  if (limiter) return limiter
+
   try {
     if (process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })

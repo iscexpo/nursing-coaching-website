@@ -5,7 +5,7 @@ import { and, eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
-  const limiter = rateLimit(request, { windowMs: 60_000, max: 20, prefix: 'admissions.status' })
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 20, prefix: 'admissions.status' })
   if (limiter) return limiter
 
   try {

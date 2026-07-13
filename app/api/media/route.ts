@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { requireAdmin } from '@/lib/permissions'
+import { rateLimit } from '@/lib/rate-limit'
 
 const ALLOWED_MIME_TYPES = [
   'image/jpeg',
@@ -35,6 +36,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'media.upload' })
+  if (limiter) return limiter
+
   try {
     const auth = await requireAdmin()
     if (!auth.ok) return auth.response

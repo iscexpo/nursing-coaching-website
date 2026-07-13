@@ -10,8 +10,8 @@ import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const authz = await requireAdmin()
+    if (!authz.ok) return authz.response
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const limiter = rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'students.create' })
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'students.create' })
   if (limiter) return limiter
 
   try {

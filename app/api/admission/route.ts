@@ -7,7 +7,7 @@ import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
-  const limiter = rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'admission' })
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'admission' })
   if (limiter) return limiter
 
   try {

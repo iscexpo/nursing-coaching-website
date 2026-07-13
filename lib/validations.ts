@@ -6,7 +6,7 @@ export const paginationSchema = z.object({
 })
 
 export const createCourseSchema = z.object({
-  slug: z.string().min(1).max(200),
+  slug: z.string().min(1).max(200).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug format'),
   title: z.string().min(1).max(200),
   description: z.string().min(1),
   shortDescription: z.string().max(500).optional(),
@@ -118,20 +118,20 @@ export const createQuestionSchema = z.object({
 
 export const submitExamSchema = z.object({
   examId: z.string().uuid(),
-  answers: z.record(z.coerce.number().int().min(0).max(3)),
+  answers: z.record(z.string(), z.number().int().min(0).max(3)),
   timeTaken: z.number().int().min(0).optional(),
 })
 
 export const createAdmissionSchema = z.object({
   name: z.string().min(1).max(200),
-  phone: z.string().min(10).max(20),
+  phone: z.string().regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   courseSlug: z.string().min(1).max(200),
   message: z.string().max(2000).optional(),
 })
 
 export const createContactInquirySchema = z.object({
   name: z.string().min(1).max(200),
-  phone: z.string().min(10).max(20),
+  phone: z.string().regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   message: z.string().min(1).max(5000),
 })
 

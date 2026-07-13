@@ -10,6 +10,16 @@ export async function getSession() {
 
 export type Role = 'super-admin' | 'admin' | 'teacher' | 'student'
 
+/** Returns true for both `admin` and `super-admin` roles. */
+export function isAdmin(role: string | undefined | null): boolean {
+  return role === 'admin' || role === 'super-admin'
+}
+
+/** Returns true only for the `super-admin` role. */
+export function isSuperAdmin(role: string | undefined | null): boolean {
+  return role === 'super-admin'
+}
+
 export type Permission =
   | 'admin.access'
   | 'settings.view'

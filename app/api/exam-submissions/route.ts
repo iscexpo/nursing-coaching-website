@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { eq, desc, and, count } from 'drizzle-orm'
+import { getSession, isAdmin } from '@/lib/permissions'
 import { submitExamSchema, paginationSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
@@ -17,21 +17,17 @@ export async function GET(request: NextRequest) {
     })
     const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
 
-    let data
-    if (session.user.role === 'admin') {
-      data = await db.select().from(examSubmissions)
-        .orderBy(desc(examSubmissions.createdAt))
-        .limit(limit)
-        .offset((page - 1) * limit)
-    } else {
-      data = await db.select().from(examSubmissions)
-        .where(eq(examSubmissions.userId, session.user.id))
-        .orderBy(desc(examSubmissions.createdAt))
-        .limit(limit)
-        .offset((page - 1) * limit)
-    }
+    const where = isAdmin(session.user.role) ? undefined : eq(examSubmissions.userId, session.user.id)
 
-    return NextResponse.json({ data, page, limit })
+    const data = await db.select().from(examSubmissions)
+      .where(where)
+      .orderBy(desc(examSubmissions.createdAt))
+      .limit(limit)
+      .offset((page - 1) * limit)
+
+    const [totalRow] = await db.select({ count: count() }).from(examSubmissions).where(where)
+
+    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch submissions' }, { status: 500 })
   }
@@ -54,7 +50,19 @@ export async function POST(request: NextRequest) {
     if (!exam) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
     if (!exam.isActive) return NextResponse.json({ error: 'Exam is not active' }, { status: 400 })
 
-    const examQuestions = await db.select().from(questions).where(eq(questions.examId, examId))
+    // Prevent multiple attempts for the same exam by the same user.
+    const existing = await db.select({ id: examSubmissions.id }).from(examSubmissions)
+      .where(and(eq(examSubmissions.userId, session.user.id), eq(examSubmissions.examId, examId)))
+      .limit(1)
+    if (existing.length > 0) {
+      return NextResponse.json({ error: 'এই পরীক্ষাটি ইতিমধ্যে জমা দেওয়া হয়েছে' }, { status: 409 })
+    }
+
+    // Only fetch the fields required for scoring; never expose correct answers.
+    const examQuestions = await db.select({
+      id: questions.id,
+      correctIndex: questions.correctIndex,
+    }).from(questions).where(eq(questions.examId, examId))
     if (examQuestions.length === 0) {
       return NextResponse.json({ error: 'No questions found for this exam' }, { status: 400 })
     }

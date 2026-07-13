@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { getSession, isAdmin } from '@/lib/permissions'
 import { createNotificationSchema } from '@/lib/validations'
 
 export async function GET() {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     const { title, message, type, link, targetUserId } = parsed.data
 
-    if (session.user.role !== 'admin') {
+    if (!isAdmin(session.user.role)) {
       return NextResponse.json({ error: 'Only admins can create notifications' }, { status: 403 })
     }
 

@@ -137,7 +137,7 @@ export default function DashboardPage() {
   const totalDue = enrollments.reduce((s, e) => s + e.dueAmount, 0)
   const totalPaid = enrollments.reduce((s, e) => s + e.paidAmount, 0)
 
-  const welcomeParts = [`ফোন: ${user.phoneNumber}`]
+  const welcomeParts = user.phoneNumber ? [`ফোন: ${user.phoneNumber}`] : []
   if (user.studentId) welcomeParts.push(`ID: ${user.studentId}`)
   if (totalDue > 0) welcomeParts.push(`বকেয়: ৳${totalDue.toLocaleString()}`)
 

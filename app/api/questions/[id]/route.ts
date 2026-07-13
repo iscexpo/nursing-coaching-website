@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { createQuestionSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const [question] = await db.select().from(questions).where(eq(questions.id, id))
     if (!question) return NextResponse.json({ error: 'Question not found' }, { status: 404 })
 
-    if (session.user.role !== 'admin') {
+    if (!isAdmin(session.user.role)) {
       const { correctIndex, ...rest } = question
       return NextResponse.json(rest)
     }
