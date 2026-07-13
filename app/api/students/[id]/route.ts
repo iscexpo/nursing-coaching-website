@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin, isAdmin, isSuperAdmin } from '@/lib/permissions'
 import { updateStudentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
@@ -43,10 +43,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const [existing] = await db.select().from(user).where(eq(user.id, id))
     if (!existing) return NextResponse.json({ error: 'Student not found' }, { status: 404 })
 
-    const [updated] = await db.update(user).set({
-      ...parsed.data,
-      updatedAt: new Date(),
-    }).where(eq(user.id, id)).returning()
+    const { role, ...safeData } = parsed.data
+
+    if (role && !isSuperAdmin(session.user.role)) {
+      return NextResponse.json({ error: 'শুধুমাত্র সুপার-অ্যাডমিন ভূমিকা পরিবর্তন করতে পারেন' }, { status: 403 })
+    }
+
+    const updatePayload: Record<string, unknown> = { ...safeData, updatedAt: new Date() }
+    if (role) updatePayload.role = role
+
+    const [updated] = await db.update(user).set(updatePayload).where(eq(user.id, id)).returning()
 
     void writeAudit(
       buildAuditEntry(

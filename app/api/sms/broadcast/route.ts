@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod/v3'
-import { getSession } from '@/lib/permissions'
+import { requireAdmin } from '@/lib/permissions'
 import { sendBroadcastSms } from '@/lib/sms'
+import { rateLimit } from '@/lib/rate-limit'
 
 const broadcastSchema = z.object({
   title: z.string().min(1).max(200),
@@ -11,11 +12,12 @@ const broadcastSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'sms.broadcast' })
+  if (limiter) return limiter
+
   try {
-    const session = await getSession()
-    if (!session || (session.user.role !== 'admin' && session.user.role !== 'super-admin')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const auth = await requireAdmin()
+    if (!auth.ok) return auth.response
 
     const body = await request.json()
     const parsed = broadcastSchema.safeParse(body)

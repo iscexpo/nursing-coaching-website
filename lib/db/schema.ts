@@ -9,7 +9,7 @@ export const user = pgTable('user', {
   image: text('image'),
   phoneNumber: text('phone_number').unique(),
   phoneNumberVerified: boolean('phone_number_verified').notNull().default(false),
-  role: text('role').$type<'super-admin' | 'admin' | 'student'>().default('student').notNull(),
+  role: text('role').$type<'super-admin' | 'admin' | 'teacher' | 'student'>().default('student').notNull(),
   studentId: text('student_id').unique(),
   address: text('address'),
   village: text('village'),
@@ -293,7 +293,7 @@ export const examSubmissions = pgTable('exam_submissions', {
     .references(() => exams.id, { onDelete: 'cascade' }),
   score: integer('score').notNull(),
   total: integer('total').notNull(),
-  answers: jsonb('answers').$type<Record<number, number>>().notNull(),
+  answers: jsonb('answers').$type<Record<string, number>>().notNull(),
   timeTaken: integer('time_taken'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (table) => [

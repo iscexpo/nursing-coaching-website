@@ -4,6 +4,7 @@ import { payments, enrollments, invoices } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
 import { getSession, isAdmin } from '@/lib/permissions'
 import { createPaymentSchema, paginationSchema } from '@/lib/validations'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,6 +35,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'payments.create' })
+  if (limiter) return limiter
+
   try {
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

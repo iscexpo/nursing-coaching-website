@@ -109,7 +109,7 @@ export interface Student {
   image: string | null
   phoneNumber: string | null
   phoneNumberVerified: boolean
-  role: 'admin' | 'student'
+  role: 'super-admin' | 'admin' | 'teacher' | 'student'
   studentId: string | null
   address: string | null
   village: string | null
@@ -133,7 +133,7 @@ export interface ExamSubmission {
   examId: string
   score: number
   total: number
-  answers: Record<number, number>
+  answers: Record<string, number>
   timeTaken: number | null
   createdAt: string
   userName?: string | null

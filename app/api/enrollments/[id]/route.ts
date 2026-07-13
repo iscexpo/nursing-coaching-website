@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { updateEnrollmentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit, writeLifecycleEvent } from '@/lib/audit'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -124,13 +125,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
       )
     )
-
-    await writeLifecycleEvent({
-      studentId: existing.userId,
-      enrollmentId: existing.id,
-      eventType: 'enrollment.deleted',
-      details: { previousStatus: existing.status },
-    })
 
     return NextResponse.json({ success: true })
   } catch {

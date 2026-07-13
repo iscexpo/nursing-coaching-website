@@ -5,6 +5,9 @@ import { SectionHeading } from '@/components/section-heading'
 import { SITE } from '@/lib/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { CalendarDays, Clock, Users, FileCheck } from 'lucide-react'
+import { db } from '@/lib/db'
+import { exams } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 
 export const metadata = {
   title: 'মডেল টেস্ট | কর্নিয়া নার্সিং কোচিং',
@@ -12,7 +15,7 @@ export const metadata = {
   alternates: { canonical: '/model-test' },
 }
 
-const SCHEDULES = [
+const FALLBACK_SCHEDULES = [
   {
     day: 'শুক্রবার',
     time: 'সকাল ১০:০০টা',
@@ -34,7 +37,22 @@ const FEATURES = [
   { icon: CalendarDays, label: 'সাপ্তাহিক পরীক্ষা', desc: 'প্রতি সপ্তাহে দুইবার মডেল টেস্ট' },
 ]
 
-export default function ModelTestPage() {
+export default async function ModelTestPage() {
+  const activeExams = await db
+    .select()
+    .from(exams)
+    .where(eq(exams.isActive, true))
+    .orderBy(desc(exams.createdAt))
+
+  const schedules = activeExams.length > 0
+    ? activeExams.map((exam) => ({
+        day: exam.subject,
+        time: `${exam.duration} মিনিট`,
+        topic: exam.title,
+        difficulty: exam.difficulty,
+      }))
+    : FALLBACK_SCHEDULES
+
   return (
     <>
       <SiteHeader />
@@ -70,7 +88,7 @@ export default function ModelTestPage() {
               পরীক্ষার সময়সূচি
             </h2>
             <div className="grid gap-6 sm:grid-cols-2">
-              {SCHEDULES.map((s) => (
+              {schedules.map((s) => (
                 <div key={s.day} className="rounded-2xl border border-border bg-card p-6 shadow-sm">
                   <div className="flex items-center gap-3">
                     <span className="rounded-full bg-brand/10 px-3 py-1 text-sm font-bold text-brand">
@@ -81,9 +99,11 @@ export default function ModelTestPage() {
                   <h3 className="mt-3 font-heading text-lg font-semibold text-foreground">
                     {s.topic}
                   </h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    আসন সংখ্যা: {s.seats}
-                  </p>
+                  {'difficulty' in s && (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      কঠিনতা: {s.difficulty === 'easy' ? 'সহজ' : s.difficulty === 'hard' ? 'কঠিন' : 'মাঝারি'}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

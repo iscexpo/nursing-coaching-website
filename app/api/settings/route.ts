@@ -3,6 +3,7 @@ import { getSession, requireAdmin, requireSuperAdmin, isSuperAdmin } from '@/lib
 import { getSystemSettings, saveSystemSettings } from '@/lib/settings'
 import { settingsSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { rateLimit } from '@/lib/rate-limit'
 
 const MASK = '********'
 
@@ -31,6 +32,9 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'settings.update' })
+  if (limiter) return limiter
+
   try {
     const session = await getSession()
     const auth = await requireSuperAdmin()

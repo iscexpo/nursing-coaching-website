@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       if (admin) {
         base.correctIndex = q.correctIndex
       }
-      base.userAnswer = submission.answers[q.id as unknown as number]
+      base.userAnswer = submission.answers[q.id]
       return base
     })
 

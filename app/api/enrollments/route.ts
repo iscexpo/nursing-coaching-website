@@ -5,6 +5,7 @@ import { eq, desc, and, count } from 'drizzle-orm'
 import { getSession, isAdmin } from '@/lib/permissions'
 import { createEnrollmentSchema, paginationSchema } from '@/lib/validations'
 import { writeLifecycleEvent } from '@/lib/audit'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -73,6 +74,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'enrollments.create' })
+  if (limiter) return limiter
+
   try {
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
