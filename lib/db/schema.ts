@@ -256,6 +256,16 @@ export const notices = pgTable('notices', {
   index('notices_created_idx').on(table.createdAt),
 ])
 
+export const subjects = pgTable('subjects', {
+  id: text('id').primaryKey(),
+  name: text('name').unique().notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('subjects_is_active_idx').on(table.isActive),
+])
+
 export const exams = pgTable('exams', {
   id: text('id').primaryKey(),
   title: text('title').notNull(),
