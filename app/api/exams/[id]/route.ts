@@ -8,8 +8,6 @@ import { updateExamSchema } from '@/lib/validations'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
-    const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const [exam] = await db.select({
       id: exams.id,
