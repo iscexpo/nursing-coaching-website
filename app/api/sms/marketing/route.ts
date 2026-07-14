@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod/v3'
 import { requireAdmin } from '@/lib/permissions'
 import { extractPhoneNumbersFromSheet } from '@/lib/sheet-sms'
-import { buildBroadcastMessage } from '@/lib/sms'
+import { buildBroadcastMessage, sendSmsToRecipients } from '@/lib/sms'
 import { rateLimit } from '@/lib/rate-limit'
 
 const marketingSchema = z.object({
@@ -35,13 +35,23 @@ export async function POST(request: NextRequest) {
     const recipients = await extractPhoneNumbersFromSheet(file)
     const message = buildBroadcastMessage(parsed.data.title, parsed.data.content)
 
+    if (recipients.length === 0) {
+      return NextResponse.json({
+        sent: 0,
+        recipients: [],
+        message,
+        provider: 'sheet-upload',
+        skipped: true,
+        reason: 'No valid phone numbers found in the uploaded sheet',
+      })
+    }
+
+    const result = await sendSmsToRecipients(recipients, message)
+
     return NextResponse.json({
-      sent: recipients.length,
+      ...result,
       recipients,
       message,
-      provider: 'sheet-upload',
-      skipped: recipients.length === 0,
-      reason: recipients.length === 0 ? 'No valid phone numbers found in the uploaded sheet' : 'Sheet-based SMS broadcast prepared',
     })
   } catch {
     return NextResponse.json({ error: 'Failed to process sheet-based SMS marketing' }, { status: 500 })

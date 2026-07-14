@@ -1,7 +1,8 @@
 import { db } from '@/lib/db'
 import { getSystemSettings } from '@/lib/settings'
 import { user } from '@/lib/db/schema'
-import { eq, inArray } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
+import { sendBulkSms, type GpSmsConfig } from '@/lib/gp-sms'
 
 export type SmsBroadcastPayload = {
   title: string
@@ -44,6 +45,39 @@ export async function getBroadcastRecipients() {
   return normalizePhoneNumbers(students.map((student) => student.phoneNumber))
 }
 
+export async function sendSmsToRecipients(phoneNumbers: string[], message: string) {
+  const settings = await getSystemSettings()
+
+  if (settings.smsProvider === 'none' || !settings.smsApiKey) {
+    return {
+      sent: 0,
+      failed: 0,
+      provider: settings.smsProvider,
+      skipped: true,
+      reason: 'SMS provider is not configured',
+    }
+  }
+
+  const gpConfig: GpSmsConfig = {
+    apiKey: settings.smsApiKey,
+    senderId: settings.smsSenderId,
+  }
+
+  const result = await sendBulkSms({
+    config: gpConfig,
+    phoneNumbers,
+    message,
+  })
+
+  return {
+    sent: result.totalSent,
+    failed: result.totalFailed,
+    provider: 'grameenphone',
+    skipped: false,
+    results: result.results,
+  }
+}
+
 export async function sendBroadcastSms(payload: SmsBroadcastPayload) {
   const settings = await getSystemSettings()
   const message = buildBroadcastMessage(payload.title, payload.content, payload.tag, payload.isUrgent)
@@ -60,23 +94,24 @@ export async function sendBroadcastSms(payload: SmsBroadcastPayload) {
     }
   }
 
-  if (settings.smsProvider === 'bulk') {
-    return {
-      sent: recipients.length,
-      recipients,
-      provider: 'bulk',
-      message,
-      skipped: false,
-      reason: 'Bulk SMS provider simulated successfully',
-    }
+  const gpConfig: GpSmsConfig = {
+    apiKey: settings.smsApiKey,
+    senderId: settings.smsSenderId,
   }
 
+  const result = await sendBulkSms({
+    config: gpConfig,
+    phoneNumbers: recipients,
+    message,
+  })
+
   return {
-    sent: recipients.length,
+    sent: result.totalSent,
+    failed: result.totalFailed,
     recipients,
-    provider: settings.smsProvider,
+    provider: 'grameenphone',
     message,
     skipped: false,
-    reason: 'SMS provider simulated successfully',
+    results: result.results,
   }
 }
