@@ -51,6 +51,8 @@ function getTrustedOrigins() {
     'https://0.0.0.0:3000',
     'http://[::1]:3000',
     'https://[::1]:3000',
+    'https://iscexpo.edu.bd',
+    'http://iscexpo.edu.bd',
   ]
   const normalized = new Set<string>()
 
