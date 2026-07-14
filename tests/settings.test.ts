@@ -26,7 +26,7 @@ describe('getSystemSettings', () => {
 
     await expect(getSystemSettings()).resolves.toMatchObject({
       id: 'primary',
-      siteName: 'কর্ণিয়া নার্সিং কোচিং',
+      siteName: 'ISC Expo - Icon Skill & Career Expo',
       siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
       cmsContent: expect.objectContaining({
         hero: expect.objectContaining({

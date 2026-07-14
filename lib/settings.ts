@@ -21,7 +21,7 @@ export type SystemSettings = {
 function createDefaultSystemSettings(): SystemSettings {
   return {
     id: 'primary',
-    siteName: 'কর্ণিয়া নার্সিং কোচিং',
+    siteName: 'ISC Expo - Icon Skill & Career Expo',
     siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
     smsProvider: 'none',
     smsApiKey: '',
@@ -47,7 +47,7 @@ export async function getSystemSettings() {
 
     const [created] = await db.insert(settings).values({
       id: 'primary',
-      siteName: 'কর্ণিয়া নার্সিং কোচিং',
+      siteName: 'ISC Expo - Icon Skill & Career Expo',
       siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
       smsProvider: 'none',
       smsApiKey: '',

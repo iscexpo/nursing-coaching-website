@@ -209,7 +209,7 @@ export const invoices = pgTable('invoices', {
 
 export const settings = pgTable('settings', {
   id: text('id').primaryKey(),
-  siteName: text('site_name').notNull().default('কর্ণিয়া নার্সিং কোচিং'),
+  siteName: text('site_name').notNull().default('ISC Expo - Icon Skill & Career Expo'),
   siteTagline: text('site_tagline').notNull().default('সাফল্যের জন্য প্রস্তুতি'),
   smsProvider: text('sms_provider').notNull().default('none'),
   smsApiKey: text('sms_api_key').default(''),
