@@ -160,9 +160,9 @@ export default function AdmissionPage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'ভর্তি' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'ভর্তি' }]} />
             <FadeIn>
               <SectionHeading
                 eyebrow="ভর্তি চলমান"

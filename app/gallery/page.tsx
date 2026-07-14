@@ -17,9 +17,9 @@ export default function GalleryPage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'গ্যালারি' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'গ্যালারি' }]} />
             <SectionHeading
               eyebrow="গ্যালারি"
               title="আমাদের ছবি"

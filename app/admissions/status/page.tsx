@@ -50,9 +50,9 @@ export default function AdmissionStatusPage() {
 
   return (
     <main>
-      <Breadcrumb items={[{ label: 'ভর্তি' }, { label: 'আবেদনের স্ট্যাটাস' }]} />
       <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-4">
+          <Breadcrumb items={[{ label: 'ভর্তি' }, { label: 'আবেদনের স্ট্যাটাস' }]} />
           <SectionHeading
             eyebrow="আবেদন স্ট্যাটাস"
             title="আপনার আবেদন কী অবস্থায় আছে?"

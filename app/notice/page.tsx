@@ -39,9 +39,9 @@ export default async function NoticePage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'নোটিশ' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'নোটিশ' }]} />
             <SectionHeading
               eyebrow="নোটিশ বোর্ড"
               title="সকল নোটিশ"

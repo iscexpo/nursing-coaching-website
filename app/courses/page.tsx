@@ -40,9 +40,9 @@ export default async function CoursesPage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'কোর্স' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'কোর্স' }]} />
             <SectionHeading
               eyebrow="আমাদের কোর্স"
               title="সকল কোর্স সমূহ"

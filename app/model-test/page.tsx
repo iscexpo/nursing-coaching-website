@@ -82,11 +82,10 @@ export default async function ModelTestPage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'মডেল টেস্ট' }]} />
-
         {/* Hero */}
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'মডেল টেস্ট' }]} />
             <SectionHeading
               eyebrow="মডেল টেস্ট"
               title="সাপ্তাহিক মডেল টেস্ট"

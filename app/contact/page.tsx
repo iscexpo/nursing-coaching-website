@@ -53,9 +53,9 @@ export default function ContactPage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'যোগাযোগ' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'যোগাযোগ' }]} />
             <SectionHeading
               eyebrow="যোগাযোগ"
               title="আমাদের সাথে যোগাযোগ করুন"
