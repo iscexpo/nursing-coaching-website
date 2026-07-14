@@ -5,6 +5,7 @@ import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
 import { Lightbox } from '@/components/ui/lightbox'
 import { GALLERY } from '@/lib/site-data'
+import { cn } from '@/lib/utils'
 
 export function Gallery() {
   const lightboxImages = GALLERY.map((g) => ({
@@ -28,7 +29,10 @@ export function Gallery() {
               <Lightbox
                 images={lightboxImages}
                 trigger={
-                  <div className="group relative aspect-4/3 overflow-hidden rounded-2xl">
+                  <div className={cn(
+                    'group relative overflow-hidden rounded-2xl',
+                    i === 0 ? 'aspect-[4/5] lg:row-span-2' : 'aspect-4/3',
+                  )}>
                     <Image
                       src={g.image || '/placeholder.svg'}
                       alt={g.caption}

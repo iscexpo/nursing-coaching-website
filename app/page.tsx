@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
+import { BackToTop } from '@/components/back-to-top'
 import { Hero } from '@/components/sections/hero'
 import { WhyCornia } from '@/components/sections/why-cornia'
 import { Courses } from '@/components/sections/courses'
@@ -49,6 +50,7 @@ export default function HomePage() {
       </main>
       <SiteFooter />
       <FloatingWhatsApp />
+      <BackToTop />
     </>
   )
 }

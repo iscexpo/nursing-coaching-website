@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,10 +11,24 @@ import { STORIES } from '@/lib/site-data'
 export function SuccessStories() {
   const [index, setIndex] = useState(0)
   const story = STORIES[index]
+  const touchStart = useRef<number | null>(null)
 
   const go = (dir: number) => {
     setIndex((i) => (i + dir + STORIES.length) % STORIES.length)
   }
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStart.current = e.touches[0].clientX
+  }, [])
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStart.current === null) return
+    const diff = touchStart.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 50) {
+      go(diff > 0 ? 1 : -1)
+    }
+    touchStart.current = null
+  }, [])
 
   return (
     <section id="success" className="bg-secondary/50 py-16 md:py-20">
@@ -28,7 +42,11 @@ export function SuccessStories() {
         </FadeIn>
 
         <FadeIn delay={200}>
-          <div className="mt-12 rounded-3xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-10">
+          <div
+            className="mt-12 rounded-3xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-10"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
               <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl border-4 border-secondary shadow-lg sm:size-28">
                 <Image src={story.image || '/placeholder.svg'} alt={story.name} fill className="object-cover" />

@@ -3,12 +3,7 @@ import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
 import { getCmsContent } from '@/lib/content-server'
 
-const ICONS: Record<string, LucideIcon> = {
-  trophy: Trophy,
-  book: BookOpen,
-  file: FileText,
-  target: Target,
-}
+const ICON_LIST: LucideIcon[] = [Trophy, BookOpen, FileText, Target]
 
 export async function WhyCornia() {
   const content = await getCmsContent()
@@ -24,7 +19,7 @@ export async function WhyCornia() {
         </FadeIn>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {content.whyCornia.map((item, i) => {
-            const Icon = ICONS.trophy
+            const Icon = ICON_LIST[i % ICON_LIST.length]
             return (
               <FadeIn key={item.title} delay={i * 100}>
                 <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-2 hover:border-brand/30 hover:shadow-xl hover:shadow-brand/5">
