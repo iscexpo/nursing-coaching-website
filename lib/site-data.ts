@@ -1,6 +1,6 @@
 export const SITE = {
   nameBn: 'কর্নিয়া নার্সিং কোচিং',
-  name: 'Cornia Nursing Coaching',
+  name: 'ISC - Icon Skill & Career Expo',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://cornianursing.com',
   city: 'খুলনা',
   phone: '01784-176442',

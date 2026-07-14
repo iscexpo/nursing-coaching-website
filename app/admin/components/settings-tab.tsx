@@ -306,7 +306,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           </Field>
 
           <Field label="সাইটের নাম (English)">
-            <TextInput value={form.site.nameEn} onChange={(v) => updateSite('nameEn', v)} placeholder="Cornia Nursing Coaching" />
+            <TextInput value={form.site.nameEn} onChange={(v) => updateSite('nameEn', v)} placeholder="ISC - Icon Skill & Career Expo" />
           </Field>
 
           <Field label="ট্যাগলাইন">

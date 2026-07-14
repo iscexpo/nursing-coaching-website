@@ -37,7 +37,7 @@ export type CmsContentInput = {
 export const defaultCmsContent: CmsContent = {
   site: {
     nameBn: 'কর্নিয়া নার্সিং কোচিং',
-    nameEn: 'Cornia Nursing Coaching',
+    nameEn: 'ISC - Icon Skill & Career Expo',
     tagline: 'সাফল্যের জন্য প্রস্তুতি',
     logo: '/logo.png',
     city: 'খুলনা',
