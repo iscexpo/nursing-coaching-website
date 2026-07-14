@@ -25,6 +25,7 @@
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
+    "next-intl": "^4.13.2",
     "postgres": "^3.4.9",
     "react": "^19",
     "react-dom": "^19",

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { FileText, ArrowRight, Bell, Megaphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FadeIn } from '@/components/ui/fade-in'
@@ -7,6 +8,7 @@ import { notices } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
 
 export async function ModelTestAndNotice() {
+  const t = await getTranslations('modelTestNotice')
   let data: { id: string; title: string; tag: string; isUrgent: boolean; createdAt: Date }[] = []
   try {
     data = await db.select({
@@ -33,15 +35,14 @@ export async function ModelTestAndNotice() {
               <span className="flex size-12 items-center justify-center rounded-xl bg-brand-foreground/15 backdrop-blur-sm">
                 <FileText className="size-6" />
               </span>
-              <h2 className="mt-5 font-heading text-2xl font-bold sm:text-3xl">অনলাইন মডেল টেস্ট</h2>
+              <h2 className="mt-5 font-heading text-2xl font-bold sm:text-3xl">{t('modelTest.title')}</h2>
               <p className="mt-3 max-w-md leading-relaxed text-brand-foreground/85">
-                সর্বশেষ সিলেবাস অনুযায়ী তৈরি ফ্রি মডেল টেস্ট দিয়ে নিজেকে যাচাই করুন। তাৎক্ষণিক ফলাফল ও
-                বিস্তারিত সমাধান।
+                {t('modelTest.description')}
               </p>
               <ul className="mt-5 flex flex-wrap gap-2 text-sm">
-                {['MCQ ব্যাংক', 'তাৎক্ষণিক রেজাল্ট', 'র‍্যাংকিং', 'সমাধান'].map((t) => (
-                  <li key={t} className="rounded-full bg-brand-foreground/10 px-3 py-1 backdrop-blur-sm">
-                    {t}
+                {[t('modelTest.tags.mcq'), t('modelTest.tags.instant'), t('modelTest.tags.ranking'), t('modelTest.tags.solution')].map((tagText) => (
+                  <li key={tagText} className="rounded-full bg-brand-foreground/10 px-3 py-1 backdrop-blur-sm">
+                    {tagText}
                   </li>
                 ))}
               </ul>
@@ -51,7 +52,7 @@ export async function ModelTestAndNotice() {
               size="lg"
               className="mt-8 h-12 w-fit bg-gold px-8 text-base font-semibold text-gold-foreground shadow-lg shadow-gold/25 transition-all hover:bg-gold/90 hover:shadow-xl hover:-translate-y-0.5"
             >
-              ফ্রি টেস্ট শুরু করুন
+              {t('modelTest.startFree')}
               <ArrowRight className="size-4" />
             </Button>
           </div>
@@ -63,15 +64,15 @@ export async function ModelTestAndNotice() {
             <div className="flex items-center justify-between">
               <h2 className="flex items-center gap-2 font-heading text-2xl font-bold text-foreground">
                 <Megaphone className="size-6 text-brand" />
-                নোটিশ বোর্ড
+                {t('noticeBoard.title')}
               </h2>
               <Button render={<Link href="/notice" />} variant="ghost" size="sm" className="text-brand">
-                সব দেখুন
+                View All
               </Button>
             </div>
             <ul className="mt-5 divide-y divide-border">
               {data.length === 0 ? (
-                <li className="py-8 text-center text-sm text-muted-foreground">কোনো নোটিশ নেই</li>
+                <li className="py-8 text-center text-sm text-muted-foreground">{t('noticeBoard.noNotice')}</li>
               ) : (
                 data.map((n) => (
                   <li key={n.id} className="flex items-start gap-3 py-3.5 transition-colors hover:bg-secondary/50 rounded-lg px-2 -mx-2">

@@ -1,0 +1,240 @@
+{
+  "common": {
+    "home": "Home",
+    "courses": "Courses",
+    "admission": "Admission",
+    "modelTest": "Model Test",
+    "success": "Success",
+    "teachers": "Teachers",
+    "notice": "Notice",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "login": "Login",
+    "enroll": "Enroll Now",
+    "register": "Register",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "close": "Close",
+    "readMore": "Details",
+    "viewAll": "View All",
+    "back": "Previous",
+    "next": "Next",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "error": "Error",
+    "noData": "No data available",
+    "allRightsReserved": "All rights reserved",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "whatsapp": "WhatsApp",
+    "facebook": "Facebook",
+    "youtube": "YouTube",
+    "quickLinks": "Quick Links",
+    "policies": "Policies",
+    "privacyPolicy": "Privacy Policy",
+    "refundPolicy": "Refund Policy",
+    "terms": "Terms & Conditions",
+    "password": "Password",
+    "fullName": "Full Name",
+    "studentId": "Student ID",
+    "optional": "Optional",
+    "language": "Language",
+    "bangla": "বাংলা",
+    "english": "English"
+  },
+  "header": {
+    "welcome": "Welcome to",
+    "enrollingNow": "Enrolling Now",
+    "established": "Est. 2016"
+  },
+  "hero": {
+    "eyebrow": "Khulna's #1 Nursing Coaching",
+    "title": "ISC Expo - Icon Skill & Career Expo",
+    "subtitle": "One of Khulna's most trusted nursing admission coaching. Complete preparation for BNMC admission, B.Sc Nursing, Post Basic B.Sc & job preparation.",
+    "primaryCta": "Enroll Now",
+    "secondaryCta": "Watch Free Class",
+    "successRate": "Success Rate",
+    "successfulStudents": "Successful Students",
+    "features": {
+      "coaching": "Admission Coaching",
+      "council": "Council Exam",
+      "bsc": "B.Sc. Nursing",
+      "postBasic": "Post Basic B.Sc.",
+      "jobPrep": "Job Preparation",
+      "modelTest": "Model Test",
+      "mcqBank": "MCQ Bank",
+      "liveClass": "Live Class",
+      "recordedClass": "Recorded Class"
+    }
+  },
+  "whyUs": {
+    "eyebrow": "Why ISC Expo?",
+    "title": "Your Success is Our Commitment",
+    "description": "Why Khulna's students choose ISC Expo for nursing preparation."
+  },
+  "courses": {
+    "eyebrow": "Our Courses",
+    "title": "Specialized Courses for Every Goal",
+    "description": "From admission to career — the right preparation at every step of your nursing journey.",
+    "noImage": "No image available",
+    "noCourses": "No courses found"
+  },
+  "counters": {
+    "students": "Students",
+    "successRate": "Success Rate",
+    "modelTests": "Model Tests",
+    "lectureSheets": "Lecture Sheets",
+    "experience": "Years Experience"
+  },
+  "successStories": {
+    "eyebrow": "Success Stories",
+    "title": "Our Proud Students",
+    "description": "Those whose dreams ISC Expo helped fulfill."
+  },
+  "freeClass": {
+    "badge": "Completely Free",
+    "title": "Join the Next Free Class",
+    "description": "Experience ISC Expo's teaching method firsthand — completely free of charge.",
+    "register": "Register Now",
+    "date": "Date",
+    "time": "Time",
+    "seatsLeft": "Seats Left",
+    "seatsCount": "Only 15 seats"
+  },
+  "modelTestNotice": {
+    "modelTest": {
+      "title": "Online Model Test",
+      "description": "Test yourself with free model tests based on the latest syllabus. Instant results and detailed solutions.",
+      "startFree": "Start Free Test",
+      "tags": {
+        "mcq": "MCQ Bank",
+        "instant": "Instant Result",
+        "ranking": "Ranking",
+        "solution": "Solution"
+      }
+    },
+    "noticeBoard": {
+      "title": "Notice Board",
+      "noNotice": "No notices available"
+    }
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Get in Touch",
+    "description": "For any questions, visit our office directly or give us a call.",
+    "mapTitle": "ISC Expo - Icon Skill & Career Expo Map"
+  },
+  "breadcrumb": {
+    "home": "Home"
+  },
+  "footer": {
+    "description": "One of Khulna's most trusted nursing admission coaching. Building the next generation of nurses with quality education."
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign In",
+      "subtitle": "Access the ISC Expo - Icon Skill & Career Expo portal",
+      "phoneTab": "Phone",
+      "emailTab": "Email",
+      "phoneLabel": "Phone Number",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Register",
+      "error": "Sign in failed",
+      "tagline": "Start Your",
+      "taglineHighlight": "Nursing Career Journey",
+      "taglineDescription": "Log in to ISC Expo - Icon Skill & Career Expo to track your courses, results & payments."
+    },
+    "signUp": {
+      "title": "Register",
+      "subtitle": "Join ISC Expo - Icon Skill & Career Expo",
+      "phoneTab": "Phone",
+      "emailTab": "Email",
+      "phoneLabel": "Phone Number",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "fullName": "Full Name",
+      "studentId": "Student ID (Optional)",
+      "phoneOptional": "Phone Number (Optional)",
+      "submit": "Register",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign In",
+      "otpSend": "Send OTP",
+      "otpVerify": "Verify",
+      "otpSentTo": "OTP has been sent to",
+      "otpPlaceholder": "6-digit code",
+      "changePhone": "Change phone number",
+      "otpError": "Failed to send OTP",
+      "otpVerifyError": "OTP verification failed",
+      "signUpError": "Registration failed",
+      "tagline": "Join the",
+      "taglineHighlight": "ISC Expo Family",
+      "taglineDescription": "Register to access online model tests, results & class schedules.",
+      "benefits": {
+        "freeTest": "Participate in free model tests",
+        "trackResult": "Track your results & attendance",
+        "manageCourse": "Manage courses & payments"
+      },
+      "steps": {
+        "phone": "Phone",
+        "otp": "OTP",
+        "details": "Details"
+      }
+    }
+  },
+  "admission": {
+    "title": "Admission Form",
+    "personalInfo": "Personal Information",
+    "education": "Educational Qualifications",
+    "course": "Course Selection",
+    "review": "Review",
+    "fullName": "Full Name",
+    "phone": "Mobile Number",
+    "email": "Email (Optional)",
+    "ssc": "SSC / Equivalent",
+    "hsc": "HSC / Equivalent",
+    "honors": "Honors (Optional)",
+    "roll": "Roll",
+    "registration": "Reg. No",
+    "board": "Board",
+    "selectBoard": "Select Board",
+    "gpa": "GPA",
+    "selectCourse": "Select Course",
+    "prev": "Previous",
+    "next": "Next",
+    "submit": "Complete Application",
+    "success": "Your application has been accepted!",
+    "error": "Something went wrong. Please try again."
+  },
+  "noticePage": {
+    "title": "All Notices",
+    "description": "Latest notices, updates & important information from ISC Expo - Icon Skill & Career Expo."
+  },
+  "galleryPage": {
+    "title": "Our Photos",
+    "description": "Photos from various events, seminars & classes at ISC Expo - Icon Skill & Career Expo."
+  },
+  "contactPage": {
+    "title": "Contact Us",
+    "description": "For any questions or information, contact us directly."
+  },
+  "coursesPage": {
+    "title": "All Courses",
+    "description": "From BNMC admission to job preparation — experienced teachers & modern teaching methods in every course."
+  },
+  "modelTestPage": {
+    "title": "Weekly Model Test",
+    "description": "Participate in our weekly model tests modeled after BNMC admission exams and assess yourself."
+  },
+  "admissionStatusPage": {
+    "title": "What is the Status of Your Application?",
+    "description": "Check your admission application status with your reference number and phone number."
+  },
+  "admissionPage": {
+    "title": "Enroll Now",
+    "description": "Fill out our easy online admission wizard to enroll at ISC Expo - Icon Skill & Career Expo."
+  }
+}

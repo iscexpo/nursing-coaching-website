@@ -1,35 +1,31 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import createMiddleware from 'next-intl/middleware';
+import {routing} from './i18n/routing';
+import {NextResponse, type NextRequest} from 'next/server';
 
-/**
- * Middleware provides authentication gating only (session cookie check).
- * Authorization (role verification) is handled by server components in
- * `app/admin/layout.tsx` which calls `getSession()` and checks `isAdmin()`.
- *
- * This dual-gate pattern is intentional: middleware runs in the Edge runtime
- * where Better Auth's full session lookup is not available without an extra
- * network hop. The admin layout server component performs the authoritative
- * role check before any admin content renders.
- */
+const handleI18nRouting = createMiddleware(routing);
+
 export default async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const {pathname} = request.nextUrl;
   const sessionToken = request.cookies.get('__Secure-better-auth.session_token')?.value
-    || request.cookies.get('better-auth.session_token')?.value
+    || request.cookies.get('better-auth.session_token')?.value;
 
-  const isAuthPage = pathname.startsWith('/auth')
-  const isDashboard = pathname.startsWith('/dashboard')
-  const isAdmin = pathname.startsWith('/admin')
+  const isDashboard = pathname.startsWith('/dashboard') || pathname.includes('/dashboard');
+  const isAdmin = pathname.startsWith('/admin') || pathname.includes('/admin');
+  const isAuthPage = pathname.includes('/auth/sign-in') || pathname.includes('/auth/sign-up');
 
   if (!sessionToken && (isDashboard || isAdmin)) {
-    return NextResponse.redirect(new URL('/auth/sign-in', request.url))
+    return NextResponse.redirect(new URL('/auth/sign-in', request.url));
   }
 
   if (isAuthPage && sessionToken) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  return NextResponse.next()
+  return handleI18nRouting(request);
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/auth/:path*'],
-}
+  matcher: [
+    '/((?!api|_next|images|icon.svg|icon-dark-32x32.png|icon-light-32x32.png|apple-icon.png|favicon.ico|manifest.webmanifest|robots.txt|sitemap.xml|opengraph-image.*).*)',
+  ],
+};

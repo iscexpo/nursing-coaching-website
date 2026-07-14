@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { getTranslations } from 'next-intl/server'
 import { Clock, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SectionHeading } from '@/components/section-heading'
@@ -9,6 +10,7 @@ import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
 export async function Courses() {
+  const t = await getTranslations('courses')
   let data: { id: string; slug: string; title: string; description: string; shortDescription: string | null; duration: string; fee: number; discountFee: number | null; image: string | null }[] = []
   try {
     data = await db.select({
@@ -35,9 +37,9 @@ export async function Courses() {
       <div className="mx-auto max-w-7xl px-4">
         <FadeIn>
           <SectionHeading
-            eyebrow="আমাদের কোর্সসমূহ"
-            title="প্রতিটি লক্ষ্যের জন্য আলাদা কোর্স"
-            description="ভর্তি থেকে চাকরি — নার্সিং ক্যারিয়ারের প্রতিটি ধাপে সঠিক প্রস্তুতি।"
+            eyebrow={t('eyebrow')}
+            title={t('title')}
+            description={t('description')}
           />
         </FadeIn>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -53,7 +55,7 @@ export async function Courses() {
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground">কোনো ছবি নেই</div>
+                    <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground">{t('noImage')}</div>
                   )}
                   <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-brand shadow backdrop-blur-sm">
                     <Clock className="size-3.5" />
@@ -89,7 +91,7 @@ export async function Courses() {
                       size="sm"
                       className="text-brand hover:bg-secondary"
                     >
-                      বিস্তারিত
+                      {t('noImage') === 'No image available' ? 'Details' : 'বিস্তারিত'}
                       <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                     </Button>
                   </div>

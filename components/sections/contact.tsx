@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
@@ -7,12 +8,14 @@ import { useSiteData } from '@/hooks/use-site-data'
 
 export function Contact() {
   const site = useSiteData()
+  const t = useTranslations('common')
+  const tc = useTranslations('contact')
 
   const CONTACTS = [
-    { icon: MapPin, label: 'ঠিকানা', value: site.addressBn, href: undefined },
-    { icon: Phone, label: 'ফোন', value: site.phone, href: site.phoneHref },
-    { icon: MessageCircle, label: 'হোয়াটসঅ্যাপ', value: site.phone, href: site.whatsapp },
-    { icon: Mail, label: 'ইমেইল', value: site.email, href: `mailto:${site.email}` },
+    { icon: MapPin, label: t('address'), value: site.addressBn, href: undefined },
+    { icon: Phone, label: t('phone'), value: site.phone, href: site.phoneHref },
+    { icon: MessageCircle, label: t('whatsapp'), value: site.phone, href: site.whatsapp },
+    { icon: Mail, label: t('email'), value: site.email, href: `mailto:${site.email}` },
   ]
 
   return (
@@ -20,9 +23,9 @@ export function Contact() {
       <div className="mx-auto max-w-7xl px-4">
         <FadeIn>
           <SectionHeading
-            eyebrow="যোগাযোগ"
-            title="আমাদের সাথে যুক্ত হোন"
-            description="যেকোনো প্রশ্নে সরাসরি অফিসে আসুন অথবা কল করুন।"
+            eyebrow={tc('eyebrow')}
+            title={tc('title')}
+            description={tc('description')}
           />
         </FadeIn>
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
@@ -53,7 +56,7 @@ export function Contact() {
           <FadeIn delay={200} direction="right">
             <div className="overflow-hidden rounded-2xl border border-border shadow-sm">
               <iframe
-                title="ISC Expo - Icon Skill & Career Expo ম্যাপ"
+                title={tc('mapTitle')}
                 src="https://www.google.com/maps?q=Khulna+Medical+College+Hospital&output=embed"
                 className="h-full min-h-[300px] w-full"
                 loading="lazy"

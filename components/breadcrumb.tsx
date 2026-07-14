@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { Home, ChevronRight } from 'lucide-react'
 import { JsonLd, breadcrumbJsonLd } from '@/components/json-ld'
 import { SITE } from '@/lib/site-data'
@@ -6,8 +7,9 @@ import { cn } from '@/lib/utils'
 
 export type Crumb = { label: string; href?: string }
 
-export function Breadcrumb({ items, className = '' }: { items: Crumb[]; className?: string }) {
-  const full: Crumb[] = [{ label: 'হোম', href: '/' }, ...items]
+export async function Breadcrumb({ items, className = '' }: { items: Crumb[]; className?: string }) {
+  const t = await getTranslations('breadcrumb')
+  const full: Crumb[] = [{ label: t('home'), href: '/' }, ...items]
 
   return (
     <>

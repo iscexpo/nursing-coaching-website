@@ -1,0 +1,240 @@
+{
+  "common": {
+    "home": "হোম",
+    "courses": "কোর্স",
+    "admission": "ভর্তি",
+    "modelTest": "মডেল টেস্ট",
+    "success": "সাফল্য",
+    "teachers": "শিক্ষক",
+    "notice": "নোটিশ",
+    "gallery": "গ্যালারি",
+    "contact": "যোগাযোগ",
+    "login": "লগইন",
+    "enroll": "ভর্তি হোন",
+    "register": "নিবন্ধন করুন",
+    "menu": "মেনু",
+    "openMenu": "মেনু খুলুন",
+    "close": "বন্ধ",
+    "readMore": "বিস্তারিত",
+    "viewAll": "সব দেখুন",
+    "back": "পূর্ববর্তী",
+    "next": "পরের ধাপ",
+    "submit": "দাখিল করুন",
+    "loading": "লোড হচ্ছে...",
+    "error": "ত্রুটি",
+    "noData": "কোনো তথ্য নেই",
+    "allRightsReserved": "সর্বস্বত্ব সংরক্ষিত",
+    "phone": "ফোন",
+    "email": "ইমেইল",
+    "address": "ঠিকানা",
+    "whatsapp": "হোয়াটসঅ্যাপ",
+    "facebook": "ফেসবুক",
+    "youtube": "ইউটিউব",
+    "quickLinks": "কুইক লিংক",
+    "policies": "পলিসি",
+    "privacyPolicy": "প্রাইভেসি পলিসি",
+    "refundPolicy": "রিফান্ড পলিসি",
+    "terms": "শর্তাবলী",
+    "password": "পাসওয়ার্ড",
+    "fullName": "পুরো নাম",
+    "studentId": "শিক্ষার্থী ID",
+    "optional": "ঐচ্ছিক",
+    "language": "ভাষা",
+    "bangla": "বাংলা",
+    "english": "English"
+  },
+  "header": {
+    "welcome": "স্বাগতম",
+    "enrollingNow": "ভর্তি চলমান",
+    "established": "Est. 2016"
+  },
+  "hero": {
+    "eyebrow": "খুলনার #১ নার্সিং কোচিং",
+    "title": "ISC Expo - Icon Skill & Career Expo",
+    "subtitle": "খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। BNMC ভর্তি পরীক্ষা, B.Sc Nursing, Post Basic B.Sc ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।",
+    "primaryCta": "এখনই ভর্তি হোন",
+    "secondaryCta": "ফ্রি ক্লাস দেখুন",
+    "successRate": "সাফল্যের হার",
+    "successfulStudents": "সফল শিক্ষার্থী",
+    "features": {
+      "coaching": "ভর্তি কোচিং",
+      "council": "কাউন্সিল পরীক্ষা",
+      "bsc": "B.Sc. Nursing",
+      "postBasic": "Post Basic B.Sc.",
+      "jobPrep": "চাকরি প্রস্তুতি",
+      "modelTest": "মডেল টেস্ট",
+      "mcqBank": "MCQ ব্যাংক",
+      "liveClass": "লাইভ ক্লাস",
+      "recordedClass": "Recorded Class"
+    }
+  },
+  "whyUs": {
+    "eyebrow": "কেন ISC Expo?",
+    "title": "আপনার সাফল্যই আমাদের অঙ্গীকার",
+    "description": "যে কারণে খুলনার শিক্ষার্থীরা নার্সিং প্রস্তুতির জন্য ISC Expo-কে বেছে নেয়।"
+  },
+  "courses": {
+    "eyebrow": "আমাদের কোর্সসমূহ",
+    "title": "প্রতিটি লক্ষ্যের জন্য আলাদা কোর্স",
+    "description": "ভর্তি থেকে চাকরি — নার্সিং ক্যারিয়ারের প্রতিটি ধাপে সঠিক প্রস্তুতি।",
+    "noImage": "কোনো ছবি নেই",
+    "noCourses": "কোনো কোর্স পাওয়া যায়নি"
+  },
+  "counters": {
+    "students": "শিক্ষার্থী",
+    "successRate": "সাফল্যের হার",
+    "modelTests": "মডেল টেস্ট",
+    "lectureSheets": "লেকচার শীট",
+    "experience": "বছরের অভিজ্ঞতা"
+  },
+  "successStories": {
+    "eyebrow": "সাফল্যের গল্প",
+    "title": "আমাদের গর্বিত শিক্ষার্থীরা",
+    "description": "যাদের স্বপ্নপূরণে ISC Expo পাশে ছিল।"
+  },
+  "freeClass": {
+    "badge": "সম্পূর্ণ ফ্রি",
+    "title": "আগামী ফ্রি ক্লাসে অংশ নিন",
+    "description": "ISC Expo-এর পাঠদান পদ্ধতি সরাসরি অনুভব করুন — কোনো ফি ছাড়াই।",
+    "register": "রেজিস্টার করুন",
+    "date": "তারিখ",
+    "time": "সময়",
+    "seatsLeft": "আসন বাকি",
+    "seatsCount": "মাত্র ১৫টি"
+  },
+  "modelTestNotice": {
+    "modelTest": {
+      "title": "অনলাইন মডেল টেস্ট",
+      "description": "সর্বশেষ সিলেবাস অনুযায়ী তৈরি ফ্রি মডেল টেস্ট দিয়ে নিজেকে যাচাই করুন। তাৎক্ষণিক ফলাফল ও বিস্তারিত সমাধান।",
+      "startFree": "ফ্রি টেস্ট শুরু করুন",
+      "tags": {
+        "mcq": "MCQ ব্যাংক",
+        "instant": "তাৎক্ষণিক রেজাল্ট",
+        "ranking": "র‍্যাংকিং",
+        "solution": "সমাধান"
+      }
+    },
+    "noticeBoard": {
+      "title": "নোটিশ বোর্ড",
+      "noNotice": "কোনো নোটিশ নেই"
+    }
+  },
+  "contact": {
+    "eyebrow": "যোগাযোগ",
+    "title": "আমাদের সাথে যুক্ত হোন",
+    "description": "যেকোনো প্রশ্নে সরাসরি অফিসে আসুন অথবা কল করুন।",
+    "mapTitle": "ISC Expo - Icon Skill & Career Expo ম্যাপ"
+  },
+  "breadcrumb": {
+    "home": "হোম"
+  },
+  "footer": {
+    "description": "খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। মানসম্মত শিক্ষায় গড়ছি আগামীর নার্স।"
+  },
+  "auth": {
+    "signIn": {
+      "title": "সাইন ইন করুন",
+      "subtitle": "ISC Expo - Icon Skill & Career Expo পোর্টালে প্রবেশ করুন",
+      "phoneTab": "ফোন",
+      "emailTab": "ইমেইল",
+      "phoneLabel": "ফোন নম্বর",
+      "emailLabel": "ইমেইল",
+      "passwordLabel": "পাসওয়ার্ড",
+      "submit": "সাইন ইন",
+      "noAccount": "অ্যাকাউন্ট নেই?",
+      "signUpLink": "নিবন্ধন করুন",
+      "error": "সাইন ইন ব্যর্থ হয়েছে",
+      "tagline": "আপনার নার্সিং ক্যারিয়ারের",
+      "taglineHighlight": "যাত্রা শুরু করুন",
+      "taglineDescription": "ISC Expo - Icon Skill & Career Expo-এ লগইন করে আপনার কোর্স, ফলাফল ও পেমেন্ট ট্র্যাক করুন।"
+    },
+    "signUp": {
+      "title": "নিবন্ধন করুন",
+      "subtitle": "ISC Expo - Icon Skill & Career Expo-এ যোগ দিন",
+      "phoneTab": "ফোন",
+      "emailTab": "ইমেইল",
+      "phoneLabel": "ফোন নম্বর",
+      "emailLabel": "ইমেইল",
+      "passwordLabel": "পাসওয়ার্ড",
+      "fullName": "পুরো নাম",
+      "studentId": "শিক্ষার্থী ID (ঐচ্ছিক)",
+      "phoneOptional": "ফোন নম্বর (ঐচ্ছিক)",
+      "submit": "নিবন্ধন করুন",
+      "hasAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+      "signInLink": "সাইন ইন করুন",
+      "otpSend": "OTP পাঠান",
+      "otpVerify": "যাচাই করুন",
+      "otpSentTo": "নম্বরে OTP পাঠানো হয়েছে",
+      "otpPlaceholder": "৬ ডিজিটের কোড",
+      "changePhone": "ফোন নম্বর পরিবর্তন করুন",
+      "otpError": "OTP পাঠানো যায়নি",
+      "otpVerifyError": "OTP যাচাই ব্যর্থ",
+      "signUpError": "নিবন্ধন ব্যর্থ হয়েছে",
+      "tagline": "ISC Expo পরিবারে",
+      "taglineHighlight": "যোগ দিন",
+      "taglineDescription": "নিবন্ধন করে অনলাইনে কোর্স মডেল টেস্ট, ফলাফল ও ক্লাস স্কেডিউল দেখুন।",
+      "benefits": {
+        "freeTest": "ফ্রি মডেল টেস্টে অংশ নিন",
+        "trackResult": "নিজের ফলাফল ও উপস্থিতি ট্র্যাক করুন",
+        "manageCourse": "কোর্স ও পেমেন্ট ম্যানেজ করুন"
+      },
+      "steps": {
+        "phone": "ফোন",
+        "otp": "OTP",
+        "details": "বিস্তারিত"
+      }
+    }
+  },
+  "admission": {
+    "title": "ভর্তি ফরম",
+    "personalInfo": "ব্যক্তিগত তথ্য",
+    "education": "শিক্ষাগত যোগ্যতা",
+    "course": "কোর্স নির্বাচন",
+    "review": "পর্যালোচনা",
+    "fullName": "পুরো নাম",
+    "phone": "মোবাইল নম্বর",
+    "email": "ইমেইল (ঐচ্ছিক)",
+    "ssc": "SSC / সমমান",
+    "hsc": "HSC / সমমান",
+    "honors": "অনার্স (ঐচ্ছিক)",
+    "roll": "রোল",
+    "registration": "রেজি. নং",
+    "board": "বোর্ড",
+    "selectBoard": "বোর্ড নির্বাচন করুন",
+    "gpa": "GPA",
+    "selectCourse": "কোর্স নির্বাচন করুন",
+    "prev": "পূর্ববর্তী",
+    "next": "পরের ধাপ",
+    "submit": "আবেদন সম্পন্ন করুন",
+    "success": "আপনার আবেদন গ্রহণ করা হয়েছে!",
+    "error": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।"
+  },
+  "noticePage": {
+    "title": "সকল নোটিশ",
+    "description": "ISC Expo - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ, আপডেট ও গুরুত্বপূর্ণ তথ্য।"
+  },
+  "galleryPage": {
+    "title": "আমাদের ছবি",
+    "description": "ISC Expo - Icon Skill & Career Expo-এর বিভিন্ন অনুষ্ঠান, সেমিনার ও ক্লাসের ছবি।"
+  },
+  "contactPage": {
+    "title": "আমাদের সাথে যোগাযোগ করুন",
+    "description": "যেকোনো প্রশ্ন বা তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।"
+  },
+  "coursesPage": {
+    "title": "সকল কোর্স সমূহ",
+    "description": "BNMC ভর্তি পরীক্ষা থেকে চাকরি প্রস্তুতি — প্রতিটি কোর্সে অভিজ্ঞ শিক্ষক ও আধুনিক পাঠদান পদ্ধতি।"
+  },
+  "modelTestPage": {
+    "title": "সাপ্তাহিক মডেল টেস্ট",
+    "description": "BNMC ভর্তি পরীক্ষার আদলে আমাদের সাপ্তাহিক মডেল টেস্টে অংশ নিন এবং নিজেকে যাচাই করুন।"
+  },
+  "admissionStatusPage": {
+    "title": "আপনার আবেদন কী অবস্থায় আছে?",
+    "description": "আপনার রেফারেন্স নম্বর ও ফোন নম্বর দিয়ে আপনার ভর্তি আবেদন স্ট্যাটাস দেখুন।"
+  },
+  "admissionPage": {
+    "title": "এখনই ভর্তি হোন",
+    "description": "ISC Expo - Icon Skill & Career Expo-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।"
+  }
+}

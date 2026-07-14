@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Menu, X, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DarkModeToggle } from '@/components/dark-mode-toggle'
+import { LanguageSwitcher } from '@/components/language-switcher'
 import { NAV_LINKS } from '@/lib/site-data'
 import { useSiteData } from '@/hooks/use-site-data'
 import { cn } from '@/lib/utils'
@@ -12,6 +14,8 @@ import { cn } from '@/lib/utils'
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const site = useSiteData()
+  const t = useTranslations('common')
+  const th = useTranslations('header')
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -37,14 +41,14 @@ export function SiteHeader() {
       {/* Top bar */}
       <div className="hidden bg-brand text-brand-foreground md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-1.5 text-xs">
-          <p>স্বাগতম {site.nameBn}, {site.city} — {site.tagline}</p>
+          <p>{th('welcome')} {site.nameBn}, {site.city} — {site.tagline}</p>
           <div className="flex items-center gap-4">
             <a href={site.phoneHref} className="flex items-center gap-1.5 hover:underline">
               <Phone className="size-3.5" />
               {site.phone}
             </a>
             <span className="rounded-full bg-gold px-2.5 py-0.5 font-semibold text-gold-foreground">
-              ভর্তি চলমান
+              {th('enrollingNow')}
             </span>
           </div>
         </div>
@@ -59,7 +63,7 @@ export function SiteHeader() {
               <span className="font-heading text-base font-bold text-foreground sm:text-lg">
                 {site.nameBn}
               </span>
-              <span className="text-xs text-muted-foreground">{site.city} · Est. 2016</span>
+              <span className="text-xs text-muted-foreground">{site.city} · {th('established')}</span>
             </span>
           </Link>
 
@@ -76,6 +80,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-1">
+            <LanguageSwitcher className="hidden sm:flex" />
             <DarkModeToggle />
             <Button
               render={<Link href="/auth/sign-in" />}
@@ -83,10 +88,10 @@ export function SiteHeader() {
               size="lg"
               className="hidden sm:inline-flex"
             >
-              লগইন
+              {t('login')}
             </Button>
             <Button render={<Link href="/admission" />} size="lg" className="hidden sm:inline-flex">
-              ভর্তি হোন
+              {t('enroll')}
             </Button>
             <Button
               ref={triggerRef}
@@ -94,7 +99,7 @@ export function SiteHeader() {
               size="icon-lg"
               className="lg:hidden"
               onClick={() => setOpen((v) => !v)}
-              aria-label="মেনু খুলুন"
+              aria-label={t('openMenu')}
             >
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
             </Button>
@@ -115,7 +120,7 @@ export function SiteHeader() {
           )}
         >
           <div className="mb-4 flex items-center justify-between">
-            <span className="font-heading text-sm font-bold text-foreground">মেনু</span>
+            <span className="font-heading text-sm font-bold text-foreground">{t('menu')}</span>
             <button
               onClick={() => setOpen(false)}
               className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
@@ -135,11 +140,12 @@ export function SiteHeader() {
               </Link>
             ))}
             <div className="mt-4 flex flex-col gap-2">
+              <LanguageSwitcher className="justify-center" />
               <Button render={<Link href="/auth/sign-in" onClick={() => setOpen(false)} />} variant="outline" className="w-full" size="lg">
-                লগইন
+                {t('login')}
               </Button>
               <Button render={<Link href="/admission" onClick={() => setOpen(false)} />} className="w-full" size="lg">
-                ভর্তি হোন
+                {t('enroll')}
               </Button>
             </div>
           </nav>

@@ -1,29 +1,32 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { ExternalLink, Video, MessageCircle, Phone, MapPin } from 'lucide-react'
 import { useSiteData } from '@/hooks/use-site-data'
 
-const QUICK = [
-  { label: 'কোর্স', href: '/courses' },
-  { label: 'নোটিশ', href: '/notice' },
-  { label: 'গ্যালারি', href: '/gallery' },
-  { label: 'মডেল টেস্ট', href: '/model-test' },
-]
-
-const POLICIES = [
-  { label: 'প্রাইভেসি পলিসি', href: '/privacy' },
-  { label: 'রিফান্ড পলিসি', href: '/refund' },
-  { label: 'শর্তাবলী', href: '/terms' },
-]
-
 export function SiteFooter() {
   const site = useSiteData()
+  const t = useTranslations('common')
+  const tf = useTranslations('footer')
+
+  const QUICK = [
+    { label: t('courses'), href: '/courses' },
+    { label: t('notice'), href: '/notice' },
+    { label: t('gallery'), href: '/gallery' },
+    { label: t('modelTest'), href: '/model-test' },
+  ]
+
+  const POLICIES = [
+    { label: t('privacyPolicy'), href: '/privacy' },
+    { label: t('refundPolicy'), href: '/refund' },
+    { label: t('terms'), href: '/terms' },
+  ]
 
   const socials = [
-    { icon: ExternalLink, href: site.facebook, label: 'Facebook' },
-    { icon: Video, href: site.youtube, label: 'YouTube' },
-    { icon: MessageCircle, href: site.whatsapp, label: 'WhatsApp' },
+    { icon: ExternalLink, href: site.facebook, label: t('facebook') },
+    { icon: Video, href: site.youtube, label: t('youtube') },
+    { icon: MessageCircle, href: site.whatsapp, label: t('whatsapp') },
   ]
   return (
     <footer className="bg-foreground text-background">
@@ -34,7 +37,7 @@ export function SiteFooter() {
             <span className="font-heading text-base font-bold">{site.nameBn}</span>
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-background/70">
-            খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। মানসম্মত শিক্ষায় গড়ছি আগামীর নার্স।
+            {tf('description')}
           </p>
           <div className="mt-5 flex gap-2">
             {socials.map((s) => (
@@ -54,7 +57,7 @@ export function SiteFooter() {
 
         <div>
           <h3 className="font-heading text-sm font-semibold uppercase tracking-wide text-background/60">
-            কুইক লিংক
+            {t('quickLinks')}
           </h3>
           <ul className="mt-4 space-y-2.5">
             {QUICK.map((l) => (
@@ -69,7 +72,7 @@ export function SiteFooter() {
 
         <div>
           <h3 className="font-heading text-sm font-semibold uppercase tracking-wide text-background/60">
-            পলিসি
+            {t('policies')}
           </h3>
           <ul className="mt-4 space-y-2.5">
             {POLICIES.map((l) => (
@@ -84,7 +87,7 @@ export function SiteFooter() {
 
         <div>
           <h3 className="font-heading text-sm font-semibold uppercase tracking-wide text-background/60">
-            যোগাযোগ
+            {t('contact')}
           </h3>
           <ul className="mt-4 space-y-3 text-sm text-background/80">
             <li className="flex items-start gap-2.5">
@@ -103,7 +106,7 @@ export function SiteFooter() {
 
       <div className="border-t border-background/10">
         <div className="mx-auto max-w-7xl px-4 py-5 text-center text-xs text-background/60">
-          © {new Date().getFullYear()} {site.nameBn}, {site.city}. সর্বস্বত্ব সংরক্ষিত।
+          © {new Date().getFullYear()} {site.nameBn}, {site.city}. {t('allRightsReserved')}.
         </div>
       </div>
     </footer>
