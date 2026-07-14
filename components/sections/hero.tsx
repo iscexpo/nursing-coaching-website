@@ -20,8 +20,8 @@ export async function Hero() {
             {hero.eyebrow}
           </span>
           <h1 className="mt-5 font-heading text-3xl font-extrabold leading-tight text-balance sm:text-4xl md:text-5xl">
-            {hero.title.split(' ')[0]}
-            <span className="mt-1 block text-gold">{hero.title.split(' ').slice(1).join(' ')}</span>
+            {hero.title.split(' ').slice(0, -3).join(' ')}
+            <span className="mt-1 block text-gold">{hero.title.split(' ').slice(-3).join(' ')}</span>
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-brand-foreground/85 text-pretty">
             {hero.subtitle}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Menu, X, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,11 @@ import { cn } from '@/lib/utils'
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const site = useSiteData()
+
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [open])
 
   return (
     <header className="sticky top-0 z-50 w-full">

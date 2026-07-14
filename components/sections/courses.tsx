@@ -59,6 +59,11 @@ export async function Courses() {
                     <Clock className="size-3.5" />
                     {course.duration}
                   </span>
+                  {course.discountFee != null && course.discountFee < course.fee && (
+                    <span className="absolute right-3 top-3 rounded-full bg-destructive px-2.5 py-0.5 text-[11px] font-bold text-white shadow">
+                      -{Math.round(((course.fee - course.discountFee) / course.fee) * 100)}%
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="font-heading text-lg font-semibold text-foreground">
@@ -68,7 +73,16 @@ export async function Courses() {
                     {course.shortDescription || course.description?.slice(0, 100)}
                   </p>
                   <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                    <span className="font-heading text-lg font-bold text-green">৳{course.fee.toLocaleString()}</span>
+                    <span className="flex items-center gap-2">
+                      {course.discountFee != null && course.discountFee < course.fee ? (
+                        <>
+                          <span className="font-heading text-lg font-bold text-green">৳{course.discountFee.toLocaleString()}</span>
+                          <span className="text-xs text-muted-foreground line-through">৳{course.fee.toLocaleString()}</span>
+                        </>
+                      ) : (
+                        <span className="font-heading text-lg font-bold text-green">৳{course.fee.toLocaleString()}</span>
+                      )}
+                    </span>
                     <Button
                       render={<Link href={`/admission?course=${course.slug}`} />}
                       variant="ghost"
