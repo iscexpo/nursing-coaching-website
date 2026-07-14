@@ -341,7 +341,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           </Field>
 
           <Field label="ইমেইল">
-            <TextInput value={form.site.email} onChange={(v) => updateSite('email', v)} placeholder="info@cornianursing.com" />
+            <TextInput value={form.site.email} onChange={(v) => updateSite('email', v)} placeholder="info@iscexpo.edu.bd" />
           </Field>
 
           <h4 className="font-heading font-semibold text-foreground pt-2">সোশ্যাল লিংক</h4>

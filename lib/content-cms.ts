@@ -45,7 +45,7 @@ export const defaultCmsContent: CmsContent = {
     phoneHref: 'tel:+8801784176442',
     whatsapp: 'https://wa.me/8801784176442',
     messenger: 'https://m.me/cornianursing',
-    email: 'info@cornianursing.com',
+    email: 'info@iscexpo.edu.bd',
     facebook: 'https://www.facebook.com/CorniaNursingKhulna',
     youtube: 'https://youtube.com/@cornianursing',
     addressBn: 'কলাবাগান মোড়, খুলনা মেডিকেল কলেজ হাসপাতালের সামনে, খুলনা।',
