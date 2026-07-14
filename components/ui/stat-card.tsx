@@ -17,6 +17,7 @@ export function StatCard({
     brand: { bg: 'bg-brand/10', icon: 'text-brand', gradient: 'from-brand/5 to-transparent' },
     green: { bg: 'bg-green/10', icon: 'text-green', gradient: 'from-green/5 to-transparent' },
     gold: { bg: 'bg-gold/10', icon: 'text-gold', gradient: 'from-gold/5 to-transparent' },
+    destructive: { bg: 'bg-destructive/10', icon: 'text-destructive', gradient: 'from-destructive/5 to-transparent' },
   }
   const colors = colorMap[color] || colorMap.brand
   return (

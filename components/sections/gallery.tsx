@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
 import { Lightbox } from '@/components/ui/lightbox'
-import { GALLERY } from '@/lib/site-data'
+import { getCmsContent } from '@/lib/content-server'
 import { cn } from '@/lib/utils'
 
-export function Gallery() {
-  const lightboxImages = GALLERY.map((g) => ({
+export async function Gallery() {
+  const content = await getCmsContent()
+  const gallery = content.gallery
+
+  const lightboxImages = gallery.map((g) => ({
     src: g.image || '/placeholder.svg',
     alt: g.caption,
   }))
@@ -23,15 +26,15 @@ export function Gallery() {
             description="সেমিনার, পুরস্কার বিতরণী, ফ্রি ক্লাস ও নানা আয়োজনের ঝলক।"
           />
         </FadeIn>
-        <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {GALLERY.map((g, i) => (
+        <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 auto-rows-[200px]">
+          {gallery.map((g, i) => (
             <FadeIn key={g.caption} delay={i * 80}>
               <Lightbox
                 images={lightboxImages}
                 trigger={
                   <div className={cn(
                     'group relative overflow-hidden rounded-2xl',
-                    i === 0 ? 'aspect-[4/5] lg:row-span-2' : 'aspect-4/3',
+                    i === 0 ? 'lg:row-span-2' : '',
                   )}>
                     <Image
                       src={g.image || '/placeholder.svg'}

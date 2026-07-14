@@ -437,12 +437,12 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         </div>
       </div>
 
-      {/* Why Cornia Section */}
+      {/* Why ISC Expo Section */}
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-heading font-semibold text-foreground">কেন কর্নিয়া?</h4>
-            <p className="mt-1 text-sm text-muted-foreground">হোমপেজে প্রদর্শিত "কেন কর্নিয়া" কার্ড পরিচালনা করুন</p>
+            <h4 className="font-heading font-semibold text-foreground">কেন ISC Expo?</h4>
+            <p className="mt-1 text-sm text-muted-foreground">হোমপেজে প্রদর্শিত "কেন ISC Expo?" কার্ড পরিচালনা করুন</p>
           </div>
           <button
             type="button"

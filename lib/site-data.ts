@@ -37,7 +37,7 @@ export const HERO_FEATURES = [
   'Recorded Class',
 ]
 
-export const WHY_CORNIA = [
+export const WHY_US = [
   {
     icon: 'trophy',
     title: 'অভিজ্ঞ শিক্ষকমণ্ডলী',
@@ -126,7 +126,7 @@ export const STORIES = [
     rank: 'মেধা তালিকায় ১২তম',
     image: '/images/student-1.png',
     quote:
-      'কর্নিয়ার নিয়মিত মডেল টেস্ট আর শিক্ষকদের গাইডলাইন ছাড়া আমার এই ফলাফল সম্ভব হতো না।',
+      'ISC Expo-এর নিয়মিত মডেল টেস্ট আর শিক্ষকদের গাইডলাইন ছাড়া আমার এই ফলাফল সম্ভব হতো না।',
   },
   {
     name: 'রাকিব হাসান',

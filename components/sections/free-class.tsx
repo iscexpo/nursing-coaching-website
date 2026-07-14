@@ -3,8 +3,18 @@ import { CalendarDays, Clock, Users, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FadeIn } from '@/components/ui/fade-in'
 
+function getNextFriday(): string {
+  const now = new Date()
+  const dayOfWeek = now.getDay()
+  const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7
+  const next = new Date(now)
+  next.setDate(now.getDate() + daysUntilFriday)
+  const bnMonths = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
+  return `${next.getDate()} ${bnMonths[next.getMonth()]}, শুক্রবার`
+}
+
 const INFO = [
-  { icon: CalendarDays, label: 'তারিখ', value: '১৮ জুলাই, শুক্রবার' },
+  { icon: CalendarDays, label: 'তারিখ', value: getNextFriday() },
   { icon: Clock, label: 'সময়', value: 'সকাল ১০:০০টা' },
   { icon: Users, label: 'আসন বাকি', value: 'মাত্র ১৫টি' },
 ]
@@ -24,7 +34,7 @@ export function FreeClass() {
                   আগামী ফ্রি ক্লাসে অংশ নিন
                 </h2>
                 <p className="mt-2 max-w-xl text-green-foreground/85">
-                  কর্নিয়ার পাঠদান পদ্ধতি সরাসরি অনুভব করুন — কোনো ফি ছাড়াই।
+                  ISC Expo-এর পাঠদান পদ্ধতি সরাসরি অনুভব করুন — কোনো ফি ছাড়াই।
                 </p>
                 <div className="mt-6 grid gap-4 sm:grid-cols-3">
                   {INFO.map((item, i) => (

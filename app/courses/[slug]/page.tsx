@@ -15,15 +15,18 @@ import { SITE } from '@/lib/site-data'
 
 type Props = { params: Promise<{ slug: string }> }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
-  let course: typeof courses.$inferSelect | null = null
+async function getCourse(slug: string) {
   try {
     const rows = await db.select().from(courses).where(eq(courses.slug, slug)).limit(1)
-    course = rows[0] ?? null
+    return rows[0] ?? null
   } catch {
-    course = null
+    return null
   }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const course = await getCourse(slug)
 
   if (!course) {
     return {
@@ -50,13 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CourseDetailPage({ params }: Props) {
   const { slug } = await params
-  let course: typeof courses.$inferSelect | null = null
-  try {
-    const rows = await db.select().from(courses).where(eq(courses.slug, slug)).limit(1)
-    course = rows[0] ?? null
-  } catch {
-    course = null
-  }
+  const course = await getCourse(slug)
 
   if (!course) notFound()
 

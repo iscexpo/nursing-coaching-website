@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Menu, X, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -12,10 +12,24 @@ import { cn } from '@/lib/utils'
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const site = useSiteData()
+  const panelRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        triggerRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
   return (
@@ -75,6 +89,7 @@ export function SiteHeader() {
               ভর্তি হোন
             </Button>
             <Button
+              ref={triggerRef}
               variant="ghost"
               size="icon-lg"
               className="lg:hidden"
@@ -95,7 +110,7 @@ export function SiteHeader() {
         )}
         <div
           className={cn(
-            'fixed inset-y-0 right-0 z-50 w-72 border-l border-border bg-card p-4 shadow-2xl transition-transform duration-300 ease-out lg:hidden',
+            'fixed inset-y-0 right-0 z-[60] w-72 border-l border-border bg-card p-4 shadow-2xl transition-transform duration-300 ease-out lg:hidden',
             open ? 'translate-x-0' : 'translate-x-full',
           )}
         >

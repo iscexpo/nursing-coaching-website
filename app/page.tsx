@@ -5,7 +5,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { BackToTop } from '@/components/back-to-top'
 import { Hero } from '@/components/sections/hero'
-import { WhyCornia } from '@/components/sections/why-cornia'
+import { WhyUs } from '@/components/sections/why-us'
 import { Courses } from '@/components/sections/courses'
 import { Counters } from '@/components/sections/counters-section'
 import { SuccessStories } from '@/components/sections/success-stories'
@@ -17,26 +17,28 @@ import { Gallery } from '@/components/sections/gallery'
 import { Faq } from '@/components/sections/faq'
 import { Contact } from '@/components/sections/contact'
 import { JsonLd } from '@/components/json-ld'
-import { defaultCmsContent } from '@/lib/content-cms'
+import { getCmsContent } from '@/lib/content-server'
 
-const faqJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: defaultCmsContent.faqs.map((f) => ({
-    '@type': 'Question',
-    name: f.question,
-    acceptedAnswer: { '@type': 'Answer', text: f.answer },
-  })),
-}
+export default async function HomePage() {
+  const content = await getCmsContent()
 
-export default function HomePage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: content.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  }
+
   return (
     <>
       <JsonLd data={faqJsonLd} />
       <SiteHeader />
       <main>
         <Hero />
-        <WhyCornia />
+        <WhyUs />
         <Courses />
         <Counters />
         <SuccessStories />

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
-import { GraduationCap, Phone, Mail, ArrowRight, Loader2, CheckCircle2, Shield } from 'lucide-react'
+import { GraduationCap, Phone, Mail, ArrowRight, Loader2, CheckCircle2, Shield, Eye, EyeOff } from 'lucide-react'
 
 type SignUpMode = 'phone' | 'email'
 type PhoneStep = 'phone' | 'otp' | 'details'
@@ -23,6 +23,8 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPhonePassword, setShowPhonePassword] = useState(false)
+  const [showEmailPassword, setShowEmailPassword] = useState(false)
 
   const [emailName, setEmailName] = useState('')
   const [email, setEmail] = useState('')
@@ -148,7 +150,7 @@ export default function SignUpPage() {
             <span className="font-heading text-2xl font-bold">{site.nameBn}</span>
           </div>
           <h2 className="font-heading text-3xl font-extrabold leading-tight">
-            কর্নিয়া পরিবারে
+              ISC Expo পরিবারে
             <span className="mt-1 block text-gold">যোগ দিন</span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
@@ -347,16 +349,26 @@ export default function SignUpPage() {
                 <label htmlFor="password" className="block text-sm font-medium text-foreground">
                   পাসওয়ার্ড
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  minLength={8}
-                  required
-                  className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPhonePassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    minLength={8}
+                    required
+                    className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 pr-10 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPhonePassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showPhonePassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -419,16 +431,26 @@ export default function SignUpPage() {
                 <label htmlFor="email-password" className="block text-sm font-medium text-foreground">
                   পাসওয়ার্ড
                 </label>
-                <input
-                  id="email-password"
-                  type="password"
-                  value={emailPassword}
-                  onChange={(e) => setEmailPassword(e.target.value)}
-                  placeholder="••••••••"
-                  minLength={8}
-                  required
-                  className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-                />
+                <div className="relative">
+                  <input
+                    id="email-password"
+                    type={showEmailPassword ? 'text' : 'password'}
+                    value={emailPassword}
+                    onChange={(e) => setEmailPassword(e.target.value)}
+                    placeholder="••••••••"
+                    minLength={8}
+                    required
+                    className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 pr-10 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showEmailPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
               </div>
 
               <button

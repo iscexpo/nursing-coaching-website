@@ -30,7 +30,7 @@ export function Contact() {
             {CONTACTS.map((c, i) => {
               const content = (
                 <FadeIn key={c.label} delay={i * 100}>
-                  <div className="flex h-full items-start gap-4 rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:border-brand/30 hover:shadow-lg hover:shadow-brand/5 hover:-translate-y-0.5">
+                  <div className="group flex h-full items-start gap-4 rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:border-brand/30 hover:shadow-lg hover:shadow-brand/5 hover:-translate-y-0.5">
                     <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
                       <c.icon className="size-5" />
                     </span>

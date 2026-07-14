@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Share2, Video, MessageCircle, Phone, MapPin } from 'lucide-react'
+import { ExternalLink, Video, MessageCircle, Phone, MapPin } from 'lucide-react'
 import { useSiteData } from '@/hooks/use-site-data'
 
 const QUICK = [
@@ -21,7 +21,7 @@ export function SiteFooter() {
   const site = useSiteData()
 
   const socials = [
-    { icon: Share2, href: site.facebook, label: 'Facebook' },
+    { icon: ExternalLink, href: site.facebook, label: 'Facebook' },
     { icon: Video, href: site.youtube, label: 'YouTube' },
     { icon: MessageCircle, href: site.whatsapp, label: 'WhatsApp' },
   ]

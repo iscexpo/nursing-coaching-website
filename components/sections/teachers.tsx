@@ -2,9 +2,12 @@ import Image from 'next/image'
 import { GraduationCap } from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
-import { TEACHERS } from '@/lib/site-data'
+import { getCmsContent } from '@/lib/content-server'
 
-export function Teachers() {
+export async function Teachers() {
+  const content = await getCmsContent()
+  const teachers = content.teachers
+
   return (
     <section id="teachers" className="bg-secondary/50 py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4">
@@ -16,7 +19,7 @@ export function Teachers() {
           />
         </FadeIn>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {TEACHERS.map((t, i) => (
+          {teachers.map((t, i) => (
             <FadeIn key={t.name} delay={i * 100}>
               <div className="overflow-hidden rounded-2xl border border-border bg-card text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-brand/5">
                 <div className="relative aspect-square overflow-hidden">

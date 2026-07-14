@@ -5,16 +5,16 @@ import { getCmsContent } from '@/lib/content-server'
 
 const ICON_LIST: LucideIcon[] = [Trophy, BookOpen, FileText, Target]
 
-export async function WhyCornia() {
+export async function WhyUs() {
   const content = await getCmsContent()
   return (
     <section className="bg-background py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4">
         <FadeIn>
           <SectionHeading
-            eyebrow="কেন কর্নিয়া?"
+            eyebrow="কেন ISC Expo?"
             title="আপনার সাফল্যই আমাদের অঙ্গীকার"
-            description="যে কারণে খুলনার শিক্ষার্থীরা নার্সিং প্রস্তুতির জন্য কর্নিয়াকে বেছে নেয়।"
+            description="যে কারণে খুলনার শিক্ষার্থীরা নার্সিং প্রস্তুতির জন্য ISC Expo-কে বেছে নেয়।"
           />
         </FadeIn>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
-import { GraduationCap, Phone, Mail, ArrowRight, Loader2 } from 'lucide-react'
+import { GraduationCap, Phone, Mail, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react'
 
 type LoginMode = 'phone' | 'email'
 
@@ -21,6 +21,8 @@ export default function SignInPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+  const [showPhonePassword, setShowPhonePassword] = useState(false)
+  const [showEmailPassword, setShowEmailPassword] = useState(false)
 
   useEffect(() => {
     setHydrated(true)
@@ -198,16 +200,26 @@ export default function SignInPage() {
                 <label htmlFor="phone-password" className="block text-sm font-medium text-foreground">
                   পাসওয়ার্ড
                 </label>
-                <input
-                  id="phone-password"
-                  type="password"
-                  suppressHydrationWarning
-                  value={phonePassword}
-                  onChange={(e) => setPhonePassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-                />
+                <div className="relative">
+                  <input
+                    id="phone-password"
+                    type={showPhonePassword ? 'text' : 'password'}
+                    suppressHydrationWarning
+                    value={phonePassword}
+                    onChange={(e) => setPhonePassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 pr-10 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPhonePassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showPhonePassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -247,16 +259,26 @@ export default function SignInPage() {
                 <label htmlFor="email-password" className="block text-sm font-medium text-foreground">
                   পাসওয়ার্ড
                 </label>
-                <input
-                  id="email-password"
-                  type="password"
-                  suppressHydrationWarning
-                  value={emailPassword}
-                  onChange={(e) => setEmailPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-                />
+                <div className="relative">
+                  <input
+                    id="email-password"
+                    type={showEmailPassword ? 'text' : 'password'}
+                    suppressHydrationWarning
+                    value={emailPassword}
+                    onChange={(e) => setEmailPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 pr-10 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showEmailPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
               </div>
 
               <button

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   applicationName: SITE.nameBn,
   keywords: [
     'নার্সিং কোচিং খুলনা',
-    'Cornia Nursing',
+    'ISC Expo',
     'BNMC admission',
     'B.Sc Nursing',
     'nursing coaching Khulna',
