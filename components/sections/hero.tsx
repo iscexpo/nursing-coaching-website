@@ -60,7 +60,7 @@ export async function Hero() {
           <div className="relative aspect-4/5 overflow-hidden rounded-3xl border-4 border-brand-foreground/20 shadow-2xl sm:aspect-square lg:aspect-4/5">
             <Image
               src="/images/hero.jpeg"
-              alt="ISC - Icon Skill & Career Expo-এর একজন শিক্ষার্থী"
+              alt="ISC Expo - Icon Skill & Career Expo-এর একজন শিক্ষার্থী"
               fill
               className="object-cover"
               priority

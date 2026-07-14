@@ -1,6 +1,6 @@
 export const SITE = {
-  nameBn: 'ISC - Icon Skill & Career Expo',
-  name: 'ISC - Icon Skill & Career Expo',
+  nameBn: 'ISC Expo - Icon Skill & Career Expo',
+  name: 'ISC Expo - Icon Skill & Career Expo',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://iscexpo.edu.bd',
   city: 'খুলনা',
   phone: '01784-176442',

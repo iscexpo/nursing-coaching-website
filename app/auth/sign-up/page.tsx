@@ -144,7 +144,7 @@ export default function SignUpPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-brand via-brand/90 to-brand/70" />
         <div className="relative z-10 max-w-md px-8 text-brand-foreground animate-fade-in-up">
           <div className="flex items-center gap-3 mb-8">
-            <Image src="/logo.png" alt="ISC - Icon Skill & Career Expo" width={48} height={30} className="object-contain" />
+            <Image src="/logo.png" alt="ISC Expo - Icon Skill & Career Expo" width={48} height={30} className="object-contain" />
             <span className="font-heading text-2xl font-bold">{site.nameBn}</span>
           </div>
           <h2 className="font-heading text-3xl font-extrabold leading-tight">
@@ -174,14 +174,14 @@ export default function SignUpPage() {
         <div className="w-full max-w-md space-y-6 animate-fade-in-up" style={{ animationDuration: '600ms' }}>
           <div>
             <Link href="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
-              <Image src="/logo.png" alt="ISC - Icon Skill & Career Expo" width={36} height={22} className="object-contain" />
+              <Image src="/logo.png" alt="ISC Expo - Icon Skill & Career Expo" width={36} height={22} className="object-contain" />
               <span className="font-heading text-lg font-bold text-foreground">{site.nameBn}</span>
             </Link>
             <h1 className="font-heading text-2xl font-bold text-foreground">
               নিবন্ধন করুন
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              ISC - Icon Skill & Career Expo-এ যোগ দিন
+              ISC Expo - Icon Skill & Career Expo-এ যোগ দিন
             </p>
           </div>
 

@@ -167,7 +167,7 @@ export default function AdmissionPage() {
               <SectionHeading
                 eyebrow="ভর্তি চলমান"
                 title="এখনই ভর্তি হোন"
-                description="ISC - Icon Skill & Career Expo-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।"
+                description="ISC Expo - Icon Skill & Career Expo-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।"
               />
             </FadeIn>
           </div>

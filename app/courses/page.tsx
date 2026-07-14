@@ -12,8 +12,8 @@ import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
 export const metadata = {
-  title: 'কোর্স সমূহ | ISC - Icon Skill & Career Expo',
-  description: 'ISC - Icon Skill & Career Expo-এর সকল কোর্স — নার্সিং ভর্তি, কাউন্সিল, B.Sc Nursing, Post Basic, চাকরি প্রস্তুতি ও অনলাইন ব্যাচ।',
+  title: 'কোর্স সমূহ | ISC Expo - Icon Skill & Career Expo',
+  description: 'ISC Expo - Icon Skill & Career Expo-এর সকল কোর্স — নার্সিং ভর্তি, কাউন্সিল, B.Sc Nursing, Post Basic, চাকরি প্রস্তুতি ও অনলাইন ব্যাচ।',
   alternates: { canonical: '/courses' },
 }
 

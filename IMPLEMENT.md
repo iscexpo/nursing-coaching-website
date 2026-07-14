@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document tracks all identified gaps, issues, and missing features in the ISC - Icon Skill & Career Expo platform, organized by priority.
+This document tracks all identified gaps, issues, and missing features in the ISC Expo - Icon Skill & Career Expo platform, organized by priority.
 
 ---
 

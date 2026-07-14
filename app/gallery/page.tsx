@@ -7,8 +7,8 @@ import { GALLERY } from '@/lib/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 
 export const metadata = {
-  title: 'গ্যালারি | ISC - Icon Skill & Career Expo',
-  description: 'ISC - Icon Skill & Career Expo-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
+  title: 'গ্যালারি | ISC Expo - Icon Skill & Career Expo',
+  description: 'ISC Expo - Icon Skill & Career Expo-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
   alternates: { canonical: '/gallery' },
 }
 
@@ -23,7 +23,7 @@ export default function GalleryPage() {
             <SectionHeading
               eyebrow="গ্যালারি"
               title="আমাদের ছবি"
-              description="ISC - Icon Skill & Career Expo-এর বিভিন্ন অনুষ্ঠান, সেমিনার ও ক্লাসের ছবি।"
+              description="ISC Expo - Icon Skill & Career Expo-এর বিভিন্ন অনুষ্ঠান, সেমিনার ও ক্লাসের ছবি।"
             />
           </div>
         </section>

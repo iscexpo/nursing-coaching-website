@@ -19,7 +19,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: 'ISC - Icon Skill & Career Expo | খুলনা — BNMC নার্সিং ভর্তি প্রস্তুতি',
+  title: 'ISC Expo - Icon Skill & Career Expo | খুলনা — BNMC নার্সিং ভর্তি প্রস্তুতি',
   description:
     'খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। BNMC ভর্তি পরীক্ষা, B.Sc Nursing, Post Basic B.Sc, কাউন্সিল ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।',
   generator: 'v0.app',
@@ -49,13 +49,13 @@ export const metadata: Metadata = {
     locale: 'bn_BD',
     url: SITE.url,
     siteName: SITE.nameBn,
-    title: 'ISC - Icon Skill & Career Expo | খুলনা — BNMC নার্সিং ভর্তি প্রস্তুতি',
+    title: 'ISC Expo - Icon Skill & Career Expo | খুলনা — BNMC নার্সিং ভর্তি প্রস্তুতি',
     description:
       'খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। BNMC ভর্তি পরীক্ষা, B.Sc Nursing ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ISC - Icon Skill & Career Expo | খুলনা',
+    title: 'ISC Expo - Icon Skill & Career Expo | খুলনা',
     description: 'খুলনার বিশ্বস্ত নার্সিং ভর্তি কোচিং — BNMC, B.Sc Nursing ও চাকরি প্রস্তুতি।',
   },
 }

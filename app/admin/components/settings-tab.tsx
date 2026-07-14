@@ -302,11 +302,11 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           </div>
 
           <Field label="সাইটের নাম (বাংলা)">
-            <TextInput value={form.site.nameBn} onChange={(v) => updateSite('nameBn', v)} placeholder="ISC - Icon Skill & Career Expo" />
+            <TextInput value={form.site.nameBn} onChange={(v) => updateSite('nameBn', v)} placeholder="ISC Expo - Icon Skill & Career Expo" />
           </Field>
 
           <Field label="সাইটের নাম (English)">
-            <TextInput value={form.site.nameEn} onChange={(v) => updateSite('nameEn', v)} placeholder="ISC - Icon Skill & Career Expo" />
+            <TextInput value={form.site.nameEn} onChange={(v) => updateSite('nameEn', v)} placeholder="ISC Expo - Icon Skill & Career Expo" />
           </Field>
 
           <Field label="ট্যাগলাইন">

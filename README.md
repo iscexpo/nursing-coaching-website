@@ -1,6 +1,6 @@
-# ISC - Icon Skill & Career Expo ওয়েবসাইট
+# ISC Expo - Icon Skill & Career Expo ওয়েবসাইট
 
-খুলনার ISC - Icon Skill & Career Expo-এর অফিসিয়াল ওয়েবসাইট — BNMC ভর্তি পরীক্ষা, B.Sc Nursing, কাউন্সিল, ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।
+খুলনার ISC Expo - Icon Skill & Career Expo-এর অফিসিয়াল ওয়েবসাইট — BNMC ভর্তি পরীক্ষা, B.Sc Nursing, কাউন্সিল, ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।
 
 ## Features
 

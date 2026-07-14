@@ -27,12 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!course) {
     return {
-      title: 'কোর্স পাওয়া যায়নি | ISC - Icon Skill & Career Expo',
+      title: 'কোর্স পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo',
       robots: { index: false },
     }
   }
 
-  const title = `${course.title} | ISC - Icon Skill & Career Expo`
+  const title = `${course.title} | ISC Expo - Icon Skill & Career Expo`
   const description = course.shortDescription || course.description
   return {
     title,

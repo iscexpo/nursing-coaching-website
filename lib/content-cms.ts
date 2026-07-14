@@ -36,8 +36,8 @@ export type CmsContentInput = {
 
 export const defaultCmsContent: CmsContent = {
   site: {
-    nameBn: 'ISC - Icon Skill & Career Expo',
-    nameEn: 'ISC - Icon Skill & Career Expo',
+    nameBn: 'ISC Expo - Icon Skill & Career Expo',
+    nameEn: 'ISC Expo - Icon Skill & Career Expo',
     tagline: 'সাফল্যের জন্য প্রস্তুতি',
     logo: '/logo.png',
     city: 'খুলনা',
