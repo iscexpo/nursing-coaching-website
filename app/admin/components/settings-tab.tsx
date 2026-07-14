@@ -370,6 +370,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             <select value={form.smsProvider} onChange={(e) => setForm({ ...form, smsProvider: e.target.value })} className={selectClass}>
               <option value="none">বন্ধ</option>
               <option value="grameenphone">Grameenphone Bulk SMS</option>
+              <option value="sasbulksms">SAS Bulk SMS</option>
               <option value="twilio">Twilio</option>
             </select>
           </Field>

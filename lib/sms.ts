@@ -2,7 +2,8 @@ import { db } from '@/lib/db'
 import { getSystemSettings } from '@/lib/settings'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { sendBulkSms, type GpSmsConfig } from '@/lib/gp-sms'
+import { sendBulkSms as gpSendBulkSms, type GpSmsConfig } from '@/lib/gp-sms'
+import { sendBulkSms as sasSendBulkSms, type SasSmsConfig } from '@/lib/sas-sms'
 
 export type SmsBroadcastPayload = {
   title: string
@@ -58,12 +59,33 @@ export async function sendSmsToRecipients(phoneNumbers: string[], message: strin
     }
   }
 
+  if (settings.smsProvider === 'sasbulksms') {
+    const sasConfig: SasSmsConfig = {
+      apiKey: settings.smsApiKey,
+      senderId: settings.smsSenderId,
+    }
+
+    const result = await sasSendBulkSms({
+      config: sasConfig,
+      phoneNumbers,
+      message,
+    })
+
+    return {
+      sent: result.totalSent,
+      failed: result.totalFailed,
+      provider: 'sasbulksms',
+      skipped: false,
+      results: result.results,
+    }
+  }
+
   const gpConfig: GpSmsConfig = {
     apiKey: settings.smsApiKey,
     senderId: settings.smsSenderId,
   }
 
-  const result = await sendBulkSms({
+  const result = await gpSendBulkSms({
     config: gpConfig,
     phoneNumbers,
     message,
@@ -94,12 +116,35 @@ export async function sendBroadcastSms(payload: SmsBroadcastPayload) {
     }
   }
 
+  if (settings.smsProvider === 'sasbulksms') {
+    const sasConfig: SasSmsConfig = {
+      apiKey: settings.smsApiKey,
+      senderId: settings.smsSenderId,
+    }
+
+    const result = await sasSendBulkSms({
+      config: sasConfig,
+      phoneNumbers: recipients,
+      message,
+    })
+
+    return {
+      sent: result.totalSent,
+      failed: result.totalFailed,
+      recipients,
+      provider: 'sasbulksms',
+      message,
+      skipped: false,
+      results: result.results,
+    }
+  }
+
   const gpConfig: GpSmsConfig = {
     apiKey: settings.smsApiKey,
     senderId: settings.smsSenderId,
   }
 
-  const result = await sendBulkSms({
+  const result = await gpSendBulkSms({
     config: gpConfig,
     phoneNumbers: recipients,
     message,
