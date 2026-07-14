@@ -181,7 +181,7 @@ export default function SignUpPage() {
               নিবন্ধন করুন
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              কর্নিয়া নার্সিং কোচিং-এ যোগ দিন
+              ISC - Icon Skill & Career Expo-এ যোগ দিন
             </p>
           </div>
 

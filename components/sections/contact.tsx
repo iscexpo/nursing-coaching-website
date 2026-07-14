@@ -53,7 +53,7 @@ export function Contact() {
           <FadeIn delay={200} direction="right">
             <div className="overflow-hidden rounded-2xl border border-border shadow-sm">
               <iframe
-                title="কর্নিয়া নার্সিং কোচিং ম্যাপ"
+                title="ISC - Icon Skill & Career Expo ম্যাপ"
                 src="https://www.google.com/maps?q=Khulna+Medical+College+Hospital&output=embed"
                 className="h-full min-h-[300px] w-full"
                 loading="lazy"

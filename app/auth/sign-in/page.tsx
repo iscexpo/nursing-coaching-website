@@ -106,7 +106,7 @@ export default function SignInPage() {
             <span className="mt-1 block text-gold">যাত্রা শুরু করুন</span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
-            কর্নিয়া নার্সিং কোচিং-এ লগইন করে আপনার কোর্স, ফলাফল ও পেমেন্ট ট্র্যাক করুন।
+            ISC - Icon Skill & Career Expo-এ লগইন করে আপনার কোর্স, ফলাফল ও পেমেন্ট ট্র্যাক করুন।
           </p>
           <div className="mt-10 grid grid-cols-3 gap-4 text-center">
             <div className="rounded-2xl bg-brand-foreground/10 p-4 backdrop-blur-sm">
@@ -137,7 +137,7 @@ export default function SignInPage() {
               সাইন ইন করুন
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              কর্নিয়া নার্সিং কোচিং পোর্টালে প্রবেশ করুন
+              ISC - Icon Skill & Career Expo পোর্টালে প্রবেশ করুন
             </p>
           </div>
 

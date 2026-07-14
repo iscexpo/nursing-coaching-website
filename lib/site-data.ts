@@ -1,5 +1,5 @@
 export const SITE = {
-  nameBn: 'কর্নিয়া নার্সিং কোচিং',
+  nameBn: 'ISC - Icon Skill & Career Expo',
   name: 'ISC - Icon Skill & Career Expo',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://cornianursing.com',
   city: 'খুলনা',

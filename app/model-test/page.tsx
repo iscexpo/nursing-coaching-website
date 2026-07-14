@@ -11,8 +11,8 @@ import { FadeIn } from '@/components/ui/fade-in'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'মডেল টেস্ট | কর্নিয়া নার্সিং কোচিং',
-  description: 'কর্নিয়া নার্সিং কোচিং-এর সাপ্তাহিক মডেল টেস্টে অংশ নিন। BNMC ভর্তি পরীক্ষার প্রস্তুতি নিন।',
+  title: 'মডেল টেস্ট | ISC - Icon Skill & Career Expo',
+  description: 'ISC - Icon Skill & Career Expo-এর সাপ্তাহিক মডেল টেস্টে অংশ নিন। BNMC ভর্তি পরীক্ষার প্রস্তুতি নিন।',
   alternates: { canonical: '/model-test' },
 }
 

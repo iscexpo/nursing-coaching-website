@@ -11,8 +11,8 @@ import { notices } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
 
 export const metadata = {
-  title: 'নোটিশ | কর্নিয়া নার্সিং কোচিং',
-  description: 'কর্নিয়া নার্সিং কোচিং-এর সর্বশেষ নোটিশ ও আপডেট।',
+  title: 'নোটিশ | ISC - Icon Skill & Career Expo',
+  description: 'ISC - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ ও আপডেট।',
   alternates: { canonical: '/notice' },
 }
 
@@ -45,7 +45,7 @@ export default async function NoticePage() {
             <SectionHeading
               eyebrow="নোটিশ বোর্ড"
               title="সকল নোটিশ"
-              description="কর্নিয়া নার্সিং কোচিং-এর সর্বশেষ নোটিশ, আপডেট ও গুরুত্বপূর্ণ তথ্য।"
+              description="ISC - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ, আপডেট ও গুরুত্বপূর্ণ তথ্য।"
             />
           </div>
         </section>
