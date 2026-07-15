@@ -21,6 +21,7 @@ import {
   CreditCard,
   Presentation,
   Image,
+  MessageSquare,
 } from 'lucide-react'
 
 import { PanelLayout } from '@/components/ui/panel-layout'
@@ -44,6 +45,7 @@ const ContactsPanel = lazy(() => import('./components/contacts-tab').then((m) =>
 const NotificationsPanel = lazy(() => import('./components/notifications-tab').then((m) => ({ default: m.NotificationsPanel })))
 const SettingsPanel = lazy(() => import('./components/settings-tab').then((m) => ({ default: m.SettingsPanel })))
 const SubjectsPanel = lazy(() => import('./components/subjects-tab').then((m) => ({ default: m.SubjectsPanel })))
+const SmsPanel = lazy(() => import('./components/sms-tab').then((m) => ({ default: m.SmsPanel })))
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -52,6 +54,7 @@ const TABS = [
   { id: 'payments', label: 'পেমেন্ট', icon: Wallet },
   { id: 'invoices', label: 'ইনভয়েস', icon: Receipt },
   { id: 'notices', label: 'নোটিশ', icon: Megaphone },
+  { id: 'sms', label: 'SMS', icon: MessageSquare },
   { id: 'media', label: 'মিডিয়া', icon: Image },
   { id: 'exams', label: 'পরীক্ষা', icon: FileText },
   { id: 'subjects', label: 'বিষয়', icon: BookOpen },
@@ -75,6 +78,7 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   payments: ['payments', 'enrollments', 'students'],
   invoices: ['invoices', 'enrollments'],
   notices: ['notices'],
+  sms: [],
   media: ['media'],
   exams: ['exams', 'submissions'],
   questions: ['exams'],
@@ -238,6 +242,7 @@ export default function AdminPage() {
         {tab === 'payments' && <PaymentsPanel payments={payments} enrollments={enrollments} students={students} onRefresh={fetchData} />}
         {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
         {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}
+        {tab === 'sms' && <SmsPanel />}
         {tab === 'media' && <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />}
         {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
         {tab === 'questions' && <QuestionsPanel exams={exams} />}
