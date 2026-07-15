@@ -76,6 +76,7 @@ function allPermissions(): Permission[] {
       ...ADMIN_PERMISSIONS,
       ...TEACHER_PERMISSIONS,
       ...STUDENT_PERMISSIONS,
+      'settings.manage',
     ])
   )
 }
