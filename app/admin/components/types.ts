@@ -43,6 +43,7 @@ export interface Result {
 export interface Course {
   id: string
   slug: string
+  courseCode: string | null
   title: string
   description: string
   shortDescription: string | null

@@ -15,6 +15,7 @@ export const updateSubjectSchema = createSubjectSchema.partial()
 
 export const createCourseSchema = z.object({
   slug: z.string().min(1).max(200).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug format'),
+  courseCode: z.string().max(50).optional(),
   title: z.string().min(1).max(200),
   description: z.string().min(1),
   shortDescription: z.string().max(500).optional(),

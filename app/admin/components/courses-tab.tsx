@@ -17,6 +17,7 @@ export function CoursesPanel({
   const [formError, setFormError] = useState('')
   const [form, setForm] = useState({
     slug: '',
+    courseCode: '',
     title: '',
     description: '',
     shortDescription: '',
@@ -29,7 +30,7 @@ export function CoursesPanel({
   })
 
   function resetForm() {
-    setForm({ slug: '', title: '', description: '', shortDescription: '', duration: '', fee: 0, discountFee: 0, image: '', maxStudents: 0, schedule: '' })
+    setForm({ slug: '', courseCode: '', title: '', description: '', shortDescription: '', duration: '', fee: 0, discountFee: 0, image: '', maxStudents: 0, schedule: '' })
     setFormError('')
   }
 
@@ -45,6 +46,7 @@ export function CoursesPanel({
         duration: form.duration.trim(),
         fee: Number(form.fee),
       }
+      if (form.courseCode.trim()) body.courseCode = form.courseCode.trim()
       if (form.shortDescription.trim()) body.shortDescription = form.shortDescription.trim()
       if (form.discountFee) body.discountFee = Number(form.discountFee)
       if (form.image.trim()) body.image = form.image.trim()
@@ -89,6 +91,7 @@ export function CoursesPanel({
     setEditing(course)
     setForm({
       slug: course.slug,
+      courseCode: course.courseCode || '',
       title: course.title,
       description: course.description,
       shortDescription: course.shortDescription || '',
@@ -138,10 +141,15 @@ export function CoursesPanel({
             {formError && (
               <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{formError}</div>
             )}
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               <div>
                 <label className="block text-sm font-medium text-foreground">কোর্সের নাম</label>
                 <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="যেমন: নার্সিং অ্যাডমিশন কোচিং"
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground">কোর্স কোড</label>
+                <input type="text" value={form.courseCode} onChange={(e) => setForm({ ...form, courseCode: e.target.value })} placeholder="যেমন: NAC-2025"
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
               </div>
               <div>
@@ -203,6 +211,7 @@ export function CoursesPanel({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">কোর্স</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground">কোড</th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">সময়কাল</th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">ফি</th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">ছাড়</th>
@@ -215,6 +224,7 @@ export function CoursesPanel({
               {courses.map((c) => (
                 <tr key={c.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                   <td className="px-4 py-3 font-medium text-foreground">{c.title}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{c.courseCode || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground">{c.duration}</td>
                   <td className="px-4 py-3 text-center text-foreground">৳{c.fee.toLocaleString()}</td>
                   <td className="px-4 py-3 text-center text-green">{c.discountFee ? `৳${c.discountFee.toLocaleString()}` : '—'}</td>

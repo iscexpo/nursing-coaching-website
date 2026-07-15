@@ -85,6 +85,7 @@ export const otp = pgTable('otp', {
 export const courses = pgTable('courses', {
   id: text('id').primaryKey(),
   slug: text('slug').unique().notNull(),
+  courseCode: text('course_code'),
   title: text('title').notNull(),
   description: text('description').notNull(),
   shortDescription: text('short_description'),
