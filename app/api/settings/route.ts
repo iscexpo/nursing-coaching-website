@@ -22,6 +22,7 @@ export async function GET() {
     return NextResponse.json({
       ...settings,
       smsApiKey: settings.smsApiKey ? MASK : '',
+      smsPassword: settings.smsPassword ? MASK : '',
       paymentGatewayApiKey: settings.paymentGatewayApiKey ? MASK : '',
       paymentGatewaySecret: settings.paymentGatewaySecret ? MASK : '',
       paymentGatewayWebhookSecret: settings.paymentGatewayWebhookSecret ? MASK : '',

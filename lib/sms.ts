@@ -4,6 +4,7 @@ import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { sendBulkSms as gpSendBulkSms, type GpSmsConfig } from '@/lib/gp-sms'
 import { sendBulkSms as sasSendBulkSms, type SasSmsConfig } from '@/lib/sas-sms'
+import { sendBulkSms as shiramSendBulkSms, type ShiramSmsConfig } from '@/lib/shiram-sms'
 
 export type SmsBroadcastPayload = {
   title: string
@@ -80,6 +81,28 @@ export async function sendSmsToRecipients(phoneNumbers: string[], message: strin
     }
   }
 
+  if (settings.smsProvider === 'shiram') {
+    const shiramConfig: ShiramSmsConfig = {
+      email: settings.smsEmail,
+      password: settings.smsPassword,
+      senderId: settings.smsSenderId,
+    }
+
+    const result = await shiramSendBulkSms({
+      config: shiramConfig,
+      phoneNumbers,
+      message,
+    })
+
+    return {
+      sent: result.totalSent,
+      failed: result.totalFailed,
+      provider: 'shiram',
+      skipped: false,
+      results: result.results,
+    }
+  }
+
   const gpConfig: GpSmsConfig = {
     apiKey: settings.smsApiKey,
     senderId: settings.smsSenderId,
@@ -105,7 +128,7 @@ export async function sendBroadcastSms(payload: SmsBroadcastPayload) {
   const message = buildBroadcastMessage(payload.title, payload.content, payload.tag, payload.isUrgent)
   const recipients = await getBroadcastRecipients()
 
-  if (settings.smsProvider === 'none' || !settings.smsApiKey) {
+  if (settings.smsProvider === 'none' || (settings.smsProvider !== 'shiram' && !settings.smsApiKey) || (settings.smsProvider === 'shiram' && (!settings.smsEmail || !settings.smsPassword))) {
     return {
       sent: 0,
       recipients,
@@ -133,6 +156,30 @@ export async function sendBroadcastSms(payload: SmsBroadcastPayload) {
       failed: result.totalFailed,
       recipients,
       provider: 'sasbulksms',
+      message,
+      skipped: false,
+      results: result.results,
+    }
+  }
+
+  if (settings.smsProvider === 'shiram') {
+    const shiramConfig: ShiramSmsConfig = {
+      email: settings.smsEmail,
+      password: settings.smsPassword,
+      senderId: settings.smsSenderId,
+    }
+
+    const result = await shiramSendBulkSms({
+      config: shiramConfig,
+      phoneNumbers: recipients,
+      message,
+    })
+
+    return {
+      sent: result.totalSent,
+      failed: result.totalFailed,
+      recipients,
+      provider: 'shiram',
       message,
       skipped: false,
       results: result.results,

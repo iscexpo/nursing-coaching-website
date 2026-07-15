@@ -39,6 +39,8 @@ type FormState = {
   smsProvider: string
   smsApiKey: string
   smsSenderId: string
+  smsEmail: string
+  smsPassword: string
   paymentGateway: string
   paymentGatewayApiKey: string
   paymentGatewaySecret: string
@@ -80,6 +82,8 @@ const defaultForm: FormState = {
   smsProvider: 'none',
   smsApiKey: '',
   smsSenderId: '',
+  smsEmail: '',
+  smsPassword: '',
   paymentGateway: 'none',
   paymentGatewayApiKey: '',
   paymentGatewaySecret: '',
@@ -132,6 +136,8 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             smsProvider: data.smsProvider || 'none',
             smsApiKey: data.smsApiKey || '',
             smsSenderId: data.smsSenderId || '',
+            smsEmail: data.smsEmail || '',
+            smsPassword: data.smsPassword || '',
             paymentGateway: data.paymentGateway || 'none',
             paymentGatewayApiKey: data.paymentGatewayApiKey || '',
             paymentGatewaySecret: data.paymentGatewaySecret || '',
@@ -203,6 +209,8 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           smsProvider: form.smsProvider,
           smsApiKey: form.smsApiKey,
           smsSenderId: form.smsSenderId,
+          smsEmail: form.smsEmail,
+          smsPassword: form.smsPassword,
           paymentGateway: form.paymentGateway,
           paymentGatewayApiKey: form.paymentGatewayApiKey,
           paymentGatewaySecret: form.paymentGatewaySecret,
@@ -371,14 +379,34 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               <option value="none">বন্ধ</option>
               <option value="grameenphone">Grameenphone Bulk SMS</option>
               <option value="sasbulksms">SAS Bulk SMS</option>
+              <option value="shiram">Shiram System SMS</option>
               <option value="twilio">Twilio</option>
             </select>
           </Field>
-          <Field label="API Key">
-            <TextInput value={form.smsApiKey} onChange={(v) => setForm({ ...form, smsApiKey: v })} />
-          </Field>
-          <Field label="Sender ID">
-            <TextInput value={form.smsSenderId} onChange={(v) => setForm({ ...form, smsSenderId: v })} />
+          {form.smsProvider === 'shiram' ? (
+            <>
+              <Field label="ইমেইল">
+                <TextInput value={form.smsEmail} onChange={(v) => setForm({ ...form, smsEmail: v })} placeholder="example@shiramsystem.com" />
+              </Field>
+              <Field label="পাসওয়ার্ড">
+                <input
+                  type="password"
+                  value={form.smsPassword}
+                  onChange={(e) => setForm({ ...form, smsPassword: e.target.value })}
+                  placeholder="Shiram account password"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                />
+              </Field>
+            </>
+          ) : (
+            <>
+              <Field label="API Key">
+                <TextInput value={form.smsApiKey} onChange={(v) => setForm({ ...form, smsApiKey: v })} />
+              </Field>
+            </>
+          )}
+          <Field label="Sender ID / Mask">
+            <TextInput value={form.smsSenderId} onChange={(v) => setForm({ ...form, smsSenderId: v })} placeholder={form.smsProvider === 'shiram' ? 'Non-Masking' : ''} />
           </Field>
         </div>
 

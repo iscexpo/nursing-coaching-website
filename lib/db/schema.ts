@@ -214,6 +214,8 @@ export const settings = pgTable('settings', {
   smsProvider: text('sms_provider').notNull().default('none'),
   smsApiKey: text('sms_api_key').default(''),
   smsSenderId: text('sms_sender_id').default(''),
+  smsEmail: text('sms_email').default(''),
+  smsPassword: text('sms_password').default(''),
   paymentGateway: text('payment_gateway').notNull().default('none'),
   paymentGatewayApiKey: text('payment_gateway_api_key').default(''),
   paymentGatewaySecret: text('payment_gateway_secret').default(''),

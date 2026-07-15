@@ -10,6 +10,8 @@ export type SystemSettings = {
   smsProvider: string
   smsApiKey: string
   smsSenderId: string
+  smsEmail: string
+  smsPassword: string
   paymentGateway: string
   paymentGatewayApiKey: string
   paymentGatewaySecret: string
@@ -26,6 +28,8 @@ function createDefaultSystemSettings(): SystemSettings {
     smsProvider: 'none',
     smsApiKey: '',
     smsSenderId: '',
+    smsEmail: '',
+    smsPassword: '',
     paymentGateway: 'none',
     paymentGatewayApiKey: '',
     paymentGatewaySecret: '',
@@ -52,6 +56,8 @@ export async function getSystemSettings() {
       smsProvider: 'none',
       smsApiKey: '',
       smsSenderId: '',
+      smsEmail: '',
+      smsPassword: '',
       paymentGateway: 'none',
       paymentGatewayApiKey: '',
       paymentGatewaySecret: '',

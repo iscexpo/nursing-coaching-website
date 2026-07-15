@@ -238,9 +238,11 @@ export const updateStudentSchema = z.object({
 export const settingsSchema = z.object({
   siteName: z.string().min(1).max(200).optional(),
   siteTagline: z.string().max(500).optional(),
-  smsProvider: z.enum(['none', 'bulk', 'twilio']).optional(),
+  smsProvider: z.enum(['none', 'grameenphone', 'sasbulksms', 'shiram', 'twilio']).optional(),
   smsApiKey: z.string().max(500).optional(),
   smsSenderId: z.string().max(100).optional(),
+  smsEmail: z.string().max(200).optional(),
+  smsPassword: z.string().max(500).optional(),
   paymentGateway: z.enum(['none', 'sslcommerz', 'stripe']).optional(),
   paymentGatewayApiKey: z.string().max(500).optional(),
   paymentGatewaySecret: z.string().max(500).optional(),
