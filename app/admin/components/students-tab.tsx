@@ -316,7 +316,7 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
             {/* অভিভাবক */}
             <div>
               <p className="text-sm font-semibold text-foreground mb-2 border-b border-border pb-1">অভিভাবক</p>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className={labelCls}>অভিভাবকের নাম</label>
                   <input type="text" value={form.guardianName} onChange={(e) => setForm({ ...form, guardianName: e.target.value })} placeholder="বাবা/মা/অভিভাবক" className={inputCls} />
@@ -324,10 +324,6 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
                 <div>
                   <label className={labelCls}>অভিভাবকের ফোন</label>
                   <input type="text" value={form.guardianPhone} onChange={(e) => setForm({ ...form, guardianPhone: e.target.value })} placeholder="+8801..." className={inputCls} />
-                </div>
-                <div>
-                  <label className={labelCls}>প্রতিষ্ঠান</label>
-                  <input type="text" value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })} placeholder="পড়ুয়া প্রতিষ্ঠান" className={inputCls} />
                 </div>
               </div>
             </div>
