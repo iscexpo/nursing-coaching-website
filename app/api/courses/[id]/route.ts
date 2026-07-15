@@ -15,7 +15,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
 
     return NextResponse.json(course)
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch course:', error)
     return NextResponse.json({ error: 'Failed to fetch course' }, { status: 500 })
   }
 }
@@ -39,7 +40,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     if (!updated) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     return NextResponse.json(updated)
-  } catch {
+  } catch (error) {
+    console.error('Failed to update course:', error)
+    const code = (error as { code?: string })?.code
+    if (code === '23505') {
+      return NextResponse.json({ error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে', details: { slug: ['Slug already exists'] } }, { status: 409 })
+    }
     return NextResponse.json({ error: 'Failed to update course' }, { status: 500 })
   }
 }
@@ -54,7 +60,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     if (!deleted) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
 
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (error) {
+    console.error('Failed to delete course:', error)
     return NextResponse.json({ error: 'Failed to delete course' }, { status: 500 })
   }
 }

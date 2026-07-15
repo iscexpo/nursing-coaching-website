@@ -83,6 +83,9 @@ export function CoursesPanel({
 
   async function handleSave() {
     if (!form.title.trim() || !form.slug.trim()) return
+    if (!form.description.trim()) { setFormError('বিস্তারিত বিবরণ আবশ্যক'); return }
+    if (!form.duration.trim()) { setFormError('সময়কাল আবশ্যক'); return }
+    if (!form.fee || form.fee <= 0) { setFormError('ফি আবশ্যক এবং ০-এর বেশি হতে হবে'); return }
     setSaving(true)
     setFormError('')
     try {

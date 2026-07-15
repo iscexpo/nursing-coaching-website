@@ -5,6 +5,7 @@ import { eq, desc, count } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { createCourseSchema, paginationSchema } from '@/lib/validations'
 
+
 export async function GET(request: NextRequest) {
   try {
     // Public endpoint: the marketing site lists courses without a session.
@@ -30,7 +31,8 @@ export async function GET(request: NextRequest) {
     const [totalRow] = await db.select({ count: count() }).from(courses).where(where)
 
     return NextResponse.json({ data: allCourses, page, limit, total: totalRow?.count ?? 0 })
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch courses:', error)
     return NextResponse.json({ error: 'Failed to fetch courses' }, { status: 500 })
   }
 }
@@ -52,7 +54,12 @@ export async function POST(request: NextRequest) {
     }).returning()
 
     return NextResponse.json(course, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error('Failed to create course:', error)
+    const code = (error as { code?: string })?.code
+    if (code === '23505') {
+      return NextResponse.json({ error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে', details: { slug: ['Slug already exists'] } }, { status: 409 })
+    }
     return NextResponse.json({ error: 'Failed to create course' }, { status: 500 })
   }
 }
