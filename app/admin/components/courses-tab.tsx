@@ -1,8 +1,32 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
 import type { Course } from './types'
+
+function resizeImage(file: File, maxW = 1200, maxH = 800, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      let { width: w, height: h } = img
+      if (w > maxW || h > maxH) {
+        const ratio = Math.min(maxW / w, maxH / h)
+        w = Math.round(w * ratio)
+        h = Math.round(h * ratio)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
+      canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', quality)
+    }
+    img.src = url
+  })
+}
+
+const inputCls = "mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
 
 export function CoursesPanel({
   courses,
@@ -14,7 +38,9 @@ export function CoursesPanel({
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Course | null>(null)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [form, setForm] = useState({
     slug: '',
     courseCode: '',
@@ -32,6 +58,27 @@ export function CoursesPanel({
   function resetForm() {
     setForm({ slug: '', courseCode: '', title: '', description: '', shortDescription: '', duration: '', fee: 0, discountFee: 0, image: '', maxStudents: 0, schedule: '' })
     setFormError('')
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const resized = await resizeImage(file)
+      const formData = new FormData()
+      formData.append('file', resized, 'course.jpg')
+      formData.append('altText', form.title || 'কোর্স ছবি')
+      const res = await fetch('/api/media', { method: 'POST', body: formData })
+      if (res.ok) {
+        const data = await res.json()
+        setForm({ ...form, image: data.url })
+      }
+    } catch { /* ignore */ }
+    finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
   }
 
   async function handleSave() {
@@ -145,56 +192,75 @@ export function CoursesPanel({
               <div>
                 <label className="block text-sm font-medium text-foreground">কোর্সের নাম</label>
                 <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="যেমন: নার্সিং অ্যাডমিশন কোচিং"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">কোর্স কোড</label>
                 <input type="text" value={form.courseCode} onChange={(e) => setForm({ ...form, courseCode: e.target.value })} placeholder="যেমন: NAC-2025"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">স্লাগ (URL)</label>
                 <input type="text" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="যেমন: nursing-admission"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground">ছবি</label>
+              <div className="mt-1 flex items-center gap-3">
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                  className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary transition-colors disabled:opacity-50">
+                  {uploading ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
+                  {uploading ? 'আপলোড হচ্ছে...' : 'ছবি আপলোড'}
+                </button>
+                <input type="url" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="অথবা URL পেস্ট করুন"
+                  className={inputCls} />
+              </div>
+              {form.image && (
+                <div className="mt-2 flex items-center gap-3">
+                  <img src={form.image} alt="" className="h-20 w-32 rounded-lg object-cover border border-border" />
+                  <button type="button" onClick={() => setForm({ ...form, image: '' })} className="text-xs text-destructive hover:underline">মুছুন</button>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">সংক্ষিপ্ত বিবরণ</label>
               <input type="text" value={form.shortDescription} onChange={(e) => setForm({ ...form, shortDescription: e.target.value })} placeholder="কোর্স সম্পর্কে সংক্ষিপ্ত"
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                className={inputCls} />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">বিস্তারিত বিবরণ</label>
               <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} placeholder="কোর্সের বিস্তারিত বিবরণ"
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                className={inputCls} />
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
                 <label className="block text-sm font-medium text-foreground">সময়কাল</label>
                 <input type="text" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="যেমন: ১ বছর"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">ফি (৳)</label>
                 <input type="number" value={form.fee || ''} onChange={(e) => setForm({ ...form, fee: Number(e.target.value) })}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">ছাড়ের ফি (৳)</label>
                 <input type="number" value={form.discountFee || ''} onChange={(e) => setForm({ ...form, discountFee: Number(e.target.value) })}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">সর্বোচ্চ আসন</label>
                 <input type="number" value={form.maxStudents || ''} onChange={(e) => setForm({ ...form, maxStudents: Number(e.target.value) })}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">সময়সূচি</label>
                 <input type="text" value={form.schedule} onChange={(e) => setForm({ ...form, schedule: e.target.value })} placeholder="যেমন: শনি-বৃহ ৬:০০-৮:০০"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                  className={inputCls} />
               </div>
             </div>
             <button onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50">
@@ -211,6 +277,7 @@ export function CoursesPanel({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">কোর্স</th>
+                <th className="px-4 py-3 text-center font-semibold text-foreground">ছবি</th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">কোড</th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">সময়কাল</th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">ফি</th>
@@ -224,6 +291,13 @@ export function CoursesPanel({
               {courses.map((c) => (
                 <tr key={c.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
                   <td className="px-4 py-3 font-medium text-foreground">{c.title}</td>
+                  <td className="px-4 py-3 text-center">
+                    {c.image ? (
+                      <img src={c.image} alt="" className="mx-auto h-10 w-16 rounded object-cover border border-border" />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">নেই</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">{c.courseCode || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground">{c.duration}</td>
                   <td className="px-4 py-3 text-center text-foreground">৳{c.fee.toLocaleString()}</td>
