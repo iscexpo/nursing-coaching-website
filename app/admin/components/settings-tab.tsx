@@ -388,12 +388,12 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               <Field label="ইমেইল">
                 <TextInput value={form.smsEmail} onChange={(v) => setForm({ ...form, smsEmail: v })} placeholder="example@shiramsystem.com" />
               </Field>
-              <Field label="পাসওয়ার্ড">
+              <Field label="API পাসওয়ার্ড">
                 <input
                   type="password"
                   value={form.smsPassword}
                   onChange={(e) => setForm({ ...form, smsPassword: e.target.value })}
-                  placeholder="Shiram account password"
+                  placeholder="Shiram API password (not login password)"
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 />
               </Field>
