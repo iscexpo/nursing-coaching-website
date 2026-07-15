@@ -1,24 +1,10 @@
-import { NextIntlClientProvider, useMessages } from 'next-intl';
+import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
-import { Hind_Siliguri, Poppins } from 'next/font/google';
-import '../globals.css';
 import { SITE } from '@/lib/site-data';
 import { JsonLd, organizationJsonLd, localBusinessJsonLd } from '@/components/json-ld';
 import { routing } from '@/i18n/routing';
-
-const hindSiliguri = Hind_Siliguri({
-  subsets: ['bengali', 'latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-hind',
-})
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-poppins',
-})
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -67,7 +53,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: isEn ? 'ISC Expo - Icon Skill & Career Expo | Khulna' : 'ISC Expo - Icon Skill & Career Expo | খুলনা',
       description: isEn
         ? 'Khulna\'s trusted nursing admission coaching'
-        : 'খুলনার বিশ্বস্ত নার্সিং ভর্তি কোচিং — BNMC, B.Sc Nursing ও চাকরি প্রস্তুতি।',
+        : 'খুলনার বিশ্বস্ত নার্সিং কোচিং — BNMC, B.Sc Nursing ও চাকরি প্রস্তুতি।',
     },
   };
 }
@@ -92,15 +78,11 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${hindSiliguri.variable} ${poppins.variable} bg-background`} suppressHydrationWarning>
-      <body className="font-sans antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <JsonLd data={organizationJsonLd()} />
-          <JsonLd data={localBusinessJsonLd()} />
-          {children}
-        </NextIntlClientProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <JsonLd data={organizationJsonLd()} />
+      <JsonLd data={localBusinessJsonLd()} />
+      {children}
+      {process.env.NODE_ENV === 'production' && <Analytics />}
+    </NextIntlClientProvider>
   );
 }
