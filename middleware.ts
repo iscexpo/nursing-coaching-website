@@ -21,6 +21,10 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
+  if (isAdmin || isDashboard || isAuthPage) {
+    return NextResponse.next();
+  }
+
   return handleI18nRouting(request);
 }
 
