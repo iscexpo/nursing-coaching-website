@@ -12,7 +12,7 @@ export async function Hero() {
   return (
     <section className="relative overflow-hidden bg-brand">
       <div className="absolute inset-0 opacity-10">
-        <Image src="/images/classroom.png" alt="" fill className="object-cover" priority />
+        <Image src="/images/classroom.png" alt="" fill className="object-cover" />
       </div>
       <div className="absolute inset-0 bg-gradient-to-r from-brand/80 via-brand/60 to-transparent" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 md:py-20 lg:grid-cols-2">

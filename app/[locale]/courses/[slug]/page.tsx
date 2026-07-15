@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: `/courses/${slug}` },
+    alternates: { canonical: `${SITE.url}/courses/${slug}` },
     openGraph: {
       type: 'website',
       title,
@@ -75,7 +75,7 @@ export default async function CourseDetailPage({ params }: Props) {
     hasCourseInstance: course.duration
       ? {
           '@type': 'CourseInstance',
-          courseMode: 'on-site',
+          courseMode: 'onsite',
           courseWorkload: course.duration,
         }
       : undefined,

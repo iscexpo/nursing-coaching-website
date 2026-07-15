@@ -1,8 +1,19 @@
 import createMiddleware from 'next-intl/middleware';
 import {routing} from './i18n/routing';
 import {NextResponse, type NextRequest} from 'next/server';
+import {decodeJwt} from 'jose';
 
 const handleI18nRouting = createMiddleware(routing);
+
+async function getUserRoleFromToken(sessionToken: string): Promise<string | null> {
+  try {
+    const payload = decodeJwt(sessionToken) as Record<string, unknown>;
+    const role = payload.role ?? (payload.user as Record<string, unknown> | undefined)?.role;
+    return typeof role === 'string' ? role : null;
+  } catch {
+    return null;
+  }
+}
 
 export default async function middleware(request: NextRequest) {
   const {pathname} = request.nextUrl;
@@ -15,6 +26,13 @@ export default async function middleware(request: NextRequest) {
 
   if (!sessionToken && (isDashboard || isAdmin)) {
     return NextResponse.redirect(new URL('/auth/sign-in', request.url));
+  }
+
+  if (sessionToken && isAdmin) {
+    const role = await getUserRoleFromToken(sessionToken);
+    if (role !== 'admin' && role !== 'super-admin') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   if (isAuthPage && sessionToken) {

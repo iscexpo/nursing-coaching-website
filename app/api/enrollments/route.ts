@@ -4,7 +4,6 @@ import { enrollments, courses, user, studentLifecycleEvents } from '@/lib/db/sch
 import { eq, desc, and, count } from 'drizzle-orm'
 import { getSession, isAdmin } from '@/lib/permissions'
 import { createEnrollmentSchema, paginationSchema } from '@/lib/validations'
-import { writeLifecycleEvent } from '@/lib/audit'
 import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
@@ -107,6 +106,12 @@ export async function POST(request: NextRequest) {
     const fee = course.discountFee || course.fee
 
     const result = await db.transaction(async (tx) => {
+      const [freshCourse] = await tx.select().from(courses).where(eq(courses.id, courseId))
+      if (!freshCourse) throw new Error('Course not found')
+      if (freshCourse.maxStudents && freshCourse.currentStudents >= freshCourse.maxStudents) {
+        throw new Error('COURSE_FULL')
+      }
+
       const [enrollment] = await tx.insert(enrollments).values({
         id: crypto.randomUUID(),
         userId: session.user.id,
@@ -117,7 +122,7 @@ export async function POST(request: NextRequest) {
       }).returning()
 
       await tx.update(courses).set({
-        currentStudents: course.currentStudents + 1,
+        currentStudents: freshCourse.currentStudents + 1,
         updatedAt: new Date(),
       }).where(eq(courses.id, courseId))
 
@@ -132,15 +137,11 @@ export async function POST(request: NextRequest) {
       return enrollment
     })
 
-    await writeLifecycleEvent({
-      studentId: session.user.id,
-      enrollmentId: result.id,
-      eventType: 'enrollment.created',
-      details: { courseId, totalFee: fee },
-    })
-
     return NextResponse.json(result, { status: 201 })
-  } catch {
-    return NextResponse.json({ error: 'Failed to create enrollment' }, { status: 500 })
-  }
+    } catch (e) {
+      if (e instanceof Error && e.message === 'COURSE_FULL') {
+        return NextResponse.json({ error: 'Course is full' }, { status: 400 })
+      }
+      return NextResponse.json({ error: 'Failed to create enrollment' }, { status: 500 })
+    }
 }

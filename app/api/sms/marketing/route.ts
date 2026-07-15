@@ -32,6 +32,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'CSV/Excel file is required' }, { status: 400 })
     }
 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 })
+    }
+
+    const allowedTypes = [
+      'text/csv',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'text/tab-separated-values',
+    ]
+    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(csv|xlsx|xls|tsv)$/i)) {
+      return NextResponse.json({ error: 'Only CSV, XLSX, XLS, and TSV files are allowed' }, { status: 400 })
+    }
+
     const recipients = await extractPhoneNumbersFromSheet(file)
     const message = buildBroadcastMessage(parsed.data.title, parsed.data.content)
 

@@ -4,7 +4,7 @@ import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { updateEnrollmentSchema } from '@/lib/validations'
-import { buildAuditEntry, writeAudit, writeLifecycleEvent } from '@/lib/audit'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -43,20 +43,26 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const [existing] = await db.select().from(enrollments).where(eq(enrollments.id, id))
     if (!existing) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
 
-    const [updated] = await db.update(enrollments).set({
-      ...parsed.data,
-      updatedAt: new Date(),
-    }).where(eq(enrollments.id, id)).returning()
-
     const eventType = parsed.data.status ? `enrollment.${parsed.data.status}` : 'enrollment.updated'
-    await writeLifecycleEvent({
-      studentId: existing.userId,
-      enrollmentId: existing.id,
-      eventType,
-      details: {
+
+    const [updated] = await db.transaction(async (tx) => {
+      const [result] = await tx.update(enrollments).set({
         ...parsed.data,
-        previousStatus: existing.status,
-      },
+        updatedAt: new Date(),
+      }).where(eq(enrollments.id, id)).returning()
+
+      await tx.insert(studentLifecycleEvents).values({
+        id: crypto.randomUUID(),
+        studentId: existing.userId,
+        enrollmentId: existing.id,
+        eventType,
+        details: {
+          ...parsed.data,
+          previousStatus: existing.status,
+        },
+      })
+
+      return [result]
     })
 
     void writeAudit(

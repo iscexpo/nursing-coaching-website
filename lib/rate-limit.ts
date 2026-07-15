@@ -7,9 +7,6 @@ export interface RateLimitOptions {
   prefix?: string
 }
 
-// Lazily instantiate a shared Redis client. When the Upstash env vars are not
-// configured (e.g. local dev without the integration), we transparently fall
-// back to an in-memory store so rate limiting still works in a single process.
 let redis: Redis | null = null
 if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
   redis = new Redis({
@@ -18,17 +15,17 @@ if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
   })
 }
 
+const MEMORY_MAX_ENTRIES = 10_000
 const memoryStore = new Map<string, { count: number; expiresAt: number }>()
 
 function getClientIp(request: Request) {
+  const realIp = request.headers.get('x-real-ip')
+  if (realIp) return realIp.trim()
+
   const forwarded = request.headers.get('x-forwarded-for')
   if (forwarded) {
-    return forwarded.split(',')[0].trim()
-  }
-
-  const realIp = request.headers.get('x-real-ip')
-  if (realIp) {
-    return realIp.trim()
+    const firstIp = forwarded.split(',')[0].trim()
+    if (firstIp) return firstIp
   }
 
   return 'unknown'
@@ -49,6 +46,17 @@ function tooManyRequests(retryAfterSeconds: number): NextResponse {
 
 function memoryLimit(key: string, options: RateLimitOptions): NextResponse | null {
   const now = Date.now()
+
+  if (memoryStore.size > MEMORY_MAX_ENTRIES) {
+    const oldestKeys: string[] = []
+    for (const [k, v] of memoryStore) {
+      if (v.expiresAt <= now || oldestKeys.length < 100) {
+        oldestKeys.push(k)
+      }
+    }
+    for (const k of oldestKeys) memoryStore.delete(k)
+  }
+
   const existing = memoryStore.get(key)
 
   if (!existing || existing.expiresAt <= now) {
@@ -65,11 +73,6 @@ function memoryLimit(key: string, options: RateLimitOptions): NextResponse | nul
   return null
 }
 
-/**
- * Distributed, fixed-window rate limiter backed by Upstash Redis.
- * Returns a 429 NextResponse when the limit is exceeded, otherwise null.
- * Falls back to an in-memory store when Redis is not configured.
- */
 export async function rateLimit(
   request: Request,
   options: RateLimitOptions
@@ -89,8 +92,6 @@ export async function rateLimit(
   const windowSeconds = Math.max(1, Math.ceil(options.windowMs / 1000))
 
   try {
-    // Atomically increment the counter; set the expiry only on the first hit
-    // so the fixed window starts when the first request in it arrives.
     const count = await redis.incr(key)
     if (count === 1) {
       await redis.expire(key, windowSeconds)
@@ -103,8 +104,6 @@ export async function rateLimit(
 
     return null
   } catch {
-    // If Redis is unreachable, fail open to the in-memory limiter rather than
-    // blocking all traffic.
     return memoryLimit(key, options)
   }
 }

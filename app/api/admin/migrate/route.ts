@@ -22,8 +22,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 
+    const seedKey = process.env.ADMIN_SEED_KEY
+    if (!seedKey) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.ADMIN_SEED_KEY}`) {
+    if (authHeader !== `Bearer ${seedKey}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

@@ -15,17 +15,17 @@ export default function Error({
         <AlertTriangle className="size-8 text-destructive" />
       </div>
       <h1 className="mt-4 font-heading text-2xl font-bold text-foreground">
-        404 — Something went wrong
+        কিছু ভুল হয়েছে
       </h1>
       <p className="mt-2 max-w-md text-muted-foreground">
-        An unexpected error occurred. Please try again.
+        একটি অপ্রত্যাশিত ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।
       </p>
       <button
-        onClick={() => reset()}
+        onClick={reset}
         className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5"
       >
         <RefreshCw className="size-4" />
-        Try Again
+        আবার চেষ্টা করুন
       </button>
     </main>
   )

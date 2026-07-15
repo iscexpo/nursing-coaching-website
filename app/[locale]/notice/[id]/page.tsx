@@ -1,8 +1,9 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
+import { cache } from 'react'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -24,15 +25,18 @@ function formatDate(date: Date) {
   })
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params
-  let notice: typeof notices.$inferSelect | null = null
+const getNotice = cache(async (id: string) => {
   try {
     const rows = await db.select().from(notices).where(eq(notices.id, id)).limit(1)
-    notice = rows[0] ?? null
+    return rows[0] ?? null
   } catch {
-    notice = null
+    return null
   }
+})
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  const notice = await getNotice(id)
 
   if (!notice) {
     return { title: 'নোটিশ পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo', robots: { index: false } }
@@ -43,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: `/notice/${id}` },
+    alternates: { canonical: `${SITE.url}/notice/${id}` },
     openGraph: { type: 'article', title, description, url: `${SITE.url}/notice/${id}` },
   }
 }
@@ -51,13 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function NoticeDetailPage({ params }: Props) {
   const { locale, id } = await params
   setRequestLocale(locale)
-  let notice: typeof notices.$inferSelect | null = null
-  try {
-    const rows = await db.select().from(notices).where(eq(notices.id, id)).limit(1)
-    notice = rows[0] ?? null
-  } catch {
-    notice = null
-  }
+  const notice = await getNotice(id)
 
   if (!notice) notFound()
 

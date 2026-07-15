@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payment amount exceeds due amount' }, { status: 400 })
     }
 
+    const isCashPayment = method === 'cash'
     const result = await db.transaction(async (tx) => {
       const [payment] = await tx.insert(payments).values({
         id: crypto.randomUUID(),
@@ -75,10 +76,10 @@ export async function POST(request: NextRequest) {
         transactionId,
         senderNumber,
         notes,
-        status: method === 'cash' ? 'verified' : 'pending',
+        status: isCashPayment && isAdmin(session.user.role) ? 'verified' : 'pending',
       }).returning()
 
-      if (method === 'cash') {
+      if (isCashPayment && isAdmin(session.user.role)) {
         await tx.update(enrollments).set({
           paidAmount: enrollment.paidAmount + amount,
           dueAmount: enrollment.dueAmount - amount,

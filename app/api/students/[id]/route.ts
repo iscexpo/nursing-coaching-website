@@ -12,8 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    // Students may only view their own profile; admins may view anyone.
-    if (!isAdmin(session.user.role) && session.user.id !== id) {
+    if (session.user.role !== 'admin' && session.user.role !== 'super-admin' && session.user.id !== id) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 

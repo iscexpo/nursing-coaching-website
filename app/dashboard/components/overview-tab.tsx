@@ -90,7 +90,15 @@ export function OverviewTab({
                   <span className="text-xs text-muted-foreground">{new Date(event.createdAt).toLocaleDateString('bn-BD')}</span>
                 </div>
                 <p className="text-xs text-muted-foreground">{event.enrollmentId ? `এনরোলমেন্ট: ${event.enrollmentId.slice(0, 8)}` : 'এনরোলমেন্ট আইডি নেই'}</p>
-                <pre className="text-xs text-muted-foreground whitespace-pre-wrap break-words">{JSON.stringify(event.details || {}, null, 0)}</pre>
+                {event.details && typeof event.details === 'object' && Object.keys(event.details).length > 0 && (
+                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    {Object.entries(event.details).map(([key, val]) => (
+                      <span key={key} className="inline-flex rounded bg-muted-foreground/10 px-1.5 py-0.5">
+                        {key}: {String(val)}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

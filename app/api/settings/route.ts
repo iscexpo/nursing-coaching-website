@@ -32,6 +32,22 @@ export async function GET() {
   }
 }
 
+function maskSensitiveFields(data: Record<string, unknown>): Record<string, unknown> {
+  const sensitiveKeys = [
+    'smsApiKey', 'smsPassword', 'smsEmail',
+    'paymentGatewayApiKey', 'paymentGatewaySecret', 'paymentGatewayWebhookSecret',
+  ]
+  const masked: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(data)) {
+    if (sensitiveKeys.includes(key) && typeof value === 'string' && value) {
+      masked[key] = '***'
+    } else {
+      masked[key] = value
+    }
+  }
+  return masked
+}
+
 export async function PUT(request: NextRequest) {
   const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'settings.update' })
   if (limiter) return limiter
@@ -55,7 +71,7 @@ export async function PUT(request: NextRequest) {
           resourceType: 'settings',
           resourceId: 'primary',
           action: 'settings.update',
-          details: parsed.data,
+          details: maskSensitiveFields(parsed.data as Record<string, unknown>),
         },
         session,
         request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined

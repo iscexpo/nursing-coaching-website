@@ -21,7 +21,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     description: isEn
       ? 'One of Khulna\'s most trusted nursing admission coaching. Complete preparation for BNMC admission, B.Sc Nursing, Post Basic B.Sc & job preparation.'
       : 'খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। BNMC ভর্তি পরীক্ষা, B.Sc Nursing, Post Basic B.Sc, কাউন্সিল ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।',
-    generator: 'v0.app',
     applicationName: SITE.nameBn,
     keywords: isEn
       ? ['nursing coaching Khulna', 'ISC Expo', 'BNMC admission', 'B.Sc Nursing']

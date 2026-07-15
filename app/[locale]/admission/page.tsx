@@ -32,22 +32,22 @@ const BOARD_NAMES = ['ঢাকা বোর্ড', 'রাজশাহী ব�
 const inputCls = "mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
 const smallInputCls = "mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
 
-function EduFields({ label, value, onChange, selectBoard }: { label: string; value: EducationField; onChange: (v: EducationField) => void; selectBoard: string }) {
+function EduFields({ label, value, onChange, selectBoard, idPrefix }: { label: string; value: EducationField; onChange: (v: EducationField) => void; selectBoard: string; idPrefix: string }) {
   return (
     <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
       <p className="text-sm font-semibold text-foreground">{label}</p>
       <div className="grid gap-3 sm:grid-cols-3">
         <div>
-          <label className="block text-xs font-medium text-muted-foreground">ফলাফল</label>
-          <input type="text" value={value.result} onChange={(e) => onChange({ ...value, result: e.target.value })} placeholder="যেমন: GPA 5.00" className={smallInputCls} />
+          <label htmlFor={`${idPrefix}-result`} className="block text-xs font-medium text-muted-foreground">ফলাফল</label>
+          <input id={`${idPrefix}-result`} type="text" value={value.result} onChange={(e) => onChange({ ...value, result: e.target.value })} placeholder="যেমন: GPA 5.00" className={smallInputCls} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-muted-foreground">প্রতিষ্ঠান</label>
-          <input type="text" value={value.institution} onChange={(e) => onChange({ ...value, institution: e.target.value })} placeholder="কলেজ/বিশ্ববিদ্যালয়" className={smallInputCls} />
+          <label htmlFor={`${idPrefix}-institution`} className="block text-xs font-medium text-muted-foreground">প্রতিষ্ঠান</label>
+          <input id={`${idPrefix}-institution`} type="text" value={value.institution} onChange={(e) => onChange({ ...value, institution: e.target.value })} placeholder="কলেজ/বিশ্ববিদ্যালয়" className={smallInputCls} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-muted-foreground">সাল</label>
-          <select value={value.year} onChange={(e) => onChange({ ...value, year: e.target.value })} className={smallInputCls}>
+          <label htmlFor={`${idPrefix}-year`} className="block text-xs font-medium text-muted-foreground">সাল</label>
+          <select id={`${idPrefix}-year`} value={value.year} onChange={(e) => onChange({ ...value, year: e.target.value })} className={smallInputCls}>
             <option value="">বছর নির্বাচন</option>
             {Array.from({ length: 27 }, (_, i) => 2026 - i).map((y) => (
               <option key={y} value={String(y)}>{y}</option>
@@ -57,16 +57,16 @@ function EduFields({ label, value, onChange, selectBoard }: { label: string; val
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
         <div>
-          <label className="block text-xs font-medium text-muted-foreground">রোল নম্বর</label>
-          <input type="text" value={value.roll} onChange={(e) => onChange({ ...value, roll: e.target.value })} placeholder="রোল নম্বর" className={smallInputCls} />
+          <label htmlFor={`${idPrefix}-roll`} className="block text-xs font-medium text-muted-foreground">রোল নম্বর</label>
+          <input id={`${idPrefix}-roll`} type="text" value={value.roll} onChange={(e) => onChange({ ...value, roll: e.target.value })} placeholder="রোল নম্বর" className={smallInputCls} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-muted-foreground">রেজিস্ট্রেশন নম্বর</label>
-          <input type="text" value={value.registrationNo} onChange={(e) => onChange({ ...value, registrationNo: e.target.value })} placeholder="রেজিস্ট্রেশন নম্বর" className={smallInputCls} />
+          <label htmlFor={`${idPrefix}-reg`} className="block text-xs font-medium text-muted-foreground">রেজিস্ট্রেশন নম্বর</label>
+          <input id={`${idPrefix}-reg`} type="text" value={value.registrationNo} onChange={(e) => onChange({ ...value, registrationNo: e.target.value })} placeholder="রেজিস্ট্রেশন নম্বর" className={smallInputCls} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-muted-foreground">বোর্ড</label>
-          <select value={value.board} onChange={(e) => onChange({ ...value, board: e.target.value })} className={smallInputCls}>
+          <label htmlFor={`${idPrefix}-board`} className="block text-xs font-medium text-muted-foreground">বোর্ড</label>
+          <select id={`${idPrefix}-board`} value={value.board} onChange={(e) => onChange({ ...value, board: e.target.value })} className={smallInputCls}>
             <option value="">{selectBoard}</option>
             {BOARD_NAMES.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
@@ -98,7 +98,10 @@ export default function AdmissionPage() {
 
   useEffect(() => {
     fetch('/api/courses')
-      .then((r) => (r.ok ? r.json() : []))
+      .then((r) => {
+        if (!r.ok) throw new Error('Failed to load courses')
+        return r.json()
+      })
       .then((data) => {
         const list = Array.isArray(data) ? data : data.data || []
         const activeCourses = list
@@ -112,7 +115,9 @@ export default function AdmissionPage() {
           setForm((current) => ({ ...current, course: defaultCourse }))
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        setError('কোর্স তালিকা লোড করা যায়নি। পেজ রিফ্রেশ করুন।')
+      })
   }, [searchParams])
 
   const stepLabels = [t('personalInfo'), t('education'), t('course'), t('review')]
@@ -288,9 +293,9 @@ export default function AdmissionPage() {
                         <p className="text-sm font-medium text-foreground mb-1">{t('education')} (ঐচ্ছিক)</p>
                         <p className="text-xs text-muted-foreground mb-4">আপনার SSC, HSC এবং অনার্স তথ্য প্রদান করুন।</p>
                       </div>
-                      <EduFields label="SSC (মাধ্যমিক সার্টিফিকেট)" value={form.ssc} onChange={(ssc) => setForm({ ...form, ssc })} selectBoard={t('selectBoard')} />
-                      <EduFields label="HSC (উচ্চ মাধ্যমিক সার্টিফিকেট) (ঐচ্ছিক)" value={form.hsc} onChange={(hsc) => setForm({ ...form, hsc })} selectBoard={t('selectBoard')} />
-                      <EduFields label="অনার্স (স্নাতক) (ঐচ্ছিক)" value={form.honors} onChange={(honors) => setForm({ ...form, honors })} selectBoard={t('selectBoard')} />
+                      <EduFields label="SSC (মাধ্যমিক সার্টিফিকেট)" value={form.ssc} onChange={(ssc) => setForm({ ...form, ssc })} selectBoard={t('selectBoard')} idPrefix="ssc" />
+                      <EduFields label="HSC (উচ্চ মাধ্যমিক সার্টিফিকেট) (ঐচ্ছিক)" value={form.hsc} onChange={(hsc) => setForm({ ...form, hsc })} selectBoard={t('selectBoard')} idPrefix="hsc" />
+                      <EduFields label="অনার্স (স্নাতক) (ঐচ্ছিক)" value={form.honors} onChange={(honors) => setForm({ ...form, honors })} selectBoard={t('selectBoard')} idPrefix="honors" />
                     </div>
                   )}
 
