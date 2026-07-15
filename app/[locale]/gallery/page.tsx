@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -21,17 +21,19 @@ export function generateStaticParams() {
 export default async function GalleryPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
+  const t = await getTranslations('galleryPage')
+  const tc = await getTranslations('common')
   return (
     <>
       <SiteHeader />
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
-            <Breadcrumb items={[{ label: 'গ্যালারি' }]} />
+            <Breadcrumb items={[{ label: tc('gallery') }]} />
             <SectionHeading
-              eyebrow="গ্যালারি"
-              title="আমাদের ছবি"
-              description="ISC Expo - Icon Skill & Career Expo-এর বিভিন্ন অনুষ্ঠান, সেমিনার ও ক্লাসের ছবি।"
+              eyebrow={tc('gallery')}
+              title={t('title')}
+              description={t('description')}
             />
           </div>
         </section>

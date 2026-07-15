@@ -1,9 +1,11 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { Home } from 'lucide-react'
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations('common')
   return (
     <>
       <SiteHeader />
@@ -25,7 +27,7 @@ export default function NotFound() {
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5"
         >
           <Home className="size-4" />
-          হোমপেজে ফিরুন
+          {t('home')}
         </Link>
       </main>
       <SiteFooter />

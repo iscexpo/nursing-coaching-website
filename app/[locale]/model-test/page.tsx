@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
@@ -73,6 +73,8 @@ async function getExams(): Promise<ExamRow[]> {
 export default async function ModelTestPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
+  const t = await getTranslations('modelTestPage')
+  const tc = await getTranslations('common')
   const exams = await getExams()
 
   const subjects = [...new Set(exams.map((e) => e.subject))]
@@ -88,11 +90,11 @@ export default async function ModelTestPage({ params }: { params: Promise<{ loca
         {/* Hero */}
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
-            <Breadcrumb items={[{ label: 'মডেল টেস্ট' }]} />
+            <Breadcrumb items={[{ label: tc('modelTest') }]} />
             <SectionHeading
-              eyebrow="মডেল টেস্ট"
-              title="সাপ্তাহিক মডেল টেস্ট"
-              description="BNMC ভর্তি পরীক্ষার আদলে আমাদের সাপ্তাহিক মডেল টেস্টে অংশ নিন এবং নিজেকে যাচাই করুন।"
+              eyebrow={tc('modelTest')}
+              title={t('title')}
+              description={t('description')}
             />
           </div>
         </section>

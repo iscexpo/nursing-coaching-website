@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
@@ -15,6 +16,9 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const site = useSiteData()
+  const t = useTranslations('contactPage')
+  const tc = useTranslations('contact')
+  const tCommon = useTranslations('common')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,9 +47,9 @@ export default function ContactPage() {
   }
 
   const infoItems = [
-    { icon: MapPin, label: 'ঠিকানা', value: site.addressBn },
-    { icon: Phone, label: 'ফোন', value: site.phone, href: site.phoneHref },
-    { icon: Mail, label: 'ইমেইল', value: site.email, href: `mailto:${site.email}` },
+    { icon: MapPin, label: tCommon('address'), value: site.addressBn },
+    { icon: Phone, label: tCommon('phone'), value: site.phone, href: site.phoneHref },
+    { icon: Mail, label: tCommon('email'), value: site.email, href: `mailto:${site.email}` },
     { icon: MessageCircle, label: 'WhatsApp', value: 'চ্যাট করুন', href: site.whatsapp },
   ]
 
@@ -55,11 +59,11 @@ export default function ContactPage() {
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
-            <Breadcrumb items={[{ label: 'যোগাযোগ' }]} />
+            <Breadcrumb items={[{ label: tc('eyebrow') }]} />
             <SectionHeading
-              eyebrow="যোগাযোগ"
-              title="আমাদের সাথে যোগাযোগ করুন"
-              description="যেকোনো প্রশ্ন বা তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।"
+              eyebrow={tc('eyebrow')}
+              title={t('title')}
+              description={t('description')}
             />
           </div>
         </section>
@@ -136,7 +140,7 @@ export default function ContactPage() {
 
                     <div>
                       <label htmlFor="c-name" className="block text-sm font-medium text-foreground">
-                        নাম
+                        {tCommon('fullName')}
                       </label>
                       <input
                         id="c-name"
@@ -150,7 +154,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <label htmlFor="c-phone" className="block text-sm font-medium text-foreground">
-                        ফোন নম্বর
+                        {tCommon('phone')}
                       </label>
                       <input
                         id="c-phone"

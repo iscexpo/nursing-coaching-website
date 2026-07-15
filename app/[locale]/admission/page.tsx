@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
@@ -26,12 +27,12 @@ function emptyEducation(): EducationField {
 type AdmissionStep = 1 | 2 | 3 | 4
 
 const STEP_ICONS = [User, GraduationCap, BookOpen, FileText]
-const BOARDS = ['বোর্ড নির্বাচন করুন', 'ঢাকা বোর্ড', 'রাজশাহী বোর্ড', 'চট্টগ্রাম বোর্ড', 'যশোর বোর্ড', 'বরিশাল বোর্ড', 'সিলেট বোর্ড', 'রংপুর বোর্ড', 'ময়মনসিংহ বোর্ড', 'দিনাজপুর বোর্ড', 'কুমিল্লা বোর্ড']
+const BOARD_NAMES = ['ঢাকা বোর্ড', 'রাজশাহী বোর্ড', 'চট্টগ্রাম বোর্ড', 'যশোর বোর্ড', 'বরিশাল বোর্ড', 'সিলেট বোর্ড', 'রংপুর বোর্ড', 'ময়মনসিংহ বোর্ড', 'দিনাজপুর বোর্ড', 'কুমিল্লা বোর্ড']
 
 const inputCls = "mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
 const smallInputCls = "mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
 
-function EduFields({ label, value, onChange }: { label: string; value: EducationField; onChange: (v: EducationField) => void }) {
+function EduFields({ label, value, onChange, selectBoard }: { label: string; value: EducationField; onChange: (v: EducationField) => void; selectBoard: string }) {
   return (
     <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
       <p className="text-sm font-semibold text-foreground">{label}</p>
@@ -61,7 +62,8 @@ function EduFields({ label, value, onChange }: { label: string; value: Education
         <div>
           <label className="block text-xs font-medium text-muted-foreground">বোর্ড</label>
           <select value={value.board} onChange={(e) => onChange({ ...value, board: e.target.value })} className={smallInputCls}>
-            {BOARDS.map((b, i) => <option key={b} value={i === 0 ? '' : b}>{b}</option>)}
+            <option value="">{selectBoard}</option>
+            {BOARD_NAMES.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
       </div>
@@ -72,6 +74,8 @@ function EduFields({ label, value, onChange }: { label: string; value: Education
 export default function AdmissionPage() {
   const searchParams = useSearchParams()
   const site = useSiteData()
+  const t = useTranslations('admission')
+  const tc = useTranslations('common')
   const [coursesList, setCoursesList] = useState<CourseOption[]>([])
   const [step, setStep] = useState<AdmissionStep>(1)
   const [form, setForm] = useState({
@@ -106,7 +110,7 @@ export default function AdmissionPage() {
       .catch(() => {})
   }, [searchParams])
 
-  const stepLabels = ['ব্যক্তিগত তথ্য', 'শিক্ষাগত যোগ্যতা', 'কোর্স নির্বাচন', 'সারাংশ']
+  const stepLabels = [t('personalInfo'), t('education'), t('course'), t('review')]
 
   const hasStepOneValues = form.name.trim().length > 0 && form.phone.trim().length > 0
   const hasStepTwoValues = true
@@ -134,7 +138,7 @@ export default function AdmissionPage() {
 
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error || 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।')
+        setError(data.error || t('error'))
         return
       }
 
@@ -162,11 +166,11 @@ export default function AdmissionPage() {
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
-            <Breadcrumb items={[{ label: 'ভর্তি' }]} />
+            <Breadcrumb items={[{ label: tc('admission') }]} />
             <FadeIn>
               <SectionHeading
-                eyebrow="ভর্তি চলমান"
-                title="এখনই ভর্তি হোন"
+                eyebrow={tc('admission')}
+                title={t('title')}
                 description="ISC Expo - Icon Skill & Career Expo-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।"
               />
             </FadeIn>
@@ -182,7 +186,7 @@ export default function AdmissionPage() {
                     <CheckCircle2 className="size-10 text-green" />
                   </div>
                   <h3 className="font-heading text-2xl font-bold text-foreground">
-                    আপনার আবেদন গ্রহণ করা হয়েছে!
+                    {t('success')}
                   </h3>
                   <p className="mt-3 text-muted-foreground">
                     আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব। ধন্যবাদ!
@@ -247,7 +251,7 @@ export default function AdmissionPage() {
                   {step === 1 && (
                     <div className="space-y-5 animate-fade-in">
                       <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-foreground">পুরো নাম *</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-foreground">{t('fullName')} *</label>
                         <input
                           id="name"
                           type="text"
@@ -259,7 +263,7 @@ export default function AdmissionPage() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-foreground">মোবাইল নম্বর *</label>
+                        <label htmlFor="phone" className="block text-sm font-medium text-foreground">{t('phone')} *</label>
                         <input
                           id="phone"
                           type="tel"
@@ -276,19 +280,19 @@ export default function AdmissionPage() {
                   {step === 2 && (
                     <div className="space-y-5 animate-fade-in">
                       <div>
-                        <p className="text-sm font-medium text-foreground mb-1">শিক্ষাগত যোগ্যতা (ঐচ্ছিক)</p>
+                        <p className="text-sm font-medium text-foreground mb-1">{t('education')} (ঐচ্ছিক)</p>
                         <p className="text-xs text-muted-foreground mb-4">আপনার SSC, HSC এবং অনার্স তথ্য প্রদান করুন।</p>
                       </div>
-                      <EduFields label="SSC (মাধ্যমিক সার্টিফিকেট)" value={form.ssc} onChange={(ssc) => setForm({ ...form, ssc })} />
-                      <EduFields label="HSC (উচ্চ মাধ্যমিক সার্টিফিকেট) (ঐচ্ছিক)" value={form.hsc} onChange={(hsc) => setForm({ ...form, hsc })} />
-                      <EduFields label="অনার্স (স্নাতক) (ঐচ্ছিক)" value={form.honors} onChange={(honors) => setForm({ ...form, honors })} />
+                      <EduFields label="SSC (মাধ্যমিক সার্টিফিকেট)" value={form.ssc} onChange={(ssc) => setForm({ ...form, ssc })} selectBoard={t('selectBoard')} />
+                      <EduFields label="HSC (উচ্চ মাধ্যমিক সার্টিফিকেট) (ঐচ্ছিক)" value={form.hsc} onChange={(hsc) => setForm({ ...form, hsc })} selectBoard={t('selectBoard')} />
+                      <EduFields label="অনার্স (স্নাতক) (ঐচ্ছিক)" value={form.honors} onChange={(honors) => setForm({ ...form, honors })} selectBoard={t('selectBoard')} />
                     </div>
                   )}
 
                   {step === 3 && (
                     <div className="space-y-5 animate-fade-in">
                       <div>
-                        <p className="text-sm font-medium text-foreground">আপনার আগ্রহী কোর্স নির্বাচন করুন *</p>
+                        <p className="text-sm font-medium text-foreground">{t('selectCourse')} *</p>
                         <select
                           id="course"
                           value={form.course}
@@ -296,7 +300,7 @@ export default function AdmissionPage() {
                           required
                           className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                         >
-                          <option value="">কোর্স বাছাই করুন</option>
+                          <option value="">{t('selectCourse')}</option>
                           {coursesList.map((c) => (
                             <option key={c.slug} value={c.slug}>
                               {c.title} — ৳{c.fee.toLocaleString()}
@@ -328,15 +332,15 @@ export default function AdmissionPage() {
                         <p className="font-medium text-foreground">আবেদনের সারাংশ</p>
                         <dl className="mt-4 space-y-3 text-sm">
                           <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
-                            <dt className="font-medium text-foreground">নাম</dt>
+                            <dt className="font-medium text-foreground">{t('fullName')}</dt>
                             <dd className="text-muted-foreground">{form.name || '-'}</dd>
                           </div>
                           <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
-                            <dt className="font-medium text-foreground">মোবাইল</dt>
+                            <dt className="font-medium text-foreground">{t('phone')}</dt>
                             <dd className="text-muted-foreground">{form.phone || '-'}</dd>
                           </div>
                           <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
-                            <dt className="font-medium text-foreground">কোর্স</dt>
+                            <dt className="font-medium text-foreground">{t('course')}</dt>
                             <dd className="text-muted-foreground">{coursesList.find((c) => c.slug === form.course)?.title || '-'}</dd>
                           </div>
                           <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
@@ -374,7 +378,7 @@ export default function AdmissionPage() {
                       className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition-all hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <ArrowLeft className="size-4" />
-                      পূর্ববর্তী
+                      {t('prev')}
                     </button>
                     {step < 4 ? (
                       <button
@@ -383,7 +387,7 @@ export default function AdmissionPage() {
                         disabled={(step === 1 ? !hasStepOneValues : step === 3 ? !hasStepThreeValues : false) || loading}
                         className="flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
                       >
-                        পরের ধাপ
+                        {t('next')}
                         <ArrowRight className="size-4" />
                       </button>
                     ) : (
@@ -393,7 +397,7 @@ export default function AdmissionPage() {
                         className="flex items-center justify-center gap-2 rounded-xl bg-green px-5 py-2.5 text-sm font-semibold text-green-foreground transition-all hover:bg-green/90 hover:shadow-lg hover:shadow-green/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
                       >
                         {loading && <Loader2 className="size-4 animate-spin" />}
-                        {loading ? 'জমা হচ্ছে...' : 'আবেদন সম্পন্ন করুন'}
+                        {loading ? 'জমা হচ্ছে...' : t('submit')}
                         {!loading && <CheckCircle2 className="size-4" />}
                       </button>
                     )}
@@ -407,13 +411,13 @@ export default function AdmissionPage() {
                 <h3 className="font-heading text-lg font-bold text-foreground">সরাসরি যোগাযোগ</h3>
                 <div className="mt-4 space-y-3 text-sm text-muted-foreground">
                   <p>
-                    ফোন: <a href={site.phoneHref} className="font-medium text-brand hover:underline">{site.phone}</a>
+                    {tc('phone')}: <a href={site.phoneHref} className="font-medium text-brand hover:underline">{site.phone}</a>
                   </p>
                   <p>
                     WhatsApp: <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-brand hover:underline">চ্যাট করুন</a>
                   </p>
                   <p>
-                    ঠিকানা: {site.addressBn}
+                    {tc('address')}: {site.addressBn}
                   </p>
                 </div>
               </div>

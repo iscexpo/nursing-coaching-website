@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
@@ -37,6 +37,8 @@ export default async function NoticePage({ params }: { params: Promise<{ locale:
   const { locale } = await params
   setRequestLocale(locale)
   const allNotices = await getNotices()
+  const t = await getTranslations('noticePage')
+  const tc = await getTranslations('common')
 
   return (
     <>
@@ -44,11 +46,11 @@ export default async function NoticePage({ params }: { params: Promise<{ locale:
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
-            <Breadcrumb items={[{ label: 'নোটিশ' }]} />
+            <Breadcrumb items={[{ label: tc('notice') }]} />
             <SectionHeading
-              eyebrow="নোটিশ বোর্ড"
-              title="সকল নোটিশ"
-              description="ISC Expo - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ, আপডেট ও গুরুত্বপূর্ণ তথ্য।"
+              eyebrow={tc('notice')}
+              title={t('title')}
+              description={t('description')}
             />
           </div>
         </section>

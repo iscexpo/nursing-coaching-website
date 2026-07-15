@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
 import { GraduationCap, Phone, Mail, ArrowRight, Loader2, CheckCircle2, Shield, Eye, EyeOff } from 'lucide-react'
@@ -14,6 +15,7 @@ type PhoneStep = 'phone' | 'otp' | 'details'
 export default function SignUpPage() {
   const router = useRouter()
   const site = useSiteData()
+  const t = useTranslations('auth.signUp')
   const [mode, setMode] = useState<SignUpMode>('phone')
   const [phoneStep, setPhoneStep] = useState<PhoneStep>('phone')
   const [phoneNumber, setPhoneNumber] = useState('')
@@ -42,13 +44,13 @@ export default function SignUpPage() {
       })
 
       if (otpError) {
-        setError(otpError.message || 'OTP পাঠানো যায়নি')
+        setError(otpError.message || t('otpError'))
         return
       }
 
       setPhoneStep('otp')
     } catch {
-      setError('OTP পাঠানো যায়নি')
+      setError(t('otpError'))
     } finally {
       setLoading(false)
     }
@@ -67,13 +69,13 @@ export default function SignUpPage() {
       })
 
       if (verifyError) {
-        setError(verifyError.message || 'OTP যাচাই ব্যর্থ')
+        setError(verifyError.message || t('otpVerifyError'))
         return
       }
 
       setPhoneStep('details')
     } catch {
-      setError('OTP যাচাই ব্যর্থ')
+      setError(t('otpVerifyError'))
     } finally {
       setLoading(false)
     }
@@ -93,14 +95,14 @@ export default function SignUpPage() {
       })
 
       if (signUpError) {
-        setError(signUpError.message || 'নিবন্ধন ব্যর্থ হয়েছে')
+        setError(signUpError.message || t('signUpError'))
         return
       }
 
       router.push('/dashboard')
       router.refresh()
     } catch {
-      setError('নিবন্ধন ব্যর্থ হয়েছে')
+      setError(t('signUpError'))
     } finally {
       setLoading(false)
     }
@@ -120,20 +122,20 @@ export default function SignUpPage() {
       })
 
       if (signUpError) {
-        setError(signUpError.message || 'নিবন্ধন ব্যর্থ হয়েছে')
+        setError(signUpError.message || t('signUpError'))
         return
       }
 
       router.push('/dashboard')
       router.refresh()
     } catch {
-      setError('নিবন্ধন ব্যর্থ হয়েছে')
+      setError(t('signUpError'))
     } finally {
       setLoading(false)
     }
   }
 
-  const stepLabels = ['ফোন', 'OTP', 'বিস্তারিত']
+  const stepLabels = [t('steps.phone'), 'OTP', t('steps.details')]
   const phoneStepIndex = phoneStep === 'phone' ? 0 : phoneStep === 'otp' ? 1 : 2
 
   return (
@@ -150,17 +152,17 @@ export default function SignUpPage() {
             <span className="font-heading text-2xl font-bold">{site.nameBn}</span>
           </div>
           <h2 className="font-heading text-3xl font-extrabold leading-tight">
-              ISC Expo পরিবারে
-            <span className="mt-1 block text-gold">যোগ দিন</span>
+              {t('tagline')}
+            <span className="mt-1 block text-gold">{t('taglineHighlight')}</span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
-            নিবন্ধন করে অনলাইনে কোর্স মডেল টেস্ট, ফলাফল ও ক্লাস স্কেডিউল দেখুন।
+            {t('taglineDescription')}
           </p>
           <div className="mt-10 space-y-4">
             {[
-              { icon: CheckCircle2, text: 'ফ্রি মডেল টেস্টে অংশ নিন' },
-              { icon: Shield, text: 'নিজের ফলাফল ও উপস্থিতি ট্র্যাক করুন' },
-              { icon: GraduationCap, text: 'কোর্স ও পেমেন্ট ম্যানেজ করুন' },
+              { icon: CheckCircle2, text: t('benefits.freeTest') },
+              { icon: Shield, text: t('benefits.trackResult') },
+              { icon: GraduationCap, text: t('benefits.manageCourse') },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-3 rounded-xl bg-brand-foreground/10 p-3 backdrop-blur-sm">
                 <item.icon className="size-5 text-gold" />
@@ -180,10 +182,10 @@ export default function SignUpPage() {
               <span className="font-heading text-lg font-bold text-foreground">{site.nameBn}</span>
             </Link>
             <h1 className="font-heading text-2xl font-bold text-foreground">
-              নিবন্ধন করুন
+              {t('title')}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              ISC Expo - Icon Skill & Career Expo-এ যোগ দিন
+              {t('subtitle')}
             </p>
           </div>
 
@@ -198,7 +200,7 @@ export default function SignUpPage() {
               }`}
             >
               <Phone className="size-4" />
-              ফোন
+              {t('phoneTab')}
             </button>
             <button
               type="button"
@@ -210,7 +212,7 @@ export default function SignUpPage() {
               }`}
             >
               <Mail className="size-4" />
-              ইমেইল
+              {t('emailTab')}
             </button>
           </div>
 
@@ -251,7 +253,7 @@ export default function SignUpPage() {
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-foreground">
-                  ফোন নম্বর
+                  {t('phoneLabel')}
                 </label>
                 <input
                   id="phone"
@@ -269,7 +271,7 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>OTP পাঠান <ArrowRight className="size-4" /></>}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : <>{t('otpSend')} <ArrowRight className="size-4" /></>}
               </button>
             </form>
           )}
@@ -277,7 +279,7 @@ export default function SignUpPage() {
           {mode === 'phone' && phoneStep === 'otp' && (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">{phoneNumber}</span> নম্বরে OTP পাঠানো হয়েছে
+                <span className="font-medium text-foreground">{phoneNumber}</span> {t('otpSentTo')}
               </p>
 
               <div>
@@ -289,7 +291,7 @@ export default function SignUpPage() {
                   type="text"
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  placeholder="6 ডিজিটের কোড"
+                  placeholder={t('otpPlaceholder')}
                   maxLength={6}
                   required
                   className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-center text-lg tracking-[0.5em] text-foreground placeholder:text-muted-foreground placeholder:tracking-normal transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
@@ -301,7 +303,7 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>যাচাই করুন <ArrowRight className="size-4" /></>}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : <>{t('otpVerify')} <ArrowRight className="size-4" /></>}
               </button>
 
               <button
@@ -309,7 +311,7 @@ export default function SignUpPage() {
                 onClick={() => setPhoneStep('phone')}
                 className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                ফোন নম্বর পরিবর্তন করুন
+                {t('changePhone')}
               </button>
             </form>
           )}
@@ -318,7 +320,7 @@ export default function SignUpPage() {
             <form onSubmit={handlePhoneSignUp} className="space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-foreground">
-                  পুরো নাম
+                  {t('fullName')}
                 </label>
                 <input
                   id="name"
@@ -333,7 +335,7 @@ export default function SignUpPage() {
 
               <div>
                 <label htmlFor="studentId" className="block text-sm font-medium text-foreground">
-                  শিক্ষার্থী ID (ঐচ্ছিক)
+                  {t('studentId')}
                 </label>
                 <input
                   id="studentId"
@@ -347,7 +349,7 @@ export default function SignUpPage() {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                  পাসওয়ার্ড
+                  {t('passwordLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -376,7 +378,7 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>নিবন্ধন করুন <ArrowRight className="size-4" /></>}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : <>{t('submit')} <ArrowRight className="size-4" /></>}
               </button>
             </form>
           )}
@@ -385,7 +387,7 @@ export default function SignUpPage() {
             <form onSubmit={handleEmailSignUp} className="space-y-4">
               <div>
                 <label htmlFor="email-name" className="block text-sm font-medium text-foreground">
-                  পুরো নাম
+                  {t('fullName')}
                 </label>
                 <input
                   id="email-name"
@@ -400,7 +402,7 @@ export default function SignUpPage() {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-foreground">
-                  ইমেইল
+                  {t('emailLabel')}
                 </label>
                 <input
                   id="email"
@@ -415,7 +417,7 @@ export default function SignUpPage() {
 
               <div>
                 <label htmlFor="email-phone" className="block text-sm font-medium text-foreground">
-                  ফোন নম্বর (ঐচ্ছিক)
+                  {t('phoneOptional')}
                 </label>
                 <input
                   id="email-phone"
@@ -429,7 +431,7 @@ export default function SignUpPage() {
 
               <div>
                 <label htmlFor="email-password" className="block text-sm font-medium text-foreground">
-                  পাসওয়ার্ড
+                  {t('passwordLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -458,15 +460,15 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>নিবন্ধন করুন <ArrowRight className="size-4" /></>}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : <>{t('submit')} <ArrowRight className="size-4" /></>}
               </button>
             </form>
           )}
 
           <p className="text-center text-sm text-muted-foreground">
-            ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
+            {t('hasAccount')}{' '}
             <Link href="/auth/sign-in" className="font-medium text-brand hover:underline">
-              সাইন ইন করুন
+              {t('signInLink')}
             </Link>
           </p>
         </div>

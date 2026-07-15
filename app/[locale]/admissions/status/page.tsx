@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { SectionHeading } from '@/components/section-heading'
 import { Button } from '@/components/ui/button'
 import { Breadcrumb } from '@/components/breadcrumb'
@@ -26,6 +27,8 @@ export default function AdmissionStatusPage() {
   const [status, setStatus] = useState<ApplicationStatus | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const t = useTranslations('admissionStatusPage')
+  const tCommon = useTranslations('common')
 
   async function handleCheckStatus(e: React.FormEvent) {
     e.preventDefault()
@@ -52,11 +55,11 @@ export default function AdmissionStatusPage() {
     <main>
       <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-4">
-          <Breadcrumb items={[{ label: 'ভর্তি' }, { label: 'আবেদনের স্ট্যাটাস' }]} />
+          <Breadcrumb items={[{ label: tCommon('admission') }, { label: 'আবেদনের স্ট্যাটাস' }]} />
           <SectionHeading
-            eyebrow="আবেদন স্ট্যাটাস"
-            title="আপনার আবেদন কী অবস্থায় আছে?"
-            description="আপনার রেফারেন্স নম্বর ও ফোন নম্বর দিয়ে আপনার ভর্তি আবেদন স্ট্যাটাস দেখুন।"
+            eyebrow={tCommon('admission')}
+            title={t('title')}
+            description={t('description')}
           />
         </div>
       </section>
@@ -77,7 +80,7 @@ export default function AdmissionStatusPage() {
                 />
               </div>
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-foreground">ফোন নম্বর *</label>
+                <label htmlFor="phone" className="block text-sm font-medium text-foreground">{tCommon('phone')} *</label>
                 <input
                   id="phone"
                   value={phone}
@@ -104,15 +107,15 @@ export default function AdmissionStatusPage() {
                     <p>{status.reference}</p>
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">নাম</p>
+                    <p className="font-medium text-foreground">{tCommon('fullName')}</p>
                     <p>{status.name}</p>
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">ফোন</p>
+                    <p className="font-medium text-foreground">{tCommon('phone')}</p>
                     <p>{status.phone}</p>
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">কোর্স</p>
+                    <p className="font-medium text-foreground">{tCommon('courses')}</p>
                     <p>{status.courseTitle || 'কোর্স নেই'}</p>
                   </div>
                   <div>
