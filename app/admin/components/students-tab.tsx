@@ -61,8 +61,13 @@ function EduFields({ label, value, onChange }: { label: string; value: Education
         </div>
         <div>
           <label className="block text-xs font-medium text-muted-foreground">সাল</label>
-          <input type="text" value={value.year} onChange={(e) => onChange({ ...value, year: e.target.value })} placeholder="যেমন: 2020"
-            className={inputCls} />
+          <select value={value.year} onChange={(e) => onChange({ ...value, year: e.target.value })}
+            className={inputCls}>
+            <option value="">বছর নির্বাচন</option>
+            {Array.from({ length: 27 }, (_, i) => 2026 - i).map((y) => (
+              <option key={y} value={String(y)}>{y}</option>
+            ))}
+          </select>
         </div>
       </div>
       <div className="grid gap-2 sm:grid-cols-3">
