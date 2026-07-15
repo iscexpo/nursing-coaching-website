@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'enrollments.create' })
+  const limiter = await rateLimit(request, { windowMs: 60_000, max: 20, prefix: 'enrollments.create' })
   if (limiter) return limiter
 
   try {
@@ -89,72 +89,81 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
     }
 
-    const { courseId, notes } = parsed.data
     const admin = isAdmin(session.user.role)
     const targetUserId = admin && parsed.data.userId ? parsed.data.userId : session.user.id
     const discountAmount = parsed.data.discount || 0
+    const notes = parsed.data.notes
 
     if (admin && parsed.data.userId) {
       const authz = await requireAdmin()
       if (!authz.ok) return authz.response
     }
 
-    const [course] = await db.select().from(courses).where(eq(courses.id, courseId))
-    if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
-    if (!course.isActive) return NextResponse.json({ error: 'Course is not active' }, { status: 400 })
+    const courseIds = parsed.data.courseIds || (parsed.data.courseId ? [parsed.data.courseId] : [])
 
-    const existingEnrollment = await db.select().from(enrollments).where(
-      and(eq(enrollments.userId, targetUserId), eq(enrollments.courseId, courseId))
-    )
-    if (existingEnrollment.length > 0) {
-      return NextResponse.json({ error: 'Already enrolled in this course' }, { status: 409 })
-    }
+    const enrolled: Array<{ courseId: string; enrollmentId: string }> = []
+    const errors: Array<{ courseId: string; error: string }> = []
 
-    if (course.maxStudents && course.currentStudents >= course.maxStudents) {
-      return NextResponse.json({ error: 'Course is full' }, { status: 400 })
-    }
+    await db.transaction(async (tx) => {
+      for (const cid of courseIds) {
+        const [course] = await tx.select().from(courses).where(eq(courses.id, cid))
+        if (!course) { errors.push({ courseId: cid, error: 'Course not found' }); continue }
+        if (!course.isActive) { errors.push({ courseId: cid, error: 'Course is not active' }); continue }
 
-    const fee = course.discountFee || course.fee
-    const totalFee = Math.max(0, fee - discountAmount)
+        const existingEnrollment = await tx.select().from(enrollments).where(
+          and(eq(enrollments.userId, targetUserId), eq(enrollments.courseId, cid))
+        )
+        if (existingEnrollment.length > 0) { errors.push({ courseId: cid, error: 'Already enrolled' }); continue }
 
-    const result = await db.transaction(async (tx) => {
-      const [freshCourse] = await tx.select().from(courses).where(eq(courses.id, courseId))
-      if (!freshCourse) throw new Error('Course not found')
-      if (freshCourse.maxStudents && freshCourse.currentStudents >= freshCourse.maxStudents) {
-        throw new Error('COURSE_FULL')
+        if (course.maxStudents && course.currentStudents >= course.maxStudents) {
+          errors.push({ courseId: cid, error: 'Course is full' }); continue
+        }
+
+        const fee = course.discountFee || course.fee
+        const totalFee = Math.max(0, fee - discountAmount)
+
+        const [freshCourse] = await tx.select().from(courses).where(eq(courses.id, cid))
+        if (!freshCourse) { errors.push({ courseId: cid, error: 'Course not found' }); continue }
+        if (freshCourse.maxStudents && freshCourse.currentStudents >= freshCourse.maxStudents) {
+          errors.push({ courseId: cid, error: 'Course is full' }); continue
+        }
+
+        const [enrollment] = await tx.insert(enrollments).values({
+          id: crypto.randomUUID(),
+          userId: targetUserId,
+          courseId: cid,
+          totalFee,
+          discount: discountAmount,
+          dueAmount: totalFee,
+          notes,
+        }).returning()
+
+        await tx.update(courses).set({
+          currentStudents: freshCourse.currentStudents + 1,
+          updatedAt: new Date(),
+        }).where(eq(courses.id, cid))
+
+        await tx.insert(studentLifecycleEvents).values({
+          id: crypto.randomUUID(),
+          studentId: targetUserId,
+          enrollmentId: enrollment.id,
+          eventType: 'enrollment.pending',
+          details: { courseId: cid, totalFee, discount: discountAmount, createdByAdmin: admin },
+        })
+
+        enrolled.push({ courseId: cid, enrollmentId: enrollment.id })
       }
-
-      const [enrollment] = await tx.insert(enrollments).values({
-        id: crypto.randomUUID(),
-        userId: targetUserId,
-        courseId,
-        totalFee,
-        discount: discountAmount,
-        dueAmount: totalFee,
-        notes,
-      }).returning()
-
-      await tx.update(courses).set({
-        currentStudents: freshCourse.currentStudents + 1,
-        updatedAt: new Date(),
-      }).where(eq(courses.id, courseId))
-
-      await tx.insert(studentLifecycleEvents).values({
-        id: crypto.randomUUID(),
-        studentId: targetUserId,
-        enrollmentId: enrollment.id,
-        eventType: 'enrollment.pending',
-        details: { courseId, totalFee, discount: discountAmount, createdByAdmin: admin },
-      })
-
-      return enrollment
     })
 
-    return NextResponse.json(result, { status: 201 })
-    } catch (e) {
-      if (e instanceof Error && e.message === 'COURSE_FULL') {
-        return NextResponse.json({ error: 'Course is full' }, { status: 400 })
-      }
-      return NextResponse.json({ error: 'Failed to create enrollment' }, { status: 500 })
+    if (enrolled.length === 0 && errors.length > 0) {
+      return NextResponse.json({ error: 'কোনো এনরোলমেন্ট তৈরি হয়নি', details: errors }, { status: 400 })
     }
+
+    return NextResponse.json({ enrolled, errors, count: enrolled.length }, { status: 201 })
+  } catch (e) {
+    if (e instanceof Error && e.message === 'COURSE_FULL') {
+      return NextResponse.json({ error: 'Course is full' }, { status: 400 })
+    }
+    return NextResponse.json({ error: 'Failed to create enrollment' }, { status: 500 })
+  }
 }

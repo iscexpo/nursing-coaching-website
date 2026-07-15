@@ -33,10 +33,13 @@ export const updateCourseSchema = createCourseSchema.partial().extend({
 })
 
 export const createEnrollmentSchema = z.object({
-  courseId: z.string().uuid(),
+  courseId: z.string().uuid().optional(),
+  courseIds: z.array(z.string().uuid()).optional(),
   userId: z.string().uuid().optional(),
   notes: z.string().max(1000).optional(),
   discount: z.number().int().min(0).optional(),
+}).refine((d) => d.courseId || (d.courseIds && d.courseIds.length > 0), {
+  message: 'একটি বা একাধিক কোর্স নির্বাচন করুন',
 })
 
 export const updateEnrollmentSchema = z.object({
