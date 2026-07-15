@@ -20,6 +20,15 @@ export type SystemSettings = {
   updatedAt: Date | null
 }
 
+type SmsExtras = { smsEmail?: string; smsPassword?: string }
+
+function extractSmsExtras(cms: CmsContent | null | undefined): SmsExtras {
+  if (!cms || typeof cms !== 'object') return {}
+  const raw = (cms as Record<string, unknown>).smsExtras
+  if (raw && typeof raw === 'object') return raw as SmsExtras
+  return {}
+}
+
 function createDefaultSystemSettings(): SystemSettings {
   return {
     id: 'primary',
@@ -39,14 +48,33 @@ function createDefaultSystemSettings(): SystemSettings {
   }
 }
 
-export async function getSystemSettings() {
+function rowToSettings(row: Record<string, unknown>): SystemSettings {
+  const cms = mergeCmsContent((row.cmsContent as CmsContent | null) || undefined)
+  const extras = extractSmsExtras(cms)
+  const { smsExtras: _removed, ...cmsWithoutSmsExtras } = (cms || {}) as Record<string, unknown>
+  return {
+    id: row.id as string,
+    siteName: row.siteName as string,
+    siteTagline: row.siteTagline as string,
+    smsProvider: row.smsProvider as string,
+    smsApiKey: row.smsApiKey as string,
+    smsSenderId: row.smsSenderId as string,
+    smsEmail: extras.smsEmail || '',
+    smsPassword: extras.smsPassword || '',
+    paymentGateway: row.paymentGateway as string,
+    paymentGatewayApiKey: row.paymentGatewayApiKey as string,
+    paymentGatewaySecret: row.paymentGatewaySecret as string,
+    paymentGatewayWebhookSecret: row.paymentGatewayWebhookSecret as string,
+    cmsContent: cmsWithoutSmsExtras as unknown as CmsContent,
+    updatedAt: row.updatedAt as Date | null,
+  }
+}
+
+export async function getSystemSettings(): Promise<SystemSettings> {
   try {
     const [setting] = await db.select().from(settings).where(eq(settings.id, 'primary'))
     if (setting) {
-      return {
-        ...(setting as SystemSettings),
-        cmsContent: mergeCmsContent((setting as SystemSettings).cmsContent || undefined),
-      } as SystemSettings
+      return rowToSettings(setting as unknown as Record<string, unknown>)
     }
 
     const [created] = await db.insert(settings).values({
@@ -56,8 +84,6 @@ export async function getSystemSettings() {
       smsProvider: 'none',
       smsApiKey: '',
       smsSenderId: '',
-      smsEmail: '',
-      smsPassword: '',
       paymentGateway: 'none',
       paymentGatewayApiKey: '',
       paymentGatewaySecret: '',
@@ -66,10 +92,7 @@ export async function getSystemSettings() {
     }).returning()
 
     if (created) {
-      return {
-        ...(created as SystemSettings),
-        cmsContent: mergeCmsContent((created as SystemSettings).cmsContent || undefined),
-      } as SystemSettings
+      return rowToSettings(created as unknown as Record<string, unknown>)
     }
   } catch (error) {
     console.warn('Unable to load system settings, using defaults:', error)
@@ -83,16 +106,19 @@ export type SystemSettingsUpdate = Partial<Omit<SystemSettings, 'cmsContent'>> &
 }
 
 export async function saveSystemSettings(input: SystemSettingsUpdate) {
-  const nextCmsContent = mergeCmsContent(input.cmsContent || undefined)
+  const { smsEmail, smsPassword, ...rest } = input
+  const nextCmsContent = mergeCmsContent(rest.cmsContent || undefined)
+
+  const cmsWithExtras = {
+    ...nextCmsContent,
+    smsExtras: { smsEmail: smsEmail || '', smsPassword: smsPassword || '' },
+  }
 
   const [updated] = await db.update(settings).set({
-    ...input,
-    cmsContent: nextCmsContent,
+    ...rest,
+    cmsContent: cmsWithExtras,
     updatedAt: new Date(),
   }).where(eq(settings.id, 'primary')).returning()
 
-  return {
-    ...(updated as SystemSettings),
-    cmsContent: mergeCmsContent((updated as SystemSettings).cmsContent || undefined),
-  } as SystemSettings
+  return rowToSettings(updated as unknown as Record<string, unknown>)
 }
