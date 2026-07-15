@@ -4,6 +4,28 @@ import { useState, useRef } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Search, Upload } from 'lucide-react'
 import type { Student } from './types'
 
+function resizeImage(file: File, maxW = 800, maxH = 800, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      let { width: w, height: h } = img
+      if (w > maxW || h > maxH) {
+        const ratio = Math.min(maxW / w, maxH / h)
+        w = Math.round(w * ratio)
+        h = Math.round(h * ratio)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
+      canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', quality)
+    }
+    img.src = url
+  })
+}
+
 const inputCls = "mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
 const labelCls = "block text-sm font-medium text-foreground"
 
@@ -34,8 +56,9 @@ function EduFields({ label, value, onChange }: { label: string; value: Education
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    const resized = await resizeImage(file)
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', resized, 'photo.jpg')
     try {
       const res = await fetch('/api/media', { method: 'POST', body: formData })
       if (res.ok) {
@@ -116,9 +139,10 @@ function StudentPhotoUpload({ value, onChange }: { value: string; onChange: (url
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
-    const formData = new FormData()
-    formData.append('file', file)
     try {
+      const resized = await resizeImage(file, 600, 600, 0.85)
+      const formData = new FormData()
+      formData.append('file', resized, 'photo.jpg')
       const res = await fetch('/api/media', { method: 'POST', body: formData })
       if (res.ok) {
         const data = await res.json()
