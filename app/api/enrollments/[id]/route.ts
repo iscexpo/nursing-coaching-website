@@ -43,13 +43,26 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const [existing] = await db.select().from(enrollments).where(eq(enrollments.id, id))
     if (!existing) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
 
+    const updateData: Record<string, unknown> = { ...parsed.data, updatedAt: new Date() }
+
+    if (parsed.data.discount !== undefined || parsed.data.totalFee !== undefined) {
+      let newTotalFee = existing.totalFee
+      if (parsed.data.totalFee !== undefined) {
+        newTotalFee = parsed.data.totalFee
+      } else if (parsed.data.discount !== undefined) {
+        const [course] = await db.select().from(courses).where(eq(courses.id, existing.courseId))
+        const courseFee = course ? (course.discountFee || course.fee) : existing.totalFee
+        newTotalFee = Math.max(0, courseFee - parsed.data.discount)
+      }
+      updateData.totalFee = newTotalFee
+      if (parsed.data.discount !== undefined) updateData.discount = parsed.data.discount
+      updateData.dueAmount = Math.max(0, newTotalFee - existing.paidAmount)
+    }
+
     const eventType = parsed.data.status ? `enrollment.${parsed.data.status}` : 'enrollment.updated'
 
     const [updated] = await db.transaction(async (tx) => {
-      const [result] = await tx.update(enrollments).set({
-        ...parsed.data,
-        updatedAt: new Date(),
-      }).where(eq(enrollments.id, id)).returning()
+      const [result] = await tx.update(enrollments).set(updateData).where(eq(enrollments.id, id)).returning()
 
       await tx.insert(studentLifecycleEvents).values({
         id: crypto.randomUUID(),
@@ -99,8 +112,17 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const [existing] = await db.select().from(enrollments).where(eq(enrollments.id, id))
     if (!existing) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
 
+    if (existing.status === 'cancelled') {
+      return NextResponse.json({ error: 'এনরোলমেন্ট ইতিমধ্যে বাতিল হয়েছে' }, { status: 400 })
+    }
+
+    const previousStatus = existing.status
+
     await db.transaction(async (tx) => {
-      await tx.delete(enrollments).where(eq(enrollments.id, id))
+      await tx.update(enrollments).set({
+        status: 'cancelled',
+        updatedAt: new Date(),
+      }).where(eq(enrollments.id, id))
 
       const [course] = await tx.select().from(courses).where(eq(courses.id, existing.courseId))
       if (course && course.currentStudents > 0) {
@@ -114,18 +136,18 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         id: crypto.randomUUID(),
         studentId: existing.userId,
         enrollmentId: existing.id,
-        eventType: 'enrollment.deleted',
-        details: { previousStatus: existing.status },
+        eventType: 'enrollment.cancelled',
+        details: { previousStatus, cancelledBy: session!.user.id },
       })
     })
 
-    await writeAudit(
+    void writeAudit(
       buildAuditEntry(
         {
           resourceType: 'enrollment',
           resourceId: id,
-          action: 'delete',
-          details: { previousStatus: existing.status },
+          action: 'enrollment.cancel',
+          details: { previousStatus },
         },
         session,
         request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
@@ -134,6 +156,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json({ error: 'Failed to delete enrollment' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to cancel enrollment' }, { status: 500 })
   }
 }

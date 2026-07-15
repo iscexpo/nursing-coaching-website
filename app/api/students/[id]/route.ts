@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { user } from '@/lib/db/schema'
+import { user, account } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin, isSuperAdmin } from '@/lib/permissions'
 import { updateStudentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { hashPassword } from 'better-auth/crypto'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -42,10 +43,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const [existing] = await db.select().from(user).where(eq(user.id, id))
     if (!existing) return NextResponse.json({ error: 'Student not found' }, { status: 404 })
 
-    const { role, ...safeData } = parsed.data
+    const { role, password, ...safeData } = parsed.data
 
     if (role && !isSuperAdmin(session.user.role)) {
       return NextResponse.json({ error: 'শুধুমাত্র সুপার-অ্যাডমিন ভূমিকা পরিবর্তন করতে পারেন' }, { status: 403 })
+    }
+
+    if (password) {
+      const hashed = await hashPassword(password)
+      await db.update(account).set({ password: hashed, updatedAt: new Date() }).where(eq(account.userId, id))
     }
 
     const updatePayload: Record<string, unknown> = { ...safeData, updatedAt: new Date() }

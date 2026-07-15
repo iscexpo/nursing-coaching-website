@@ -238,7 +238,7 @@ export default function AdminPage() {
       )}
       <Suspense fallback={<TabSkeleton />}>
         {tab === 'courses' && <CoursesPanel courses={courses} onRefresh={fetchData} />}
-        {tab === 'enrollments' && <EnrollmentsPanel enrollments={enrollments} onRefresh={fetchData} />}
+        {tab === 'enrollments' && <EnrollmentsPanel enrollments={enrollments} courses={courses} students={students} onRefresh={fetchData} />}
         {tab === 'payments' && <PaymentsPanel payments={payments} enrollments={enrollments} students={students} onRefresh={fetchData} />}
         {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
         {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}

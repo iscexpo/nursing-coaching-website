@@ -64,7 +64,10 @@ export interface Enrollment {
   courseId: string
   status: string
   enrolledAt: string
+  startDate: string | null
+  endDate: string | null
   totalFee: number
+  discount: number
   paidAmount: number
   dueAmount: number
   notes: string | null

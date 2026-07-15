@@ -132,6 +132,7 @@ export const enrollments = pgTable('enrollments', {
   startDate: timestamp('start_date'),
   endDate: timestamp('end_date'),
   totalFee: integer('total_fee').notNull(),
+  discount: integer('discount').notNull().default(0),
   paidAmount: integer('paid_amount').notNull().default(0),
   dueAmount: integer('due_amount').notNull(),
   notes: text('notes'),

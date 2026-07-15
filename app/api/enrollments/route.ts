@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { enrollments, courses, user, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
-import { getSession, isAdmin } from '@/lib/permissions'
+import { getSession, isAdmin, requireAdmin } from '@/lib/permissions'
 import { createEnrollmentSchema, paginationSchema } from '@/lib/validations'
 import { rateLimit } from '@/lib/rate-limit'
 
@@ -27,7 +27,10 @@ export async function GET(request: NextRequest) {
         courseId: enrollments.courseId,
         status: enrollments.status,
         enrolledAt: enrollments.enrolledAt,
+        startDate: enrollments.startDate,
+        endDate: enrollments.endDate,
         totalFee: enrollments.totalFee,
+        discount: enrollments.discount,
         paidAmount: enrollments.paidAmount,
         dueAmount: enrollments.dueAmount,
         notes: enrollments.notes,
@@ -87,13 +90,21 @@ export async function POST(request: NextRequest) {
     }
 
     const { courseId, notes } = parsed.data
+    const admin = isAdmin(session.user.role)
+    const targetUserId = admin && parsed.data.userId ? parsed.data.userId : session.user.id
+    const discountAmount = parsed.data.discount || 0
+
+    if (admin && parsed.data.userId) {
+      const authz = await requireAdmin()
+      if (!authz.ok) return authz.response
+    }
 
     const [course] = await db.select().from(courses).where(eq(courses.id, courseId))
     if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     if (!course.isActive) return NextResponse.json({ error: 'Course is not active' }, { status: 400 })
 
     const existingEnrollment = await db.select().from(enrollments).where(
-      and(eq(enrollments.userId, session.user.id), eq(enrollments.courseId, courseId))
+      and(eq(enrollments.userId, targetUserId), eq(enrollments.courseId, courseId))
     )
     if (existingEnrollment.length > 0) {
       return NextResponse.json({ error: 'Already enrolled in this course' }, { status: 409 })
@@ -104,6 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fee = course.discountFee || course.fee
+    const totalFee = Math.max(0, fee - discountAmount)
 
     const result = await db.transaction(async (tx) => {
       const [freshCourse] = await tx.select().from(courses).where(eq(courses.id, courseId))
@@ -114,10 +126,11 @@ export async function POST(request: NextRequest) {
 
       const [enrollment] = await tx.insert(enrollments).values({
         id: crypto.randomUUID(),
-        userId: session.user.id,
+        userId: targetUserId,
         courseId,
-        totalFee: fee,
-        dueAmount: fee,
+        totalFee,
+        discount: discountAmount,
+        dueAmount: totalFee,
         notes,
       }).returning()
 
@@ -128,10 +141,10 @@ export async function POST(request: NextRequest) {
 
       await tx.insert(studentLifecycleEvents).values({
         id: crypto.randomUUID(),
-        studentId: session.user.id,
+        studentId: targetUserId,
         enrollmentId: enrollment.id,
         eventType: 'enrollment.pending',
-        details: { courseId, totalFee: fee },
+        details: { courseId, totalFee, discount: discountAmount, createdByAdmin: admin },
       })
 
       return enrollment

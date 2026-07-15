@@ -34,7 +34,9 @@ export const updateCourseSchema = createCourseSchema.partial().extend({
 
 export const createEnrollmentSchema = z.object({
   courseId: z.string().uuid(),
+  userId: z.string().uuid().optional(),
   notes: z.string().max(1000).optional(),
+  discount: z.number().int().min(0).optional(),
 })
 
 export const updateEnrollmentSchema = z.object({
@@ -42,6 +44,8 @@ export const updateEnrollmentSchema = z.object({
   notes: z.string().max(1000).optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
+  discount: z.number().int().min(0).optional(),
+  totalFee: z.number().int().min(0).optional(),
 })
 
 export const createPaymentSchema = z.object({
@@ -218,6 +222,7 @@ export const createStudentSchema = z.object({
 export const updateStudentSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   email: z.string().email().optional(),
+  password: z.string().min(6).optional(),
   phoneNumber: z.string().max(20).optional(),
   studentId: z.string().max(50).optional(),
   image: z.string().url().nullable().optional(),

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Plus, Trash2, Pencil, Save, X, Loader2, Search, Upload } from 'lucide-react'
+import { Plus, Trash2, Pencil, Save, X, Loader2, Search, Upload, Key } from 'lucide-react'
 import type { Student } from './types'
 
 function resizeImage(file: File, maxW = 800, maxH = 800, quality = 0.8): Promise<Blob> {
@@ -178,6 +178,10 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
   const [formError, setFormError] = useState('')
   const [search, setSearch] = useState('')
   const [form, setForm] = useState<FormState>(emptyForm)
+  const [resettingStudent, setResettingStudent] = useState<Student | null>(null)
+  const [newPassword, setNewPassword] = useState('')
+  const [resetError, setResetError] = useState('')
+  const [resetSaving, setResetSaving] = useState(false)
 
   function handleEdit(s: Student) {
     setEditing(s)
@@ -244,6 +248,27 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
     const res = await fetch(`/api/students/${id}`, { method: 'DELETE' })
     if (res.ok) onRefresh()
     else { const err = await res.json().catch(() => ({})); alert(err.error || 'মুছে ফেলা ব্যর্থ') }
+  }
+
+  async function handleResetPassword() {
+    if (!resettingStudent || !newPassword.trim()) return
+    setResetSaving(true)
+    setResetError('')
+    try {
+      const res = await fetch(`/api/students/${resettingStudent.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: newPassword }),
+      })
+      if (res.ok) {
+        setResettingStudent(null)
+        setNewPassword('')
+      } else {
+        const err = await res.json().catch(() => ({ error: 'পাসওয়ার্ড রিসেট ব্যর্থ' }))
+        setResetError(err.error || 'পাসওয়ার্ড রিসেট ব্যর্থ')
+      }
+    } catch { setResetError('পাসওয়ার্ড রিসেট ব্যর্থ') }
+    finally { setResetSaving(false) }
   }
 
   const filtered = students.filter((s) =>
@@ -374,6 +399,32 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
           className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
       </div>
 
+      {resettingStudent && (
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm dark:border-blue-900 dark:bg-blue-950/30">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-heading font-semibold text-foreground">পাসওয়ার্ড রিসেট — {resettingStudent.name}</h4>
+            <button onClick={() => { setResettingStudent(null); setNewPassword(''); setResetError('') }} className="text-muted-foreground hover:text-foreground"><X className="size-5" /></button>
+          </div>
+          <div className="space-y-3">
+            {resetError && <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{resetError}</div>}
+            <div>
+              <label className={labelCls}>নতুন পাসওয়ার্ড *</label>
+              <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="কমপক্ষে ৬ অক্ষর" className={inputCls}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleResetPassword() }} />
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={handleResetPassword} disabled={resetSaving || newPassword.length < 6}
+                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+                {resetSaving ? <Loader2 className="size-4 animate-spin" /> : <Key className="size-4" />}
+                পাসওয়ার্ড আপডেট করুন
+              </button>
+              <button onClick={() => { setResettingStudent(null); setNewPassword(''); setResetError('') }}
+                className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-secondary">বাতিল</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -419,6 +470,7 @@ export function StudentsPanel({ students, onRefresh }: { students: Student[]; on
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-1">
                       <button onClick={() => handleEdit(s)} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"><Pencil className="size-4" /></button>
+                      <button onClick={() => { setResettingStudent(s); setNewPassword(''); setResetError('') }} className="rounded-lg p-1.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600" title="পাসওয়ার্ড রিসেট"><Key className="size-4" /></button>
                       <button onClick={() => handleDelete(s.id)} className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-4" /></button>
                     </div>
                   </td>
