@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server'
-import { SiteHeader } from '@/components/site-header'
+import { SiteHeader } from '@/components/navigation'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { BackToTop } from '@/components/back-to-top'
