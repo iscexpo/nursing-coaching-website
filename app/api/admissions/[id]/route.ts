@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { admissions, user } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { updateAdmissionSchema } from '@/lib/validations'
@@ -10,6 +10,22 @@ import { buildAuditEntry, writeAudit } from '@/lib/audit'
 function deriveStudentEmail(phone: string): string {
   const normalized = phone.replace(/[^0-9]/g, '')
   return `student-${normalized}@iscexpo.edu.bd`
+}
+
+async function generateNextStudentId(): Promise<string> {
+  const rows = await db
+    .select({ studentId: user.studentId })
+    .from(user)
+    .where(sql`${user.studentId} IS NOT NULL`)
+  let max = 0
+  for (const row of rows) {
+    const match = /^STU-(\d+)$/.exec(row.studentId || '')
+    if (match) {
+      const n = parseInt(match[1], 10)
+      if (n > max) max = n
+    }
+  }
+  return `STU-${String(max + 1).padStart(3, '0')}`
 }
 
 async function ensureStudentFromAdmission(admission: {
@@ -60,9 +76,12 @@ async function ensureStudentFromAdmission(admission: {
 
   const userId = result.user.id
 
+  const studentId = await generateNextStudentId()
+
   const updateData: Record<string, unknown> = {
     phoneNumber: phone,
     admissionId: admission.id,
+    studentId,
     phoneNumberVerified: true,
   }
   if (admission.ssc) updateData.ssc = admission.ssc
