@@ -226,6 +226,27 @@ export const updateAdmissionSchema = z.object({
   status: admissionStatusEnum,
 })
 
+export const createModelTestApplicantSchema = z.object({
+  name: z.string().min(1).max(200),
+  phone: z
+    .string()
+    .regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
+  examId: z.string().uuid().optional(),
+  preferredSubject: z.string().max(200).optional(),
+  message: z.string().max(2000).optional(),
+})
+
+export const modelTestApplicantStatusEnum = z.enum([
+  'pending',
+  'contacted',
+  'registered',
+  'rejected',
+])
+
+export const updateModelTestApplicantSchema = z.object({
+  status: modelTestApplicantStatusEnum,
+})
+
 export const createContactInquirySchema = z.object({
   name: z.string().min(1).max(200),
   phone: z

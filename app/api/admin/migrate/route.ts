@@ -20,6 +20,7 @@ const MIGRATION_FILES = [
   '0011_enrollment_discount.sql',
   '0012_add_course_code.sql',
   '0013_add_user_admission_link.sql',
+  '0014_add_model_test_applicants.sql',
 ]
 
 export async function POST(request: NextRequest) {

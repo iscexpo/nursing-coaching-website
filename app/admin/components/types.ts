@@ -283,3 +283,20 @@ export interface Admission {
   createdAt: string
   updatedAt: string
 }
+
+export type ModelTestApplicantStatus =
+  'pending' | 'contacted' | 'registered' | 'rejected'
+
+export interface ModelTestApplicant {
+  id: string
+  reference: string
+  name: string
+  phone: string
+  examId: string | null
+  examTitle: string | null
+  preferredSubject: string | null
+  message: string | null
+  status: ModelTestApplicantStatus
+  createdAt: string
+  updatedAt: string
+}

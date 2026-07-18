@@ -506,6 +506,31 @@ export const admissions = pgTable(
   ],
 )
 
+export const modelTestApplicants = pgTable(
+  'model_test_applicants',
+  {
+    id: text('id').primaryKey(),
+    reference: text('reference').notNull().unique(),
+    name: text('name').notNull(),
+    phone: text('phone').notNull(),
+    examId: text('exam_id').references(() => exams.id, {
+      onDelete: 'set null',
+    }),
+    preferredSubject: text('preferred_subject'),
+    message: text('message'),
+    status: text('status')
+      .$type<'pending' | 'contacted' | 'registered' | 'rejected'>()
+      .notNull()
+      .default('pending'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [
+    index('model_test_applicants_phone_idx').on(table.phone),
+    index('model_test_applicants_created_idx').on(table.createdAt),
+  ],
+)
+
 export const mediaFiles = pgTable(
   'media_files',
   {

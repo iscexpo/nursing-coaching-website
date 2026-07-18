@@ -43,6 +43,7 @@ import type {
   MediaFile,
   Subject,
   Admission,
+  ModelTestApplicant,
 } from './components/types'
 
 const CoursesPanel = lazy(() =>
@@ -110,6 +111,11 @@ const AdmissionsPanel = lazy(() =>
     default: m.AdmissionsPanel,
   })),
 )
+const ModelTestApplicantsPanel = lazy(() =>
+  import('./components/model-test-applicants-tab').then((m) => ({
+    default: m.ModelTestApplicantsPanel,
+  })),
+)
 const NotificationsPanel = lazy(() =>
   import('./components/notifications-tab').then((m) => ({
     default: m.NotificationsPanel,
@@ -148,6 +154,7 @@ const TABS = [
   { id: 'admit-cards', label: 'এডমিট কার্ড', icon: CreditCard },
   { id: 'contacts', label: 'যোগাযোগ', icon: Users },
   { id: 'admissions', label: 'ভর্তি আবেদন', icon: FileText },
+  { id: 'model-test', label: 'মডেল টেস্ট', icon: FileText },
   { id: 'notifications', label: 'নোটিফিকেশন', icon: Bell },
   { id: 'settings', label: 'সেটিংস', icon: BarChart3 },
 ] as const
@@ -172,6 +179,7 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   'admit-cards': ['enrollments', 'exams', 'admitCards'],
   contacts: ['contacts'],
   admissions: ['admissions'],
+  'model-test': ['modelTestApplicants'],
   notifications: ['notifications'],
   settings: [],
   subjects: ['subjects'],
@@ -207,6 +215,9 @@ export default function AdminPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [subjectsList, setSubjectsList] = useState<Subject[]>([])
   const [admissions, setAdmissions] = useState<Admission[]>([])
+  const [modelTestApplicants, setModelTestApplicants] = useState<
+    ModelTestApplicant[]
+  >([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(
@@ -283,6 +294,10 @@ export default function AdminPage() {
           fetches.push(fetch('/api/admissions'))
           fetchKeys.push('admissions')
         }
+        if (needed.includes('modelTestApplicants')) {
+          fetches.push(fetch('/api/model-test-applicants'))
+          fetchKeys.push('modelTestApplicants')
+        }
 
         const responses = await Promise.all(fetches)
 
@@ -341,6 +356,9 @@ export default function AdminPage() {
               case 'admissions':
                 setAdmissions(data)
                 break
+              case 'modelTestApplicants':
+                setModelTestApplicants(data)
+                break
             }
           }
         }
@@ -394,6 +412,9 @@ export default function AdminPage() {
   const pendingAdmissions = admissions.filter(
     (a) => a.status === 'pending',
   ).length
+  const pendingModelTest = modelTestApplicants.filter(
+    (a) => a.status === 'pending',
+  ).length
 
   const tabsWithBadges = TABS.map((t) => ({
     ...t,
@@ -404,7 +425,9 @@ export default function AdminPage() {
           ? pendingPayments
           : t.id === 'admissions'
             ? pendingAdmissions
-            : undefined,
+            : t.id === 'model-test'
+              ? pendingModelTest
+              : undefined,
   }))
 
   return (
@@ -499,6 +522,12 @@ export default function AdminPage() {
         )}
         {tab === 'admissions' && (
           <AdmissionsPanel admissions={admissions} onRefresh={fetchData} />
+        )}
+        {tab === 'model-test' && (
+          <ModelTestApplicantsPanel
+            applicants={modelTestApplicants}
+            onRefresh={fetchData}
+          />
         )}
         {tab === 'notifications' && (
           <NotificationsPanel

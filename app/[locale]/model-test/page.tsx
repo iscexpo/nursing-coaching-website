@@ -18,6 +18,7 @@ import {
   Filter,
 } from 'lucide-react'
 import { FadeIn } from '@/components/ui/fade-in'
+import { ModelTestApplyForm } from '@/components/model-test-apply-form'
 
 export const metadata = {
   title: 'মডেল টেস্ট | ISC Expo - Icon Skill & Career Expo',
@@ -249,31 +250,38 @@ export default async function ModelTestPage({
           </div>
         </section>
 
-        {/* CTA */}
+        {/* CTA + Apply */}
         <section className="py-12 md:py-16">
-          <div className="mx-auto max-w-3xl px-4 text-center">
-            <h2 className="font-heading text-2xl font-bold text-foreground">
-              মডেল টেস্টে যোগ দিন
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              মডেল টেস্টে অংশ নিতে আমাদের অফিসে এসে নিবন্ধন করুন অথবা WhatsApp-এ
-              যোগাযোগ করুন।
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-              <a
-                href={SITE.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg bg-green px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green/90"
-              >
-                WhatsApp-এ যোগাযোগ
-              </a>
-              <a
-                href={SITE.phoneHref}
-                className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
-              >
-                ফোনে কল করুন
-              </a>
+          <div className="mx-auto max-w-3xl px-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+              <h2 className="text-center font-heading text-2xl font-bold text-foreground">
+                মডেল টেস্টে যোগ দিন
+              </h2>
+              <p className="mt-3 text-center text-muted-foreground">
+                নিচের ফর্ম পূরণ করে মডেল টেস্টে আবেদন করুন, অথবা সরাসরি
+                WhatsApp-এ যোগাযোগ করুন।
+              </p>
+              <div className="mt-6">
+                <ModelTestApplyForm
+                  exams={exams.map((e) => ({ id: e.id, title: e.title }))}
+                />
+              </div>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+                <a
+                  href={SITE.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg bg-green px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green/90"
+                >
+                  WhatsApp-এ যোগাযোগ
+                </a>
+                <a
+                  href={SITE.phoneHref}
+                  className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+                >
+                  ফোনে কল করুন
+                </a>
+              </div>
             </div>
           </div>
         </section>
