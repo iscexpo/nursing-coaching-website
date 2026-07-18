@@ -125,40 +125,40 @@ export function SiteHeader() {
       {/* Mobile menu - slide in panel */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
       <div
         className={cn(
-          'fixed inset-y-0 right-0 z-[50] h-full w-full max-w-xs transform border-l border-border bg-card p-4 shadow-2xl transition-transform duration-300 ease-in-out lg:hidden',
+          'fixed inset-y-0 right-0 z-[50] h-full w-full max-w-sm transform border-l border-border bg-card p-4 shadow-2xl transition-transform duration-300 ease-out lg:hidden',
           open ? 'translate-x-0' : 'translate-x-full',
         )}
       >
         <div className="mb-6 flex items-center justify-between">
-          <span className="font-heading text-base font-bold text-foreground">
+          <h2 className="font-heading text-lg font-bold text-foreground">
             {t('menu')}
-          </span>
+          </h2>
           <button
             onClick={() => setOpen(false)}
-            className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
+            className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
             aria-label={t('closeMenu')}
           >
             <X className="size-5" />
           </button>
         </div>
-        <nav className="flex flex-col gap-1">
+        <nav className="flex flex-col gap-1.5">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-4 py-3 text-base font-medium text-foreground/80 transition-colors hover:bg-secondary hover:text-brand"
+              className="rounded-lg px-4 py-3.5 text-base font-medium text-foreground/80 transition-all hover:bg-secondary hover:text-brand"
             >
               {link.label}
             </Link>
           ))}
-          <div className="mt-6 flex flex-col gap-3">
+          <div className="mt-8 flex flex-col gap-3">
             <LanguageSwitcher className="justify-center" />
             <Button
               render={
