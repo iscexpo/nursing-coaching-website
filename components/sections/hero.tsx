@@ -61,17 +61,6 @@ export async function Hero() {
               )}
             </span>
           </h1>
-              {hero.title.split(' ').length > 3 ? (
-                <>
-                  {hero.title.split(' ').slice(0, -3).join(' ')}{' '}
-                  <span className="mt-1 block text-gold">
-                    {hero.title.split(' ').slice(-3).join(' ')}
-                  </span>
-                </>
-              ) : (
-                <span className="text-gold">{hero.title}</span>
-              )}
-            </h1>
 
             <p className="mt-4 max-w-xl text-base leading-relaxed text-brand-foreground/85 text-pretty">
               {hero.subtitle}
