@@ -13,16 +13,28 @@ import { cn } from '@/lib/utils'
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
+  const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const site = useSiteData()
   const t = useTranslations('common')
   const th = useTranslations('header')
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const [hasScrolled, setHasScrolled] = useState(false)
 
   useEffect(() => {
+    function handleScroll() {
+      setHasScrolled(window.scrollY > 20)
+    }
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const originalStyle = document.body.style.overflow
     document.body.style.overflow = open ? 'hidden' : ''
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = originalStyle
     }
   }, [open])
 
@@ -59,18 +71,19 @@ export function SiteHeader() {
       {/* Top bar */}
       <div className="hidden bg-brand text-brand-foreground md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-1.5 text-xs">
-          <p>
+          <p className="truncate">
             {th('welcome')} {site.nameBn}, {site.city} — {site.tagline}
           </p>
           <div className="flex items-center gap-4">
             <a
               href={site.phoneHref}
               className="flex items-center gap-1.5 hover:underline"
+              aria-label={`${site.phone} phone number`}
             >
               <Phone className="size-3.5" />
-              {site.phone}
+              <span className="hidden sm:inline">{site.phone}</span>
             </a>
-            <span className="rounded-full bg-gold px-2.5 py-0.5 font-semibold text-gold-foreground">
+            <span className="rounded-full bg-gold px-2.5 py-0.5 font-semibold text-gold-foreground whitespace-nowrap">
               {th('enrollingNow')}
             </span>
           </div>
@@ -147,23 +160,23 @@ export function SiteHeader() {
         {/* Mobile menu - slide in panel */}
         {open && (
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md lg:hidden"
             onClick={() => setOpen(false)}
           />
         )}
         <div
           className={cn(
-            'fixed inset-y-0 right-0 z-[60] w-72 border-l border-border bg-card p-4 shadow-2xl transition-transform duration-300 ease-out lg:hidden',
+            'fixed inset-y-0 right-0 z-[50] h-full w-full max-w-xs transform border-l border-border bg-card p-4 shadow-2xl transition-transform duration-300 ease-in-out lg:hidden',
             open ? 'translate-x-0' : 'translate-x-full',
           )}
         >
-          <div className="mb-4 flex items-center justify-between">
-            <span className="font-heading text-sm font-bold text-foreground">
+          <div className="mb-6 flex items-center justify-between">
+            <span className="font-heading text-base font-bold text-foreground">
               {t('menu')}
             </span>
             <button
               onClick={() => setOpen(false)}
-              className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
+              className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
               aria-label={t('closeMenu')}
             >
               <X className="size-5" />
@@ -175,12 +188,12 @@ export function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-secondary hover:text-brand"
+                className="rounded-lg px-4 py-3 text-base font-medium text-foreground/80 transition-colors hover:bg-secondary hover:text-brand"
               >
                 {link.label}
               </Link>
             ))}
-            <div className="mt-4 flex flex-col gap-2">
+            <div className="mt-6 flex flex-col gap-3">
               <LanguageSwitcher className="justify-center" />
               <Button
                 render={
