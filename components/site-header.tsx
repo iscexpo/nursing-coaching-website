@@ -13,22 +13,11 @@ import { cn } from '@/lib/utils'
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
-  const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const site = useSiteData()
   const t = useTranslations('common')
   const th = useTranslations('header')
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const [hasScrolled, setHasScrolled] = useState(false)
-
-  useEffect(() => {
-    function handleScroll() {
-      setHasScrolled(window.scrollY > 20)
-    }
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   useEffect(() => {
     const originalStyle = document.body.style.overflow
