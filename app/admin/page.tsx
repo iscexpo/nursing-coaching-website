@@ -22,6 +22,7 @@ import {
   Presentation,
   Image,
   MessageSquare,
+  LineChart,
 } from 'lucide-react'
 
 import { PanelLayout } from '@/components/ui/panel-layout'
@@ -126,6 +127,11 @@ const SettingsPanel = lazy(() =>
     default: m.SettingsPanel,
   })),
 )
+const ReportsPanel = lazy(() =>
+  import('./components/reports-tab').then((m) => ({
+    default: m.ReportsPanel,
+  })),
+)
 const SubjectsPanel = lazy(() =>
   import('./components/subjects-tab').then((m) => ({
     default: m.SubjectsPanel,
@@ -156,6 +162,7 @@ const TABS = [
   { id: 'admissions', label: 'ভর্তি আবেদন', icon: FileText },
   { id: 'model-test', label: 'মডেল টেস্ট', icon: FileText },
   { id: 'notifications', label: 'নোটিফিকেশন', icon: Bell },
+  { id: 'reports', label: 'রিপোর্ট', icon: LineChart },
   { id: 'settings', label: 'সেটিংস', icon: BarChart3 },
 ] as const
 
@@ -183,6 +190,7 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   notifications: ['notifications'],
   settings: [],
   subjects: ['subjects'],
+  reports: ['courses', 'enrollments', 'payments', 'students', 'attendance', 'exams', 'submissions'],
 }
 
 function TabSkeleton() {
@@ -533,6 +541,17 @@ export default function AdminPage() {
           <NotificationsPanel
             notifications={notifications}
             onRefresh={fetchData}
+          />
+        )}
+        {tab === 'reports' && (
+          <ReportsPanel
+            enrollments={enrollments}
+            payments={payments}
+            courses={courses}
+            students={students}
+            attendance={attendance}
+            examSubmissions={examSubmissions}
+            exams={exams}
           />
         )}
         {tab === 'settings' && <SettingsPanel onRefresh={fetchData} />}

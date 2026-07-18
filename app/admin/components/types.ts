@@ -300,3 +300,56 @@ export interface ModelTestApplicant {
   createdAt: string
   updatedAt: string
 }
+
+export interface EnrollmentTrend {
+  period: string
+  count: number
+}
+
+export interface RevenueReport {
+  period: string
+  verified: number
+  pending: number
+  total: number
+}
+
+export interface AttendanceStats {
+  studentId: string
+  studentName: string
+  present: number
+  late: number
+  absent: number
+  total: number
+  percentage: number
+}
+
+export interface CourseAnalytics {
+  courseId: string
+  courseTitle: string
+  totalEnrollments: number
+  activeStudents: number
+  completedStudents: number
+  totalRevenue: number
+  averageAttendance: number
+}
+
+export interface FeeCollectionReport {
+  studentId: string
+  studentName: string
+  studentPhone: string
+  courseTitle: string
+  totalFee: number
+  paidAmount: number
+  dueAmount: number
+  status: string
+  lastPaymentDate: string | null
+}
+
+export interface StudentPerformance {
+  studentId: string
+  studentName: string
+  examsAttempted: number
+  averageScore: number
+  highestScore: number
+  lowestScore: number
+}

@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Plus, Pencil, X, Loader2, Search, Ban, Check } from 'lucide-react'
 import { EnrollmentStatusBadge } from '@/components/ui/badges'
+import { Button } from '@/components/ui/button'
 import type { Enrollment, Course, Student } from './types'
 import { useToast } from '@/components/ui/toast'
 
@@ -71,6 +72,12 @@ export function EnrollmentsPanel({
 
   const { success, error, confirm } = useToast()
   const [cancelling, setCancelling] = useState<string | null>(null)
+
+  // Bulk operations
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [bulkAction, setBulkAction] = useState<'status' | 'cancel' | null>(null)
+  const [bulkStatus, setBulkStatus] = useState('active')
+  const [bulkSaving, setBulkSaving] = useState(false)
 
   const activeCourses = courses.filter((c) => c.isActive)
   const filtered = enrollments.filter((e) => {
@@ -146,6 +153,50 @@ export function EnrollmentsPanel({
           ? []
           : filteredActiveCourses.map((c) => c.id),
     }))
+  }
+
+  // Bulk selection handlers
+  function toggleSelectAll() {
+    if (selectedIds.length === filtered.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(filtered.map((e) => e.id))
+    }
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
+  }
+
+  async function handleBulkAction() {
+    if (selectedIds.length === 0) return
+    setBulkSaving(true)
+    try {
+      if (bulkAction === 'status') {
+        for (const id of selectedIds) {
+          await fetch(`/api/enrollments/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: bulkStatus }),
+          })
+        }
+        success(`${selectedIds.length}টি এনরোলমেন্ট আপডেট করা হয়েছে`)
+      } else if (bulkAction === 'cancel') {
+        for (const id of selectedIds) {
+          await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
+        }
+        success(`${selectedIds.length}টি এনরোলমেন্ট বাতিল করা হয়েছে`)
+      }
+      setSelectedIds([])
+      setBulkAction(null)
+      onRefresh()
+    } catch {
+      error('বাল্ক অপারেশন ব্যর্থ')
+    } finally {
+      setBulkSaving(false)
+    }
   }
 
   async function handleAdd() {
@@ -650,11 +701,80 @@ export function EnrollmentsPanel({
         />
       </div>
 
+      {selectedIds.length > 0 && (
+        <div className="flex items-center justify-between gap-3 rounded-lg bg-brand/5 p-3 border border-brand/20">
+          <span className="text-sm font-medium text-brand">
+            {selectedIds.length}টি নির্বাচিত
+          </span>
+          <div className="flex items-center gap-2">
+            <select
+              value={bulkStatus}
+              onChange={(e) => setBulkStatus(e.target.value)}
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+            >
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <Button
+              onClick={() => {
+                setBulkAction('status')
+                handleBulkAction()
+              }}
+              disabled={bulkSaving}
+              size="sm"
+            >
+              {bulkSaving ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Check className="size-4" />
+              )}
+              স্টেটাস আপডেট
+            </Button>
+            <Button
+              onClick={async () => {
+                const ok = await confirm('নির্বাচিত এনরোলমেন্টগুলো বাতিল করতে চান?')
+                if (ok) {
+                  setBulkAction('cancel')
+                  handleBulkAction()
+                }
+              }}
+              disabled={bulkSaving}
+              variant="destructive"
+              size="sm"
+            >
+              {bulkSaving ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Ban className="size-4" />
+              )}
+              বাতিল করুন
+            </Button>
+            <button
+              onClick={() => setSelectedIds([])}
+              className="rounded-lg p-2 text-muted-foreground hover:bg-secondary"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
+                <th className="px-4 py-3 text-center font-semibold text-foreground w-12">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.length === filtered.length && filtered.length > 0}
+                    onChange={toggleSelectAll}
+                    className="size-4 rounded border-border text-brand focus:ring-brand"
+                  />
+                </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
                   শিক্ষার্থী
                 </th>
@@ -688,7 +808,7 @@ export function EnrollmentsPanel({
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-4 py-8 text-center text-muted-foreground"
                   >
                     {search
@@ -702,6 +822,14 @@ export function EnrollmentsPanel({
                     key={e.id}
                     className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
                   >
+                    <td className="px-4 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(e.id)}
+                        onChange={() => toggleSelect(e.id)}
+                        className="size-4 rounded border-border text-brand focus:ring-brand"
+                      />
+                    </td>
                     <td className="px-4 py-3 font-medium text-foreground">
                       {e.userName || '—'}
                     </td>

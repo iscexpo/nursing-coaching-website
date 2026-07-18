@@ -520,13 +520,15 @@ export function StudentsPanel({
     }
   }
 
-  const filtered = students.filter(
-    (s) =>
-      !search ||
-      [s.name, s.email, s.phoneNumber, s.studentId, s.district].some((f) =>
-        (f || '').toLowerCase().includes(search.toLowerCase()),
-      ),
-  )
+  const filtered = students
+    .filter((s) => s.role === 'student')
+    .filter(
+      (s) =>
+        !search ||
+        [s.name, s.email, s.phoneNumber, s.studentId, s.district].some((f) =>
+          (f || '').toLowerCase().includes(search.toLowerCase()),
+        ),
+    )
 
   return (
     <div className="space-y-4">
