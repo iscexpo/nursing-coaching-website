@@ -634,12 +634,11 @@ export function StudentsPanel({
                 <div>
                   <label className={labelCls}>জন্ম তারিখ</label>
                   <input
-                    type="text"
+                    type="date"
                     value={form.dateOfBirth}
                     onChange={(e) =>
                       setForm({ ...form, dateOfBirth: e.target.value })
                     }
-                    placeholder="01/01/2000"
                     className={inputCls}
                   />
                 </div>
