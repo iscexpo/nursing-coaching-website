@@ -56,7 +56,6 @@ export function SiteHeader() {
   }, [open])
 
   return (
-  return (
     <header className="sticky top-0 z-50 w-full bg-card backdrop-blur-md supports-[backdrop-filter]:bg-card/95 border-b border-border/50 shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex items-center gap-2.5">
