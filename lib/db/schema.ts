@@ -61,6 +61,9 @@ export const user = pgTable('user', {
     board: string
     photoUrl: string
   }>(),
+  admissionId: text('admission_id').references(() => admissions.id, {
+    onDelete: 'set null',
+  }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })

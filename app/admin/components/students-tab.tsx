@@ -940,11 +940,18 @@ export function StudentsPanel({
                       {s.studentId || '—'}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${s.role === 'admin' ? 'bg-brand/10 text-brand' : 'bg-green/10 text-green'}`}
-                      >
-                        {s.role === 'admin' ? 'অ্যাডমিন' : 'শিক্ষার্থী'}
-                      </span>
+                      <div className="flex flex-col items-center gap-1">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${s.role === 'admin' ? 'bg-brand/10 text-brand' : 'bg-green/10 text-green'}`}
+                        >
+                          {s.role === 'admin' ? 'অ্যাডমিন' : 'শিক্ষার্থী'}
+                        </span>
+                        {s.admissionId && (
+                          <span className="inline-flex rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-semibold text-brand">
+                            ভর্তি আবেদন
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-1">

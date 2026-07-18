@@ -151,6 +151,7 @@ export interface Student {
     board: string
     photoUrl: string
   } | null
+  admissionId: string | null
   createdAt: string
   updatedAt: string
 }
