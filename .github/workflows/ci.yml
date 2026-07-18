@@ -41,3 +41,25 @@ jobs:
           DATABASE_URL: postgres://test:test@localhost:5432/test
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-placeholder-secret-minimum-thirty-two-chars' }}
           NODE_ENV: production
+
+  migrate:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+      - name: Approve pnpm build scripts
+        run: pnpm approve-builds --all
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Apply database migrations
+        run: pnpm db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
