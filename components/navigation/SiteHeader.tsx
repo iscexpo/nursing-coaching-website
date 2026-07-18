@@ -61,7 +61,7 @@ export function SiteHeader() {
           </Button>
           <MobileNavToggle
             onClick={() => setOpen(!open)}
-            'aria-label'={t('openMenu')}
+            aria-label={t('openMenu')}
             isOpen={open}
           />
         </div>

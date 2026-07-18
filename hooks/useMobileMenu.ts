@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export interface UseMobileMenuReturn {
   open: boolean
   setOpen: (value: boolean) => void
-  panelRef: React.RefObject<HTMLDivElement>
-  triggerRef: React.RefObject<HTMLButtonElement>
+  panelRef: React.RefObject<HTMLDivElement | null>
+  triggerRef: React.RefObject<HTMLButtonElement | null>
 }
 
 export function useMobileMenu(): UseMobileMenuReturn {
   const [open, setOpen] = useState(false)
-  const panelRef = { current: null } as React.RefObject<HTMLDivElement>
-  const triggerRef = { current: null } as React.RefObject<HTMLButtonElement>
+  const panelRef = useRef<HTMLDivElement | null>(null)
+  const triggerRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
     const originalStyle = document.body.style.overflow
