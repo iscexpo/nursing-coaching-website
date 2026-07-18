@@ -254,3 +254,31 @@ export interface Subject {
   isActive: boolean
   createdAt: string
 }
+
+export type AdmissionStatus =
+  'pending' | 'received' | 'processing' | 'approved' | 'rejected'
+
+export interface EducationDetail {
+  result: string
+  institution: string
+  year: string
+  roll: string
+  registrationNo: string
+  board: string
+}
+
+export interface Admission {
+  id: string
+  reference: string
+  name: string
+  phone: string
+  courseId: string
+  courseTitle: string
+  message: string | null
+  ssc: EducationDetail | null
+  hsc: EducationDetail | null
+  honors: EducationDetail | null
+  status: AdmissionStatus
+  createdAt: string
+  updatedAt: string
+}

@@ -214,6 +214,18 @@ export const createAdmissionSchema = z.object({
   honors: educationFieldSchema,
 })
 
+export const admissionStatusEnum = z.enum([
+  'pending',
+  'received',
+  'processing',
+  'approved',
+  'rejected',
+])
+
+export const updateAdmissionSchema = z.object({
+  status: admissionStatusEnum,
+})
+
 export const createContactInquirySchema = z.object({
   name: z.string().min(1).max(200),
   phone: z

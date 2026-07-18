@@ -42,6 +42,7 @@ import type {
   Teacher,
   MediaFile,
   Subject,
+  Admission,
 } from './components/types'
 
 const CoursesPanel = lazy(() =>
@@ -104,6 +105,11 @@ const ContactsPanel = lazy(() =>
     default: m.ContactsPanel,
   })),
 )
+const AdmissionsPanel = lazy(() =>
+  import('./components/admissions-tab').then((m) => ({
+    default: m.AdmissionsPanel,
+  })),
+)
 const NotificationsPanel = lazy(() =>
   import('./components/notifications-tab').then((m) => ({
     default: m.NotificationsPanel,
@@ -141,6 +147,7 @@ const TABS = [
   { id: 'attendance', label: 'উপস্থিতি', icon: CalendarCheck },
   { id: 'admit-cards', label: 'এডমিট কার্ড', icon: CreditCard },
   { id: 'contacts', label: 'যোগাযোগ', icon: Users },
+  { id: 'admissions', label: 'ভর্তি আবেদন', icon: FileText },
   { id: 'notifications', label: 'নোটিফিকেশন', icon: Bell },
   { id: 'settings', label: 'সেটিংস', icon: BarChart3 },
 ] as const
@@ -164,6 +171,7 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   attendance: ['enrollments', 'attendance'],
   'admit-cards': ['enrollments', 'exams', 'admitCards'],
   contacts: ['contacts'],
+  admissions: ['admissions'],
   notifications: ['notifications'],
   settings: [],
   subjects: ['subjects'],
@@ -198,6 +206,7 @@ export default function AdminPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [subjectsList, setSubjectsList] = useState<Subject[]>([])
+  const [admissions, setAdmissions] = useState<Admission[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(
@@ -270,6 +279,10 @@ export default function AdminPage() {
           fetches.push(fetch('/api/subjects'))
           fetchKeys.push('subjects')
         }
+        if (needed.includes('admissions')) {
+          fetches.push(fetch('/api/admissions'))
+          fetchKeys.push('admissions')
+        }
 
         const responses = await Promise.all(fetches)
 
@@ -325,6 +338,9 @@ export default function AdminPage() {
               case 'subjects':
                 setSubjectsList(data)
                 break
+              case 'admissions':
+                setAdmissions(data)
+                break
             }
           }
         }
@@ -375,6 +391,9 @@ export default function AdminPage() {
     (e) => e.status === 'pending',
   ).length
   const pendingPayments = payments.filter((p) => p.status === 'pending').length
+  const pendingAdmissions = admissions.filter(
+    (a) => a.status === 'pending',
+  ).length
 
   const tabsWithBadges = TABS.map((t) => ({
     ...t,
@@ -383,7 +402,9 @@ export default function AdminPage() {
         ? pendingEnrollments
         : t.id === 'payments'
           ? pendingPayments
-          : undefined,
+          : t.id === 'admissions'
+            ? pendingAdmissions
+            : undefined,
   }))
 
   return (
@@ -475,6 +496,9 @@ export default function AdminPage() {
         )}
         {tab === 'contacts' && (
           <ContactsPanel contacts={contacts} onRefresh={fetchData} />
+        )}
+        {tab === 'admissions' && (
+          <AdmissionsPanel admissions={admissions} onRefresh={fetchData} />
         )}
         {tab === 'notifications' && (
           <NotificationsPanel
