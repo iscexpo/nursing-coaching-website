@@ -4,6 +4,7 @@ import { exams, questions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { updateExamSchema } from '@/lib/validations'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -52,6 +53,20 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }).where(eq(exams.id, id)).returning()
 
     if (!updated) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'exam',
+          resourceId: id,
+          action: 'update',
+          details: parsed.data,
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
+
     return NextResponse.json(updated)
   } catch {
     return NextResponse.json({ error: 'Failed to update exam' }, { status: 500 })
@@ -68,6 +83,19 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     const [deleted] = await db.delete(exams).where(eq(exams.id, id)).returning()
     if (!deleted) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'exam',
+          resourceId: id,
+          action: 'delete',
+          details: {},
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
 
     return NextResponse.json({ success: true })
   } catch {

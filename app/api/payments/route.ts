@@ -5,6 +5,7 @@ import { eq, desc, count } from 'drizzle-orm'
 import { getSession, isAdmin } from '@/lib/permissions'
 import { createPaymentSchema, paginationSchema } from '@/lib/validations'
 import { rateLimit } from '@/lib/rate-limit'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -101,6 +102,19 @@ export async function POST(request: NextRequest) {
 
       return payment
     })
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'payment',
+          resourceId: result.id,
+          action: 'create',
+          details: { enrollmentId, amount, method, status: result.status },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
 
     return NextResponse.json(result, { status: 201 })
   } catch {

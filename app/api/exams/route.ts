@@ -4,6 +4,7 @@ import { exams, questions } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { createExamSchema, paginationSchema } from '@/lib/validations'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,6 +59,19 @@ export async function POST(request: NextRequest) {
       id: crypto.randomUUID(),
       ...parsed.data,
     }).returning()
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'exam',
+          resourceId: exam.id,
+          action: 'create',
+          details: { title: exam.title, subject: exam.subject },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
 
     return NextResponse.json(exam, { status: 201 })
   } catch {

@@ -2,19 +2,20 @@ import { betterAuth } from 'better-auth'
 import { phoneNumber } from 'better-auth/plugins'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { db } from './db'
+import { validateEnv } from './env'
 import * as schema from './db/schema'
+
+const env = validateEnv()
 
 async function sendSupabaseSMS(phoneNumber: string, code: string) {
   const supabaseUrl = process.env.SUPABASE_URL
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[OTP] Supabase credentials not configured; dev-only OTP fallback')
-      console.log(`[OTP] Code for ${phoneNumber}: ${code}`)
-    } else {
-      console.error('[OTP] OTP delivery is not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY). Cannot send code.')
-    }
+    console.error(
+      '[OTP] OTP delivery is not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY). ' +
+        'Set these variables or the auth OTP flow will be unavailable.'
+    )
     return
   }
 
@@ -37,7 +38,7 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
 }
 
 function getTrustedOrigins() {
-  const configured = process.env.BETTER_AUTH_TRUSTED_ORIGINS
+  const configured = env.BETTER_AUTH_TRUSTED_ORIGINS
     ?.split(',')
     .map((origin) => origin.trim())
     .filter(Boolean) ?? []
@@ -58,7 +59,7 @@ function getTrustedOrigins() {
   ]
   const normalized = new Set<string>()
 
-  for (const origin of [...configured, ...defaults, process.env.BETTER_AUTH_URL || '']) {
+  for (const origin of [...configured, ...defaults, env.BETTER_AUTH_URL || '']) {
     const trimmed = origin.trim().replace(/\/$/, '')
     if (trimmed) normalized.add(trimmed)
   }
@@ -67,7 +68,8 @@ function getTrustedOrigins() {
 }
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+  baseURL: env.BETTER_AUTH_URL || 'http://localhost:3000',
+  secret: env.BETTER_AUTH_SECRET,
   trustedOrigins: getTrustedOrigins(),
   database: drizzleAdapter(db, {
     provider: 'pg',

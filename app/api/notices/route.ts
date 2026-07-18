@@ -4,6 +4,7 @@ import { notices } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { createNoticeSchema, updateNoticeSchema, paginationSchema } from '@/lib/validations'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,6 +46,19 @@ export async function POST(request: NextRequest) {
       id: crypto.randomUUID(),
       ...parsed.data,
     }).returning()
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'notice',
+          resourceId: notice.id,
+          action: 'create',
+          details: { title: notice.title },
+        },
+        session,
+        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
+      )
+    )
 
     return NextResponse.json(notice, { status: 201 })
   } catch {
