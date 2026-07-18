@@ -59,7 +59,9 @@ export function PanelLayout({
               {siteName.charAt(0)}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-foreground">{siteName}</p>
+              <p className="truncate text-sm font-bold text-foreground">
+                {siteName}
+              </p>
               <p className="text-xs text-brand">{panelTitle}</p>
             </div>
           </Link>
@@ -111,7 +113,9 @@ export function PanelLayout({
         {/* Sidebar footer */}
         <div className="border-t border-border p-3">
           <div className="mb-2 rounded-xl bg-secondary/50 px-3 py-2">
-            <p className="truncate text-sm font-medium text-foreground">{userName}</p>
+            <p className="truncate text-sm font-medium text-foreground">
+              {userName}
+            </p>
             <p className="text-xs text-muted-foreground">{welcomeMessage}</p>
           </div>
           <button
@@ -135,7 +139,9 @@ export function PanelLayout({
             <Menu className="size-5" />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-foreground">{siteName}</p>
+            <p className="truncate text-sm font-bold text-foreground">
+              {siteName}
+            </p>
           </div>
           <button
             onClick={onSignOut}
@@ -148,16 +154,18 @@ export function PanelLayout({
         {/* Breadcrumb */}
         <div className="hidden px-6 py-4 lg:block">
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-foreground transition-colors">{siteName}</Link>
+            <Link href="/" className="hover:text-foreground transition-colors">
+              {siteName}
+            </Link>
             <ChevronRight className="size-3.5" />
-            <span className="font-medium text-foreground">{activeTabData?.label}</span>
+            <span className="font-medium text-foreground">
+              {activeTabData?.label}
+            </span>
           </div>
         </div>
 
         {/* Page content */}
-        <main className="px-4 pb-8 pt-2 lg:px-6 lg:pt-0">
-          {children}
-        </main>
+        <main className="px-4 pb-8 pt-2 lg:px-6 lg:pt-0">{children}</main>
       </div>
     </div>
   )

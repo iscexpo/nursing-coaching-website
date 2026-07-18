@@ -10,8 +10,34 @@ function getNextFriday(): string {
   const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7
   const next = new Date(now)
   next.setDate(now.getDate() + daysUntilFriday)
-  const bnMonths = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর']
-  const enMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  const bnMonths = [
+    'জানুয়ারি',
+    'ফেব্রুয়ারি',
+    'মার্চ',
+    'এপ্রিল',
+    'মে',
+    'জুন',
+    'জুলাই',
+    'আগস্ট',
+    'সেপ্টেম্বর',
+    'অক্টোবর',
+    'নভেম্বর',
+    'ডিসেম্বর',
+  ]
+  const enMonths = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
   const locale = process.env.NEXT_LOCALE || 'bn'
   const months = locale === 'en' ? enMonths : bnMonths
   const dayName = locale === 'en' ? 'Friday' : 'শুক্রবার'
@@ -51,7 +77,9 @@ export async function FreeClass() {
                     >
                       <item.icon className="size-6 shrink-0" />
                       <div>
-                        <p className="text-xs text-green-foreground/75">{item.label}</p>
+                        <p className="text-xs text-green-foreground/75">
+                          {item.label}
+                        </p>
                         <p className="font-semibold">{item.value}</p>
                       </div>
                     </div>

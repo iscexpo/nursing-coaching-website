@@ -5,7 +5,6 @@ import { eq, desc, count } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { createCourseSchema, paginationSchema } from '@/lib/validations'
 
-
 export async function GET(request: NextRequest) {
   try {
     // Public endpoint: the marketing site lists courses without a session.
@@ -18,22 +17,37 @@ export async function GET(request: NextRequest) {
       page: searchParams.get('page'),
       limit: searchParams.get('limit'),
     })
-    const { page, limit } = parsed.success ? parsed.data : { page: 1, limit: 20 }
+    const { page, limit } = parsed.success
+      ? parsed.data
+      : { page: 1, limit: 20 }
 
     const where = showAll ? undefined : eq(courses.isActive, true)
 
-    const allCourses = await db.select().from(courses)
+    const allCourses = await db
+      .select()
+      .from(courses)
       .where(where)
       .orderBy(desc(courses.createdAt))
       .limit(limit)
       .offset((page - 1) * limit)
 
-    const [totalRow] = await db.select({ count: count() }).from(courses).where(where)
+    const [totalRow] = await db
+      .select({ count: count() })
+      .from(courses)
+      .where(where)
 
-    return NextResponse.json({ data: allCourses, page, limit, total: totalRow?.count ?? 0 })
+    return NextResponse.json({
+      data: allCourses,
+      page,
+      limit,
+      total: totalRow?.count ?? 0,
+    })
   } catch (error) {
     console.error('Failed to fetch courses:', error)
-    return NextResponse.json({ error: 'Failed to fetch courses' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch courses' },
+      { status: 500 },
+    )
   }
 }
 
@@ -45,21 +59,36 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createCourseSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      )
     }
 
-    const [course] = await db.insert(courses).values({
-      id: crypto.randomUUID(),
-      ...parsed.data,
-    }).returning()
+    const [course] = await db
+      .insert(courses)
+      .values({
+        id: crypto.randomUUID(),
+        ...parsed.data,
+      })
+      .returning()
 
     return NextResponse.json(course, { status: 201 })
   } catch (error) {
     console.error('Failed to create course:', error)
     const code = (error as { code?: string })?.code
     if (code === '23505') {
-      return NextResponse.json({ error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে', details: { slug: ['Slug already exists'] } }, { status: 409 })
+      return NextResponse.json(
+        {
+          error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে',
+          details: { slug: ['Slug already exists'] },
+        },
+        { status: 409 },
+      )
     }
-    return NextResponse.json({ error: 'Failed to create course' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to create course' },
+      { status: 500 },
+    )
   }
 }

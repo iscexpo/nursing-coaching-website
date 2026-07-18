@@ -14,7 +14,11 @@ export const createSubjectSchema = z.object({
 export const updateSubjectSchema = createSubjectSchema.partial()
 
 export const createCourseSchema = z.object({
-  slug: z.string().min(1).max(200).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug format'),
+  slug: z
+    .string()
+    .min(1)
+    .max(200)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug format'),
   courseCode: z.string().max(50).optional(),
   title: z.string().min(1).max(200),
   description: z.string().min(1),
@@ -32,18 +36,29 @@ export const updateCourseSchema = createCourseSchema.partial().extend({
   isActive: z.boolean().optional(),
 })
 
-export const createEnrollmentSchema = z.object({
-  courseId: z.string().uuid().optional(),
-  courseIds: z.array(z.string().uuid()).optional(),
-  userId: z.string().uuid().optional(),
-  notes: z.string().max(1000).optional(),
-  discount: z.number().int().min(0).optional(),
-}).refine((d) => d.courseId || (d.courseIds && d.courseIds.length > 0), {
-  message: 'একটি বা একাধিক কোর্স নির্বাচন করুন',
-})
+export const createEnrollmentSchema = z
+  .object({
+    courseId: z.string().uuid().optional(),
+    courseIds: z.array(z.string().uuid()).optional(),
+    userId: z.string().uuid().optional(),
+    notes: z.string().max(1000).optional(),
+    discount: z.number().int().min(0).optional(),
+  })
+  .refine((d) => d.courseId || (d.courseIds && d.courseIds.length > 0), {
+    message: 'একটি বা একাধিক কোর্স নির্বাচন করুন',
+  })
 
 export const updateEnrollmentSchema = z.object({
-  status: z.enum(['pending', 'approved', 'rejected', 'active', 'completed', 'cancelled']).optional(),
+  status: z
+    .enum([
+      'pending',
+      'approved',
+      'rejected',
+      'active',
+      'completed',
+      'cancelled',
+    ])
+    .optional(),
   notes: z.string().max(1000).optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
@@ -90,7 +105,9 @@ export const createInvoiceSchema = z.object({
 export const createNotificationSchema = z.object({
   title: z.string().min(1).max(200),
   message: z.string().min(1).max(2000),
-  type: z.enum(['info', 'success', 'warning', 'payment', 'enrollment']).optional(),
+  type: z
+    .enum(['info', 'success', 'warning', 'payment', 'enrollment'])
+    .optional(),
   link: z.string().url().optional(),
   targetUserId: z.string().uuid().optional(),
 })
@@ -103,9 +120,42 @@ export const updateProfileSchema = z.object({
   guardianName: z.string().max(200).optional(),
   guardianPhone: z.string().max(20).optional(),
   institution: z.string().max(200).optional(),
-  ssc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
-  hsc: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
-  honors: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
+  ssc: z
+    .object({
+      result: z.string().max(100),
+      institution: z.string().max(200),
+      year: z.string().max(10),
+      roll: z.string().max(50),
+      registrationNo: z.string().max(50),
+      board: z.string().max(100),
+      photoUrl: z.string().max(500),
+    })
+    .nullable()
+    .optional(),
+  hsc: z
+    .object({
+      result: z.string().max(100).optional(),
+      institution: z.string().max(200).optional(),
+      year: z.string().max(10).optional(),
+      roll: z.string().max(50).optional(),
+      registrationNo: z.string().max(50).optional(),
+      board: z.string().max(100).optional(),
+      photoUrl: z.string().max(500).optional(),
+    })
+    .nullable()
+    .optional(),
+  honors: z
+    .object({
+      result: z.string().max(100).optional(),
+      institution: z.string().max(200).optional(),
+      year: z.string().max(10).optional(),
+      roll: z.string().max(50).optional(),
+      registrationNo: z.string().max(50).optional(),
+      board: z.string().max(100).optional(),
+      photoUrl: z.string().max(500).optional(),
+    })
+    .nullable()
+    .optional(),
 })
 
 export const createNoticeSchema = z.object({
@@ -141,18 +191,22 @@ export const submitExamSchema = z.object({
   timeTaken: z.number().int().min(0).optional(),
 })
 
-const educationFieldSchema = z.object({
-  result: z.string().max(100).optional().default(''),
-  institution: z.string().max(300).optional().default(''),
-  year: z.string().max(10).optional().default(''),
-  roll: z.string().max(50).optional().default(''),
-  registrationNo: z.string().max(50).optional().default(''),
-  board: z.string().max(100).optional().default(''),
-}).optional()
+const educationFieldSchema = z
+  .object({
+    result: z.string().max(100).optional().default(''),
+    institution: z.string().max(300).optional().default(''),
+    year: z.string().max(10).optional().default(''),
+    roll: z.string().max(50).optional().default(''),
+    registrationNo: z.string().max(50).optional().default(''),
+    board: z.string().max(100).optional().default(''),
+  })
+  .optional()
 
 export const createAdmissionSchema = z.object({
   name: z.string().min(1).max(200),
-  phone: z.string().regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
+  phone: z
+    .string()
+    .regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   courseSlug: z.string().min(1).max(200),
   message: z.string().max(2000).optional(),
   ssc: educationFieldSchema,
@@ -162,7 +216,9 @@ export const createAdmissionSchema = z.object({
 
 export const createContactInquirySchema = z.object({
   name: z.string().min(1).max(200),
-  phone: z.string().regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
+  phone: z
+    .string()
+    .regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   message: z.string().min(1).max(5000),
 })
 
@@ -217,9 +273,39 @@ export const createStudentSchema = z.object({
   guardianName: z.string().max(200).optional(),
   guardianPhone: z.string().max(20).optional(),
   institution: z.string().max(200).optional(),
-  ssc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).optional(),
-  hsc: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).optional(),
-  honors: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).optional(),
+  ssc: z
+    .object({
+      result: z.string().max(100),
+      institution: z.string().max(200),
+      year: z.string().max(10),
+      roll: z.string().max(50),
+      registrationNo: z.string().max(50),
+      board: z.string().max(100),
+      photoUrl: z.string().max(500),
+    })
+    .optional(),
+  hsc: z
+    .object({
+      result: z.string().max(100).optional(),
+      institution: z.string().max(200).optional(),
+      year: z.string().max(10).optional(),
+      roll: z.string().max(50).optional(),
+      registrationNo: z.string().max(50).optional(),
+      board: z.string().max(100).optional(),
+      photoUrl: z.string().max(500).optional(),
+    })
+    .optional(),
+  honors: z
+    .object({
+      result: z.string().max(100).optional(),
+      institution: z.string().max(200).optional(),
+      year: z.string().max(10).optional(),
+      roll: z.string().max(50).optional(),
+      registrationNo: z.string().max(50).optional(),
+      board: z.string().max(100).optional(),
+      photoUrl: z.string().max(500).optional(),
+    })
+    .optional(),
 })
 
 export const updateStudentSchema = z.object({
@@ -238,16 +324,51 @@ export const updateStudentSchema = z.object({
   guardianName: z.string().max(200).optional(),
   guardianPhone: z.string().max(20).optional(),
   institution: z.string().max(200).optional(),
-  ssc: z.object({ result: z.string().max(100), institution: z.string().max(200), year: z.string().max(10), roll: z.string().max(50), registrationNo: z.string().max(50), board: z.string().max(100), photoUrl: z.string().max(500) }).nullable().optional(),
-  hsc: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
-  honors: z.object({ result: z.string().max(100).optional(), institution: z.string().max(200).optional(), year: z.string().max(10).optional(), roll: z.string().max(50).optional(), registrationNo: z.string().max(50).optional(), board: z.string().max(100).optional(), photoUrl: z.string().max(500).optional() }).nullable().optional(),
+  ssc: z
+    .object({
+      result: z.string().max(100),
+      institution: z.string().max(200),
+      year: z.string().max(10),
+      roll: z.string().max(50),
+      registrationNo: z.string().max(50),
+      board: z.string().max(100),
+      photoUrl: z.string().max(500),
+    })
+    .nullable()
+    .optional(),
+  hsc: z
+    .object({
+      result: z.string().max(100).optional(),
+      institution: z.string().max(200).optional(),
+      year: z.string().max(10).optional(),
+      roll: z.string().max(50).optional(),
+      registrationNo: z.string().max(50).optional(),
+      board: z.string().max(100).optional(),
+      photoUrl: z.string().max(500).optional(),
+    })
+    .nullable()
+    .optional(),
+  honors: z
+    .object({
+      result: z.string().max(100).optional(),
+      institution: z.string().max(200).optional(),
+      year: z.string().max(10).optional(),
+      roll: z.string().max(50).optional(),
+      registrationNo: z.string().max(50).optional(),
+      board: z.string().max(100).optional(),
+      photoUrl: z.string().max(500).optional(),
+    })
+    .nullable()
+    .optional(),
   role: z.enum(['super-admin', 'admin', 'student']).optional(),
 })
 
 export const settingsSchema = z.object({
   siteName: z.string().min(1).max(200).optional(),
   siteTagline: z.string().max(500).optional(),
-  smsProvider: z.enum(['none', 'grameenphone', 'sasbulksms', 'shiram', 'twilio']).optional(),
+  smsProvider: z
+    .enum(['none', 'grameenphone', 'sasbulksms', 'shiram', 'twilio'])
+    .optional(),
   smsApiKey: z.string().max(500).optional(),
   smsSenderId: z.string().max(100).optional(),
   smsEmail: z.string().max(200).optional(),
@@ -256,31 +377,45 @@ export const settingsSchema = z.object({
   paymentGatewayApiKey: z.string().max(500).optional(),
   paymentGatewaySecret: z.string().max(500).optional(),
   paymentGatewayWebhookSecret: z.string().max(500).optional(),
-  cmsContent: z.object({
-    site: z.object({
-      nameBn: z.string().optional(),
-      nameEn: z.string().optional(),
-      tagline: z.string().optional(),
-      logo: z.string().optional(),
-      city: z.string().optional(),
-      phone: z.string().optional(),
-      phoneHref: z.string().optional(),
-      whatsapp: z.string().optional(),
-      messenger: z.string().optional(),
-      email: z.string().optional(),
-      facebook: z.string().optional(),
-      youtube: z.string().optional(),
-      addressBn: z.string().optional(),
-    }).partial().optional(),
-    hero: z.object({
-      eyebrow: z.string().optional(),
-      title: z.string().optional(),
-      subtitle: z.string().optional(),
-      primaryCta: z.string().optional(),
-      secondaryCta: z.string().optional(),
-    }).partial().optional(),
-    whyCornia: z.array(z.object({ title: z.string(), description: z.string() })).optional(),
-    counters: z.array(z.object({ value: z.string(), label: z.string() })).optional(),
-    faqs: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
-  }).optional(),
+  cmsContent: z
+    .object({
+      site: z
+        .object({
+          nameBn: z.string().optional(),
+          nameEn: z.string().optional(),
+          tagline: z.string().optional(),
+          logo: z.string().optional(),
+          city: z.string().optional(),
+          phone: z.string().optional(),
+          phoneHref: z.string().optional(),
+          whatsapp: z.string().optional(),
+          messenger: z.string().optional(),
+          email: z.string().optional(),
+          facebook: z.string().optional(),
+          youtube: z.string().optional(),
+          addressBn: z.string().optional(),
+        })
+        .partial()
+        .optional(),
+      hero: z
+        .object({
+          eyebrow: z.string().optional(),
+          title: z.string().optional(),
+          subtitle: z.string().optional(),
+          primaryCta: z.string().optional(),
+          secondaryCta: z.string().optional(),
+        })
+        .partial()
+        .optional(),
+      whyCornia: z
+        .array(z.object({ title: z.string(), description: z.string() }))
+        .optional(),
+      counters: z
+        .array(z.object({ value: z.string(), label: z.string() }))
+        .optional(),
+      faqs: z
+        .array(z.object({ question: z.string(), answer: z.string() }))
+        .optional(),
+    })
+    .optional(),
 })

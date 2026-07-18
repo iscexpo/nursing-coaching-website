@@ -33,7 +33,9 @@ export function AdmissionStatusForm() {
     setLoading(true)
 
     try {
-      const res = await fetch(`/api/admissions/status?reference=${encodeURIComponent(reference)}&phone=${encodeURIComponent(phone)}`)
+      const res = await fetch(
+        `/api/admissions/status?reference=${encodeURIComponent(reference)}&phone=${encodeURIComponent(phone)}`,
+      )
       const data = await res.json()
       if (!res.ok) {
         setError(data.error || 'কোনো ফলাফল পাওয়া যায়নি।')
@@ -51,7 +53,9 @@ export function AdmissionStatusForm() {
     <main>
       <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-4">
-          <Breadcrumb items={[{ label: 'ভর্তি' }, { label: 'আবেদনের স্ট্যাটাস' }]} />
+          <Breadcrumb
+            items={[{ label: 'ভর্তি' }, { label: 'আবেদনের স্ট্যাটাস' }]}
+          />
           <SectionHeading
             eyebrow="আবেদন স্ট্যাটাস"
             title="আপনার আবেদন কী অবস্থায় আছে?"
@@ -65,37 +69,61 @@ export function AdmissionStatusForm() {
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
             <form onSubmit={handleCheckStatus} className="space-y-5">
               <div>
-                <label htmlFor="reference" className="block text-sm font-medium text-foreground">আবেদন রেফারেন্স *</label>
+                <label
+                  htmlFor="reference"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  আবেদন রেফারেন্স *
+                </label>
                 <input
                   id="reference"
                   value={reference}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReference(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setReference(e.target.value)
+                  }
                   placeholder="ADM-XXXXXXXX"
                   required
                   className="mt-2 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-foreground">ফোন নম্বর *</label>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  ফোন নম্বর *
+                </label>
                 <input
                   id="phone"
                   value={phone}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setPhone(e.target.value)
+                  }
                   placeholder="01XXXXXXXXX"
                   required
                   className="mt-2 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
-              {error && <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
+              {error && (
+                <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                  {error}
+                </p>
+              )}
               <Button type="submit" disabled={loading || !reference || !phone}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : 'স্ট্যাটাস দেখুন'}
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  'স্ট্যাটাস দেখুন'
+                )}
               </Button>
             </form>
           </div>
 
           {status && (
             <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <h3 className="font-heading text-lg font-bold text-foreground">আবেদনের তথ্য</h3>
+              <h3 className="font-heading text-lg font-bold text-foreground">
+                আবেদনের তথ্য
+              </h3>
               <div className="mt-4 space-y-3 text-sm text-muted-foreground">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>

@@ -19,7 +19,8 @@ export default function Error({
         কিছু ভুল হয়েছে
       </h1>
       <p className="mt-2 max-w-md text-sm text-muted-foreground">
-        {error.message || 'একটি অপ্রত্যাশিত ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।'}
+        {error.message ||
+          'একটি অপ্রত্যাশিত ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।'}
       </p>
       <div className="mt-6 flex gap-3">
         <button

@@ -14,7 +14,11 @@ const MIGRATION_FILES = [
 ]
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'admin.migrate' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 3,
+    prefix: 'admin.migrate',
+  })
   if (limiter) return limiter
 
   try {
@@ -49,7 +53,11 @@ export async function POST(request: NextRequest) {
           await db.execute(sql.raw(statement))
         } catch (e: unknown) {
           const msg = e instanceof Error ? e.message : String(e)
-          if (msg.includes('already exists') || msg.includes('does not exist') || msg.includes('column') && msg.includes('already')) {
+          if (
+            msg.includes('already exists') ||
+            msg.includes('does not exist') ||
+            (msg.includes('column') && msg.includes('already'))
+          ) {
             continue
           }
           errors.push(msg.substring(0, 100))
@@ -63,7 +71,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: 'Migration failed', details: String(error) },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

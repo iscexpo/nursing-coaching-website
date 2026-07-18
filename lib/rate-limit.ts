@@ -40,11 +40,14 @@ function tooManyRequests(retryAfterSeconds: number): NextResponse {
         'Content-Type': 'application/json',
         'Retry-After': String(Math.max(1, retryAfterSeconds)),
       },
-    }
+    },
   )
 }
 
-function memoryLimit(key: string, options: RateLimitOptions): NextResponse | null {
+function memoryLimit(
+  key: string,
+  options: RateLimitOptions,
+): NextResponse | null {
   const now = Date.now()
 
   if (memoryStore.size > MEMORY_MAX_ENTRIES) {
@@ -75,7 +78,7 @@ function memoryLimit(key: string, options: RateLimitOptions): NextResponse | nul
 
 export async function rateLimit(
   request: Request,
-  options: RateLimitOptions
+  options: RateLimitOptions,
 ): Promise<NextResponse | null> {
   const prefix = options.prefix ?? 'rl'
   const ip = getClientIp(request)

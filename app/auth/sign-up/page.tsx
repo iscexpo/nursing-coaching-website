@@ -6,7 +6,17 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
-import { GraduationCap, Phone, Mail, ArrowRight, Loader2, CheckCircle2, Shield, Eye, EyeOff } from 'lucide-react'
+import {
+  GraduationCap,
+  Phone,
+  Mail,
+  ArrowRight,
+  Loader2,
+  CheckCircle2,
+  Shield,
+  Eye,
+  EyeOff,
+} from 'lucide-react'
 
 type SignUpMode = 'phone' | 'email'
 type PhoneStep = 'phone' | 'otp' | 'details'
@@ -141,16 +151,29 @@ export default function SignUpPage() {
       {/* Left branding panel */}
       <div className="relative hidden w-1/2 items-center justify-center bg-brand lg:flex">
         <div className="absolute inset-0 opacity-10">
-          <Image src="/images/classroom.png" alt="" fill className="object-cover" />
+          <Image
+            src="/images/classroom.png"
+            alt=""
+            fill
+            className="object-cover"
+          />
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-brand via-brand/90 to-brand/70" />
         <div className="relative z-10 max-w-md px-8 text-brand-foreground animate-fade-in-up">
           <div className="flex items-center gap-3 mb-8">
-            <Image src="/logo.png" alt="ISC Expo - Icon Skill & Career Expo" width={48} height={30} className="object-contain" />
-            <span className="font-heading text-2xl font-bold">{site.nameBn}</span>
+            <Image
+              src="/logo.png"
+              alt="ISC Expo - Icon Skill & Career Expo"
+              width={48}
+              height={30}
+              className="object-contain"
+            />
+            <span className="font-heading text-2xl font-bold">
+              {site.nameBn}
+            </span>
           </div>
           <h2 className="font-heading text-3xl font-extrabold leading-tight">
-              ISC Expo পরিবারে
+            ISC Expo পরিবারে
             <span className="mt-1 block text-gold">যোগ দিন</span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
@@ -162,9 +185,14 @@ export default function SignUpPage() {
               { icon: Shield, text: 'নিজের ফলাফল ও উপস্থিতি ট্র্যাক করুন' },
               { icon: GraduationCap, text: 'কোর্স ও পেমেন্ট ম্যানেজ করুন' },
             ].map((item) => (
-              <div key={item.text} className="flex items-center gap-3 rounded-xl bg-brand-foreground/10 p-3 backdrop-blur-sm">
+              <div
+                key={item.text}
+                className="flex items-center gap-3 rounded-xl bg-brand-foreground/10 p-3 backdrop-blur-sm"
+              >
                 <item.icon className="size-5 text-gold" />
-                <span className="text-sm text-brand-foreground/90">{item.text}</span>
+                <span className="text-sm text-brand-foreground/90">
+                  {item.text}
+                </span>
               </div>
             ))}
           </div>
@@ -173,11 +201,25 @@ export default function SignUpPage() {
 
       {/* Right form panel */}
       <div className="flex w-full items-center justify-center bg-background px-4 sm:px-8 lg:w-1/2">
-        <div className="w-full max-w-md space-y-6 animate-fade-in-up" style={{ animationDuration: '600ms' }}>
+        <div
+          className="w-full max-w-md space-y-6 animate-fade-in-up"
+          style={{ animationDuration: '600ms' }}
+        >
           <div>
-            <Link href="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
-              <Image src="/logo.png" alt="ISC Expo - Icon Skill & Career Expo" width={36} height={22} className="object-contain" />
-              <span className="font-heading text-lg font-bold text-foreground">{site.nameBn}</span>
+            <Link
+              href="/"
+              className="mb-8 inline-flex items-center gap-2 lg:hidden"
+            >
+              <Image
+                src="/logo.png"
+                alt="ISC Expo - Icon Skill & Career Expo"
+                width={36}
+                height={22}
+                className="object-contain"
+              />
+              <span className="font-heading text-lg font-bold text-foreground">
+                {site.nameBn}
+              </span>
             </Link>
             <h1 className="font-heading text-2xl font-bold text-foreground">
               নিবন্ধন করুন
@@ -190,7 +232,11 @@ export default function SignUpPage() {
           <div className="flex rounded-xl border border-border bg-muted p-1">
             <button
               type="button"
-              onClick={() => { setMode('phone'); setError(''); setPhoneStep('phone') }}
+              onClick={() => {
+                setMode('phone')
+                setError('')
+                setPhoneStep('phone')
+              }}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 mode === 'phone'
                   ? 'bg-background text-foreground shadow-sm'
@@ -202,7 +248,10 @@ export default function SignUpPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setMode('email'); setError('') }}
+              onClick={() => {
+                setMode('email')
+                setError('')
+              }}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 mode === 'email'
                   ? 'bg-background text-foreground shadow-sm'
@@ -226,20 +275,24 @@ export default function SignUpPage() {
               <div className="flex items-center gap-2">
                 {stepLabels.map((label, index) => (
                   <div key={label} className="flex items-center gap-2 flex-1">
-                    <div className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
-                      phoneStepIndex === index
-                        ? 'bg-brand text-brand-foreground shadow-sm'
-                        : phoneStepIndex > index
-                          ? 'bg-green/10 text-green'
-                          : 'bg-muted text-muted-foreground'
-                    }`}>
+                    <div
+                      className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+                        phoneStepIndex === index
+                          ? 'bg-brand text-brand-foreground shadow-sm'
+                          : phoneStepIndex > index
+                            ? 'bg-green/10 text-green'
+                            : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
                       {phoneStepIndex > index ? '✓' : index + 1}
                       <span className="hidden sm:inline">{label}</span>
                     </div>
                     {index < 2 && (
-                      <div className={`h-0.5 flex-1 rounded-full transition-colors ${
-                        phoneStepIndex > index ? 'bg-green' : 'bg-border'
-                      }`} />
+                      <div
+                        className={`h-0.5 flex-1 rounded-full transition-colors ${
+                          phoneStepIndex > index ? 'bg-green' : 'bg-border'
+                        }`}
+                      />
                     )}
                   </div>
                 ))}
@@ -250,7 +303,10 @@ export default function SignUpPage() {
           {mode === 'phone' && phoneStep === 'phone' && (
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-foreground"
+                >
                   ফোন নম্বর
                 </label>
                 <input
@@ -269,7 +325,13 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>OTP পাঠান <ArrowRight className="size-4" /></>}
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <>
+                    OTP পাঠান <ArrowRight className="size-4" />
+                  </>
+                )}
               </button>
             </form>
           )}
@@ -277,11 +339,17 @@ export default function SignUpPage() {
           {mode === 'phone' && phoneStep === 'otp' && (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">{phoneNumber}</span> নম্বরে OTP পাঠানো হয়েছে
+                <span className="font-medium text-foreground">
+                  {phoneNumber}
+                </span>{' '}
+                নম্বরে OTP পাঠানো হয়েছে
               </p>
 
               <div>
-                <label htmlFor="otp" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="otp"
+                  className="block text-sm font-medium text-foreground"
+                >
                   OTP কোড
                 </label>
                 <input
@@ -301,7 +369,13 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>যাচাই করুন <ArrowRight className="size-4" /></>}
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <>
+                    যাচাই করুন <ArrowRight className="size-4" />
+                  </>
+                )}
               </button>
 
               <button
@@ -317,7 +391,10 @@ export default function SignUpPage() {
           {mode === 'phone' && phoneStep === 'details' && (
             <form onSubmit={handlePhoneSignUp} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-foreground"
+                >
                   পুরো নাম
                 </label>
                 <input
@@ -332,7 +409,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="studentId" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="studentId"
+                  className="block text-sm font-medium text-foreground"
+                >
                   শিক্ষার্থী ID (ঐচ্ছিক)
                 </label>
                 <input
@@ -346,7 +426,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-foreground"
+                >
                   পাসওয়ার্ড
                 </label>
                 <div className="relative">
@@ -366,7 +449,11 @@ export default function SignUpPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     tabIndex={-1}
                   >
-                    {showPhonePassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    {showPhonePassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -376,7 +463,13 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>নিবন্ধন করুন <ArrowRight className="size-4" /></>}
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <>
+                    নিবন্ধন করুন <ArrowRight className="size-4" />
+                  </>
+                )}
               </button>
             </form>
           )}
@@ -384,7 +477,10 @@ export default function SignUpPage() {
           {mode === 'email' && (
             <form onSubmit={handleEmailSignUp} className="space-y-4">
               <div>
-                <label htmlFor="email-name" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email-name"
+                  className="block text-sm font-medium text-foreground"
+                >
                   পুরো নাম
                 </label>
                 <input
@@ -399,7 +495,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-foreground"
+                >
                   ইমেইল
                 </label>
                 <input
@@ -414,7 +513,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="email-phone" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email-phone"
+                  className="block text-sm font-medium text-foreground"
+                >
                   ফোন নম্বর (ঐচ্ছিক)
                 </label>
                 <input
@@ -428,7 +530,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="email-password" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email-password"
+                  className="block text-sm font-medium text-foreground"
+                >
                   পাসওয়ার্ড
                 </label>
                 <div className="relative">
@@ -448,7 +553,11 @@ export default function SignUpPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     tabIndex={-1}
                   >
-                    {showEmailPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    {showEmailPassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -458,14 +567,23 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <>নিবন্ধন করুন <ArrowRight className="size-4" /></>}
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <>
+                    নিবন্ধন করুন <ArrowRight className="size-4" />
+                  </>
+                )}
               </button>
             </form>
           )}
 
           <p className="text-center text-sm text-muted-foreground">
             ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
-            <Link href="/auth/sign-in" className="font-medium text-brand hover:underline">
+            <Link
+              href="/auth/sign-in"
+              className="font-medium text-brand hover:underline"
+            >
               সাইন ইন করুন
             </Link>
           </p>

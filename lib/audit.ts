@@ -61,9 +61,12 @@ export async function writeLifecycleEvent(entry: LifecycleEntry) {
 }
 
 export function buildAuditEntry(
-  partial: Omit<AuditEntry, 'actorId' | 'actorEmail' | 'actorRole' | 'ipAddress'>,
+  partial: Omit<
+    AuditEntry,
+    'actorId' | 'actorEmail' | 'actorRole' | 'ipAddress'
+  >,
   session?: Session | null,
-  ipAddress?: string
+  ipAddress?: string,
 ): AuditEntry {
   return {
     ...partial,

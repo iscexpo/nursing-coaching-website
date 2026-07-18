@@ -21,8 +21,14 @@ export function Lightbox({
   const [index, setIndex] = useState(0)
 
   const close = useCallback(() => setOpen(false), [])
-  const prev = useCallback(() => setIndex((i) => (i - 1 + images.length) % images.length), [images.length])
-  const next = useCallback(() => setIndex((i) => (i + 1) % images.length), [images.length])
+  const prev = useCallback(
+    () => setIndex((i) => (i - 1 + images.length) % images.length),
+    [images.length],
+  )
+  const next = useCallback(
+    () => setIndex((i) => (i + 1) % images.length),
+    [images.length],
+  )
 
   useEffect(() => {
     if (!open) return
@@ -59,7 +65,10 @@ export function Lightbox({
           </button>
 
           <button
-            onClick={(e) => { e.stopPropagation(); prev() }}
+            onClick={(e) => {
+              e.stopPropagation()
+              prev()
+            }}
             className="absolute left-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
             aria-label="আগের ছবি"
           >
@@ -67,7 +76,10 @@ export function Lightbox({
           </button>
 
           <button
-            onClick={(e) => { e.stopPropagation(); next() }}
+            onClick={(e) => {
+              e.stopPropagation()
+              next()
+            }}
             className="absolute right-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 md:right-16"
             aria-label="পরের ছবি"
           >
@@ -92,7 +104,10 @@ export function Lightbox({
             {images.map((_, i) => (
               <button
                 key={i}
-                onClick={(e) => { e.stopPropagation(); setIndex(i) }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIndex(i)
+                }}
                 className={cn(
                   'h-2 rounded-full transition-all',
                   i === index ? 'w-6 bg-white' : 'w-2 bg-white/40',

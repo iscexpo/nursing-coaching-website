@@ -21,7 +21,9 @@ export function SiteHeader() {
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
+    return () => {
+      document.body.style.overflow = ''
+    }
   }, [open])
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export function SiteHeader() {
       }
       if (e.key === 'Tab' && panelRef.current) {
         const focusable = panelRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
         )
         if (focusable.length === 0) return
         const first = focusable[0]
@@ -57,9 +59,14 @@ export function SiteHeader() {
       {/* Top bar */}
       <div className="hidden bg-brand text-brand-foreground md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-1.5 text-xs">
-          <p>{th('welcome')} {site.nameBn}, {site.city} — {site.tagline}</p>
+          <p>
+            {th('welcome')} {site.nameBn}, {site.city} — {site.tagline}
+          </p>
           <div className="flex items-center gap-4">
-            <a href={site.phoneHref} className="flex items-center gap-1.5 hover:underline">
+            <a
+              href={site.phoneHref}
+              className="flex items-center gap-1.5 hover:underline"
+            >
               <Phone className="size-3.5" />
               {site.phone}
             </a>
@@ -74,16 +81,27 @@ export function SiteHeader() {
       <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-2.5">
-            <img src={site.logo || '/logo.png'} alt={site.nameBn} width={40} height={25} className="object-contain" />
+            <img
+              src={site.logo || '/logo.png'}
+              alt={site.nameBn}
+              width={40}
+              height={25}
+              className="object-contain"
+            />
             <span className="flex flex-col leading-tight">
               <span className="font-heading text-base font-bold text-foreground sm:text-lg">
                 {site.nameBn}
               </span>
-              <span className="text-xs text-muted-foreground">{site.city} · {th('established')}</span>
+              <span className="text-xs text-muted-foreground">
+                {site.city} · {th('established')}
+              </span>
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
+          <nav
+            className="hidden items-center gap-1 lg:flex"
+            aria-label="Main navigation"
+          >
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -106,7 +124,11 @@ export function SiteHeader() {
             >
               {t('login')}
             </Button>
-            <Button render={<Link href="/admission" />} size="lg" className="hidden sm:inline-flex">
+            <Button
+              render={<Link href="/admission" />}
+              size="lg"
+              className="hidden sm:inline-flex"
+            >
               {t('enroll')}
             </Button>
             <Button
@@ -136,7 +158,9 @@ export function SiteHeader() {
           )}
         >
           <div className="mb-4 flex items-center justify-between">
-            <span className="font-heading text-sm font-bold text-foreground">{t('menu')}</span>
+            <span className="font-heading text-sm font-bold text-foreground">
+              {t('menu')}
+            </span>
             <button
               onClick={() => setOpen(false)}
               className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
@@ -158,10 +182,23 @@ export function SiteHeader() {
             ))}
             <div className="mt-4 flex flex-col gap-2">
               <LanguageSwitcher className="justify-center" />
-              <Button render={<Link href="/auth/sign-in" onClick={() => setOpen(false)} />} variant="outline" className="w-full" size="lg">
+              <Button
+                render={
+                  <Link href="/auth/sign-in" onClick={() => setOpen(false)} />
+                }
+                variant="outline"
+                className="w-full"
+                size="lg"
+              >
                 {t('login')}
               </Button>
-              <Button render={<Link href="/admission" onClick={() => setOpen(false)} />} className="w-full" size="lg">
+              <Button
+                render={
+                  <Link href="/admission" onClick={() => setOpen(false)} />
+                }
+                className="w-full"
+                size="lg"
+              >
                 {t('enroll')}
               </Button>
             </div>

@@ -11,7 +11,10 @@ export async function Faq() {
     <section className="bg-secondary/50 py-16 md:py-20">
       <div className="mx-auto max-w-3xl px-4">
         <FadeIn>
-          <SectionHeading eyebrow="সাধারণ জিজ্ঞাসা" title="আপনার প্রশ্ন, আমাদের উত্তর" />
+          <SectionHeading
+            eyebrow="সাধারণ জিজ্ঞাসা"
+            title="আপনার প্রশ্ন, আমাদের উত্তর"
+          />
         </FadeIn>
         {faqs.length > 0 ? (
           <FaqAccordion faqs={faqs} />

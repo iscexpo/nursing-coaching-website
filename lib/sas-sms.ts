@@ -1,4 +1,5 @@
-const SAS_SMS_API_BASE = process.env.SAS_SMS_API_BASE_URL || 'https://api.sasbulksms.com/api/v1'
+const SAS_SMS_API_BASE =
+  process.env.SAS_SMS_API_BASE_URL || 'https://api.sasbulksms.com/api/v1'
 
 export type SasSmsConfig = {
   apiKey: string
@@ -67,7 +68,8 @@ async function sendSingleSms(
       let errorMessage = `HTTP ${response.status}`
       try {
         const parsed = JSON.parse(body)
-        errorMessage = parsed.message || parsed.error || parsed.msg || errorMessage
+        errorMessage =
+          parsed.message || parsed.error || parsed.msg || errorMessage
       } catch {
         errorMessage = body || errorMessage
       }
@@ -76,12 +78,17 @@ async function sendSingleSms(
 
     try {
       const parsed = JSON.parse(body)
-      const success = parsed.status === 'success' || parsed.code === 200 || parsed.success === true
+      const success =
+        parsed.status === 'success' ||
+        parsed.code === 200 ||
+        parsed.success === true
       return {
         phone,
         success,
         messageId: parsed.message_id || parsed.messageId || parsed.id,
-        error: success ? undefined : (parsed.message || parsed.error || 'Send failed'),
+        error: success
+          ? undefined
+          : parsed.message || parsed.error || 'Send failed',
       }
     } catch {
       return { phone, success: true, messageId: body }
@@ -92,7 +99,9 @@ async function sendSingleSms(
   }
 }
 
-export async function sendBulkSms(options: SasSmsSendOptions): Promise<SasSmsBulkResult> {
+export async function sendBulkSms(
+  options: SasSmsSendOptions,
+): Promise<SasSmsBulkResult> {
   const { config, phoneNumbers, message } = options
   const results: SasSmsSingleResult[] = []
 
@@ -110,7 +119,9 @@ export async function sendBulkSms(options: SasSmsSendOptions): Promise<SasSmsBul
   return { totalSent, totalFailed, results }
 }
 
-export async function checkBalance(config: SasSmsConfig): Promise<{ balance: number | null; error?: string }> {
+export async function checkBalance(
+  config: SasSmsConfig,
+): Promise<{ balance: number | null; error?: string }> {
   const url = `${SAS_SMS_API_BASE}/balance`
   const headers = {
     Authorization: `Bearer ${config.apiKey}`,
@@ -129,7 +140,12 @@ export async function checkBalance(config: SasSmsConfig): Promise<{ balance: num
 
     const body = await response.json()
     return {
-      balance: typeof body.balance === 'number' ? body.balance : typeof body.credits === 'number' ? body.credits : null,
+      balance:
+        typeof body.balance === 'number'
+          ? body.balance
+          : typeof body.credits === 'number'
+            ? body.credits
+            : null,
       error: body.error || body.message,
     }
   } catch (error) {

@@ -4,7 +4,13 @@ import { useState } from 'react'
 import { Send, Loader2, Bell, CheckCheck } from 'lucide-react'
 import type { NotificationRecord } from './types'
 
-export function NotificationsPanel({ notifications, onRefresh }: { notifications: NotificationRecord[]; onRefresh: () => void }) {
+export function NotificationsPanel({
+  notifications,
+  onRefresh,
+}: {
+  notifications: NotificationRecord[]
+  onRefresh: () => void
+}) {
   const [form, setForm] = useState({ title: '', message: '', target: 'all' })
   const [sending, setSending] = useState(false)
 
@@ -15,7 +21,11 @@ export function NotificationsPanel({ notifications, onRefresh }: { notifications
       await fetch('/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: form.title, message: form.message, type: 'info' }),
+        body: JSON.stringify({
+          title: form.title,
+          message: form.message,
+          type: 'info',
+        }),
       })
       setForm({ title: '', message: '', target: 'all' })
       onRefresh()
@@ -41,13 +51,17 @@ export function NotificationsPanel({ notifications, onRefresh }: { notifications
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-heading text-lg font-bold text-foreground">নোটিফিকেশন পাঠান</h3>
+          <h3 className="font-heading text-lg font-bold text-foreground">
+            নোটিফিকেশন পাঠান
+          </h3>
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-foreground">শিরোনাম</label>
+              <label className="block text-sm font-medium text-foreground">
+                শিরোনাম
+              </label>
               <input
                 type="text"
                 value={form.title}
@@ -57,7 +71,9 @@ export function NotificationsPanel({ notifications, onRefresh }: { notifications
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground">বার্তা</label>
+              <label className="block text-sm font-medium text-foreground">
+                বার্তা
+              </label>
               <textarea
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -71,7 +87,11 @@ export function NotificationsPanel({ notifications, onRefresh }: { notifications
               disabled={sending}
               className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50"
             >
-              {sending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+              {sending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Send className="size-4" />
+              )}
               পাঠান
             </button>
           </div>
@@ -82,10 +102,17 @@ export function NotificationsPanel({ notifications, onRefresh }: { notifications
         <div className="flex items-center justify-between">
           <h3 className="font-heading text-lg font-bold text-foreground">
             সর্বশেষ নোটিফিকেশন
-            {unreadCount > 0 && <span className="ml-2 rounded-full bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">{unreadCount} নতুন</span>}
+            {unreadCount > 0 && (
+              <span className="ml-2 rounded-full bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
+                {unreadCount} নতুন
+              </span>
+            )}
           </h3>
           {unreadCount > 0 && (
-            <button onClick={markAllRead} className="flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80">
+            <button
+              onClick={markAllRead}
+              className="flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80"
+            >
               <CheckCheck className="size-3.5" />
               সব পড়েছি
             </button>
@@ -94,16 +121,29 @@ export function NotificationsPanel({ notifications, onRefresh }: { notifications
 
         <div className="space-y-2">
           {notifications.map((n) => (
-            <div key={n.id} className={`rounded-xl border bg-card p-4 shadow-sm ${n.isRead ? 'border-border' : 'border-brand/30 bg-brand/5'}`}>
+            <div
+              key={n.id}
+              className={`rounded-xl border bg-card p-4 shadow-sm ${n.isRead ? 'border-border' : 'border-brand/30 bg-brand/5'}`}
+            >
               <div className="flex items-start gap-3">
-                <Bell className={`mt-0.5 size-4 shrink-0 ${n.isRead ? 'text-muted-foreground' : 'text-brand'}`} />
+                <Bell
+                  className={`mt-0.5 size-4 shrink-0 ${n.isRead ? 'text-muted-foreground' : 'text-brand'}`}
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-medium text-foreground">{n.title}</h4>
-                    {!n.isRead && <span className="size-2 rounded-full bg-brand" />}
+                    <h4 className="text-sm font-medium text-foreground">
+                      {n.title}
+                    </h4>
+                    {!n.isRead && (
+                      <span className="size-2 rounded-full bg-brand" />
+                    )}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{n.message}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleDateString('bn-BD')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {n.message}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {new Date(n.createdAt).toLocaleDateString('bn-BD')}
+                  </p>
                 </div>
               </div>
             </div>

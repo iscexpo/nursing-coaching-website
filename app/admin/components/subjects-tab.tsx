@@ -94,9 +94,15 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-heading text-lg font-bold text-foreground">বিষয় ব্যবস্থাপনা</h3>
+        <h3 className="font-heading text-lg font-bold text-foreground">
+          বিষয় ব্যবস্থাপনা
+        </h3>
         <button
-          onClick={() => { setShowForm(!showForm); setEditing(null); setName('') }}
+          onClick={() => {
+            setShowForm(!showForm)
+            setEditing(null)
+            setName('')
+          }}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
@@ -110,13 +116,22 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
             <h4 className="font-heading font-semibold text-foreground">
               {editing ? 'বিষয় সম্পাদনা' : 'নতুন বিষয় যোগ করুন'}
             </h4>
-            <button onClick={() => { setShowForm(false); setEditing(null); setName('') }} className="text-muted-foreground hover:text-foreground">
+            <button
+              onClick={() => {
+                setShowForm(false)
+                setEditing(null)
+                setName('')
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <X className="size-5" />
             </button>
           </div>
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-foreground">বিষয়ের নাম</label>
+              <label className="block text-sm font-medium text-foreground">
+                বিষয়ের নাম
+              </label>
               <input
                 type="text"
                 value={name}
@@ -136,7 +151,11 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
               disabled={saving || !name.trim()}
               className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50"
             >
-              {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+              {saving ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Save className="size-4" />
+              )}
               {editing ? 'সংরক্ষণ' : 'যোগ করুন'}
             </button>
           </div>
@@ -148,18 +167,29 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
-                <th className="px-4 py-3 text-left font-semibold text-foreground">বিষয়ের নাম</th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">অবস্থা</th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">কার্যক্রম</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground">
+                  বিষয়ের নাম
+                </th>
+                <th className="px-4 py-3 text-center font-semibold text-foreground">
+                  অবস্থা
+                </th>
+                <th className="px-4 py-3 text-center font-semibold text-foreground">
+                  কার্যক্রম
+                </th>
               </tr>
             </thead>
             <tbody>
               {subjects.map((s) => (
-                <tr key={s.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
+                <tr
+                  key={s.id}
+                  className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <GripVertical className="size-4 text-muted-foreground" />
-                      <span className="font-medium text-foreground">{s.name}</span>
+                      <span className="font-medium text-foreground">
+                        {s.name}
+                      </span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -190,8 +220,12 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
               ))}
               {subjects.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    কোনো বিষয় নেই। উপরে &ldquo;নতুন বিষয়&rdquo; বোতামে ক্লিক করুন।
+                  <td
+                    colSpan={3}
+                    className="px-4 py-8 text-center text-sm text-muted-foreground"
+                  >
+                    কোনো বিষয় নেই। উপরে &ldquo;নতুন বিষয়&rdquo; বোতামে ক্লিক
+                    করুন।
                   </td>
                 </tr>
               )}

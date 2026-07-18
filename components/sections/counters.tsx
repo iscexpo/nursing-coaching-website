@@ -2,7 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-export function AnimatedCounter({ value, label, delay = 0 }: { value: string; label: string; delay?: number }) {
+export function AnimatedCounter({
+  value,
+  label,
+  delay = 0,
+}: {
+  value: string
+  label: string
+  delay?: number
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
 

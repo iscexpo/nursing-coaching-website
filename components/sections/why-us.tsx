@@ -1,4 +1,10 @@
-import { Trophy, BookOpen, FileText, Target, type LucideIcon } from 'lucide-react'
+import {
+  Trophy,
+  BookOpen,
+  FileText,
+  Target,
+  type LucideIcon,
+} from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
 import { getCmsContent } from '@/lib/content-server'
@@ -29,7 +35,9 @@ export async function WhyUs() {
                   <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {item.description}
+                  </p>
                 </div>
               </FadeIn>
             )

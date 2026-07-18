@@ -14,7 +14,7 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error(
       '[OTP] OTP delivery is not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY). ' +
-        'Set these variables or the auth OTP flow will be unavailable.'
+        'Set these variables or the auth OTP flow will be unavailable.',
     )
     return
   }
@@ -24,13 +24,17 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${supabaseServiceKey}`,
+        Authorization: `Bearer ${supabaseServiceKey}`,
       },
       body: JSON.stringify({ phoneNumber, code }),
     })
 
     if (!response.ok) {
-      console.error('[OTP] Supabase Edge Function failed:', response.status, await response.text())
+      console.error(
+        '[OTP] Supabase Edge Function failed:',
+        response.status,
+        await response.text(),
+      )
     }
   } catch (error) {
     console.error('[OTP] Failed to call Supabase Edge Function:', error)
@@ -38,10 +42,10 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
 }
 
 function getTrustedOrigins() {
-  const configured = env.BETTER_AUTH_TRUSTED_ORIGINS
-    ?.split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean) ?? []
+  const configured =
+    env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean) ?? []
 
   const defaults = [
     'http://localhost:3000',
@@ -59,7 +63,11 @@ function getTrustedOrigins() {
   ]
   const normalized = new Set<string>()
 
-  for (const origin of [...configured, ...defaults, env.BETTER_AUTH_URL || '']) {
+  for (const origin of [
+    ...configured,
+    ...defaults,
+    env.BETTER_AUTH_URL || '',
+  ]) {
     const trimmed = origin.trim().replace(/\/$/, '')
     if (trimmed) normalized.add(trimmed)
   }

@@ -10,7 +10,11 @@ const sendSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'sms.send' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 10,
+    prefix: 'sms.send',
+  })
   if (limiter) return limiter
 
   try {
@@ -20,7 +24,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = sendSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      )
     }
 
     const phones = normalizePhoneNumbers([parsed.data.phone])

@@ -11,7 +11,9 @@ export function DarkModeToggle({ className }: { className?: string }) {
   useEffect(() => {
     setMounted(true)
     const stored = localStorage.getItem('theme')
-    const prefersDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const prefersDark =
+      stored === 'dark' ||
+      (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
     setDark(prefersDark)
     document.documentElement.classList.toggle('dark', prefersDark)
   }, [])
@@ -34,7 +36,11 @@ export function DarkModeToggle({ className }: { className?: string }) {
       )}
       aria-label={dark ? 'লাইট মোড' : 'ডার্ক মোড'}
     >
-      {dark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
+      {dark ? (
+        <Sun className="size-[18px]" />
+      ) : (
+        <Moon className="size-[18px]" />
+      )}
     </button>
   )
 }

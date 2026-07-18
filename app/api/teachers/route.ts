@@ -10,10 +10,16 @@ export async function GET() {
     const authz = await requirePermission('teacher.manage')
     if (!authz.ok) return authz.response
 
-    const rows = await db.select().from(teachers).orderBy(desc(teachers.createdAt))
+    const rows = await db
+      .select()
+      .from(teachers)
+      .orderBy(desc(teachers.createdAt))
     return NextResponse.json({ data: rows })
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch teachers' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch teachers' },
+      { status: 500 },
+    )
   }
 }
 
@@ -27,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -48,6 +54,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(teacher, { status: 201 })
   } catch {
-    return NextResponse.json({ error: 'Failed to create teacher' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to create teacher' },
+      { status: 500 },
+    )
   }
 }

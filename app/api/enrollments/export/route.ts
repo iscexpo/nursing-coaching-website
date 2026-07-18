@@ -28,14 +28,14 @@ export async function GET() {
       .orderBy(desc(enrollments.createdAt))
 
     const exportData = data.map((e) => ({
-      'শিক্ষার্থী': e.userName ?? '',
-      'ফোন': e.userPhone ?? '',
-      'কোর্স': e.courseTitle ?? '',
-      'স্ট্যাটাস': e.status,
+      শিক্ষার্থী: e.userName ?? '',
+      ফোন: e.userPhone ?? '',
+      কোর্স: e.courseTitle ?? '',
+      স্ট্যাটাস: e.status,
       'মোট ফি': e.totalFee,
-      'পরিশোধিত': e.paidAmount,
-      'বকেয়': e.dueAmount,
-      'তারিখ': e.enrolledAt.toISOString(),
+      পরিশোধিত: e.paidAmount,
+      বকেয়: e.dueAmount,
+      তারিখ: e.enrolledAt.toISOString(),
     }))
 
     const worksheet = XLSX.utils.json_to_sheet(exportData)
@@ -45,11 +45,15 @@ export async function GET() {
 
     return new Response(buffer, {
       headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': 'attachment; filename=enrollments.xlsx',
       },
     })
   } catch {
-    return NextResponse.json({ error: 'Failed to export enrollments' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to export enrollments' },
+      { status: 500 },
+    )
   }
 }

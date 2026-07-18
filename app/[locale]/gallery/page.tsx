@@ -10,7 +10,8 @@ import { Breadcrumb } from '@/components/breadcrumb'
 
 export const metadata = {
   title: 'গ্যালারি | ISC Expo - Icon Skill & Career Expo',
-  description: 'ISC Expo - Icon Skill & Career Expo-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
+  description:
+    'ISC Expo - Icon Skill & Career Expo-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
   alternates: { canonical: '/gallery' },
 }
 
@@ -18,7 +19,11 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 
-export default async function GalleryPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function GalleryPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations('galleryPage')

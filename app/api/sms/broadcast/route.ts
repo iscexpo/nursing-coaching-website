@@ -12,7 +12,11 @@ const broadcastSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'sms.broadcast' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 3,
+    prefix: 'sms.broadcast',
+  })
   if (limiter) return limiter
 
   try {
@@ -22,12 +26,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = broadcastSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      )
     }
 
     const result = await sendBroadcastSms(parsed.data)
     return NextResponse.json(result)
   } catch {
-    return NextResponse.json({ error: 'Failed to send SMS broadcast' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to send SMS broadcast' },
+      { status: 500 },
+    )
   }
 }

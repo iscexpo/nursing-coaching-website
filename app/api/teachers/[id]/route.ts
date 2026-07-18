@@ -8,25 +8,32 @@ import type { InferInsertModel } from 'drizzle-orm'
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const authz = await requirePermission('teacher.manage')
     if (!authz.ok) return authz.response
 
     const { id } = await params
-    const [teacher] = await db.select().from(teachers).where(eq(teachers.id, id))
-    if (!teacher) return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+    const [teacher] = await db
+      .select()
+      .from(teachers)
+      .where(eq(teachers.id, id))
+    if (!teacher)
+      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
 
     return NextResponse.json(teacher)
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch teacher' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch teacher' },
+      { status: 500 },
+    )
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const authz = await requirePermission('teacher.manage')
@@ -38,7 +45,7 @@ export async function PUT(
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -55,7 +62,10 @@ export async function PUT(
     set.updatedAt = new Date()
 
     if (Object.keys(set).length <= 1) {
-      return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'No fields to update' },
+        { status: 400 },
+      )
     }
 
     const [updated] = await db
@@ -64,27 +74,38 @@ export async function PUT(
       .where(eq(teachers.id, id))
       .returning()
 
-    if (!updated) return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+    if (!updated)
+      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
     return NextResponse.json(updated)
   } catch {
-    return NextResponse.json({ error: 'Failed to update teacher' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to update teacher' },
+      { status: 500 },
+    )
   }
 }
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const authz = await requirePermission('teacher.manage')
     if (!authz.ok) return authz.response
 
     const { id } = await params
-    const [deleted] = await db.delete(teachers).where(eq(teachers.id, id)).returning()
-    if (!deleted) return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+    const [deleted] = await db
+      .delete(teachers)
+      .where(eq(teachers.id, id))
+      .returning()
+    if (!deleted)
+      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
 
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json({ error: 'Failed to delete teacher' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to delete teacher' },
+      { status: 500 },
+    )
   }
 }

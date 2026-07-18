@@ -28,15 +28,25 @@ export async function GET() {
     const auth = await requireAdmin()
     if (!auth.ok) return auth.response
 
-    const rows = await db.select().from(mediaFiles).orderBy(desc(mediaFiles.createdAt))
+    const rows = await db
+      .select()
+      .from(mediaFiles)
+      .orderBy(desc(mediaFiles.createdAt))
     return NextResponse.json({ data: rows })
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch media files' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch media files' },
+      { status: 500 },
+    )
   }
 }
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'media.upload' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 10,
+    prefix: 'media.upload',
+  })
   if (limiter) return limiter
 
   try {
@@ -50,19 +60,34 @@ export async function POST(request: NextRequest) {
 
     const parsed = metadataSchema.safeParse({ altText, description })
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      )
     }
 
     if (!(file instanceof File)) {
-      return NextResponse.json({ error: 'File upload is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'File upload is required' },
+        { status: 400 },
+      )
     }
 
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: 'Unsupported file type. Only PNG, JPG, WEBP, GIF or PDF are allowed.' }, { status: 400 })
+      return NextResponse.json(
+        {
+          error:
+            'Unsupported file type. Only PNG, JPG, WEBP, GIF or PDF are allowed.',
+        },
+        { status: 400 },
+      )
     }
 
     if (file.size > MAX_UPLOAD_SIZE) {
-      return NextResponse.json({ error: 'File is too large. Maximum upload size is 5MB.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'File is too large. Maximum upload size is 5MB.' },
+        { status: 400 },
+      )
     }
 
     const originalFilename = file.name
@@ -74,21 +99,27 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer())
     await writeFile(filePath, buffer)
 
-    const [media] = await db.insert(mediaFiles).values({
-      id: crypto.randomUUID(),
-      filename: savedFilename,
-      originalFilename,
-      contentType: file.type,
-      size: file.size,
-      altText: parsed.data.altText || null,
-      description: parsed.data.description || null,
-      url: `/media/${savedFilename}`,
-      uploadedBy: auth.session.user.id,
-    }).returning()
+    const [media] = await db
+      .insert(mediaFiles)
+      .values({
+        id: crypto.randomUUID(),
+        filename: savedFilename,
+        originalFilename,
+        contentType: file.type,
+        size: file.size,
+        altText: parsed.data.altText || null,
+        description: parsed.data.description || null,
+        url: `/media/${savedFilename}`,
+        uploadedBy: auth.session.user.id,
+      })
+      .returning()
 
     return NextResponse.json(media, { status: 201 })
   } catch (error) {
     console.error('Media upload failed:', error)
-    return NextResponse.json({ error: 'Failed to upload media file' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to upload media file' },
+      { status: 500 },
+    )
   }
 }

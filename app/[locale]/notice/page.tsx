@@ -19,7 +19,9 @@ export const metadata = {
 
 async function getNotices() {
   try {
-    return await db.select().from(notices)
+    return await db
+      .select()
+      .from(notices)
       .where(eq(notices.isPublished, true))
       .orderBy(desc(notices.isUrgent), desc(notices.createdAt))
       .limit(20)
@@ -30,10 +32,18 @@ async function getNotices() {
 
 function formatDate(date: Date) {
   const d = new Date(date)
-  return d.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' })
+  return d.toLocaleDateString('bn-BD', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 }
 
-export default async function NoticePage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function NoticePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
   const { locale } = await params
   setRequestLocale(locale)
   const allNotices = await getNotices()

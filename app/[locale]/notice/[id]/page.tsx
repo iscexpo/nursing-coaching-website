@@ -27,7 +27,11 @@ function formatDate(date: Date) {
 
 const getNotice = cache(async (id: string) => {
   try {
-    const rows = await db.select().from(notices).where(eq(notices.id, id)).limit(1)
+    const rows = await db
+      .select()
+      .from(notices)
+      .where(eq(notices.id, id))
+      .limit(1)
     return rows[0] ?? null
   } catch {
     return null
@@ -39,7 +43,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const notice = await getNotice(id)
 
   if (!notice) {
-    return { title: 'নোটিশ পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo', robots: { index: false } }
+    return {
+      title: 'নোটিশ পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo',
+      robots: { index: false },
+    }
   }
 
   const title = `${notice.title} | ISC Expo - Icon Skill & Career Expo`
@@ -48,7 +55,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: `${SITE.url}/notice/${id}` },
-    openGraph: { type: 'article', title, description, url: `${SITE.url}/notice/${id}` },
+    openGraph: {
+      type: 'article',
+      title,
+      description,
+      url: `${SITE.url}/notice/${id}`,
+    },
   }
 }
 
@@ -76,16 +88,25 @@ export default async function NoticeDetailPage({ params }: Props) {
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-10 md:py-14">
           <div className="mx-auto max-w-3xl px-4">
-            <Breadcrumb items={[{ label: 'নোটিশ', href: '/notice' }, { label: notice.title }]} />
+            <Breadcrumb
+              items={[
+                { label: 'নোটিশ', href: '/notice' },
+                { label: notice.title },
+              ]}
+            />
             <SectionHeading eyebrow="নোটিশ" title={notice.title} />
-            <p className="mt-2 text-sm text-muted-foreground">{formatDate(notice.createdAt)}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {formatDate(notice.createdAt)}
+            </p>
           </div>
         </section>
 
         <section className="py-10 md:py-14">
           <div className="mx-auto max-w-3xl px-4">
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
-              <p className="whitespace-pre-line leading-relaxed text-foreground">{notice.content}</p>
+              <p className="whitespace-pre-line leading-relaxed text-foreground">
+                {notice.content}
+              </p>
             </div>
           </div>
         </section>

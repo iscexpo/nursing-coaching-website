@@ -31,12 +31,16 @@ export async function Teachers() {
                   />
                 </div>
                 <div className="p-5">
-                  <h3 className="font-heading text-base font-semibold text-foreground">{t.name}</h3>
+                  <h3 className="font-heading text-base font-semibold text-foreground">
+                    {t.name}
+                  </h3>
                   <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-brand">
                     <GraduationCap className="size-3.5" />
                     {t.subject}
                   </p>
-                  <p className="mt-3 text-xs text-muted-foreground">{t.qualification}</p>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    {t.qualification}
+                  </p>
                   <p className="text-xs text-green">{t.experience}</p>
                 </div>
               </div>

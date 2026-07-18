@@ -10,17 +10,25 @@ const changePasswordSchema = z.object({
 })
 
 export async function PUT(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 5, prefix: 'password.change' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 5,
+    prefix: 'password.change',
+  })
   if (limiter) return limiter
 
   try {
     const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
     const parsed = changePasswordSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      )
     }
 
     const { currentPassword, newPassword } = parsed.data
@@ -36,7 +44,8 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to update password'
+    const message =
+      error instanceof Error ? error.message : 'Failed to update password'
     return NextResponse.json({ error: message }, { status: 400 })
   }
 }

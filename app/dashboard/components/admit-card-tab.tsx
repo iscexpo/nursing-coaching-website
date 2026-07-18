@@ -14,7 +14,9 @@ export function AdmitCardSection({
   admitCards: AdmitCard[]
 }) {
   const site = useSiteData()
-  const activeEnrollment = enrollments.find((e) => e.status === 'active' || e.status === 'approved')
+  const activeEnrollment = enrollments.find(
+    (e) => e.status === 'active' || e.status === 'approved',
+  )
   const admitCard = admitCards[0]
 
   if (!admitCard) {
@@ -22,9 +24,12 @@ export function AdmitCardSection({
       <div className="mx-auto max-w-lg space-y-6">
         <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
           <AlertCircle className="mx-auto mb-3 size-8 text-muted-foreground" />
-          <h3 className="font-heading text-lg font-bold text-foreground">এডমিট কার্ড পাওয়া যায়নি</h3>
+          <h3 className="font-heading text-lg font-bold text-foreground">
+            এডমিট কার্ড পাওয়া যায়নি
+          </h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            আপনার জন্য কোনো এডমিট কার্ড তৈরি করা হয়নি। অ্যাডমিনের সাথে যোগাযোগ করুন।
+            আপনার জন্য কোনো এডমিট কার্ড তৈরি করা হয়নি। অ্যাডমিনের সাথে যোগাযোগ
+            করুন।
           </p>
         </div>
       </div>
@@ -51,36 +56,52 @@ export function AdmitCardSection({
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">শিক্ষার্থী ID</span>
-              <span className="font-semibold text-foreground">{user.studentId || '—'}</span>
+              <span className="font-semibold text-foreground">
+                {user.studentId || '—'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">ফোন</span>
-              <span className="font-semibold text-foreground">{user.phoneNumber || '—'}</span>
+              <span className="font-semibold text-foreground">
+                {user.phoneNumber || '—'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">কোর্স</span>
-              <span className="font-semibold text-foreground">{activeEnrollment?.courseTitle || 'নার্সিং অ্যাডমিশন কোচিং'}</span>
+              <span className="font-semibold text-foreground">
+                {activeEnrollment?.courseTitle || 'নার্সিং অ্যাডমিশন কোচিং'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">পরীক্ষা</span>
-              <span className="font-semibold text-foreground">{admitCard.examName}</span>
+              <span className="font-semibold text-foreground">
+                {admitCard.examName}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">তারিখ</span>
-              <span className="font-semibold text-foreground">{admitCard.examDate}</span>
+              <span className="font-semibold text-foreground">
+                {admitCard.examDate}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">সময়</span>
-              <span className="font-semibold text-foreground">{admitCard.examTime}</span>
+              <span className="font-semibold text-foreground">
+                {admitCard.examTime}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">কেন্দ্র</span>
-              <span className="font-semibold text-foreground">{admitCard.center}</span>
+              <span className="font-semibold text-foreground">
+                {admitCard.center}
+              </span>
             </div>
             {admitCard.seatNumber && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">সিট নম্বর</span>
-                <span className="font-semibold text-foreground">{admitCard.seatNumber}</span>
+                <span className="font-semibold text-foreground">
+                  {admitCard.seatNumber}
+                </span>
               </div>
             )}
           </div>

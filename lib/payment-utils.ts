@@ -9,7 +9,10 @@ export type PaymentFormValues = {
 }
 
 export function getPaymentValidationErrors(
-  values: Pick<PaymentFormValues, 'amount' | 'method' | 'transactionId' | 'senderNumber'>,
+  values: Pick<
+    PaymentFormValues,
+    'amount' | 'method' | 'transactionId' | 'senderNumber'
+  >,
   dueAmount: number,
 ) {
   const errors: Partial<Record<keyof PaymentFormValues, string>> = {}

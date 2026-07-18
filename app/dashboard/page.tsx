@@ -22,7 +22,17 @@ import { AccountSection } from './components/account-tab'
 import { AdmitCardSection } from './components/admit-card-tab'
 import { ResultsTable } from './components/results-tab'
 import { AttendanceView } from './components/attendance-tab'
-import type { Course, Enrollment, Payment, Invoice, UserProfile, ExamSubmission, AttendanceRecord, AdmitCard, LifecycleEvent } from './components/types'
+import type {
+  Course,
+  Enrollment,
+  Payment,
+  Invoice,
+  UserProfile,
+  ExamSubmission,
+  AttendanceRecord,
+  AdmitCard,
+  LifecycleEvent,
+} from './components/types'
 
 const TABS = [
   { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
@@ -54,7 +64,17 @@ export default function DashboardPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, profileRes, submissionsRes, attendanceRes, admitCardsRes, lifecycleRes] = await Promise.all([
+      const [
+        coursesRes,
+        enrollmentsRes,
+        paymentsRes,
+        invoicesRes,
+        profileRes,
+        submissionsRes,
+        attendanceRes,
+        admitCardsRes,
+        lifecycleRes,
+      ] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
@@ -148,7 +168,13 @@ export default function DashboardPage() {
       panelTitle="শিক্ষার্থী প্যানেল"
       userName={user.name}
       welcomeMessage={welcomeParts.join(' | ')}
-      tabs={TABS as unknown as { id: string; label: string; icon: React.ElementType }[]}
+      tabs={
+        TABS as unknown as {
+          id: string
+          label: string
+          icon: React.ElementType
+        }[]
+      }
       activeTab={tab}
       onTabChange={(id) => setTab(id as TabId)}
       onSignOut={handleSignOut}
@@ -163,10 +189,31 @@ export default function DashboardPage() {
           totalPaid={totalPaid}
         />
       )}
-      {tab === 'courses' && <CourseSection courses={courses} enrollments={enrollments} onRefresh={fetchData} />}
-      {tab === 'billing' && <BillingSection enrollments={enrollments} payments={payments} invoices={invoices} onRefresh={fetchData} />}
-      {tab === 'account' && <AccountSection profile={profile} onRefresh={fetchData} />}
-      {tab === 'admit-card' && <AdmitCardSection user={user} enrollments={enrollments} admitCards={admitCards} />}
+      {tab === 'courses' && (
+        <CourseSection
+          courses={courses}
+          enrollments={enrollments}
+          onRefresh={fetchData}
+        />
+      )}
+      {tab === 'billing' && (
+        <BillingSection
+          enrollments={enrollments}
+          payments={payments}
+          invoices={invoices}
+          onRefresh={fetchData}
+        />
+      )}
+      {tab === 'account' && (
+        <AccountSection profile={profile} onRefresh={fetchData} />
+      )}
+      {tab === 'admit-card' && (
+        <AdmitCardSection
+          user={user}
+          enrollments={enrollments}
+          admitCards={admitCards}
+        />
+      )}
       {tab === 'results' && <ResultsTable examSubmissions={examSubmissions} />}
       {tab === 'attendance' && <AttendanceView attendance={attendance} />}
     </PanelLayout>

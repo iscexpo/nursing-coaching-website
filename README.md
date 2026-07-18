@@ -5,6 +5,7 @@
 ## Features
 
 ### Public Pages
+
 - **হোম** — Hero, কোর্স, সাফল্য, শিক্ষক, গ্যালারি, যোগাযোগ, FAQ
 - **কোর্স** — কোর্সের বিস্তারিত (ফি, সময়কাল, বিবরণ) — DB থেকে ডায়নামিক
 - **ভর্তি** — অনলাইন ভর্তি ফরম + যোগাযোগ তথ্য — DB থেকে কোর্স ড্রপডাউন
@@ -14,6 +15,7 @@
 - **যোগাযোগ** — যোগাযোগ ফরম + অফিস তথ্য
 
 ### Student Dashboard (`/dashboard`)
+
 - **ওভারভিউ** — পরিসংখ্যান, সর্বশেষ ফলাফল/উপস্থিতি, এনরোলমেন্ট
 - **আমার কোর্স** — কোর্স ব্রাউজ, এনরোলমেন্ট, এনরোলড কোর্স দেখুন
 - **বিলিং ও পেমেন্ট** — bKash/Nagad দিয়ে পেমেন্ট, পেমেন্ট ইতিহাস, ইনভয়েস
@@ -23,6 +25,7 @@
 - **উপস্থিতি** — উপস্থিত/বিলম্বিত/অনুপস্থিত হিসাব
 
 ### Admin Dashboard (`/admin`)
+
 - **ওভারভিউ** — পরিসংখ্যান, অপেক্ষমান এনরোলমেন্ট/পেমেন্ট
 - **কোর্স** — কোর্স CRUD, ফি, ছাড়, সময়সূচি, সক্রিয়/নিষ্ক্রিয় টগল
 - **এনরোলমেন্ট** — অনুমোদন/প্রত্যাখ্যান/সক্রিয়করণ, স্ট্যাটাস ফিল্টার
@@ -38,18 +41,21 @@
 - **শিক্ষার্থী** — সার্চযোগ্য শিক্ষার্থী তালিকা
 
 ### Online Exam System (`/exam`)
+
 - বিষয়ভিত্তিক মডেল টেস্ট (বাংলা, ইংরেজি, পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান, সাধারণ জ্ঞান)
 - ১৫ মিনিট টাইমার, অটো-সাবমিট
 - প্রশ্ন নেভিগেশন গ্রিড
 - ফলাফল: গ্রেড, স্কোর বার, উত্তর পর্যালোচনা
 
 ### Payment Gateway
+
 - **bKash** — সেন্ড মানি, ট্রানজেকশন ID ভেরিফিকেশন
 - **Nagad** — সেন্ড মানি, ট্রানজেকশন ID ভেরিফিকেশন
 - **নগদ** — অ্যাডমিন থেকে সরাসরি যাচাইকরণ
 - স্বয়ংক্রিয় ব্যালেন্স আপডেট
 
 ### Authentication (Better Auth)
+
 - ইমেইল + পাসওয়ার্ড দিয়ে সাইন ইন/সাইন আপ
 - ফোন নম্বর + OTP যাচাইকরণ
 - Role-based access (student / admin)
@@ -108,6 +114,7 @@ See `docs/installation.md` for the recommended local install workflow and CI com
 ### GitHub Actions CI
 
 This repo uses `.github/workflows/ci.yml` to run:
+
 - Node 24
 - `pnpm approve-builds --all`
 - `pnpm install --no-frozen-lockfile`
@@ -131,11 +138,11 @@ npx tsx scripts/seed-demo-admin.ts
 
 ### Demo Admin Credentials
 
-| Field    | Value              |
-|----------|--------------------|
-| Email    | `admin@cornia.co`  |
-| Password | `Admin123!`        |
-| Phone    | `+8801784176442`   |
+| Field    | Value             |
+| -------- | ----------------- |
+| Email    | `admin@cornia.co` |
+| Password | `Admin123!`       |
+| Phone    | `+8801784176442`  |
 
 ## Project Structure
 
@@ -225,25 +232,25 @@ scripts/
 
 ## Database Schema
 
-| Table | Description |
-|-------|-------------|
-| `user` | Users with role, studentId, phone, profile fields |
-| `session` | Auth sessions (7-day expiry) |
-| `account` | Auth accounts (credentials) |
-| `verification` | Email/phone verification tokens |
-| `otp` | OTP codes for phone verification |
-| `courses` | Course catalog (CRUD) |
-| `enrollments` | Student-course enrollments |
-| `payments` | Payment records (bKash/Nagad/cash/bank) |
-| `invoices` | Invoice tracking |
-| `notifications` | User notifications |
-| `notices` | Notice board entries |
-| `exams` | Model test exams |
-| `questions` | MCQ question bank (6 subjects) |
-| `exam_submissions` | Student exam attempts & scores |
-| `contact_inquiries` | Contact form submissions |
-| `attendance` | Student attendance records |
-| `admit_cards` | Exam admit cards |
+| Table               | Description                                       |
+| ------------------- | ------------------------------------------------- |
+| `user`              | Users with role, studentId, phone, profile fields |
+| `session`           | Auth sessions (7-day expiry)                      |
+| `account`           | Auth accounts (credentials)                       |
+| `verification`      | Email/phone verification tokens                   |
+| `otp`               | OTP codes for phone verification                  |
+| `courses`           | Course catalog (CRUD)                             |
+| `enrollments`       | Student-course enrollments                        |
+| `payments`          | Payment records (bKash/Nagad/cash/bank)           |
+| `invoices`          | Invoice tracking                                  |
+| `notifications`     | User notifications                                |
+| `notices`           | Notice board entries                              |
+| `exams`             | Model test exams                                  |
+| `questions`         | MCQ question bank (6 subjects)                    |
+| `exam_submissions`  | Student exam attempts & scores                    |
+| `contact_inquiries` | Contact form submissions                          |
+| `attendance`        | Student attendance records                        |
+| `admit_cards`       | Exam admit cards                                  |
 
 ## License
 

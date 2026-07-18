@@ -11,7 +11,11 @@ const marketingSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'sms.marketing' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 3,
+    prefix: 'sms.marketing',
+  })
   if (limiter) return limiter
 
   try {
@@ -25,16 +29,25 @@ export async function POST(request: NextRequest) {
 
     const parsed = marketingSchema.safeParse({ title, content })
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      )
     }
 
     if (!(file instanceof File)) {
-      return NextResponse.json({ error: 'CSV/Excel file is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'CSV/Excel file is required' },
+        { status: 400 },
+      )
     }
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'File size must be less than 5MB' },
+        { status: 400 },
+      )
     }
 
     const allowedTypes = [
@@ -43,12 +56,21 @@ export async function POST(request: NextRequest) {
       'application/vnd.ms-excel',
       'text/tab-separated-values',
     ]
-    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(csv|xlsx|xls|tsv)$/i)) {
-      return NextResponse.json({ error: 'Only CSV, XLSX, XLS, and TSV files are allowed' }, { status: 400 })
+    if (
+      !allowedTypes.includes(file.type) &&
+      !file.name.match(/\.(csv|xlsx|xls|tsv)$/i)
+    ) {
+      return NextResponse.json(
+        { error: 'Only CSV, XLSX, XLS, and TSV files are allowed' },
+        { status: 400 },
+      )
     }
 
     const recipients = await extractPhoneNumbersFromSheet(file)
-    const message = buildBroadcastMessage(parsed.data.title, parsed.data.content)
+    const message = buildBroadcastMessage(
+      parsed.data.title,
+      parsed.data.content,
+    )
 
     if (recipients.length === 0) {
       return NextResponse.json({
@@ -69,6 +91,9 @@ export async function POST(request: NextRequest) {
       message,
     })
   } catch {
-    return NextResponse.json({ error: 'Failed to process sheet-based SMS marketing' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to process sheet-based SMS marketing' },
+      { status: 500 },
+    )
   }
 }

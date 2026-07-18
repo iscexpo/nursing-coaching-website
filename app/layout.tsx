@@ -21,7 +21,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="bn" className={`${hindSiliguri.variable} ${poppins.variable} bg-background`} suppressHydrationWarning>
+    <html
+      lang="bn"
+      className={`${hindSiliguri.variable} ${poppins.variable} bg-background`}
+      suppressHydrationWarning
+    >
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           {children}

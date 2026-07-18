@@ -18,7 +18,9 @@ export function useSiteData(): SiteData {
         if (!cancelled && data && !data.error) setSite(data)
       })
       .catch(() => {})
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return site

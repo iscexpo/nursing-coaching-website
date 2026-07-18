@@ -12,10 +12,25 @@ export function Contact() {
   const tc = useTranslations('contact')
 
   const CONTACTS = [
-    { icon: MapPin, label: t('address'), value: site.addressBn, href: undefined },
+    {
+      icon: MapPin,
+      label: t('address'),
+      value: site.addressBn,
+      href: undefined,
+    },
     { icon: Phone, label: t('phone'), value: site.phone, href: site.phoneHref },
-    { icon: MessageCircle, label: t('whatsapp'), value: site.phone, href: site.whatsapp },
-    { icon: Mail, label: t('email'), value: site.email, href: `mailto:${site.email}` },
+    {
+      icon: MessageCircle,
+      label: t('whatsapp'),
+      value: site.phone,
+      href: site.whatsapp,
+    },
+    {
+      icon: Mail,
+      label: t('email'),
+      value: site.email,
+      href: `mailto:${site.email}`,
+    },
   ]
 
   return (
@@ -39,13 +54,20 @@ export function Contact() {
                     </span>
                     <div>
                       <p className="text-xs text-muted-foreground">{c.label}</p>
-                      <p className="mt-0.5 font-medium leading-relaxed text-foreground">{c.value}</p>
+                      <p className="mt-0.5 font-medium leading-relaxed text-foreground">
+                        {c.value}
+                      </p>
                     </div>
                   </div>
                 </FadeIn>
               )
               return c.href ? (
-                <a key={c.label} href={c.href} target="_blank" rel="noopener noreferrer">
+                <a
+                  key={c.label}
+                  href={c.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {content}
                 </a>
               ) : (

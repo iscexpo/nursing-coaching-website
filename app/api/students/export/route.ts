@@ -17,25 +17,28 @@ export async function GET() {
       .orderBy(desc(user.createdAt))
 
     const exportData = students.map((s) => ({
-      'নাম': s.name,
-      'ইমেইল': s.email ?? '',
-      'ফোন': s.phoneNumber ?? '',
+      নাম: s.name,
+      ইমেইল: s.email ?? '',
+      ফোন: s.phoneNumber ?? '',
       'শিক্ষার্থী ID': s.studentId ?? '',
-      'ঠিকানা': s.address ?? '',
-      'জেলা': s.district ?? '',
+      ঠিকানা: s.address ?? '',
+      জেলা: s.district ?? '',
       'SSC ফলাফল': (s.ssc as Record<string, string> | null)?.result ?? '',
       'SSC রোল': (s.ssc as Record<string, string> | null)?.roll ?? '',
-      'SSC রেজিস্ট্রেশন': (s.ssc as Record<string, string> | null)?.registrationNo ?? '',
+      'SSC রেজিস্ট্রেশন':
+        (s.ssc as Record<string, string> | null)?.registrationNo ?? '',
       'SSC বোর্ড': (s.ssc as Record<string, string> | null)?.board ?? '',
       'HSC ফলাফল': (s.hsc as Record<string, string> | null)?.result ?? '',
       'HSC রোল': (s.hsc as Record<string, string> | null)?.roll ?? '',
-      'HSC রেজিস্ট্রেশন': (s.hsc as Record<string, string> | null)?.registrationNo ?? '',
+      'HSC রেজিস্ট্রেশন':
+        (s.hsc as Record<string, string> | null)?.registrationNo ?? '',
       'HSC বোর্ড': (s.hsc as Record<string, string> | null)?.board ?? '',
       'অনার্স ফলাফল': (s.honors as Record<string, string> | null)?.result ?? '',
       'অনার্স রোল': (s.honors as Record<string, string> | null)?.roll ?? '',
-      'অনার্স রেজিস্ট্রেশন': (s.honors as Record<string, string> | null)?.registrationNo ?? '',
+      'অনার্স রেজিস্ট্রেশন':
+        (s.honors as Record<string, string> | null)?.registrationNo ?? '',
       'অনার্স বোর্ড': (s.honors as Record<string, string> | null)?.board ?? '',
-      'তৈরি': s.createdAt.toISOString(),
+      তৈরি: s.createdAt.toISOString(),
     }))
 
     const worksheet = XLSX.utils.json_to_sheet(exportData)
@@ -45,11 +48,15 @@ export async function GET() {
 
     return new Response(buffer, {
       headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': 'attachment; filename=students.xlsx',
       },
     })
   } catch {
-    return NextResponse.json({ error: 'Failed to export students' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to export students' },
+      { status: 500 },
+    )
   }
 }

@@ -48,9 +48,24 @@ export default function ContactPage() {
 
   const infoItems = [
     { icon: MapPin, label: tCommon('address'), value: site.addressBn },
-    { icon: Phone, label: tCommon('phone'), value: site.phone, href: site.phoneHref },
-    { icon: Mail, label: tCommon('email'), value: site.email, href: `mailto:${site.email}` },
-    { icon: MessageCircle, label: 'WhatsApp', value: 'চ্যাট করুন', href: site.whatsapp },
+    {
+      icon: Phone,
+      label: tCommon('phone'),
+      value: site.phone,
+      href: site.phoneHref,
+    },
+    {
+      icon: Mail,
+      label: tCommon('email'),
+      value: site.email,
+      href: `mailto:${site.email}`,
+    },
+    {
+      icon: MessageCircle,
+      label: 'WhatsApp',
+      value: 'চ্যাট করুন',
+      href: site.whatsapp,
+    },
   ]
 
   return (
@@ -82,18 +97,30 @@ export default function ContactPage() {
                         <item.icon className="size-5 text-brand" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">{item.label}</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {item.label}
+                        </p>
                         {item.href ? (
                           <a
                             href={item.href}
-                            target={item.href.startsWith('http') ? '_blank' : undefined}
-                            rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            target={
+                              item.href.startsWith('http')
+                                ? '_blank'
+                                : undefined
+                            }
+                            rel={
+                              item.href.startsWith('http')
+                                ? 'noopener noreferrer'
+                                : undefined
+                            }
                             className="text-sm text-muted-foreground hover:text-brand"
                           >
                             {item.value}
                           </a>
                         ) : (
-                          <p className="text-sm text-muted-foreground">{item.value}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.value}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -115,8 +142,18 @@ export default function ContactPage() {
                 {submitted ? (
                   <div className="rounded-2xl border border-green/30 bg-green/5 p-8 text-center">
                     <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-green/10">
-                      <svg className="size-8 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="size-8 text-green"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
                     <h3 className="font-heading text-xl font-bold text-foreground">
@@ -127,7 +164,10 @@ export default function ContactPage() {
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
+                  >
                     <h3 className="font-heading text-lg font-bold text-foreground">
                       বার্তা পাঠান
                     </h3>
@@ -139,41 +179,56 @@ export default function ContactPage() {
                     )}
 
                     <div>
-                      <label htmlFor="c-name" className="block text-sm font-medium text-foreground">
+                      <label
+                        htmlFor="c-name"
+                        className="block text-sm font-medium text-foreground"
+                      >
                         {tCommon('fullName')}
                       </label>
                       <input
                         id="c-name"
                         type="text"
                         value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, name: e.target.value })
+                        }
                         placeholder="আপনার নাম"
                         required
                         className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                       />
                     </div>
                     <div>
-                      <label htmlFor="c-phone" className="block text-sm font-medium text-foreground">
+                      <label
+                        htmlFor="c-phone"
+                        className="block text-sm font-medium text-foreground"
+                      >
                         {tCommon('phone')}
                       </label>
                       <input
                         id="c-phone"
                         type="tel"
                         value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, phone: e.target.value })
+                        }
                         placeholder="01XXXXXXXXX"
                         required
                         className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                       />
                     </div>
                     <div>
-                      <label htmlFor="c-msg" className="block text-sm font-medium text-foreground">
+                      <label
+                        htmlFor="c-msg"
+                        className="block text-sm font-medium text-foreground"
+                      >
                         বার্তা
                       </label>
                       <textarea
                         id="c-msg"
                         value={form.message}
-                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, message: e.target.value })
+                        }
                         rows={4}
                         placeholder="আপনার বার্তা লিখুন"
                         required

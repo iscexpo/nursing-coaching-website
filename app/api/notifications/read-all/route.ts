@@ -7,19 +7,28 @@ import { getSession } from '@/lib/permissions'
 export async function POST() {
   try {
     const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    await db.update(notifications).set({
-      isRead: true,
-      readAt: new Date(),
-      updatedAt: new Date(),
-    }).where(and(
-      eq(notifications.userId, session.user.id),
-      eq(notifications.isRead, false),
-    ))
+    await db
+      .update(notifications)
+      .set({
+        isRead: true,
+        readAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(notifications.userId, session.user.id),
+          eq(notifications.isRead, false),
+        ),
+      )
 
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json({ error: 'Failed to mark all as read' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to mark all as read' },
+      { status: 500 },
+    )
   }
 }

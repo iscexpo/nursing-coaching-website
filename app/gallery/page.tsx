@@ -8,7 +8,8 @@ import { Breadcrumb } from '@/components/breadcrumb'
 
 export const metadata = {
   title: 'গ্যালারি | ISC Expo - Icon Skill & Career Expo',
-  description: 'ISC Expo - Icon Skill & Career Expo-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
+  description:
+    'ISC Expo - Icon Skill & Career Expo-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
   alternates: { canonical: '/gallery' },
 }
 

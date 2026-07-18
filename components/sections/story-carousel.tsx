@@ -5,7 +5,13 @@ import Image from 'next/image'
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-type Story = { name: string; college: string; rank: string; image: string; quote: string }
+type Story = {
+  name: string
+  college: string
+  rank: string
+  image: string
+  quote: string
+}
 
 export function StoryCarousel({ stories }: { stories: Story[] }) {
   const [index, setIndex] = useState(0)
@@ -37,7 +43,12 @@ export function StoryCarousel({ stories }: { stories: Story[] }) {
     >
       <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
         <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl border-4 border-secondary shadow-lg sm:size-28">
-          <Image src={story.image || '/placeholder.svg'} alt={story.name} fill className="object-cover" />
+          <Image
+            src={story.image || '/placeholder.svg'}
+            alt={story.name}
+            fill
+            className="object-cover"
+          />
         </div>
         <div className="flex-1 text-center sm:text-left">
           <Quote className="mx-auto size-8 text-gold sm:mx-0" />
@@ -49,7 +60,9 @@ export function StoryCarousel({ stories }: { stories: Story[] }) {
               <Star key={i} className="size-4 fill-gold text-gold" />
             ))}
           </div>
-          <p className="mt-4 font-heading text-lg font-bold text-foreground">{story.name}</p>
+          <p className="mt-4 font-heading text-lg font-bold text-foreground">
+            {story.name}
+          </p>
           <p className="text-sm text-muted-foreground">{story.college}</p>
           <span className="mt-2 inline-block rounded-full bg-green/10 px-3 py-1 text-xs font-semibold text-green">
             {story.rank}
@@ -58,7 +71,12 @@ export function StoryCarousel({ stories }: { stories: Story[] }) {
       </div>
 
       <div className="mt-8 flex items-center justify-center gap-3">
-        <Button variant="outline" size="icon-lg" onClick={() => go(-1)} aria-label="আগের">
+        <Button
+          variant="outline"
+          size="icon-lg"
+          onClick={() => go(-1)}
+          aria-label="আগের"
+        >
           <ChevronLeft className="size-5" />
         </Button>
         <div className="flex gap-1.5">
@@ -68,12 +86,19 @@ export function StoryCarousel({ stories }: { stories: Story[] }) {
               onClick={() => setIndex(i)}
               aria-label={`গল্প ${i + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${
-                i === index ? 'w-6 bg-brand' : 'w-2 bg-border hover:bg-muted-foreground/30'
+                i === index
+                  ? 'w-6 bg-brand'
+                  : 'w-2 bg-border hover:bg-muted-foreground/30'
               }`}
             />
           ))}
         </div>
-        <Button variant="outline" size="icon-lg" onClick={() => go(1)} aria-label="পরের">
+        <Button
+          variant="outline"
+          size="icon-lg"
+          onClick={() => go(1)}
+          aria-label="পরের"
+        >
           <ChevronRight className="size-5" />
         </Button>
       </div>

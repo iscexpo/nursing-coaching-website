@@ -1,7 +1,12 @@
 import { db } from '@/lib/db'
 import { settings } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { defaultCmsContent, mergeCmsContent, type CmsContent, type CmsContentInput } from '@/lib/content-cms'
+import {
+  defaultCmsContent,
+  mergeCmsContent,
+  type CmsContent,
+  type CmsContentInput,
+} from '@/lib/content-cms'
 
 export type SystemSettings = {
   id: string
@@ -49,9 +54,14 @@ function createDefaultSystemSettings(): SystemSettings {
 }
 
 function rowToSettings(row: Record<string, unknown>): SystemSettings {
-  const cms = mergeCmsContent((row.cmsContent as CmsContent | null) || undefined)
+  const cms = mergeCmsContent(
+    (row.cmsContent as CmsContent | null) || undefined,
+  )
   const extras = extractSmsExtras(cms)
-  const { smsExtras: _removed, ...cmsWithoutSmsExtras } = (cms || {}) as Record<string, unknown>
+  const { smsExtras: _removed, ...cmsWithoutSmsExtras } = (cms || {}) as Record<
+    string,
+    unknown
+  >
   return {
     id: row.id as string,
     siteName: row.siteName as string,
@@ -72,24 +82,30 @@ function rowToSettings(row: Record<string, unknown>): SystemSettings {
 
 export async function getSystemSettings(): Promise<SystemSettings> {
   try {
-    const [setting] = await db.select().from(settings).where(eq(settings.id, 'primary'))
+    const [setting] = await db
+      .select()
+      .from(settings)
+      .where(eq(settings.id, 'primary'))
     if (setting) {
       return rowToSettings(setting as unknown as Record<string, unknown>)
     }
 
-    const [created] = await db.insert(settings).values({
-      id: 'primary',
-      siteName: 'ISC Expo - Icon Skill & Career Expo',
-      siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
-      smsProvider: 'none',
-      smsApiKey: '',
-      smsSenderId: '',
-      paymentGateway: 'none',
-      paymentGatewayApiKey: '',
-      paymentGatewaySecret: '',
-      paymentGatewayWebhookSecret: '',
-      cmsContent: defaultCmsContent,
-    }).returning()
+    const [created] = await db
+      .insert(settings)
+      .values({
+        id: 'primary',
+        siteName: 'ISC Expo - Icon Skill & Career Expo',
+        siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
+        smsProvider: 'none',
+        smsApiKey: '',
+        smsSenderId: '',
+        paymentGateway: 'none',
+        paymentGatewayApiKey: '',
+        paymentGatewaySecret: '',
+        paymentGatewayWebhookSecret: '',
+        cmsContent: defaultCmsContent,
+      })
+      .returning()
 
     if (created) {
       return rowToSettings(created as unknown as Record<string, unknown>)
@@ -101,7 +117,9 @@ export async function getSystemSettings(): Promise<SystemSettings> {
   return createDefaultSystemSettings()
 }
 
-export type SystemSettingsUpdate = Partial<Omit<SystemSettings, 'cmsContent'>> & {
+export type SystemSettingsUpdate = Partial<
+  Omit<SystemSettings, 'cmsContent'>
+> & {
   cmsContent?: CmsContentInput
 }
 
@@ -114,11 +132,15 @@ export async function saveSystemSettings(input: SystemSettingsUpdate) {
     smsExtras: { smsEmail: smsEmail || '', smsPassword: smsPassword || '' },
   }
 
-  const [updated] = await db.update(settings).set({
-    ...rest,
-    cmsContent: cmsWithExtras,
-    updatedAt: new Date(),
-  }).where(eq(settings.id, 'primary')).returning()
+  const [updated] = await db
+    .update(settings)
+    .set({
+      ...rest,
+      cmsContent: cmsWithExtras,
+      updatedAt: new Date(),
+    })
+    .where(eq(settings.id, 'primary'))
+    .returning()
 
   return rowToSettings(updated as unknown as Record<string, unknown>)
 }

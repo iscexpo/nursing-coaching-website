@@ -11,19 +11,31 @@ import { eq } from 'drizzle-orm'
 
 export async function Courses() {
   const t = await getTranslations('courses')
-  let data: { id: string; slug: string; title: string; description: string; shortDescription: string | null; duration: string; fee: number; discountFee: number | null; image: string | null }[] = []
+  let data: {
+    id: string
+    slug: string
+    title: string
+    description: string
+    shortDescription: string | null
+    duration: string
+    fee: number
+    discountFee: number | null
+    image: string | null
+  }[] = []
   try {
-    data = await db.select({
-      id: courses.id,
-      slug: courses.slug,
-      title: courses.title,
-      description: courses.description,
-      shortDescription: courses.shortDescription,
-      duration: courses.duration,
-      fee: courses.fee,
-      discountFee: courses.discountFee,
-      image: courses.image,
-    }).from(courses)
+    data = await db
+      .select({
+        id: courses.id,
+        slug: courses.slug,
+        title: courses.title,
+        description: courses.description,
+        shortDescription: courses.shortDescription,
+        duration: courses.duration,
+        fee: courses.fee,
+        discountFee: courses.discountFee,
+        image: courses.image,
+      })
+      .from(courses)
       .where(eq(courses.isActive, true))
       .limit(6)
   } catch {
@@ -55,43 +67,63 @@ export async function Courses() {
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground">{t('noImage')}</div>
+                    <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground">
+                      {t('noImage')}
+                    </div>
                   )}
                   <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-brand shadow backdrop-blur-sm">
                     <Clock className="size-3.5" />
                     {course.duration}
                   </span>
-                  {course.discountFee != null && course.discountFee < course.fee && (
-                    <span className="absolute right-3 top-3 rounded-full bg-destructive px-2.5 py-0.5 text-[11px] font-bold text-white shadow">
-                      -{Math.round(((course.fee - course.discountFee) / course.fee) * 100)}%
-                    </span>
-                  )}
+                  {course.discountFee != null &&
+                    course.discountFee < course.fee && (
+                      <span className="absolute right-3 top-3 rounded-full bg-destructive px-2.5 py-0.5 text-[11px] font-bold text-white shadow">
+                        -
+                        {Math.round(
+                          ((course.fee - course.discountFee) / course.fee) *
+                            100,
+                        )}
+                        %
+                      </span>
+                    )}
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="font-heading text-lg font-semibold text-foreground">
                     {course.title}
                   </h3>
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {course.shortDescription || course.description?.slice(0, 100)}
+                    {course.shortDescription ||
+                      course.description?.slice(0, 100)}
                   </p>
                   <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
                     <span className="flex items-center gap-2">
-                      {course.discountFee != null && course.discountFee < course.fee ? (
+                      {course.discountFee != null &&
+                      course.discountFee < course.fee ? (
                         <>
-                          <span className="font-heading text-lg font-bold text-green">৳{course.discountFee.toLocaleString()}</span>
-                          <span className="text-xs text-muted-foreground line-through">৳{course.fee.toLocaleString()}</span>
+                          <span className="font-heading text-lg font-bold text-green">
+                            ৳{course.discountFee.toLocaleString()}
+                          </span>
+                          <span className="text-xs text-muted-foreground line-through">
+                            ৳{course.fee.toLocaleString()}
+                          </span>
                         </>
                       ) : (
-                        <span className="font-heading text-lg font-bold text-green">৳{course.fee.toLocaleString()}</span>
+                        <span className="font-heading text-lg font-bold text-green">
+                          ৳{course.fee.toLocaleString()}
+                        </span>
                       )}
                     </span>
                     <Button
-                      render={<Link href={`/admission?course=${course.slug}`} />}
+                      render={
+                        <Link href={`/admission?course=${course.slug}`} />
+                      }
                       variant="ghost"
                       size="sm"
                       className="text-brand hover:bg-secondary"
                     >
-                      {t('noImage') === 'No image available' ? 'Details' : 'বিস্তারিত'}
+                      {t('noImage') === 'No image available'
+                        ? 'Details'
+                        : 'বিস্তারিত'}
                       <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                     </Button>
                   </div>

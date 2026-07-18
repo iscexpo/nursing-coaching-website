@@ -32,10 +32,12 @@ export async function Gallery() {
               <Lightbox
                 images={lightboxImages}
                 trigger={
-                  <div className={cn(
-                    'group relative overflow-hidden rounded-2xl',
-                    i === 0 ? 'lg:row-span-2' : '',
-                  )}>
+                  <div
+                    className={cn(
+                      'group relative overflow-hidden rounded-2xl',
+                      i === 0 ? 'lg:row-span-2' : '',
+                    )}
+                  >
                     <Image
                       src={g.image || '/placeholder.svg'}
                       alt={g.caption}
@@ -53,7 +55,11 @@ export async function Gallery() {
         </div>
         <FadeIn delay={400}>
           <div className="mt-8 text-center">
-            <Button render={<Link href="/gallery" />} variant="outline" size="lg">
+            <Button
+              render={<Link href="/gallery" />}
+              variant="outline"
+              size="lg"
+            >
               সম্পূর্ণ গ্যালারি দেখুন
             </Button>
           </div>

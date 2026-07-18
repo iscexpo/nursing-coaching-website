@@ -36,9 +36,16 @@ export function DataTableTh({
   children: React.ReactNode
   align?: 'left' | 'center' | 'right'
 }) {
-  const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left'
+  const alignClass =
+    align === 'center'
+      ? 'text-center'
+      : align === 'right'
+        ? 'text-right'
+        : 'text-left'
   return (
-    <th className={`px-4 py-3 ${alignClass} font-semibold text-foreground`}>{children}</th>
+    <th className={`px-4 py-3 ${alignClass} font-semibold text-foreground`}>
+      {children}
+    </th>
   )
 }
 
@@ -47,9 +54,7 @@ export function DataTableBody({ children }: { children: React.ReactNode }) {
 }
 
 export function DataTableRow({ children }: { children: React.ReactNode }) {
-  return (
-    <tr className="border-b border-border last:border-0">{children}</tr>
-  )
+  return <tr className="border-b border-border last:border-0">{children}</tr>
 }
 
 export function DataTableTd({
@@ -61,8 +66,11 @@ export function DataTableTd({
   align?: 'left' | 'center' | 'right'
   className?: string
 }) {
-  const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left'
-  return (
-    <td className={`px-4 py-3 ${alignClass} ${className}`}>{children}</td>
-  )
+  const alignClass =
+    align === 'center'
+      ? 'text-center'
+      : align === 'right'
+        ? 'text-right'
+        : 'text-left'
+  return <td className={`px-4 py-3 ${alignClass} ${className}`}>{children}</td>
 }

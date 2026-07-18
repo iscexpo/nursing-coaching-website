@@ -8,7 +8,9 @@
 import { z } from 'zod/v3'
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   BETTER_AUTH_SECRET: z
     .string()
@@ -31,7 +33,9 @@ if (!parsed.success) {
   for (const issue of parsed.error.issues) {
     console.error(`  ${issue.path.join('.') || '(root)'}: ${issue.message}`)
   }
-  console.error('\nCopy .env.example to .env and fill in the required values.\n')
+  console.error(
+    '\nCopy .env.example to .env and fill in the required values.\n',
+  )
   process.exit(1)
 }
 

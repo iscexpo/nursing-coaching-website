@@ -26,7 +26,15 @@ export function TeachersPanel({
   })
 
   function resetForm() {
-    setForm({ name: '', designation: '', subject: '', phone: '', email: '', bio: '', image: '' })
+    setForm({
+      name: '',
+      designation: '',
+      subject: '',
+      phone: '',
+      email: '',
+      bio: '',
+      image: '',
+    })
     setFormError('')
   }
 
@@ -57,7 +65,11 @@ export function TeachersPanel({
         resetForm()
       } else {
         const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
-        setFormError(err.details ? Object.values(err.details).flat().join(', ') : err.error || 'সংরক্ষণ ব্যর্থ')
+        setFormError(
+          err.details
+            ? Object.values(err.details).flat().join(', ')
+            : err.error || 'সংরক্ষণ ব্যর্থ',
+        )
       }
     } catch (error) {
       setFormError('সংরক্ষণ ব্যর্থ')
@@ -103,9 +115,15 @@ export function TeachersPanel({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-heading text-lg font-bold text-foreground">শিক্ষক ব্যবস্থাপনা</h3>
+        <h3 className="font-heading text-lg font-bold text-foreground">
+          শিক্ষক ব্যবস্থাপনা
+        </h3>
         <button
-          onClick={() => { setShowForm(true); setEditing(null); resetForm() }}
+          onClick={() => {
+            setShowForm(true)
+            setEditing(null)
+            resetForm()
+          }}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
@@ -119,53 +137,122 @@ export function TeachersPanel({
             <h4 className="font-heading font-semibold text-foreground">
               {editing ? 'শিক্ষক সম্পাদনা' : 'নতুন শিক্ষক যোগ'}
             </h4>
-            <button onClick={() => { setShowForm(false); setEditing(null) }} className="text-muted-foreground hover:text-foreground">
+            <button
+              onClick={() => {
+                setShowForm(false)
+                setEditing(null)
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <X className="size-5" />
             </button>
           </div>
           <div className="space-y-3">
             {formError && (
-              <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{formError}</div>
+              <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {formError}
+              </div>
             )}
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-foreground">নাম</label>
-                <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="যেমন: জনাব রহমান"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                <label className="block text-sm font-medium text-foreground">
+                  নাম
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="যেমন: জনাব রহমান"
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground">পদবি</label>
-                <input type="text" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} placeholder="যেমন: সিনিয়র লেকচারার"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                <label className="block text-sm font-medium text-foreground">
+                  পদবি
+                </label>
+                <input
+                  type="text"
+                  value={form.designation}
+                  onChange={(e) =>
+                    setForm({ ...form, designation: e.target.value })
+                  }
+                  placeholder="যেমন: সিনিয়র লেকচারার"
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground">বিষয়</label>
-                <input type="text" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder="যেমন: জীববিজ্ঞান"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                <label className="block text-sm font-medium text-foreground">
+                  বিষয়
+                </label>
+                <input
+                  type="text"
+                  value={form.subject}
+                  onChange={(e) =>
+                    setForm({ ...form, subject: e.target.value })
+                  }
+                  placeholder="যেমন: জীববিজ্ঞান"
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground">ফোন</label>
-                <input type="text" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="01XXXXXXXXX"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                <label className="block text-sm font-medium text-foreground">
+                  ফোন
+                </label>
+                <input
+                  type="text"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  placeholder="01XXXXXXXXX"
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground">ইমেইল</label>
-                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="teacher@example.com"
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                <label className="block text-sm font-medium text-foreground">
+                  ইমেইল
+                </label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="teacher@example.com"
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground">ছবি (URL)</label>
-                <input type="text" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://..."
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+                <label className="block text-sm font-medium text-foreground">
+                  ছবি (URL)
+                </label>
+                <input
+                  type="text"
+                  value={form.image}
+                  onChange={(e) => setForm({ ...form, image: e.target.value })}
+                  placeholder="https://..."
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground">বিবরণ</label>
-              <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={3} placeholder="শিক্ষকের সংক্ষিপ্ত পরিচিতি"
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
+              <label className="block text-sm font-medium text-foreground">
+                বিবরণ
+              </label>
+              <textarea
+                value={form.bio}
+                onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                rows={3}
+                placeholder="শিক্ষকের সংক্ষিপ্ত পরিচিতি"
+                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+              />
             </div>
-            <button onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50">
-              {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50"
+            >
+              {saving ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Save className="size-4" />
+              )}
               {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
             </button>
           </div>
@@ -177,32 +264,62 @@ export function TeachersPanel({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
-                <th className="px-4 py-3 text-left font-semibold text-foreground">নাম</th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">পদবি</th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">বিষয়</th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">ফোন</th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">অবস্থা</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground">
+                  নাম
+                </th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground">
+                  পদবি
+                </th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground">
+                  বিষয়
+                </th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground">
+                  ফোন
+                </th>
+                <th className="px-4 py-3 text-center font-semibold text-foreground">
+                  অবস্থা
+                </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
               </tr>
             </thead>
             <tbody>
               {teachers.map((t) => (
-                <tr key={t.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
-                  <td className="px-4 py-3 font-medium text-foreground">{t.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{t.designation || '—'}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{t.subject || '—'}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{t.phone || '—'}</td>
+                <tr
+                  key={t.id}
+                  className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
+                >
+                  <td className="px-4 py-3 font-medium text-foreground">
+                    {t.name}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {t.designation || '—'}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {t.subject || '—'}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {t.phone || '—'}
+                  </td>
                   <td className="px-4 py-3 text-center">
-                    <button onClick={() => toggleActive(t)} className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${t.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}>
+                    <button
+                      onClick={() => toggleActive(t)}
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${t.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
+                    >
                       {t.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
                     </button>
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-1">
-                      <button onClick={() => handleEdit(t)} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground">
+                      <button
+                        onClick={() => handleEdit(t)}
+                        className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                      >
                         <Pencil className="size-4" />
                       </button>
-                      <button onClick={() => handleDelete(t.id)} className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                      <button
+                        onClick={() => handleDelete(t.id)}
+                        className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      >
                         <Trash2 className="size-4" />
                       </button>
                     </div>

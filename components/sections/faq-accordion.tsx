@@ -21,7 +21,9 @@ export function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
             <div
               className={cn(
                 'overflow-hidden rounded-2xl border bg-card transition-all duration-300',
-                isOpen ? 'border-brand/30 shadow-md shadow-brand/5' : 'border-border',
+                isOpen
+                  ? 'border-brand/30 shadow-md shadow-brand/5'
+                  : 'border-border',
               )}
             >
               <button
@@ -37,10 +39,16 @@ export function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
                 <span
                   className={cn(
                     'flex size-7 shrink-0 items-center justify-center rounded-full transition-all duration-300',
-                    isOpen ? 'bg-brand text-brand-foreground scale-110' : 'bg-secondary text-brand',
+                    isOpen
+                      ? 'bg-brand text-brand-foreground scale-110'
+                      : 'bg-secondary text-brand',
                   )}
                 >
-                  {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
+                  {isOpen ? (
+                    <Minus className="size-4" />
+                  ) : (
+                    <Plus className="size-4" />
+                  )}
                 </span>
               </button>
               <div

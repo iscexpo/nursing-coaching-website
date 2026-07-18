@@ -7,7 +7,15 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
-import { GraduationCap, Phone, Mail, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react'
+import {
+  GraduationCap,
+  Phone,
+  Mail,
+  ArrowRight,
+  Loader2,
+  Eye,
+  EyeOff,
+} from 'lucide-react'
 
 type LoginMode = 'phone' | 'email'
 
@@ -98,17 +106,32 @@ export default function SignInPage() {
       {/* Left branding panel */}
       <div className="relative hidden w-1/2 items-center justify-center bg-brand lg:flex">
         <div className="absolute inset-0 opacity-10">
-          <Image src="/images/classroom.png" alt="" fill className="object-cover" />
+          <Image
+            src="/images/classroom.png"
+            alt=""
+            fill
+            className="object-cover"
+          />
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-brand via-brand/90 to-brand/70" />
         <div className="relative z-10 max-w-md px-8 text-brand-foreground animate-fade-in-up">
           <div className="flex items-center gap-3 mb-8">
-            <Image src="/logo.png" alt="ISC Expo - Icon Skill & Career Expo" width={48} height={30} className="object-contain" />
-            <span className="font-heading text-2xl font-bold">{site.nameBn}</span>
+            <Image
+              src="/logo.png"
+              alt="ISC Expo - Icon Skill & Career Expo"
+              width={48}
+              height={30}
+              className="object-contain"
+            />
+            <span className="font-heading text-2xl font-bold">
+              {site.nameBn}
+            </span>
           </div>
           <h2 className="font-heading text-3xl font-extrabold leading-tight">
             {t('tagline')}
-            <span className="mt-1 block text-gold">{t('taglineHighlight')}</span>
+            <span className="mt-1 block text-gold">
+              {t('taglineHighlight')}
+            </span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
             {t('taglineDescription')}
@@ -116,11 +139,15 @@ export default function SignInPage() {
           <div className="mt-10 grid grid-cols-3 gap-4 text-center">
             <div className="rounded-2xl bg-brand-foreground/10 p-4 backdrop-blur-sm">
               <p className="font-heading text-2xl font-bold text-gold">৯৫%</p>
-              <p className="mt-1 text-xs text-brand-foreground/70">{tc('success')}</p>
+              <p className="mt-1 text-xs text-brand-foreground/70">
+                {tc('success')}
+              </p>
             </div>
             <div className="rounded-2xl bg-brand-foreground/10 p-4 backdrop-blur-sm">
               <p className="font-heading text-2xl font-bold text-gold">৫০০০+</p>
-              <p className="mt-1 text-xs text-brand-foreground/70">{tc('teachers')}</p>
+              <p className="mt-1 text-xs text-brand-foreground/70">
+                {tc('teachers')}
+              </p>
             </div>
             <div className="rounded-2xl bg-brand-foreground/10 p-4 backdrop-blur-sm">
               <p className="font-heading text-2xl font-bold text-gold">১০+</p>
@@ -132,11 +159,25 @@ export default function SignInPage() {
 
       {/* Right form panel */}
       <div className="flex w-full items-center justify-center bg-background px-4 sm:px-8 lg:w-1/2">
-        <div className="w-full max-w-md space-y-8 animate-fade-in-up" style={{ animationDuration: '600ms' }}>
+        <div
+          className="w-full max-w-md space-y-8 animate-fade-in-up"
+          style={{ animationDuration: '600ms' }}
+        >
           <div>
-            <Link href="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
-              <Image src="/logo.png" alt="ISC Expo - Icon Skill & Career Expo" width={36} height={22} className="object-contain" />
-              <span className="font-heading text-lg font-bold text-foreground">{site.nameBn}</span>
+            <Link
+              href="/"
+              className="mb-8 inline-flex items-center gap-2 lg:hidden"
+            >
+              <Image
+                src="/logo.png"
+                alt="ISC Expo - Icon Skill & Career Expo"
+                width={36}
+                height={22}
+                className="object-contain"
+              />
+              <span className="font-heading text-lg font-bold text-foreground">
+                {site.nameBn}
+              </span>
             </Link>
             <h1 className="font-heading text-2xl font-bold text-foreground">
               {t('title')}
@@ -149,7 +190,10 @@ export default function SignInPage() {
           <div className="flex rounded-xl border border-border bg-muted p-1">
             <button
               type="button"
-              onClick={() => { setMode('phone'); setError('') }}
+              onClick={() => {
+                setMode('phone')
+                setError('')
+              }}
               suppressHydrationWarning
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 resolvedMode === 'phone'
@@ -162,7 +206,10 @@ export default function SignInPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setMode('email'); setError('') }}
+              onClick={() => {
+                setMode('email')
+                setError('')
+              }}
               suppressHydrationWarning
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 resolvedMode === 'email'
@@ -184,7 +231,10 @@ export default function SignInPage() {
           {resolvedMode === 'phone' && (
             <form onSubmit={handlePhoneSubmit} className="space-y-4">
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-foreground"
+                >
                   {t('phoneLabel')}
                 </label>
                 <input
@@ -200,7 +250,10 @@ export default function SignInPage() {
               </div>
 
               <div>
-                <label htmlFor="phone-password" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="phone-password"
+                  className="block text-sm font-medium text-foreground"
+                >
                   {t('passwordLabel')}
                 </label>
                 <div className="relative">
@@ -220,7 +273,11 @@ export default function SignInPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     tabIndex={-1}
                   >
-                    {showPhonePassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    {showPhonePassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -234,7 +291,9 @@ export default function SignInPage() {
                 {loading ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  <>{t('submit')} <ArrowRight className="size-4" /></>
+                  <>
+                    {t('submit')} <ArrowRight className="size-4" />
+                  </>
                 )}
               </button>
             </form>
@@ -243,7 +302,10 @@ export default function SignInPage() {
           {resolvedMode === 'email' && (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-foreground"
+                >
                   {t('emailLabel')}
                 </label>
                 <input
@@ -259,7 +321,10 @@ export default function SignInPage() {
               </div>
 
               <div>
-                <label htmlFor="email-password" className="block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email-password"
+                  className="block text-sm font-medium text-foreground"
+                >
                   {t('passwordLabel')}
                 </label>
                 <div className="relative">
@@ -279,7 +344,11 @@ export default function SignInPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     tabIndex={-1}
                   >
-                    {showEmailPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    {showEmailPassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -293,7 +362,9 @@ export default function SignInPage() {
                 {loading ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  <>{t('submit')} <ArrowRight className="size-4" /></>
+                  <>
+                    {t('submit')} <ArrowRight className="size-4" />
+                  </>
                 )}
               </button>
             </form>
@@ -301,7 +372,10 @@ export default function SignInPage() {
 
           <p className="text-center text-sm text-muted-foreground">
             {t('noAccount')}{' '}
-            <Link href="/auth/sign-up" className="font-medium text-brand hover:underline">
+            <Link
+              href="/auth/sign-up"
+              className="font-medium text-brand hover:underline"
+            >
               {t('signUpLink')}
             </Link>
           </p>

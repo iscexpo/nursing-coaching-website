@@ -5,22 +5,47 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { SITE } from '@/lib/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
-import { CalendarDays, Clock, Users, FileCheck, BookOpen, Play, Filter } from 'lucide-react'
+import {
+  CalendarDays,
+  Clock,
+  Users,
+  FileCheck,
+  BookOpen,
+  Play,
+  Filter,
+} from 'lucide-react'
 import { FadeIn } from '@/components/ui/fade-in'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'মডেল টেস্ট | ISC Expo - Icon Skill & Career Expo',
-  description: 'ISC Expo - Icon Skill & Career Expo-এর সাপ্তাহিক মডেল টেস্টে অংশ নিন। BNMC ভর্তি পরীক্ষার প্রস্তুতি নিন।',
+  description:
+    'ISC Expo - Icon Skill & Career Expo-এর সাপ্তাহিক মডেল টেস্টে অংশ নিন। BNMC ভর্তি পরীক্ষার প্রস্তুতি নিন।',
   alternates: { canonical: '/model-test' },
 }
 
 const FEATURES = [
-  { icon: FileCheck, label: 'MCQ ভিত্তিক পরীক্ষা', desc: 'BNMC প্যাটার্ন অনুযায়ী প্রশ্ন' },
-  { icon: Clock, label: 'টাইমড পরীক্ষা', desc: 'বাস্তব পরীক্ষার পরিবেশে পরীক্ষা' },
-  { icon: Users, label: 'তাৎক্ষণিক ফলাফল', desc: 'সাবমিট করার সাথে সাথে ফলাফল' },
-  { icon: CalendarDays, label: 'সাপ্তাহিক আপডেট', desc: 'নিয়মিত নতুন পরীক্ষা যোগ হয়' },
+  {
+    icon: FileCheck,
+    label: 'MCQ ভিত্তিক পরীক্ষা',
+    desc: 'BNMC প্যাটার্ন অনুযায়ী প্রশ্ন',
+  },
+  {
+    icon: Clock,
+    label: 'টাইমড পরীক্ষা',
+    desc: 'বাস্তব পরীক্ষার পরিবেশে পরীক্ষা',
+  },
+  {
+    icon: Users,
+    label: 'তাৎক্ষণিক ফলাফল',
+    desc: 'সাবমিট করার সাথে সাথে ফলাফল',
+  },
+  {
+    icon: CalendarDays,
+    label: 'সাপ্তাহিক আপডেট',
+    desc: 'নিয়মিত নতুন পরীক্ষা যোগ হয়',
+  },
 ]
 
 const DIFFICULTY_LABEL: Record<string, { label: string; cls: string }> = {
@@ -60,7 +85,15 @@ async function getExams(): Promise<ExamRow[]> {
       .from(exams)
       .leftJoin(questions, eq(exams.id, questions.examId))
       .where(eq(exams.isActive, true))
-      .groupBy(exams.id, exams.title, exams.subject, exams.duration, exams.difficulty, exams.isActive, exams.createdAt)
+      .groupBy(
+        exams.id,
+        exams.title,
+        exams.subject,
+        exams.duration,
+        exams.difficulty,
+        exams.isActive,
+        exams.createdAt,
+      )
       .orderBy(desc(exams.createdAt))
 
     return data
@@ -99,9 +132,14 @@ export default async function ModelTestPage() {
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {FEATURES.map((f) => (
-                <div key={f.label} className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <div
+                  key={f.label}
+                  className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+                >
                   <f.icon className="size-8 text-brand" />
-                  <h3 className="mt-3 font-heading font-semibold text-foreground">{f.label}</h3>
+                  <h3 className="mt-3 font-heading font-semibold text-foreground">
+                    {f.label}
+                  </h3>
                   <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
                 </div>
               ))}
@@ -124,7 +162,8 @@ export default async function ModelTestPage() {
                     কোনো পরীক্ষা পাওয়া যায়নি
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    শীঘ্রই নতুন পরীক্ষা যোগ করা হবে। আমাদের WhatsApp-এ যোগাযোগ করুন।
+                    শীঘ্রই নতুন পরীক্ষা যোগ করা হবে। আমাদের WhatsApp-এ যোগাযোগ
+                    করুন।
                   </p>
                   <a
                     href={SITE.whatsapp}
@@ -145,11 +184,15 @@ export default async function ModelTestPage() {
                         <span className="rounded-full bg-brand/10 px-3 py-1 text-sm font-bold text-brand">
                           {group.subject}
                         </span>
-                        <span className="text-xs text-muted-foreground">{group.exams.length} টি পরীক্ষা</span>
+                        <span className="text-xs text-muted-foreground">
+                          {group.exams.length} টি পরীক্ষা
+                        </span>
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {group.exams.map((exam) => {
-                          const diff = DIFFICULTY_LABEL[exam.difficulty] || DIFFICULTY_LABEL.medium
+                          const diff =
+                            DIFFICULTY_LABEL[exam.difficulty] ||
+                            DIFFICULTY_LABEL.medium
                           return (
                             <div
                               key={exam.id}
@@ -159,7 +202,9 @@ export default async function ModelTestPage() {
                                 <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10">
                                   <BookOpen className="size-5 text-brand" />
                                 </div>
-                                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${diff.cls}`}>
+                                <span
+                                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${diff.cls}`}
+                                >
                                   {diff.label}
                                 </span>
                               </div>
@@ -202,7 +247,8 @@ export default async function ModelTestPage() {
               মডেল টেস্টে যোগ দিন
             </h2>
             <p className="mt-3 text-muted-foreground">
-              মডেল টেস্টে অংশ নিতে আমাদের অফিসে এসে নিবন্ধন করুন অথবা WhatsApp-এ যোগাযোগ করুন।
+              মডেল টেস্টে অংশ নিতে আমাদের অফিসে এসে নিবন্ধন করুন অথবা WhatsApp-এ
+              যোগাযোগ করুন।
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
               <a

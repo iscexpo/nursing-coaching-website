@@ -77,7 +77,7 @@ function allPermissions(): Permission[] {
       ...TEACHER_PERMISSIONS,
       ...STUDENT_PERMISSIONS,
       'settings.manage',
-    ])
+    ]),
   )
 }
 
@@ -88,14 +88,19 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   student: STUDENT_PERMISSIONS,
 }
 
-export function getPermissionsForRole(role: string | undefined | null): Permission[] {
+export function getPermissionsForRole(
+  role: string | undefined | null,
+): Permission[] {
   if (role === 'super-admin') return ROLE_PERMISSIONS['super-admin']
   if (role === 'admin') return ROLE_PERMISSIONS.admin
   if (role === 'teacher') return ROLE_PERMISSIONS.teacher
   return ROLE_PERMISSIONS.student
 }
 
-export function hasPermission(permissions: Permission[], permission: Permission): boolean {
+export function hasPermission(
+  permissions: Permission[],
+  permission: Permission,
+): boolean {
   return permissions.includes(permission)
 }
 
@@ -110,12 +115,18 @@ export type AuthResult =
 async function authorize(permission?: Permission): Promise<AuthResult> {
   const session = await getSession()
   if (!session) {
-    return { ok: false, response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
+    return {
+      ok: false,
+      response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+    }
   }
 
   const permissions = getSessionPermissions(session)
   if (permission && !hasPermission(permissions, permission)) {
-    return { ok: false, response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+    return {
+      ok: false,
+      response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }),
+    }
   }
 
   return { ok: true, session, permissions }
@@ -132,4 +143,3 @@ export function requireSuperAdmin(): Promise<AuthResult> {
 export function requirePermission(permission: Permission): Promise<AuthResult> {
   return authorize(permission)
 }
-

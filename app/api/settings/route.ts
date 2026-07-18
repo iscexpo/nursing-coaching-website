@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession, requireAdmin, requireSuperAdmin, isSuperAdmin } from '@/lib/permissions'
+import {
+  getSession,
+  requireAdmin,
+  requireSuperAdmin,
+  isSuperAdmin,
+} from '@/lib/permissions'
 import { getSystemSettings, saveSystemSettings } from '@/lib/settings'
 import { settingsSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
@@ -25,17 +30,28 @@ export async function GET() {
       smsPassword: settings.smsPassword ? MASK : '',
       paymentGatewayApiKey: settings.paymentGatewayApiKey ? MASK : '',
       paymentGatewaySecret: settings.paymentGatewaySecret ? MASK : '',
-      paymentGatewayWebhookSecret: settings.paymentGatewayWebhookSecret ? MASK : '',
+      paymentGatewayWebhookSecret: settings.paymentGatewayWebhookSecret
+        ? MASK
+        : '',
     })
   } catch {
-    return NextResponse.json({ error: 'Failed to load settings' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to load settings' },
+      { status: 500 },
+    )
   }
 }
 
-function maskSensitiveFields(data: Record<string, unknown>): Record<string, unknown> {
+function maskSensitiveFields(
+  data: Record<string, unknown>,
+): Record<string, unknown> {
   const sensitiveKeys = [
-    'smsApiKey', 'smsPassword', 'smsEmail',
-    'paymentGatewayApiKey', 'paymentGatewaySecret', 'paymentGatewayWebhookSecret',
+    'smsApiKey',
+    'smsPassword',
+    'smsEmail',
+    'paymentGatewayApiKey',
+    'paymentGatewaySecret',
+    'paymentGatewayWebhookSecret',
   ]
   const masked: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(data)) {
@@ -49,19 +65,27 @@ function maskSensitiveFields(data: Record<string, unknown>): Record<string, unkn
 }
 
 export async function PUT(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 10, prefix: 'settings.update' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 10,
+    prefix: 'settings.update',
+  })
   if (limiter) return limiter
 
   try {
     const session = await getSession()
     const auth = await requireSuperAdmin()
     if (!auth.ok) return auth.response
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
     const parsed = settingsSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      )
     }
 
     const updated = await saveSystemSettings(parsed.data)
@@ -74,12 +98,17 @@ export async function PUT(request: NextRequest) {
           details: maskSensitiveFields(parsed.data as Record<string, unknown>),
         },
         session,
-        request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined
-      )
+        request.headers.get('x-forwarded-for') ??
+          request.headers.get('x-real-ip') ??
+          undefined,
+      ),
     )
 
     return NextResponse.json(updated)
   } catch {
-    return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to update settings' },
+      { status: 500 },
+    )
   }
 }

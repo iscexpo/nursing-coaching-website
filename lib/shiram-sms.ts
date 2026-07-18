@@ -1,4 +1,6 @@
-const SHIRAM_SMS_API_BASE = process.env.SHIRAM_SMS_API_BASE_URL || 'https://smsapi.shiramsystem.com/user_api/'
+const SHIRAM_SMS_API_BASE =
+  process.env.SHIRAM_SMS_API_BASE_URL ||
+  'https://smsapi.shiramsystem.com/user_api/'
 
 export type ShiramSmsConfig = {
   email: string
@@ -76,7 +78,10 @@ async function sendSingleSms(
       phone,
       success,
       messageId,
-      error: success ? undefined : (String(parsed.message || 'Send failed') + ` (code: ${parsed.error_code})`),
+      error: success
+        ? undefined
+        : String(parsed.message || 'Send failed') +
+          ` (code: ${parsed.error_code})`,
     }
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error'
@@ -84,7 +89,9 @@ async function sendSingleSms(
   }
 }
 
-export async function sendBulkSms(options: ShiramSmsSendOptions): Promise<ShiramSmsBulkResult> {
+export async function sendBulkSms(
+  options: ShiramSmsSendOptions,
+): Promise<ShiramSmsBulkResult> {
   const { config, phoneNumbers, message } = options
   const results: ShiramSmsSingleResult[] = []
   const BATCH_SIZE = 100
@@ -128,7 +135,9 @@ export async function sendBulkSms(options: ShiramSmsSendOptions): Promise<Shiram
           })
         }
       } else {
-        const errorMsg = String(parsed.message || 'Batch send failed') + ` (code: ${parsed.error_code})`
+        const errorMsg =
+          String(parsed.message || 'Batch send failed') +
+          ` (code: ${parsed.error_code})`
         for (const phone of batch) {
           results.push({ phone, success: false, error: errorMsg })
         }
@@ -147,7 +156,9 @@ export async function sendBulkSms(options: ShiramSmsSendOptions): Promise<Shiram
   return { totalSent, totalFailed, results }
 }
 
-export async function checkBalance(config: ShiramSmsConfig): Promise<{ balance: number | null; error?: string }> {
+export async function checkBalance(
+  config: ShiramSmsConfig,
+): Promise<{ balance: number | null; error?: string }> {
   try {
     const data = await postForm({
       email: config.email,
@@ -162,7 +173,10 @@ export async function checkBalance(config: ShiramSmsConfig): Promise<{ balance: 
       }
     }
 
-    return { balance: null, error: String(parsed.message || 'Balance check failed') }
+    return {
+      balance: null,
+      error: String(parsed.message || 'Balance check failed'),
+    }
   } catch (error) {
     return {
       balance: null,

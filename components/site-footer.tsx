@@ -33,8 +33,16 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <Link href="/" className="flex items-center gap-2.5">
-            <img src={site.logo || '/logo.png'} alt={site.nameBn} width={36} height={22} className="object-contain" />
-            <span className="font-heading text-base font-bold">{site.nameBn}</span>
+            <img
+              src={site.logo || '/logo.png'}
+              alt={site.nameBn}
+              width={36}
+              height={22}
+              className="object-contain"
+            />
+            <span className="font-heading text-base font-bold">
+              {site.nameBn}
+            </span>
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-background/70">
             {tf('description')}
@@ -62,7 +70,10 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-2.5">
             {QUICK.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="text-sm text-background/80 hover:text-background">
+                <Link
+                  href={l.href}
+                  className="text-sm text-background/80 hover:text-background"
+                >
                   {l.label}
                 </Link>
               </li>
@@ -77,7 +88,10 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-2.5">
             {POLICIES.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="text-sm text-background/80 hover:text-background">
+                <Link
+                  href={l.href}
+                  className="text-sm text-background/80 hover:text-background"
+                >
                   {l.label}
                 </Link>
               </li>
@@ -106,7 +120,8 @@ export function SiteFooter() {
 
       <div className="border-t border-background/10">
         <div className="mx-auto max-w-7xl px-4 py-5 text-center text-xs text-background/60">
-          © {new Date().getFullYear()} {site.nameBn}, {site.city}. {t('allRightsReserved')}.
+          © {new Date().getFullYear()} {site.nameBn}, {site.city}.{' '}
+          {t('allRightsReserved')}.
         </div>
       </div>
     </footer>
