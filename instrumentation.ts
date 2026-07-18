@@ -5,7 +5,7 @@ export async function register() {
   const { validateEnv } = await import('@/lib/env')
   validateEnv()
 
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== 'test' && process.env.NEXT_PHASE !== 'test') {
     const { assertDatabaseReady } = await import('@/lib/db/health')
     await assertDatabaseReady()
   }
