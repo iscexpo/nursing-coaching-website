@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { Plus, Pencil, X, Loader2, Search, Ban, Check } from 'lucide-react'
 import { EnrollmentStatusBadge } from '@/components/ui/badges'
 import type { Enrollment, Course, Student } from './types'
+import { useToast } from '@/components/ui/toast'
 
 const inputCls =
   'mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand'
@@ -68,6 +69,7 @@ export function EnrollmentsPanel({
   const [editSaving, setEditSaving] = useState(false)
   const [editError, setEditError] = useState('')
 
+  const { success, error, confirm } = useToast()
   const [cancelling, setCancelling] = useState<string | null>(null)
 
   const activeCourses = courses.filter((c) => c.isActive)
@@ -240,17 +242,19 @@ export function EnrollmentsPanel({
   }
 
   async function handleCancel(id: string) {
-    if (!confirm('আপনি কি নিশ্চিত এই এনরোলমেন্ট বাতিল করতে চান?')) return
+    if (!(await confirm('আপনি কি নিশ্চিত এই এনরোলমেন্ট বাতিল করতে চান?'))) return
     setCancelling(id)
     try {
       const res = await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
-      if (res.ok) onRefresh()
-      else {
+      if (res.ok) {
+        onRefresh()
+        success('এনরোলমেন্ট বাতিল করা হয়েছে')
+      } else {
         const err = await res.json().catch(() => ({}))
-        alert(err.error || 'বাতিল ব্যর্থ')
+        error(err.error || 'বাতিল ব্যর্থ')
       }
     } catch {
-      alert('বাতিল ব্যর্থ')
+      error('বাতিল ব্যর্থ')
     } finally {
       setCancelling(null)
     }

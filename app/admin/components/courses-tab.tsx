@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
 import type { Course } from './types'
+import { useToast } from '@/components/ui/toast'
 
 function resizeImage(
   file: File,
@@ -47,6 +48,7 @@ export function CoursesPanel({
   const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { success, error, confirm } = useToast()
   const [form, setForm] = useState({
     slug: '',
     courseCode: '',
@@ -144,29 +146,32 @@ export function CoursesPanel({
         setShowForm(false)
         setEditing(null)
         resetForm()
-      } else {
+        success(editing ? 'কোর্স আপডেট করা হয়েছে' : 'নতুন কোর্স যোগ করা হয়েছে')
+      }       else {
         const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
-        setFormError(
-          err.details
-            ? Object.values(err.details).flat().join(', ')
-            : err.error || 'সংরক্ষণ ব্যর্থ',
-        )
+        const msg = err.details
+          ? Object.values(err.details).flat().join(', ')
+          : err.error || 'সংরক্ষণ ব্যর্থ'
+        setFormError(msg)
+        error(msg)
       }
-    } catch (error) {
+    } catch (saveError) {
       setFormError('সংরক্ষণ ব্যর্থ')
-      console.error('Failed to save course:', error)
+      error('সংরক্ষণ ব্যর্থ')
+      console.error('Failed to save course:', saveError)
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('আপনি কি নিশ্চিত এই কোর্স মুছে ফেলতে চান?')) return
+    if (!(await confirm('আপনি কি নিশ্চিত এই কোর্স মুছে ফেলতে চান?'))) return
     try {
       await fetch(`/api/courses/${id}`, { method: 'DELETE' })
       onRefresh()
-    } catch (error) {
-      console.error('Failed to delete course:', error)
+      success('কোর্স মুছে ফেলা হয়েছে')
+    } catch (deleteError) {
+      console.error('Failed to delete course:', deleteError)
     }
   }
 

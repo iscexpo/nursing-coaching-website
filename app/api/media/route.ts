@@ -7,14 +7,12 @@ import { mediaFiles } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { requireAdmin } from '@/lib/permissions'
 import { rateLimit } from '@/lib/rate-limit'
+import {
+  hasAllowedExtension,
+  isAllowedMime,
+  matchesSignature,
+} from '@/lib/media-validation'
 
-const ALLOWED_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-  'application/pdf',
-]
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
 const uploadDir = join(process.cwd(), 'public', 'media')
 
@@ -73,7 +71,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    if (!isAllowedMime(file.type)) {
       return NextResponse.json(
         {
           error:
@@ -90,13 +88,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const buffer = Buffer.from(await file.arrayBuffer())
+
+    if (!hasAllowedExtension(file.name, file.type)) {
+      return NextResponse.json(
+        { error: 'File extension does not match the declared type.' },
+        { status: 400 },
+      )
+    }
+
+    if (!matchesSignature(buffer, file.type)) {
+      return NextResponse.json(
+        {
+          error:
+            'File content does not match the declared type. Upload rejected.',
+        },
+        { status: 400 },
+      )
+    }
+
     const originalFilename = file.name
     const extension = extname(originalFilename) || ''
     const savedFilename = `${crypto.randomUUID()}${extension}`
     const filePath = join(uploadDir, savedFilename)
 
     await mkdir(uploadDir, { recursive: true })
-    const buffer = Buffer.from(await file.arrayBuffer())
     await writeFile(filePath, buffer)
 
     const [media] = await db

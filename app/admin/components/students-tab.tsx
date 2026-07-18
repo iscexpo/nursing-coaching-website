@@ -13,6 +13,7 @@ import {
   Key,
 } from 'lucide-react'
 import type { Student } from './types'
+import { useToast } from '@/components/ui/toast'
 
 function resizeImage(
   file: File,
@@ -378,6 +379,7 @@ export function StudentsPanel({
   const [newPassword, setNewPassword] = useState('')
   const [resetError, setResetError] = useState('')
   const [resetSaving, setResetSaving] = useState(false)
+  const { success, error, confirm } = useToast()
 
   function handleEdit(s: Student) {
     setEditing(s)
@@ -463,13 +465,14 @@ export function StudentsPanel({
         setShowForm(false)
         setEditing(null)
         setForm(emptyForm())
+        success(editing ? 'শিক্ষার্থী আপডেট করা হয়েছে' : 'নতুন শিক্ষার্থী যোগ করা হয়েছে')
       } else {
         const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
-        setFormError(
-          err.details
-            ? Object.values(err.details).flat().join(', ')
-            : err.error || 'সংরক্ষণ ব্যর্থ',
-        )
+        const msg = err.details
+          ? Object.values(err.details).flat().join(', ')
+          : err.error || 'সংরক্ষণ ব্যর্থ'
+        setFormError(msg)
+        error(msg)
       }
     } catch {
       setFormError('সংরক্ষণ ব্যর্থ')
@@ -479,12 +482,15 @@ export function StudentsPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('আপনি কি নিশ্চিত এই শিক্ষার্থী মুছে ফেলতে চান?')) return
+    const ok = await confirm('আপনি কি নিশ্চিত এই শিক্ষার্থী মুছে ফেলতে চান?')
+    if (!ok) return
     const res = await fetch(`/api/students/${id}`, { method: 'DELETE' })
-    if (res.ok) onRefresh()
-    else {
+    if (res.ok) {
+      onRefresh()
+      success('শিক্ষার্থী মুছে ফেলা হয়েছে')
+    } else {
       const err = await res.json().catch(() => ({}))
-      alert(err.error || 'মুছে ফেলা ব্যর্থ')
+      error(err.error || 'মুছে ফেলা ব্যর্থ')
     }
   }
 

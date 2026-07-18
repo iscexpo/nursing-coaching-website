@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Phone, Trash2, Loader2, FileText } from 'lucide-react'
 import type { ModelTestApplicant, ModelTestApplicantStatus } from './types'
+import { useToast } from '@/components/ui/toast'
 
 const STATUS_OPTIONS: ModelTestApplicantStatus[] = [
   'pending',
@@ -32,6 +33,7 @@ export function ModelTestApplicantsPanel({
   applicants: ModelTestApplicant[]
   onRefresh: () => void
 }) {
+  const { success, error, confirm } = useToast()
   const [processing, setProcessing] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
 
@@ -44,21 +46,23 @@ export function ModelTestApplicantsPanel({
         body: JSON.stringify({ status }),
       })
       onRefresh()
-    } catch (error) {
-      console.error('Failed to update applicant:', error)
+      success('আবেদনের অবস্থা আপডেট করা হয়েছে')
+    } catch (updateError) {
+      console.error('Failed to update applicant:', updateError)
     } finally {
       setProcessing(null)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('আবেদনটি মুছে ফেলতে চান?')) return
+    if (!(await confirm('আবেদনটি মুছে ফেলতে চান?'))) return
     setProcessing(id)
     try {
       await fetch(`/api/model-test-applicants/${id}`, { method: 'DELETE' })
       onRefresh()
-    } catch (error) {
-      console.error('Failed to delete applicant:', error)
+      success('আবেদন মুছে ফেলা হয়েছে')
+    } catch (deleteError) {
+      console.error('Failed to delete applicant:', deleteError)
     } finally {
       setProcessing(null)
     }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, Loader2, Image, FileText } from 'lucide-react'
 import type { MediaFile } from './types'
+import { useToast } from '@/components/ui/toast'
 
 export function MediaPanel({
   mediaFiles,
@@ -11,6 +12,7 @@ export function MediaPanel({
   mediaFiles: MediaFile[]
   onRefresh: () => void
 }) {
+  const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast()
   const [file, setFile] = useState<File | null>(null)
   const [altText, setAltText] = useState('')
   const [description, setDescription] = useState('')
@@ -62,7 +64,7 @@ export function MediaPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('আপনি কি নিশ্চিত যে এই মিডিয়া ফাইল মুছতে চান?')) return
+    if (!(await toastConfirm('আপনি কি নিশ্চিত যে এই মিডিয়া ফাইল মুছতে চান?'))) return
 
     try {
       const response = await fetch(`/api/media/${id}`, { method: 'DELETE' })
@@ -73,13 +75,14 @@ export function MediaPanel({
         throw new Error(result.error || 'মুছা যায়নি')
       }
       onRefresh()
+      toastSuccess('মিডিয়া ফাইল মুছে ফেলা হয়েছে')
     } catch (deleteError) {
       console.error('Delete failed:', deleteError)
-      setError(
-        deleteError instanceof Error
-          ? deleteError.message
-          : 'মুছতে ব্যর্থ হয়েছে',
-      )
+      const msg = deleteError instanceof Error
+        ? deleteError.message
+        : 'মুছতে ব্যর্থ হয়েছে'
+      setError(msg)
+      toastError(msg)
     }
   }
 

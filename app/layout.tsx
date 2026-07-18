@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { Hind_Siliguri, Poppins } from 'next/font/google'
 import messages from '../messages/bn.json'
+import { ToastProvider } from '@/components/ui/toast'
 import './globals.css'
 
 const hindSiliguri = Hind_Siliguri({
@@ -28,7 +29,7 @@ export default function RootLayout({
     >
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </NextIntlClientProvider>
       </body>
     </html>

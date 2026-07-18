@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Phone, Trash2, Loader2, FileText } from 'lucide-react'
 import type { Admission, AdmissionStatus } from './types'
+import { useToast } from '@/components/ui/toast'
 
 const STATUS_OPTIONS: AdmissionStatus[] = [
   'pending',
@@ -35,6 +36,7 @@ export function AdmissionsPanel({
   admissions: Admission[]
   onRefresh: () => void
 }) {
+  const { success, error, confirm } = useToast()
   const [processing, setProcessing] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
 
@@ -47,21 +49,23 @@ export function AdmissionsPanel({
         body: JSON.stringify({ status }),
       })
       onRefresh()
-    } catch (error) {
-      console.error('Failed to update admission:', error)
+      success('ভর্তি আবেদনের অবস্থা আপডেট করা হয়েছে')
+    } catch (updateError) {
+      console.error('Failed to update admission:', updateError)
     } finally {
       setProcessing(null)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('আবেদনটি মুছে ফেলতে চান?')) return
+    if (!(await confirm('আবেদনটি মুছে ফেলতে চান?'))) return
     setProcessing(id)
     try {
       await fetch(`/api/admissions/${id}`, { method: 'DELETE' })
       onRefresh()
-    } catch (error) {
-      console.error('Failed to delete admission:', error)
+      success('ভর্তি আবেদন মুছে ফেলা হয়েছে')
+    } catch (deleteError) {
+      console.error('Failed to delete admission:', deleteError)
     } finally {
       setProcessing(null)
     }

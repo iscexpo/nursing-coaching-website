@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import type { Teacher } from './types'
+import { useToast } from '@/components/ui/toast'
 
 export function TeachersPanel({
   teachers,
@@ -11,6 +12,7 @@ export function TeachersPanel({
   teachers: Teacher[]
   onRefresh: () => void
 }) {
+  const { success, error, confirm } = useToast()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Teacher | null>(null)
   const [saving, setSaving] = useState(false)
@@ -65,27 +67,29 @@ export function TeachersPanel({
         resetForm()
       } else {
         const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
-        setFormError(
-          err.details
-            ? Object.values(err.details).flat().join(', ')
-            : err.error || 'সংরক্ষণ ব্যর্থ',
-        )
+        const msg = err.details
+          ? Object.values(err.details).flat().join(', ')
+          : err.error || 'সংরক্ষণ ব্যর্থ'
+        setFormError(msg)
+        error(msg)
       }
-    } catch (error) {
+    } catch (saveError) {
       setFormError('সংরক্ষণ ব্যর্থ')
-      console.error('Failed to save teacher:', error)
+      error('সংরক্ষণ ব্যর্থ')
+      console.error('Failed to save teacher:', saveError)
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('আপনি কি নিশ্চিত এই শিক্ষক মুছে ফেলতে চান?')) return
+    if (!(await confirm('আপনি কি নিশ্চিত এই শিক্ষক মুছে ফেলতে চান?'))) return
     try {
       await fetch(`/api/teachers/${id}`, { method: 'DELETE' })
       onRefresh()
-    } catch (error) {
-      console.error('Failed to delete teacher:', error)
+      success('শিক্ষক মুছে ফেলা হয়েছে')
+    } catch (deleteError) {
+      console.error('Failed to delete teacher:', deleteError)
     }
   }
 
