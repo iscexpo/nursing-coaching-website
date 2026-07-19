@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const session = await getSession()
-    const auth = await requireSuperAdmin()
+    const auth = await requireAdmin()
     if (!auth.ok) return auth.response
     if (!session)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -85,6 +85,26 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
         { status: 400 },
+      )
+    }
+
+    // Check if user is trying to update sensitive fields (require super-admin)
+    const sensitiveFields = [
+      'smsApiKey',
+      'smsPassword',
+      'paymentGatewayApiKey',
+      'paymentGatewaySecret',
+      'paymentGatewayWebhookSecret',
+    ]
+    
+    const hasSensitiveUpdate = sensitiveFields.some(
+      field => field in parsed.data && parsed.data[field] !== undefined && parsed.data[field] !== ''
+    )
+    
+    if (hasSensitiveUpdate && !isSuperAdmin(session.user.role)) {
+      return NextResponse.json(
+        { error: 'Forbidden: Sensitive settings require super-admin access' },
+        { status: 403 },
       )
     }
 

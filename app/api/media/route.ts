@@ -11,6 +11,8 @@ import {
   hasAllowedExtension,
   isAllowedMime,
   matchesSignature,
+  validateImageDimensions,
+  isValidLogoSize,
 } from '@/lib/media-validation'
 
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
@@ -105,6 +107,19 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 },
       )
+    }
+
+    // Validate image dimensions for logos (if altText indicates it's a logo)
+    const isLogo = altText.toLowerCase().includes('logo') || altText.toLowerCase().includes('লোগো')
+    if (isLogo && file.type.startsWith('image/')) {
+      const dimensions = validateImageDimensions(buffer, file.type)
+      const sizeCheck = isValidLogoSize(dimensions)
+      if (!sizeCheck.valid) {
+        return NextResponse.json(
+          { error: sizeCheck.error || 'Invalid image dimensions for logo' },
+          { status: 400 },
+        )
+      }
     }
 
     const originalFilename = file.name
