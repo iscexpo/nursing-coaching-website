@@ -76,6 +76,11 @@ const BOARDS = [
   'কারিগরি বোর্ড',
 ]
 
+const UNIVERSITY_NAMES = [
+  'জাতীয় বিশ্ববিদ্যালয়',
+  'UGC',
+]
+
 const inputCls =
   'mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20'
 const smallInputCls =
@@ -85,10 +90,12 @@ function EduFields({
   label,
   value,
   onChange,
+  boardOptions,
 }: {
   label: string
   value: EducationField
   onChange: (v: EducationField) => void
+  boardOptions?: string[]
 }) {
   return (
     <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
@@ -174,7 +181,7 @@ function EduFields({
             onChange={(e) => onChange({ ...value, board: e.target.value })}
             className={smallInputCls}
           >
-            {BOARDS.map((b, i) => (
+            {(boardOptions ?? BOARDS).map((b, i) => (
               <option key={b} value={i === 0 ? '' : b}>
                 {b}
               </option>
@@ -490,6 +497,7 @@ export default function AdmissionPage() {
                         label="অনার্স (স্নাতক) (ঐচ্ছিক)"
                         value={form.honors}
                         onChange={(honors) => setForm({ ...form, honors })}
+                        boardOptions={UNIVERSITY_NAMES}
                       />
                     </div>
                   )}
@@ -616,7 +624,7 @@ export default function AdmissionPage() {
                               </dt>
                               <dd className="text-muted-foreground text-right">
                                 রোল: {form.honors.roll}, রেজি:{' '}
-                                {form.honors.registrationNo}, বোর্ড:{' '}
+                                {form.honors.registrationNo}, প্রতিষ্ঠান:{' '}
                                 {form.honors.board || '-'}
                               </dd>
                             </div>
