@@ -1,25 +1,26 @@
 # QA Review Report — LMS Admin Panel
+
 ### Scope: Authentication & Infrastructure Review (Phase 1)
 
 > **Important scope note:** This report is an **Authentication & Infrastructure Review**, not
 > a complete functional QA. Because authentication failed before any admin surface could be
 > reached, the business modules (Student, Admission, Enrollment, Course, Payment, Exam, etc.)
 > were **blocked** and could **not** be tested end-to-end. They are marked **"Not Tested"**
-> below, which means *unverified*, not *defective*. A true end-to-end functional report
+> below, which means _unverified_, not _defective_. A true end-to-end functional report
 > (Phase 2) is planned once the auth/database blocker is resolved.
 
-| QA Metadata | Value |
-| ----------- | ----- |
-| Report phase | Phase 1 — Authentication & Infrastructure Review |
-| Review date | 2026-07-18 |
-| Reviewer | QA (automated workspace review) |
-| Target | LMS Admin Panel (Next.js + Better Auth + Drizzle/PostgreSQL) |
-| Env observed | Local dev server (external env vars injected; no committed `.env`) |
-| Upstream commit reviewed | see `git rev-parse HEAD` at review time |
-| Verification method | Static inspection + live HTTP probes (curl) + migration-journal diff |
-| Blocking defect | Migration drift — journal stops at `0001`; auth query fails at runtime |
+| QA Metadata              | Value                                                                  |
+| ------------------------ | ---------------------------------------------------------------------- |
+| Report phase             | Phase 1 — Authentication & Infrastructure Review                       |
+| Review date              | 2026-07-18                                                             |
+| Reviewer                 | QA (automated workspace review)                                        |
+| Target                   | LMS Admin Panel (Next.js + Better Auth + Drizzle/PostgreSQL)           |
+| Env observed             | Local dev server (external env vars injected; no committed `.env`)     |
+| Upstream commit reviewed | see `git rev-parse HEAD` at review time                                |
+| Verification method      | Static inspection + live HTTP probes (curl) + migration-journal diff   |
+| Blocking defect          | Migration drift — journal stops at `0001`; auth query fails at runtime |
 
-> **Test-coverage caveat:** This report assesses *runtime/auth* behavior. A unit-test suite
+> **Test-coverage caveat:** This report assesses _runtime/auth_ behavior. A unit-test suite
 > already exists under `tests/` (Vitest) covering validation, settings, SMS, and payment
 > utilities. Those unit tests were **not** executed as part of this review and are out of
 > scope for the auth-blocker analysis; they are noted under "Existing Test Assets" below.
@@ -110,6 +111,7 @@ explicitly marked **Not Tested** (unverified, not confirmed defective).
 ## Detailed Findings
 
 ### 1) Authentication Is Broken at the Core
+
 - **Module:** Authentication / Admin Access
 - **Severity:** Critical
 - **Description:**
@@ -141,6 +143,7 @@ explicitly marked **Not Tested** (unverified, not confirmed defective).
 - **Priority:** P0
 
 ### 2) Schema / Migration Drift Is Present
+
 - **Module:** Database / Migrations
 - **Severity:** High
 - **Description:**
@@ -167,6 +170,7 @@ explicitly marked **Not Tested** (unverified, not confirmed defective).
 - **Priority:** P0
 
 ### 3) File Uploads Are Not Adequately Hardened
+
 - **Module:** File Upload / Security (`app/api/media/route.ts`)
 - **Severity:** High
 - **Description:**
@@ -190,6 +194,7 @@ explicitly marked **Not Tested** (unverified, not confirmed defective).
 - **Priority:** P1
 
 ### 4) Client-Side Validation Is Incomplete
+
 - **Module:** Student / Course / Admission Forms
 - **Severity:** Medium
 - **Description:**
@@ -212,6 +217,7 @@ explicitly marked **Not Tested** (unverified, not confirmed defective).
 - **Priority:** P2
 
 ### 5) Loading and Error States Are Weak in the Admin Experience
+
 - **Module:** UI / UX
 - **Severity:** Medium
 - **Description:**
@@ -230,6 +236,7 @@ explicitly marked **Not Tested** (unverified, not confirmed defective).
 - **Priority:** P2
 
 ### 6) Deployment Is Fragile and Environment-Dependent
+
 - **Module:** Deployment / DevOps
 - **Severity:** Medium
 - **Description:**
@@ -256,22 +263,27 @@ explicitly marked **Not Tested** (unverified, not confirmed defective).
 > are listed with the evidence that they exist, not that they work.
 
 ### Dashboard
+
 - **Status:** Not Tested (UI exists; blocked by auth).
 - **Evidence:** The overview panel exists in `app/admin/components/overview-tab.tsx` and renders counts and recent
   activity from props.
 
 ### Student Module
+
 - **Status:** Not Tested (UI and routes present; blocked by auth).
 - **Evidence:** Student list/form flow exists in `app/admin/components/students-tab.tsx`; create/update/delete APIs
   exist at `app/api/students/route.ts` and `app/api/students/[id]/route.ts`.
 
 ### Admission Module
+
 - **Status:** Not Tested (API and UI scaffolding exist; blocked by auth).
 - **Evidence:** Admin admission routes exist at `app/api/admissions/route.ts` and
   `app/api/admissions/[id]/route.ts`.
 
 ### Enrollment / Course / Subject / Teacher / Exam / Attendance / Payment / SMS /
+
 Notification / Notice / Settings / User Management / Reports
+
 - **Status:** Not Tested (routes and UI panels exist; blocked by auth).
 - **Evidence:** Routes exist under `app/api` and UI panels are registered in `app/admin/page.tsx`.
 
@@ -347,6 +359,7 @@ Notification / Notice / Settings / User Management / Reports
 ## Prioritized Roadmap
 
 ### Immediate Fixes (Today)
+
 - Repair the schema/migration drift blocking authentication (apply `0002`–`0014`; reconcile
   `_journal.json`).
 - Re-test login and confirm the admin session is created successfully.
@@ -354,16 +367,19 @@ Notification / Notice / Settings / User Management / Reports
 - Patch upload security (`app/api/media/route.ts`) to reject suspicious files before saving.
 
 ### Short Term (This Week)
+
 - Add inline validation and better error feedback to the admin forms.
 - Add toasts, loading states, and empty states across important list views.
 - Add a smoke-test suite for sign-in and the core CRUD APIs.
 
 ### Medium Term
+
 - Implement missing import/export and bulk operations for major modules.
 - Add restore/soft-delete semantics for student/admission records.
 - Introduce stronger audit and permission UX for admin roles.
 
 ### Long Term
+
 - Refactor the admin data layer for better performance and less repeated fetch logic.
 - Add report export pipelines, analytics, and role-based dashboards.
 - Harden the platform for production with deeper security tests and deployment guardrails.
@@ -381,67 +397,86 @@ reproduction steps, plus a screenshot.
 ### Functional Test Checklist (per module)
 
 **Student**
+
 - Create student · Edit student · Delete student · Restore student · Search · Filter ·
   Pagination · Validation · Duplicate prevention · Image upload
 
 **Admission**
+
 - Create · Update · Delete · Status change · Convert to student
 
 **Enrollment**
+
 - Enroll student · Prevent duplicate enrollment · Drop course · Fee calculation
 
 **Course**
+
 - Add · Edit · Delete · Duplicate slug rejection · Inactive course handling
 
 **Subject**
+
 - CRUD · Credit validation
 
 **Teacher**
+
 - CRUD · Assign subjects
 
 **Payment**
+
 - Manual payment · Partial payment · Discount · Due calculation · Receipt generation ·
   Delete payment
 
 **Exam**
+
 - Create exam · Assign subjects · Marks entry · Publish result
 
 **Attendance**
+
 - Mark attendance · Edit attendance · Monthly report
 
 **Notice**
+
 - Publish · Edit · Delete · Rich text
 
 **Notification**
+
 - Push notification · Email notification · Read status
 
 **SMS**
+
 - Single SMS · Bulk SMS · Failed-delivery handling
 
 **Settings**
+
 - Institute profile · Logo upload · SMTP · SMS gateway · Payment gateway
 
 **User Management**
+
 - Create admin · Edit role · Disable user · Reset password
 
 **Reports**
+
 - Generate · Export (PDF/Excel/CSV) · Role-based visibility
 
 ### API Test Checklist
+
 - HTTP status codes per endpoint · Validation-error responses (422) · Authorization (401/403)
   · Rate limiting (media upload limiter) · Duplicate-request handling · Invalid-ID handling ·
   Pagination · Sorting · Filtering · File-upload abuse (type/size/MIME mismatch)
 
 ### Security Test Checklist
+
 - Broken Access Control · IDOR (object ownership) · Privilege Escalation · Session/JWT
   tampering · CSRF · XSS (input reflection, rich text) · SQL Injection · File-upload bypass ·
   Password policy · Session expiration
 
 ### Performance Test Checklist
+
 - Dashboard load time · Student list with 10,000 records · Concurrent logins · Payment
   creation speed · API response times (p50/p95) · Database query optimization review
 
 ### Deliverables for the Phase 2 Report
+
 - ✅ Pass/Fail checklist per module · ✅ Bug IDs with severity and reproduction steps ·
   ✅ Role & permission matrix · ✅ API validation results · ✅ Security test results ·
   ✅ Performance benchmarks · ✅ Screenshots per module

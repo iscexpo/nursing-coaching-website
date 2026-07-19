@@ -12,7 +12,11 @@ export function MediaPanel({
   mediaFiles: MediaFile[]
   onRefresh: () => void
 }) {
-  const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast()
+  const {
+    success: toastSuccess,
+    error: toastError,
+    confirm: toastConfirm,
+  } = useToast()
   const [file, setFile] = useState<File | null>(null)
   const [altText, setAltText] = useState('')
   const [description, setDescription] = useState('')
@@ -64,7 +68,8 @@ export function MediaPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await toastConfirm('আপনি কি নিশ্চিত যে এই মিডিয়া ফাইল মুছতে চান?'))) return
+    if (!(await toastConfirm('আপনি কি নিশ্চিত যে এই মিডিয়া ফাইল মুছতে চান?')))
+      return
 
     try {
       const response = await fetch(`/api/media/${id}`, { method: 'DELETE' })
@@ -78,9 +83,10 @@ export function MediaPanel({
       toastSuccess('মিডিয়া ফাইল মুছে ফেলা হয়েছে')
     } catch (deleteError) {
       console.error('Delete failed:', deleteError)
-      const msg = deleteError instanceof Error
-        ? deleteError.message
-        : 'মুছতে ব্যর্থ হয়েছে'
+      const msg =
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'মুছতে ব্যর্থ হয়েছে'
       setError(msg)
       toastError(msg)
     }

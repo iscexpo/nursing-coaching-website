@@ -293,7 +293,8 @@ export function EnrollmentsPanel({
   }
 
   async function handleCancel(id: string) {
-    if (!(await confirm('আপনি কি নিশ্চিত এই এনরোলমেন্ট বাতিল করতে চান?'))) return
+    if (!(await confirm('আপনি কি নিশ্চিত এই এনরোলমেন্ট বাতিল করতে চান?')))
+      return
     setCancelling(id)
     try {
       const res = await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
@@ -735,7 +736,9 @@ export function EnrollmentsPanel({
             </Button>
             <Button
               onClick={async () => {
-                const ok = await confirm('নির্বাচিত এনরোলমেন্টগুলো বাতিল করতে চান?')
+                const ok = await confirm(
+                  'নির্বাচিত এনরোলমেন্টগুলো বাতিল করতে চান?',
+                )
                 if (ok) {
                   setBulkAction('cancel')
                   handleBulkAction()
@@ -770,7 +773,10 @@ export function EnrollmentsPanel({
                 <th className="px-4 py-3 text-center font-semibold text-foreground w-12">
                   <input
                     type="checkbox"
-                    checked={selectedIds.length === filtered.length && filtered.length > 0}
+                    checked={
+                      selectedIds.length === filtered.length &&
+                      filtered.length > 0
+                    }
                     onChange={toggleSelectAll}
                     className="size-4 rounded border-border text-brand focus:ring-brand"
                   />

@@ -190,7 +190,15 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   notifications: ['notifications'],
   settings: [],
   subjects: ['subjects'],
-  reports: ['courses', 'enrollments', 'payments', 'students', 'attendance', 'exams', 'submissions'],
+  reports: [
+    'courses',
+    'enrollments',
+    'payments',
+    'students',
+    'attendance',
+    'exams',
+    'submissions',
+  ],
 }
 
 function TabSkeleton() {

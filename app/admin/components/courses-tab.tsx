@@ -146,8 +146,10 @@ export function CoursesPanel({
         setShowForm(false)
         setEditing(null)
         resetForm()
-        success(editing ? 'কোর্স আপডেট করা হয়েছে' : 'নতুন কোর্স যোগ করা হয়েছে')
-      }       else {
+        success(
+          editing ? 'কোর্স আপডেট করা হয়েছে' : 'নতুন কোর্স যোগ করা হয়েছে',
+        )
+      } else {
         const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
         const msg = err.details
           ? Object.values(err.details).flat().join(', ')

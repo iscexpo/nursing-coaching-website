@@ -24,7 +24,10 @@ export async function Hero() {
       <div className="absolute inset-0 bg-gradient-to-r from-brand/80 via-brand/60 to-transparent" />
       <div className="relative mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-20 lg:px-8">
         <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 lg:items-center lg:gap-12">
-          <div className="mt-8 lg:mt-0 animate-fade-in-up" style={{ animationDuration: '700ms' }}>
+          <div
+            className="mt-8 lg:mt-0 animate-fade-in-up"
+            style={{ animationDuration: '700ms' }}
+          >
             <div className="relative aspect-[4/3] w-full max-w-xl overflow-hidden rounded-2xl border-4 border-brand-foreground/20 shadow-2xl lg:aspect-square">
               <Image
                 src="/images/hero.jpeg"
@@ -37,7 +40,10 @@ export async function Hero() {
             </div>
           </div>
 
-          <div className="text-brand-foreground animate-fade-in-up" style={{ animationDuration: '700ms' }}>
+          <div
+            className="text-brand-foreground animate-fade-in-up"
+            style={{ animationDuration: '700ms' }}
+          >
             <span className="inline-flex items-center gap-2 rounded-full bg-brand-foreground/15 px-4 py-1.5 text-xs font-medium backdrop-blur-sm sm:text-sm">
               <span className="size-2 rounded-full bg-gold animate-pulse" />
               {hero.eyebrow || t('eyebrow')}

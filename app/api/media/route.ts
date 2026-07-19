@@ -110,7 +110,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate image dimensions for logos (if altText indicates it's a logo)
-    const isLogo = altText.toLowerCase().includes('logo') || altText.toLowerCase().includes('লোগো')
+    const isLogo =
+      altText.toLowerCase().includes('logo') ||
+      altText.toLowerCase().includes('লোগো')
     if (isLogo && file.type.startsWith('image/')) {
       const dimensions = validateImageDimensions(buffer, file.type)
       const sizeCheck = isValidLogoSize(dimensions)

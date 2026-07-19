@@ -58,9 +58,7 @@ export function MobileDrawer() {
             {t('login')}
           </Button>
           <Button
-            render={
-              <Link href="/admission" onClick={() => setOpen(false)} />
-            }
+            render={<Link href="/admission" onClick={() => setOpen(false)} />}
             className="w-full h-12 text-base font-semibold"
             size="lg"
           >

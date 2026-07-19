@@ -1,45 +1,47 @@
-import { Page, expect } from '@playwright/test';
+import { Page, expect } from '@playwright/test'
 
 export class BasePage {
-  readonly page: Page;
+  readonly page: Page
 
   constructor(page: Page) {
-    this.page = page;
+    this.page = page
   }
 
   async navigate(url: string) {
-    await this.page.goto(url);
+    await this.page.goto(url)
   }
 
   async takeScreenshot(name: string) {
-    await this.page.screenshot({ path: `playwright-report/screenshots/${name}.png` });
+    await this.page.screenshot({
+      path: `playwright-report/screenshots/${name}.png`,
+    })
   }
 
   async waitForLoading() {
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('networkidle')
   }
 
   async clickButton(text: string) {
-    await this.page.click(`button:has-text("${text}")`);
+    await this.page.click(`button:has-text("${text}")`)
   }
 
   async fillInput(label: string, value: string) {
-    await this.page.fill(`input:has-text("${label}")`, value);
+    await this.page.fill(`input:has-text("${label}")`, value)
   }
 
   async fillInputById(id: string, value: string) {
-    await this.page.fill(`#${id}`, value);
+    await this.page.fill(`#${id}`, value)
   }
 
   async selectOption(selectId: string, value: string) {
-    await this.page.selectOption(`#${selectId}`, value);
+    await this.page.selectOption(`#${selectId}`, value)
   }
 
   async verifyTextVisible(text: string) {
-    await expect(this.page.locator(`text=${text}`)).toBeVisible();
+    await expect(this.page.locator(`text=${text}`)).toBeVisible()
   }
 
   async verifyUrlContains(path: string) {
-    await expect(this.page).toHaveURL(new RegExp(path));
+    await expect(this.page).toHaveURL(new RegExp(path))
   }
 }

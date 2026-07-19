@@ -28,7 +28,9 @@ type ToastContextValue = {
 const ToastContext = createContext<ToastContextValue | null>(null)
 
 const ICONS: Record<ToastVariant, ReactNode> = {
-  success: <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />,
+  success: (
+    <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />
+  ),
   error: <AlertCircle className="size-5 text-destructive" />,
   info: <Info className="size-5 text-brand" />,
 }

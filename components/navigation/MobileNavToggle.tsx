@@ -9,7 +9,11 @@ interface MobileNavToggleProps {
   isOpen: boolean
 }
 
-export function MobileNavToggle({ onClick, 'aria-label': ariaLabel, isOpen }: MobileNavToggleProps) {
+export function MobileNavToggle({
+  onClick,
+  'aria-label': ariaLabel,
+  isOpen,
+}: MobileNavToggleProps) {
   return (
     <Button
       variant="ghost"

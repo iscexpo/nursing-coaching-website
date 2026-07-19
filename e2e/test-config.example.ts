@@ -19,9 +19,12 @@ export const testConfig = {
 
   // Database configuration for test database
   database: {
-    url: process.env.TEST_DATABASE_URL || 'postgres://user:password@localhost:5432/test_db',
+    url:
+      process.env.TEST_DATABASE_URL ||
+      'postgres://user:password@localhost:5432/test_db',
   },
 
   // Better Auth secret for testing
-  authSecret: process.env.TEST_AUTH_SECRET || 'test_secret_key_for_testing_purposes',
-};
+  authSecret:
+    process.env.TEST_AUTH_SECRET || 'test_secret_key_for_testing_purposes',
+}

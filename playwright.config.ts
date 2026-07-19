@@ -1,8 +1,8 @@
-import { defineConfig, devices } from '@playwright/test';
-import { fileURLToPath } from 'url';
-import path from 'path';
+import { defineConfig, devices } from '@playwright/test'
+import { fileURLToPath } from 'url'
+import path from 'path'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   testDir: './e2e',
@@ -46,4 +46,4 @@ export default defineConfig({
       use: { ...devices['Pixel 5'] },
     },
   ],
-});
+})

@@ -36,7 +36,11 @@ const REPORT_TYPES = [
   { id: 'attendance', label: 'উপস্থিতি পরিসংখ্যান', icon: Calendar },
   { id: 'course-analytics', label: 'কোর্স অ্যানালিটিক্স', icon: BarChart3 },
   { id: 'fee-collection', label: 'ফি সংগ্রহ রিপোর্ট', icon: FileText },
-  { id: 'student-performance', label: 'শিক্ষার্থী পারফরম্যান্স', icon: TrendingUp },
+  {
+    id: 'student-performance',
+    label: 'শিক্ষার্থী পারফরম্যান্স',
+    icon: TrendingUp,
+  },
 ] as const
 
 type ReportType = (typeof REPORT_TYPES)[number]['id']
@@ -87,7 +91,8 @@ export function ReportsPanel({
   examSubmissions: ExamSubmission[]
   exams: Exam[]
 }) {
-  const [activeReport, setActiveReport] = useState<ReportType>('enrollment-trends')
+  const [activeReport, setActiveReport] =
+    useState<ReportType>('enrollment-trends')
   const [dateRange, setDateRange] = useState({ start: '', end: '' })
   const [loading, setLoading] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -116,7 +121,8 @@ export function ReportsPanel({
     return attendance.filter((a) => {
       if (dateRange.start && new Date(a.date) < new Date(dateRange.start))
         return false
-      if (dateRange.end && new Date(a.date) > new Date(dateRange.end)) return false
+      if (dateRange.end && new Date(a.date) > new Date(dateRange.end))
+        return false
       return true
     })
   }, [attendance, dateRange])
@@ -174,7 +180,10 @@ export function ReportsPanel({
     })
 
     Object.values(studentMap).forEach((stat) => {
-      stat.percentage = calculatePercentage(stat.present + stat.late, stat.total)
+      stat.percentage = calculatePercentage(
+        stat.present + stat.late,
+        stat.total,
+      )
     })
 
     return Object.values(studentMap).filter((s) => s.total > 0)
@@ -182,7 +191,9 @@ export function ReportsPanel({
 
   const courseAnalytics: CourseAnalytics[] = useMemo(() => {
     return courses.map((course) => {
-      const courseEnrollments = enrollments.filter((e) => e.courseId === course.id)
+      const courseEnrollments = enrollments.filter(
+        (e) => e.courseId === course.id,
+      )
       const activeEnrollments = courseEnrollments.filter(
         (e) => e.status === 'active' || e.status === 'approved',
       )
@@ -228,7 +239,10 @@ export function ReportsPanel({
         const enrollmentPayments = payments.filter(
           (p) => p.enrollmentId === e.id && p.status === 'verified',
         )
-        const paidAmount = enrollmentPayments.reduce((sum, p) => sum + p.amount, 0)
+        const paidAmount = enrollmentPayments.reduce(
+          (sum, p) => sum + p.amount,
+          0,
+        )
         const lastPayment = enrollmentPayments.sort(
           (a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime(),
         )[0]
@@ -241,7 +255,12 @@ export function ReportsPanel({
           totalFee: e.totalFee,
           paidAmount,
           dueAmount: e.dueAmount,
-          status: e.dueAmount <= 0 ? 'paid' : e.dueAmount < e.totalFee ? 'partial' : 'unpaid',
+          status:
+            e.dueAmount <= 0
+              ? 'paid'
+              : e.dueAmount < e.totalFee
+                ? 'partial'
+                : 'unpaid',
           lastPaymentDate: lastPayment?.paidAt || null,
         }
       })
@@ -264,7 +283,8 @@ export function ReportsPanel({
       const p = perfMap[s.userId]
       const pct = (s.score / s.total) * 100
       p.examsAttempted++
-      p.averageScore = (p.averageScore * (p.examsAttempted - 1) + pct) / p.examsAttempted
+      p.averageScore =
+        (p.averageScore * (p.examsAttempted - 1) + pct) / p.examsAttempted
       p.highestScore = Math.max(p.highestScore, pct)
       p.lowestScore = Math.min(p.lowestScore, pct)
     })
@@ -292,9 +312,7 @@ export function ReportsPanel({
         case 'revenue':
           csv = ['মাস,যাচাইকৃত,অপেক্ষমান,মোট\n']
           revenueReport.forEach((r) =>
-            csv.push(
-              `${r.period},${r.verified},${r.pending},${r.total}`,
-            ),
+            csv.push(`${r.period},${r.verified},${r.pending},${r.total}`),
           )
           filename = 'revenue-report.csv'
           break
@@ -308,9 +326,7 @@ export function ReportsPanel({
           filename = 'attendance-report.csv'
           break
         case 'course-analytics':
-          csv = [
-            'কোর্স,মোট এনরোলমেন্ট,সক্রিয়,সম্পন্ন,রেভেনিউ,গড় উপস্থিতি\n',
-          ]
+          csv = ['কোর্স,মোট এনরোলমেন্ট,সক্রিয়,সম্পন্ন,রেভেনিউ,গড় উপস্থিতি\n']
           courseAnalytics.forEach((c) =>
             csv.push(
               `${c.courseTitle},${c.totalEnrollments},${c.activeStudents},${c.completedStudents},${c.totalRevenue},${c.averageAttendance}%`,
@@ -330,9 +346,7 @@ export function ReportsPanel({
           filename = 'fee-collection-report.csv'
           break
         case 'student-performance':
-          csv = [
-            'শিক্ষার্থী,পরীক্ষা দেওয়া,গড় স্কোর,সর্বোচ্চ,সর্বনিম্ন\n',
-          ]
+          csv = ['শিক্ষার্থী,পরীক্ষা দেওয়া,গড় স্কোর,সর্বোচ্চ,সর্বনিম্ন\n']
           studentPerformance.forEach((s) =>
             csv.push(
               `${s.studentName},${s.examsAttempted},${s.averageScore}%,${s.highestScore}%,${s.lowestScore}%`,
@@ -342,7 +356,9 @@ export function ReportsPanel({
           break
       }
 
-      const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' })
+      const blob = new Blob([csv.join('\n')], {
+        type: 'text/csv;charset=utf-8;',
+      })
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
       link.download = filename
@@ -370,7 +386,9 @@ export function ReportsPanel({
                 label="এই মাসে"
                 value={
                   filteredEnrollments.filter(
-                    (e) => new Date(e.enrolledAt).getMonth() === new Date().getMonth(),
+                    (e) =>
+                      new Date(e.enrolledAt).getMonth() ===
+                      new Date().getMonth(),
                   ).length
                 }
                 icon={TrendingUp}
@@ -379,7 +397,8 @@ export function ReportsPanel({
               <StatCard
                 label="ব� 기다"
                 value={
-                  filteredEnrollments.filter((e) => e.status === 'pending').length
+                  filteredEnrollments.filter((e) => e.status === 'pending')
+                    .length
                 }
                 icon={Calendar}
                 color="gold"
@@ -471,7 +490,14 @@ export function ReportsPanel({
               <AttendanceChart data={attendanceStats} />
             </ChartCard>
             <DataTable
-              headers={['শিক্ষার্থী', 'উপস্থিত', 'বিলম্বিত', 'অনুপস্থিত', 'মোট', 'শতাংশ']}
+              headers={[
+                'শিক্ষার্থী',
+                'উপস্থিত',
+                'বিলম্বিত',
+                'অনুপস্থিত',
+                'মোট',
+                'শতাংশ',
+              ]}
               rows={attendanceStats.map((s) => [
                 s.studentName,
                 s.present.toString(),
@@ -491,7 +517,14 @@ export function ReportsPanel({
               <CourseAnalyticsChart data={courseAnalytics} />
             </ChartCard>
             <DataTable
-              headers={['কোর্স', 'মোট', 'সক্রিয়', 'সম্পন্ন', 'রেভেনিউ', 'গড় উপস্থিতি']}
+              headers={[
+                'কোর্স',
+                'মোট',
+                'সক্রিয়',
+                'সম্পন্ন',
+                'রেভেনিউ',
+                'গড় উপস্থিতি',
+              ]}
               rows={courseAnalytics.map((c) => [
                 c.courseTitle,
                 c.totalEnrollments.toString(),
@@ -505,8 +538,14 @@ export function ReportsPanel({
         )
 
       case 'fee-collection':
-        const totalDue = feeCollectionReport.reduce((s, f) => s + f.dueAmount, 0)
-        const totalCollected = feeCollectionReport.reduce((s, f) => s + f.paidAmount, 0)
+        const totalDue = feeCollectionReport.reduce(
+          (s, f) => s + f.dueAmount,
+          0,
+        )
+        const totalCollected = feeCollectionReport.reduce(
+          (s, f) => s + f.paidAmount,
+          0,
+        )
         return (
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
@@ -532,7 +571,16 @@ export function ReportsPanel({
               />
             </div>
             <DataTable
-              headers={['শিক্ষার্থী', 'ফোন', 'কোর্স', 'মোট ফি', 'পরিশোধ', 'বকেয়া', 'অবস্থা', 'শেষ পেমেন্ট']}
+              headers={[
+                'শিক্ষার্থী',
+                'ফোন',
+                'কোর্স',
+                'মোট ফি',
+                'পরিশোধ',
+                'বকেয়া',
+                'অবস্থা',
+                'শেষ পেমেন্ট',
+              ]}
               rows={feeCollectionReport.map((f) => [
                 f.studentName,
                 f.studentPhone,
@@ -566,8 +614,10 @@ export function ReportsPanel({
                 value={
                   studentPerformance.length > 0
                     ? `${Math.round(
-                        studentPerformance.reduce((s, p) => s + p.averageScore, 0) /
-                          studentPerformance.length,
+                        studentPerformance.reduce(
+                          (s, p) => s + p.averageScore,
+                          0,
+                        ) / studentPerformance.length,
                       )}%`
                     : '0%'
                 }
@@ -576,9 +626,10 @@ export function ReportsPanel({
               />
               <StatCard
                 label="পরীক্ষা দেওয়া"
-                value={
-                  studentPerformance.reduce((s, p) => s + p.examsAttempted, 0)
-                }
+                value={studentPerformance.reduce(
+                  (s, p) => s + p.examsAttempted,
+                  0,
+                )}
                 icon={FileText}
                 color="blue"
               />
@@ -587,7 +638,13 @@ export function ReportsPanel({
               <PerformanceChart data={studentPerformance} />
             </ChartCard>
             <DataTable
-              headers={['শিক্ষার্থী', 'পরীক্ষা', 'গড় স্কোর', 'সর্বোচ্চ', 'সর্বনিম্ন']}
+              headers={[
+                'শিক্ষার্থী',
+                'পরীক্ষা',
+                'গড় স্কোর',
+                'সর্বোচ্চ',
+                'সর্বনিম্ন',
+              ]}
               rows={studentPerformance.map((s) => [
                 s.studentName,
                 s.examsAttempted.toString(),
@@ -679,7 +736,9 @@ function StatCard({
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center gap-4">
-        <div className={`flex size-11 items-center justify-center rounded-xl ${colorMap[color]}`}>
+        <div
+          className={`flex size-11 items-center justify-center rounded-xl ${colorMap[color]}`}
+        >
           <Icon className="size-5" />
         </div>
         <div>
@@ -691,22 +750,24 @@ function StatCard({
   )
 }
 
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+function ChartCard({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <h4 className="font-heading font-semibold text-foreground mb-4">{title}</h4>
+      <h4 className="font-heading font-semibold text-foreground mb-4">
+        {title}
+      </h4>
       {children}
     </div>
   )
 }
 
-function DataTable({
-  headers,
-  rows,
-}: {
-  headers: string[]
-  rows: string[][]
-}) {
+function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden mt-4">
       <div className="overflow-x-auto">
@@ -714,7 +775,10 @@ function DataTable({
           <thead>
             <tr className="border-b border-border bg-secondary/30">
               {headers.map((h) => (
-                <th key={h} className="px-4 py-3 text-left font-semibold text-foreground">
+                <th
+                  key={h}
+                  className="px-4 py-3 text-left font-semibold text-foreground"
+                >
                   {h}
                 </th>
               ))}
@@ -735,7 +799,10 @@ function DataTable({
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={headers.length} className="px-4 py-8 text-center text-muted-foreground">
+                <td
+                  colSpan={headers.length}
+                  className="px-4 py-8 text-center text-muted-foreground"
+                >
                   কোনো ডেটা নেই
                 </td>
               </tr>
@@ -747,7 +814,15 @@ function DataTable({
   )
 }
 
-function BarChart({ data, xKey, yKey }: { data: any[]; xKey: string; yKey: string }) {
+function BarChart({
+  data,
+  xKey,
+  yKey,
+}: {
+  data: any[]
+  xKey: string
+  yKey: string
+}) {
   const maxValue = Math.max(...data.map((d) => d[yKey]), 1)
   return (
     <div className="h-64 flex items-end justify-around gap-1 px-2">
@@ -760,8 +835,12 @@ function BarChart({ data, xKey, yKey }: { data: any[]; xKey: string; yKey: strin
               style={{ height: `${height}px` }}
               title={`${d[xKey]}: ${d[yKey]}`}
             />
-            <span className="text-xs text-muted-foreground mt-2">{d[xKey]}</span>
-            <span className="text-xs font-medium text-foreground">{d[yKey]}</span>
+            <span className="text-xs text-muted-foreground mt-2">
+              {d[xKey]}
+            </span>
+            <span className="text-xs font-medium text-foreground">
+              {d[yKey]}
+            </span>
           </div>
         )
       })}
@@ -775,7 +854,10 @@ function RevenueChart({ data }: { data: RevenueReport[] }) {
     <div className="h-64 flex items-end justify-around gap-1 px-2">
       {data.map((d, i) => (
         <div key={i} className="flex flex-col items-center flex-1">
-          <div className="w-full flex flex-col-reverse" style={{ height: '240px' }}>
+          <div
+            className="w-full flex flex-col-reverse"
+            style={{ height: '240px' }}
+          >
             <div
               className="bg-green rounded-t transition-all hover:bg-green/80"
               style={{ height: `${(d.verified / maxValue) * 240}px` }}
@@ -791,15 +873,22 @@ function RevenueChart({ data }: { data: RevenueReport[] }) {
         </div>
       ))}
       <div className="flex items-center gap-4 ml-4 text-xs">
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green" /> যাচাইকৃত</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gold" /> অপেক্ষমান</span>
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded bg-green" /> যাচাইকৃত
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded bg-gold" /> অপেক্ষমান
+        </span>
       </div>
     </div>
   )
 }
 
 function AttendanceChart({ data }: { data: AttendanceStats[] }) {
-  if (data.length === 0) return <p className="text-center text-muted-foreground py-8">কোনো ডেটা নেই</p>
+  if (data.length === 0)
+    return (
+      <p className="text-center text-muted-foreground py-8">কোনো ডেটা নেই</p>
+    )
   const present = data.reduce((s, d) => s + d.present + d.late, 0)
   const absent = data.reduce((s, d) => s + d.absent, 0)
   const total = present + absent
@@ -856,20 +945,27 @@ function AttendanceChart({ data }: { data: AttendanceStats[] }) {
 }
 
 function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
-  if (data.length === 0) return <p className="text-center text-muted-foreground py-8">কোনো কোর্স নেই</p>
+  if (data.length === 0)
+    return (
+      <p className="text-center text-muted-foreground py-8">কোনো কোর্স নেই</p>
+    )
   return (
     <div className="h-64 flex items-end justify-around gap-1 px-2 overflow-x-auto">
       {data.map((d, i) => (
         <div key={i} className="flex flex-col items-center flex-1 min-w-[60px]">
           <div
             className="w-full bg-brand rounded-t transition-all hover:bg-brand/80"
-            style={{ height: `${Math.max(40, (d.totalEnrollments / Math.max(...data.map(x => x.totalEnrollments), 1)) * 240)}px` }}
+            style={{
+              height: `${Math.max(40, (d.totalEnrollments / Math.max(...data.map((x) => x.totalEnrollments), 1)) * 240)}px`,
+            }}
             title={`${d.courseTitle}: ${d.totalEnrollments} এনরোলমেন্ট`}
           />
           <span className="text-xs text-muted-foreground mt-2 text-center truncate w-full">
             {d.courseTitle}
           </span>
-          <span className="text-xs font-medium text-foreground">{d.totalEnrollments}</span>
+          <span className="text-xs font-medium text-foreground">
+            {d.totalEnrollments}
+          </span>
         </div>
       ))}
     </div>
@@ -877,8 +973,13 @@ function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
 }
 
 function PerformanceChart({ data }: { data: StudentPerformance[] }) {
-  if (data.length === 0) return <p className="text-center text-muted-foreground py-8">কোনো ডেটা নেই</p>
-  const sorted = [...data].sort((a, b) => b.averageScore - a.averageScore).slice(0, 10)
+  if (data.length === 0)
+    return (
+      <p className="text-center text-muted-foreground py-8">কোনো ডেটা নেই</p>
+    )
+  const sorted = [...data]
+    .sort((a, b) => b.averageScore - a.averageScore)
+    .slice(0, 10)
   return (
     <div className="h-64 flex items-end justify-around gap-1 px-2">
       {sorted.map((d, i) => (
@@ -891,7 +992,9 @@ function PerformanceChart({ data }: { data: StudentPerformance[] }) {
           <span className="text-xs text-muted-foreground mt-2 text-center truncate w-full">
             {d.studentName}
           </span>
-          <span className="text-xs font-medium text-foreground">{d.averageScore}%</span>
+          <span className="text-xs font-medium text-foreground">
+            {d.averageScore}%
+          </span>
         </div>
       ))}
     </div>

@@ -465,7 +465,11 @@ export function StudentsPanel({
         setShowForm(false)
         setEditing(null)
         setForm(emptyForm())
-        success(editing ? 'শিক্ষার্থী আপডেট করা হয়েছে' : 'নতুন শিক্ষার্থী যোগ করা হয়েছে')
+        success(
+          editing
+            ? 'শিক্ষার্থী আপডেট করা হয়েছে'
+            : 'নতুন শিক্ষার্থী যোগ করা হয়েছে',
+        )
       } else {
         const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
         const msg = err.details
