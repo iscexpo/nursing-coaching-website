@@ -36,9 +36,8 @@ export function SiteFooter() {
             <img
               src={site.logo || '/logo.png'}
               alt={site.nameBn}
-              width={36}
-              height={22}
-              className="object-contain"
+            width={200}
+            className="h-auto object-contain"
             />
             <span className="font-heading text-base font-bold">
               {site.nameBn}

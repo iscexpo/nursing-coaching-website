@@ -62,9 +62,8 @@ export function SiteHeader() {
           <img
             src={site.logo || '/logo.png'}
             alt={site.nameBn}
-            width={40}
-            height={25}
-            className="object-contain"
+            width={200}
+            className="h-auto object-contain"
           />
           <span className="flex flex-col leading-tight">
             <span className="font-heading text-base font-bold text-foreground sm:text-lg">
