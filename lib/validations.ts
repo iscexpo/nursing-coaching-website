@@ -206,7 +206,7 @@ export const createAdmissionSchema = z.object({
   name: z.string().min(1).max(200),
   phone: z
     .string()
-    .regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
+    .regex(/^(\+?880|0)[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   courseSlug: z.string().min(1).max(200),
   message: z.string().max(2000).optional(),
   ssc: educationFieldSchema,
@@ -230,7 +230,7 @@ export const createModelTestApplicantSchema = z.object({
   name: z.string().min(1).max(200),
   phone: z
     .string()
-    .regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
+    .regex(/^(\+?880|0)[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   examId: z.string().uuid().optional(),
   preferredSubject: z.string().max(200).optional(),
   message: z.string().max(2000).optional(),
@@ -251,7 +251,7 @@ export const createContactInquirySchema = z.object({
   name: z.string().min(1).max(200),
   phone: z
     .string()
-    .regex(/^\+?880[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
+    .regex(/^(\+?880|0)[0-9]{10}$/, 'Invalid Bangladeshi phone number'),
   message: z.string().min(1).max(5000),
 })
 
