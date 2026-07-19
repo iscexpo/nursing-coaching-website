@@ -1,6 +1,10 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect, type TestArgs } from '@playwright/test';
 
-export const test = base.extend({
+type MyFixtures = {
+  page: TestArgs['page'];
+};
+
+export const test = base.extend<MyFixtures>({
   page: async ({ page }, use) => {
     // Monitor console errors
     page.on('console', msg => {
