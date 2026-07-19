@@ -52,3 +52,71 @@ export function hasAllowedExtension(filename: string, mime: string): boolean {
 export function isAllowedMime(mime: string): mime is AllowedMime {
   return (ALLOWED_MIME_TYPES as readonly string[]).includes(mime)
 }
+
+/**
+ * Image dimension validation for logos.
+ * Returns error message if dimensions are invalid, null if valid.
+ */
+export function validateImageDimensions(
+  buffer: Buffer,
+  mime: string,
+): { width: number; height: number } | null {
+  if (!mime.startsWith('image/')) return null
+
+  // Simple PNG dimension extraction
+  if (mime === 'image/png') {
+    // PNG dimensions are at bytes 16-24 (big-endian)
+    if (buffer.length >= 24) {
+      const width = buffer.readUInt32BE(16)
+      const height = buffer.readUInt32BE(20)
+      return { width, height }
+    }
+  }
+
+  // Simple JPEG dimension extraction
+  if (mime === 'image/jpeg') {
+    // JPEG dimensions are in SOF markers (0xFF 0xC0, 0xC1, 0xC2)
+    let i = 4
+    while (i < buffer.length - 8) {
+      if (buffer[i] === 0xff && (buffer[i + 1] === 0xc0 || buffer[i + 1] === 0xc1 || buffer[i + 1] === 0xc2)) {
+        const height = buffer.readUInt16BE(i + 5)
+        const width = buffer.readUInt16BE(i + 7)
+        return { width, height }
+      }
+      i += 2 + buffer.readUInt16BE(i + 2)
+    }
+  }
+
+  // WebP and GIF require more complex parsing, skip for now
+  return null
+}
+
+/**
+ * Check if image dimensions are suitable for a logo.
+ * Recommended: 200x200 to 2000x2000 pixels
+ */
+export function isValidLogoSize(
+  dimensions: { width: number; height: number } | null,
+): { valid: boolean; error?: string } {
+  if (!dimensions) return { valid: true } // Skip validation if we can't extract dimensions
+
+  const { width, height } = dimensions
+  const minSize = 200
+  const maxSize = 2000
+
+  if (width < minSize || height < minSize) {
+    return { valid: false, error: `Image too small. Minimum size is ${minSize}x${minSize} pixels.` }
+  }
+
+  if (width > maxSize || height > maxSize) {
+    return { valid: false, error: `Image too large. Maximum size is ${maxSize}x${maxSize} pixels.` }
+  }
+
+  // Check aspect ratio (should be roughly square for logos)
+  const aspectRatio = Math.max(width, height) / Math.min(width, height)
+  if (aspectRatio > 3) {
+    return { valid: false, error: 'Image aspect ratio is too extreme. Logos should be roughly square (max 3:1 ratio).' }
+  }
+
+  return { valid: true }
+}

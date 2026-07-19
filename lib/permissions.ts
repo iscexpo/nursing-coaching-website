@@ -44,6 +44,7 @@ export type Permission =
 const ADMIN_PERMISSIONS: Permission[] = [
   'admin.access',
   'settings.view',
+  'settings.manage',
   'course.manage',
   'student.view',
   'student.manage',
