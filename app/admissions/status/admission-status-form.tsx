@@ -6,6 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { Loader2 } from 'lucide-react'
 
+function normalizePhone(raw: string): string {
+  const digits = raw.replace(/\D/g, '')
+  if (digits.startsWith('880') && digits.length === 13) return `+${digits}`
+  if (digits.startsWith('01') && digits.length === 11) return `+880${digits}`
+  return raw.trim()
+}
+
 interface ApplicationStatus {
   id: string
   reference: string
@@ -34,7 +41,7 @@ export function AdmissionStatusForm() {
 
     try {
       const res = await fetch(
-        `/api/admissions/status?reference=${encodeURIComponent(reference)}&phone=${encodeURIComponent(phone)}`,
+        `/api/admissions/status?reference=${encodeURIComponent(reference)}&phone=${encodeURIComponent(normalizePhone(phone))}`,
       )
       const data = await res.json()
       if (!res.ok) {

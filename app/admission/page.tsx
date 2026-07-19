@@ -48,6 +48,17 @@ function emptyEducation(): EducationField {
 
 type AdmissionStep = 1 | 2 | 3 | 4
 
+function normalizePhone(raw: string): string {
+  const digits = raw.replace(/\D/g, '')
+  if (digits.startsWith('880') && digits.length === 13) return `+${digits}`
+  if (digits.startsWith('01') && digits.length === 11) return `+880${digits}`
+  return raw.trim()
+}
+
+function isValidPhone(raw: string): boolean {
+  return /^\+?880[0-9]{10}$/.test(normalizePhone(raw))
+}
+
 const STEP_ICONS = [User, GraduationCap, BookOpen, FileText]
 const BOARDS = [
   'বোর্ড নির্বাচন করুন',
@@ -190,6 +201,7 @@ export default function AdmissionPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [phoneError, setPhoneError] = useState('')
 
   useEffect(() => {
     fetch('/api/courses')
@@ -227,7 +239,7 @@ export default function AdmissionPage() {
   ]
 
   const hasStepOneValues =
-    form.name.trim().length > 0 && form.phone.trim().length > 0
+    form.name.trim().length > 0 && isValidPhone(form.phone)
   const hasStepTwoValues = true
   const hasStepThreeValues = form.course.length > 0
 
@@ -235,14 +247,21 @@ export default function AdmissionPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setPhoneError('')
+
+    if (!isValidPhone(form.phone)) {
+      setPhoneError('সঠিক ফোন নম্বর দিন (যেমন: 01712345678)')
+      setLoading(false)
+      return
+    }
 
     try {
       const res = await fetch('/api/admission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: form.name,
-          phone: form.phone,
+          name: form.name.trim(),
+          phone: normalizePhone(form.phone),
           courseSlug: form.course,
           message: form.message || undefined,
           ssc: form.ssc.roll || form.ssc.registrationNo ? form.ssc : undefined,
@@ -269,7 +288,14 @@ export default function AdmissionPage() {
   }
 
   function handleNext() {
-    if (step === 1 && !hasStepOneValues) return
+    if (step === 1) {
+      if (!hasStepOneValues) return
+      if (!isValidPhone(form.phone)) {
+        setPhoneError('সঠিক ফোন নম্বর দিন (যেমন: 01712345678)')
+        return
+      }
+      setPhoneError('')
+    }
     if (step === 3 && !hasStepThreeValues) return
     setStep((current) => Math.min(current + 1, 4) as AdmissionStep)
   }
@@ -417,13 +443,23 @@ export default function AdmissionPage() {
                           id="phone"
                           type="tel"
                           value={form.phone}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setForm({ ...form, phone: e.target.value })
-                          }
+                            if (phoneError) setPhoneError('')
+                          }}
                           placeholder="01XXXXXXXXX"
                           required
-                          className="mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                          className={`mt-1.5 block w-full rounded-xl border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:outline-none focus:ring-2 ${
+                            phoneError
+                              ? 'border-destructive focus:border-destructive focus:ring-destructive/20'
+                              : 'border-border focus:border-brand focus:ring-brand/20'
+                          }`}
                         />
+                        {phoneError && (
+                          <p className="mt-1.5 text-xs text-destructive">
+                            {phoneError}
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -527,7 +563,7 @@ export default function AdmissionPage() {
                               মোবাইল
                             </dt>
                             <dd className="text-muted-foreground">
-                              {form.phone || '-'}
+                              {normalizePhone(form.phone) || '-'}
                             </dd>
                           </div>
                           <div className="flex justify-between gap-4 rounded-lg bg-background/50 px-3 py-2">
