@@ -51,7 +51,7 @@ type AdmissionStep = 1 | 2 | 3 | 4
 function normalizePhone(raw: string): string {
   const digits = raw.replace(/\D/g, '')
   if (digits.startsWith('880') && digits.length === 13) return `+${digits}`
-  if (digits.startsWith('01') && digits.length === 11) return `+880${digits}`
+  if (digits.startsWith('01') && digits.length === 11) return `+880${digits.slice(1)}`
   return raw.trim()
 }
 
