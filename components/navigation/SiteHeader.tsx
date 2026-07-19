@@ -28,14 +28,6 @@ export function SiteHeader() {
             width={200}
             className="h-auto object-contain"
           />
-          <span className="flex flex-col leading-tight">
-            <span className="font-heading text-base font-bold text-foreground sm:text-lg">
-              {site.nameBn}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {site.city} · {th('established')}
-            </span>
-          </span>
         </Link>
 
         <DesktopNav t={t} th={th} />

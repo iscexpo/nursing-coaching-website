@@ -36,12 +36,9 @@ export function SiteFooter() {
             <img
               src={site.logo || '/logo.png'}
               alt={site.nameBn}
-            width={200}
-            className="h-auto object-contain"
+              width={200}
+              className="h-auto object-contain"
             />
-            <span className="font-heading text-base font-bold">
-              {site.nameBn}
-            </span>
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-background/70">
             {tf('description')}
