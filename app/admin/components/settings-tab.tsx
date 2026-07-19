@@ -147,6 +147,8 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
   const logoInputRef = useRef<HTMLInputElement>(null)
+  const [previousLogoUrl, setPreviousLogoUrl] = useState('')
+  const [currentMediaId, setCurrentMediaId] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -207,8 +209,13 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
       }
 
       const media = await res.json()
+      
+      // Store previous logo URL for rollback
+      setPreviousLogoUrl(form.site.logo)
+      setCurrentMediaId(media.id)
+      
       updateSite('logo', media.url)
-      setMessage('লোগো আপলোড হয়েছে')
+      setMessage('লোগো আপলোড হয়েছে - সংরক্ষণ করতে "সংরক্ষণ করুন" বাটনে ক্লিক করুন')
       setMessageType('success')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'আপলোড ব্যর্থ')
@@ -251,11 +258,27 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}))
+        
+        // Rollback: delete newly uploaded media if settings save failed
+        if (currentMediaId) {
+          try {
+            await fetch(`/api/media/${currentMediaId}`, { method: 'DELETE' })
+            updateSite('logo', previousLogoUrl)
+          } catch (rollbackError) {
+            console.error('Rollback failed:', rollbackError)
+          }
+        }
+        
         throw new Error(errorData.error || 'সংরক্ষণ ব্যর্থ')
       }
 
       setMessage('সেটিংস সফলভাবে সংরক্ষিত হয়েছে')
       setMessageType('success')
+      
+      // Clear rollback state on successful save
+      setPreviousLogoUrl('')
+      setCurrentMediaId(null)
+      
       onRefresh()
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'সংরক্ষণ ব্যর্থ')
