@@ -123,15 +123,5 @@ export function isValidLogoSize(
     }
   }
 
-  // Check aspect ratio (should be roughly square for logos)
-  const aspectRatio = Math.max(width, height) / Math.min(width, height)
-  if (aspectRatio > 3) {
-    return {
-      valid: false,
-      error:
-        'Image aspect ratio is too extreme. Logos should be roughly square (max 3:1 ratio).',
-    }
-  }
-
   return { valid: true }
 }
