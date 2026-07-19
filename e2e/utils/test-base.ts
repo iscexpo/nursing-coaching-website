@@ -1,7 +1,7 @@
-import { test as base, expect, type TestArgs } from '@playwright/test';
+import { test as base, expect, type PlaywrightTestArgs } from '@playwright/test';
 
 type MyFixtures = {
-  page: TestArgs['page'];
+  page: PlaywrightTestArgs['page'];
 };
 
 export const test = base.extend<MyFixtures>({

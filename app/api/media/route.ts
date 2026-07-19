@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { mkdir, writeFile } from 'fs/promises'
+import { randomUUID } from 'node:crypto'
 import { join, extname } from 'path'
 import { z } from 'zod/v3'
+import { uploadToStorage } from '@/lib/storage'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
@@ -16,7 +17,6 @@ import {
 } from '@/lib/media-validation'
 
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
-const uploadDir = join(process.cwd(), 'public', 'media')
 
 const metadataSchema = z.object({
   altText: z.string().max(200).optional().or(z.literal('')),
@@ -124,23 +124,39 @@ export async function POST(request: NextRequest) {
 
     const originalFilename = file.name
     const extension = extname(originalFilename) || ''
-    const savedFilename = `${crypto.randomUUID()}${extension}`
-    const filePath = join(uploadDir, savedFilename)
+    const savedFilename = `${randomUUID()}${extension}`
 
-    await mkdir(uploadDir, { recursive: true })
-    await writeFile(filePath, buffer)
+    let blobUrl: string
+    try {
+      blobUrl = await uploadToStorage(
+        `media/${savedFilename}`,
+        buffer,
+        file.type,
+      )
+    } catch (blobError) {
+      console.error('Storage upload failed:', blobError)
+      return NextResponse.json(
+        {
+          error:
+            blobError instanceof Error
+              ? blobError.message
+              : 'Failed to store media file',
+        },
+        { status: 500 },
+      )
+    }
 
     const [media] = await db
       .insert(mediaFiles)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         filename: savedFilename,
         originalFilename,
         contentType: file.type,
         size: file.size,
         altText: parsed.data.altText || null,
         description: parsed.data.description || null,
-        url: `/media/${savedFilename}`,
+        url: blobUrl,
         uploadedBy: auth.session.user.id,
       })
       .returning()
@@ -149,7 +165,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Media upload failed:', error)
     return NextResponse.json(
-      { error: 'Failed to upload media file' },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to upload media file',
+      },
       { status: 500 },
     )
   }

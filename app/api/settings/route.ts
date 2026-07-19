@@ -98,7 +98,7 @@ export async function PUT(request: NextRequest) {
     ]
     
     const hasSensitiveUpdate = sensitiveFields.some(
-      field => field in parsed.data && parsed.data[field] !== undefined && parsed.data[field] !== ''
+      field => field in parsed.data && (parsed.data as Record<string, unknown>)[field] !== undefined && (parsed.data as Record<string, unknown>)[field] !== ''
     )
     
     if (hasSensitiveUpdate && !isSuperAdmin(session.user.role)) {
