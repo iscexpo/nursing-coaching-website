@@ -104,6 +104,14 @@ export function EnrollmentsPanel({
   }, [activeCourses, courseSearch])
 
   const addDiscountNum = Math.max(0, parseInt(addForm.discount) || 0)
+  const addMaxDiscount = useMemo(() => {
+    if (addForm.selectedCourseIds.length === 0) return 0
+    return addForm.selectedCourseIds.reduce((max, cid) => {
+      const c = activeCourses.find((x) => x.id === cid)
+      const fee = c ? c.discountFee || c.fee : 0
+      return Math.max(max, fee)
+    }, 0)
+  }, [addForm.selectedCourseIds, activeCourses])
   const addTotalFee = useMemo(() => {
     return addForm.selectedCourseIds.reduce((sum, cid) => {
       const c = activeCourses.find((x) => x.id === cid)
@@ -173,21 +181,35 @@ export function EnrollmentsPanel({
   async function handleBulkAction() {
     if (selectedIds.length === 0) return
     setBulkSaving(true)
+    let successCount = 0
+    let failCount = 0
     try {
       if (bulkAction === 'status') {
         for (const id of selectedIds) {
-          await fetch(`/api/enrollments/${id}`, {
+          const res = await fetch(`/api/enrollments/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: bulkStatus }),
           })
+          if (res.ok) successCount++
+          else failCount++
         }
-        success(`${selectedIds.length}টি এনরোলমেন্ট আপডেট করা হয়েছে`)
+        if (failCount > 0) {
+          error(`${successCount}টি আপডেট হয়েছে, ${failCount}টি ব্যর্থ`)
+        } else {
+          success(`${successCount}টি এনরোলমেন্ট আপডেট করা হয়েছে`)
+        }
       } else if (bulkAction === 'cancel') {
         for (const id of selectedIds) {
-          await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
+          const res = await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
+          if (res.ok) successCount++
+          else failCount++
         }
-        success(`${selectedIds.length}টি এনরোলমেন্ট বাতিল করা হয়েছে`)
+        if (failCount > 0) {
+          error(`${successCount}টি বাতিল হয়েছে, ${failCount}টি ব্যর্থ`)
+        } else {
+          success(`${successCount}টি এনরোলমেন্ট বাতিল করা হয়েছে`)
+        }
       }
       setSelectedIds([])
       setBulkAction(null)
@@ -488,6 +510,7 @@ export function EnrollmentsPanel({
                     <input
                       type="number"
                       min="0"
+                      max={addMaxDiscount}
                       value={addForm.discount}
                       onChange={(e) =>
                         setAddForm({ ...addForm, discount: e.target.value })
@@ -495,6 +518,11 @@ export function EnrollmentsPanel({
                       placeholder="০"
                       className={inputCls}
                     />
+                    {addDiscountNum > addMaxDiscount && (
+                      <p className="mt-1 text-xs text-destructive">
+                        ছাড় কোর্স ফির চেয়ে বেশি হতে পারে না
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center justify-between text-sm mt-2 pt-2 border-t border-border">
                     <span className="text-muted-foreground">
@@ -506,11 +534,10 @@ export function EnrollmentsPanel({
                   </div>
                   {addDiscountNum > 0 && (
                     <div className="text-xs text-muted-foreground">
-                      ছাড়: ৳
+                      মোট ছাড়: ৳
                       {(
                         addDiscountNum * addForm.selectedCourseIds.length
-                      ).toLocaleString()}{' '}
-                      (প্রতিটি কোর্সে)
+                      ).toLocaleString()}
                     </div>
                   )}
                 </div>
@@ -526,8 +553,12 @@ export function EnrollmentsPanel({
                   setAddForm({ ...addForm, notes: e.target.value })
                 }
                 placeholder="ঐচ্ছিক নোট"
+                maxLength={1000}
                 className={inputCls}
               />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {addForm.notes.length}/1000
+              </p>
             </div>
 
             <button
@@ -597,8 +628,12 @@ export function EnrollmentsPanel({
                     setEditForm({ ...editForm, notes: e.target.value })
                   }
                   placeholder="নোট"
+                  maxLength={1000}
                   className={inputCls}
                 />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {editForm.notes.length}/1000
+                </p>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -618,11 +653,19 @@ export function EnrollmentsPanel({
                 <input
                   type="date"
                   value={editForm.endDate}
+                  min={editForm.startDate || undefined}
                   onChange={(e) =>
                     setEditForm({ ...editForm, endDate: e.target.value })
                   }
                   className={inputCls}
                 />
+                {editForm.startDate &&
+                  editForm.endDate &&
+                  editForm.endDate < editForm.startDate && (
+                    <p className="mt-1 text-xs text-destructive">
+                      শেষের তারিখ শুরুর তারিখের পরে হতে হবে
+                    </p>
+                  )}
               </div>
             </div>
             <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
@@ -670,7 +713,12 @@ export function EnrollmentsPanel({
             <div className="flex items-center gap-2">
               <button
                 onClick={handleEditSave}
-                disabled={editSaving}
+                disabled={
+                  editSaving ||
+                  (!!editForm.startDate &&
+                    !!editForm.endDate &&
+                    editForm.endDate < editForm.startDate)
+                }
                 className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50"
               >
                 {editSaving ? (
@@ -720,9 +768,17 @@ export function EnrollmentsPanel({
               ))}
             </select>
             <Button
-              onClick={() => {
-                setBulkAction('status')
-                handleBulkAction()
+              onClick={async () => {
+                const statusLabel = STATUS_OPTIONS.find(
+                  (s) => s.value === bulkStatus,
+                )?.label
+                const ok = await confirm(
+                  `নির্বাচিত ${selectedIds.length}টি এনরোলমেন্টের স্ট্যাটাস "${statusLabel}" এ পরিবর্তন করতে চান?`,
+                )
+                if (ok) {
+                  setBulkAction('status')
+                  handleBulkAction()
+                }
               }}
               disabled={bulkSaving}
               size="sm"
