@@ -234,7 +234,12 @@ export function ReportsPanel({
 
   const feeCollectionReport: FeeCollectionReport[] = useMemo(() => {
     return enrollments
-      .filter((e) => e.status === 'active' || e.status === 'approved')
+      .filter(
+        (e) =>
+          e.status === 'active' ||
+          e.status === 'approved' ||
+          e.status === 'pending',
+      )
       .map((e) => {
         const enrollmentPayments = payments.filter(
           (p) => p.enrollmentId === e.id && p.status === 'verified',
