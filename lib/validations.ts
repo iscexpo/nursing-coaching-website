@@ -40,7 +40,7 @@ export const createEnrollmentSchema = z
   .object({
     courseId: z.string().uuid().optional(),
     courseIds: z.array(z.string().uuid()).optional(),
-    userId: z.string().uuid().optional(),
+    userId: z.string().min(1).optional(),
     notes: z.string().max(1000).optional(),
     discount: z.number().int().min(0).optional(),
   })
@@ -95,7 +95,7 @@ export const updateTeacherSchema = createTeacherSchema.partial().extend({
 })
 
 export const createInvoiceSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.string().min(1),
   enrollmentId: z.string().uuid(),
   amount: z.number().int().positive(),
   dueDate: z.coerce.date().optional(),
@@ -109,7 +109,7 @@ export const createNotificationSchema = z.object({
     .enum(['info', 'success', 'warning', 'payment', 'enrollment'])
     .optional(),
   link: z.string().url().optional(),
-  targetUserId: z.string().uuid().optional(),
+  targetUserId: z.string().min(1).optional(),
 })
 
 export const updateProfileSchema = z.object({
@@ -261,7 +261,7 @@ export const updateContactInquirySchema = z.object({
 })
 
 export const createAttendanceSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.string().min(1),
   date: z.coerce.date(),
   status: z.enum(['present', 'late', 'absent']),
   time: z.string().max(50).optional(),
@@ -273,7 +273,7 @@ export const updateAttendanceSchema = z.object({
 })
 
 export const createAdmitCardSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.string().min(1),
   examId: z.string().uuid(),
   examName: z.string().min(1).max(200),
   examDate: z.string().min(1).max(100),
