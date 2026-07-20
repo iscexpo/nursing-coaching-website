@@ -28,6 +28,7 @@ export const createCourseSchema = z.object({
   discountFee: z.number().int().positive().optional(),
   image: z.string().url().optional(),
   features: z.array(z.string()).optional(),
+  category: z.enum(['icon', 'cornea']).optional(),
   maxStudents: z.number().int().positive().optional(),
   schedule: z.string().max(500).optional(),
 })

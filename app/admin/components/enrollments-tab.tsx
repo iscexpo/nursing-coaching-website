@@ -261,7 +261,19 @@ export function EnrollmentsPanel({
         setCourseSearch('')
         onRefresh()
       } else {
-        setAddError(data.error || 'এনরোলমেন্ট তৈরি ব্যর্থ')
+        const details = data.details
+          ? Object.entries(data.details)
+              .map(
+                ([field, msgs]) =>
+                  `${field}: ${(msgs as string[]).join(', ')}`,
+              )
+              .join('; ')
+          : ''
+        setAddError(
+          details
+            ? `${data.error} (${details})`
+            : data.error || 'এনরোলমেন্ট তৈরি ব্যর্থ',
+        )
       }
     } catch {
       setAddError('এনরোলমেন্ট তৈরি ব্যর্থ')

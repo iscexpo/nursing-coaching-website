@@ -52,6 +52,7 @@ export interface Course {
   discountFee: number | null
   image: string | null
   features: string[] | null
+  category: 'icon' | 'cornea'
   isActive: boolean
   maxStudents: number | null
   currentStudents: number

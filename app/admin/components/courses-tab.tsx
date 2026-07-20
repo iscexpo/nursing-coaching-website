@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
 import type { Course } from './types'
 import { useToast } from '@/components/ui/toast'
@@ -47,8 +47,19 @@ export function CoursesPanel({
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'icon' | 'cornea'>(
+    'all',
+  )
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { success, error, confirm } = useToast()
+
+  const filteredCourses = useMemo(
+    () =>
+      categoryFilter === 'all'
+        ? courses
+        : courses.filter((c) => c.category === categoryFilter),
+    [courses, categoryFilter],
+  )
   const [form, setForm] = useState({
     slug: '',
     courseCode: '',
@@ -58,6 +69,7 @@ export function CoursesPanel({
     duration: '',
     fee: 0,
     discountFee: 0,
+    category: 'icon' as 'icon' | 'cornea',
     image: '',
     maxStudents: 0,
     schedule: '',
@@ -73,6 +85,7 @@ export function CoursesPanel({
       duration: '',
       fee: 0,
       discountFee: 0,
+      category: 'icon',
       image: '',
       maxStudents: 0,
       schedule: '',
@@ -129,6 +142,7 @@ export function CoursesPanel({
       if (form.courseCode.trim()) body.courseCode = form.courseCode.trim()
       if (form.shortDescription.trim())
         body.shortDescription = form.shortDescription.trim()
+      if (form.category) body.category = form.category
       if (form.discountFee) body.discountFee = Number(form.discountFee)
       if (form.image.trim()) body.image = form.image.trim()
       if (form.maxStudents) body.maxStudents = Number(form.maxStudents)
@@ -188,6 +202,7 @@ export function CoursesPanel({
       duration: course.duration,
       fee: course.fee,
       discountFee: course.discountFee || 0,
+      category: course.category || 'icon',
       image: course.image || '',
       maxStudents: course.maxStudents || 0,
       schedule: course.schedule || '',
@@ -206,21 +221,34 @@ export function CoursesPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
           কোর্স ব্যবস্থাপনা
         </h3>
-        <button
-          onClick={() => {
-            setShowForm(true)
-            setEditing(null)
-            resetForm()
-          }}
-          className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
-        >
-          <Plus className="size-4" />
-          নতুন কোর্স
-        </button>
+        <div className="flex items-center gap-2">
+          <select
+            value={categoryFilter}
+            onChange={(e) =>
+              setCategoryFilter(e.target.value as 'all' | 'icon' | 'cornea')
+            }
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none"
+          >
+            <option value="all">সকল ক্যাটাগরি</option>
+            <option value="icon">Icon</option>
+            <option value="cornea">Cornea</option>
+          </select>
+          <button
+            onClick={() => {
+              setShowForm(true)
+              setEditing(null)
+              resetForm()
+            }}
+            className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+          >
+            <Plus className="size-4" />
+            নতুন কোর্স
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -271,6 +299,24 @@ export function CoursesPanel({
                   placeholder="যেমন: NAC-2025"
                   className={inputCls}
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground">
+                  ক্যাটাগরি
+                </label>
+                <select
+                  value={form.category}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      category: e.target.value as 'icon' | 'cornea',
+                    })
+                  }
+                  className={inputCls}
+                >
+                  <option value="icon">Icon</option>
+                  <option value="cornea">Cornea</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
@@ -483,13 +529,18 @@ export function CoursesPanel({
               </tr>
             </thead>
             <tbody>
-              {courses.map((c) => (
+              {filteredCourses.map((c) => (
                 <tr
                   key={c.id}
                   className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
                 >
                   <td className="px-4 py-3 font-medium text-foreground">
-                    {c.title}
+                    <div className="flex items-center gap-2">
+                      {c.title}
+                      <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                        {c.category === 'cornea' ? 'Cornea' : 'Icon'}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-center">
                     {c.image ? (
