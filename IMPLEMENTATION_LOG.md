@@ -34,7 +34,7 @@
 
 ### 1.10 Demo Admin User ✅
 - Confirmed `scripts/seed-demo-admin.ts` exists
-- Admin credentials: `admin@cornia.co` / `Admin123!`
+- Admin credentials: `admin@khulnasoft.com` / `Admin123!`
 
 ---
 

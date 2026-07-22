@@ -140,7 +140,7 @@ npx tsx scripts/seed-demo-admin.ts
 
 | Field    | Value             |
 | -------- | ----------------- |
-| Email    | `admin@cornia.co` |
+| Email    | `admin@khulnasoft.com` |
 | Password | `Admin123!`       |
 | Phone    | `+8801784176442`  |
 

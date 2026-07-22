@@ -4,7 +4,7 @@
 export const testConfig = {
   // Admin credentials (from README.md demo admin)
   admin: {
-    email: process.env.TEST_ADMIN_EMAIL || 'admin@cornia.co',
+    email: process.env.TEST_ADMIN_EMAIL || 'admin@khulnasoft.com',
     password: process.env.TEST_ADMIN_PASSWORD || 'Admin123!',
   },
 
