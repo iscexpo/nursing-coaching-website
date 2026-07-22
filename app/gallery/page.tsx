@@ -3,7 +3,7 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
-import { GALLERY } from '@/lib/site-data'
+import { GALLERY, SITE } from '@/lib/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 
 const CAPTION_FALLBACKS: Record<string, string> = {
@@ -14,9 +14,9 @@ const CAPTION_FALLBACKS: Record<string, string> = {
 }
 
 export const metadata = {
-  title: 'Gallery | ISC Expo - Icon Skill & Career Expo',
+  title: `Gallery | ${SITE.name}`,
   description:
-    'Photo gallery of ISC Expo - Icon Skill & Career Expo — seminars, batch photos, prize giving ceremonies and classes.',
+    `Photo gallery of ${SITE.name} — seminars, batch photos, prize giving ceremonies and classes.`,
   alternates: { canonical: '/gallery' },
 }
 
@@ -31,7 +31,7 @@ export default function GalleryPage() {
             <SectionHeading
               eyebrow="Gallery"
               title="Our Photos"
-              description="Photos from various events, seminars and classes at ISC Expo - Icon Skill & Career Expo."
+              description={`Photos from various events, seminars and classes at ${SITE.name}.`}
             />
           </div>
         </section>

@@ -117,7 +117,7 @@ export default function SignInPage() {
           <div className="flex items-center gap-3 mb-8">
             <Image
               src="/logo.png"
-              alt="ISC Expo - Icon Skill & Career Expo"
+              alt={site.nameEn}
               width={48}
               height={30}
               className="object-contain"
@@ -131,7 +131,7 @@ export default function SignInPage() {
             <span className="mt-1 block text-gold">যাত্রা শুরু করুন</span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
-            ISC Expo - Icon Skill & Career Expo-এ লগইন করে আপনার কোর্স, ফলাফল ও
+            {site.nameBn}-এ লগইন করে আপনার কোর্স, ফলাফল ও
             পেমেন্ট ট্র্যাক করুন।
           </p>
           <div className="mt-10 grid grid-cols-3 gap-4 text-center">
@@ -170,7 +170,7 @@ export default function SignInPage() {
             >
               <Image
                 src="/logo.png"
-                alt="ISC Expo - Icon Skill & Career Expo"
+                alt={site.nameEn}
                 width={36}
                 height={22}
                 className="object-contain"
@@ -183,7 +183,7 @@ export default function SignInPage() {
               সাইন ইন করুন
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              ISC Expo - Icon Skill & Career Expo পোর্টালে প্রবেশ করুন
+              {site.nameBn} পোর্টালে প্রবেশ করুন
             </p>
           </div>
 

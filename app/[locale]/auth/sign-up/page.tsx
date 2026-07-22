@@ -166,7 +166,7 @@ export default function SignUpPage() {
           <div className="flex items-center gap-3 mb-8">
             <Image
               src="/logo.png"
-              alt="ISC Expo - Icon Skill & Career Expo"
+              alt={site.nameEn}
               width={48}
               height={30}
               className="object-contain"
@@ -217,7 +217,7 @@ export default function SignUpPage() {
             >
               <Image
                 src="/logo.png"
-                alt="ISC Expo - Icon Skill & Career Expo"
+                alt={site.nameEn}
                 width={36}
                 height={22}
                 className="object-contain"

@@ -12,6 +12,8 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "db:seed": "node --experimental-strip-types scripts/seed-demo-admin.ts",
+    "db:clean": "node --experimental-strip-types scripts/clean-db.ts",
+    "db:reset": "node --experimental-strip-types scripts/clean-db.ts && node --experimental-strip-types scripts/seed-demo-admin.ts",
     "db:migrate": "drizzle-kit push",
     "test": "vitest",
     "test:coverage": "vitest --coverage",

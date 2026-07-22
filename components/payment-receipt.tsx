@@ -2,6 +2,7 @@
 
 import { QrCode } from 'lucide-react'
 import { Button } from './ui/button'
+import { SITE } from '@/lib/site-data'
 
 interface PaymentReceiptProps {
   receiptNumber: string
@@ -35,7 +36,7 @@ export function PaymentReceipt({
       <div className="bg-white text-black p-8 rounded-lg shadow-lg print:shadow-none">
         {/* Header */}
         <div className="border-b-2 border-gray-300 pb-4 mb-6">
-          <h1 className="text-3xl font-bold text-center mb-2">ISC Expo</h1>
+          <h1 className="text-3xl font-bold text-center mb-2">{SITE.nameBn}</h1>
           <h2 className="text-xl font-semibold text-center text-gray-600">
             Payment Receipt
           </h2>

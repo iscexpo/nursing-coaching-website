@@ -9,10 +9,11 @@ import { Breadcrumb } from '@/components/breadcrumb'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
+import { SITE } from '@/lib/site-data'
 
 export const metadata = {
-  title: 'Notice | ISC Expo - Icon Skill & Career Expo',
-  description: 'Latest notices and updates from ISC Expo - Icon Skill & Career Expo.',
+  title: `Notice | ${SITE.name}`,
+  description: `Latest notices and updates from ${SITE.name}.`,
   alternates: { canonical: '/notice' },
 }
 
@@ -51,7 +52,7 @@ export default async function NoticePage() {
             <SectionHeading
               eyebrow="Notice Board"
               title="All Notices"
-              description="Latest notices, updates and important information from ISC Expo - Icon Skill & Career Expo."
+              description={`Latest notices, updates and important information from ${SITE.name}.`}
             />
           </div>
         </section>

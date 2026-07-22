@@ -54,8 +54,8 @@ export type CmsContentInput = {
 
 export const defaultCmsContent: CmsContent = {
   site: {
-    nameBn: 'ISC Expo - Icon Skill & Career Expo',
-    nameEn: 'ISC Expo - Icon Skill & Career Expo',
+    nameBn: process.env.NEXT_PUBLIC_SITE_NAME_BN || 'ISC Expo - Icon Skill & Career Expo',
+    nameEn: process.env.NEXT_PUBLIC_SITE_NAME || 'ISC Expo - Icon Skill & Career Expo',
     tagline: 'সাফল্যের জন্য প্রস্তুতি',
     logo: '/logo.jpeg',
     city: 'খুলনা',
@@ -63,7 +63,7 @@ export const defaultCmsContent: CmsContent = {
     phoneHref: 'tel:+8801784176442',
     whatsapp: 'https://wa.me/8801784176442',
     messenger: 'https://m.me/isclms',
-    email: 'info@iscexpo.edu.bd',
+    email: process.env.NEXT_PUBLIC_SITE_EMAIL || 'info@iscexpo.edu.bd',
     facebook: 'https://www.facebook.com/CorniaNursingKhulna',
     youtube: 'https://youtube.com/@isclms',
     addressBn: 'কলাবাগান মোড়, খুলনা মেডিকেল কলেজ হাসপাতালের সামনে, খুলনা।',

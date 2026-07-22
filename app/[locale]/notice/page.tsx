@@ -10,10 +10,11 @@ import { Breadcrumb } from '@/components/breadcrumb'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
+import { SITE } from '@/lib/site-data'
 
 export const metadata = {
-  title: 'Notices | ISC Expo - Icon Skill & Career Expo',
-  description: 'Latest notices, updates & important information from ISC Expo - Icon Skill & Career Expo.',
+  title: `Notices | ${SITE.name}`,
+  description: `Latest notices, updates & important information from ${SITE.name}.`,
   alternates: { canonical: '/notice' },
 }
 
