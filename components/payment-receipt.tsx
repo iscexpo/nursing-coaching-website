@@ -36,8 +36,12 @@ export function PaymentReceipt({
         {/* Header */}
         <div className="border-b-2 border-gray-300 pb-4 mb-6">
           <h1 className="text-3xl font-bold text-center mb-2">ISC Expo</h1>
-          <h2 className="text-xl font-semibold text-center text-gray-600">Payment Receipt</h2>
-          <p className="text-center text-sm text-gray-500 mt-2">Receipt #{receiptNumber}</p>
+          <h2 className="text-xl font-semibold text-center text-gray-600">
+            Payment Receipt
+          </h2>
+          <p className="text-center text-sm text-gray-500 mt-2">
+            Receipt #{receiptNumber}
+          </p>
         </div>
 
         {/* Receipt Details */}
@@ -46,7 +50,9 @@ export function PaymentReceipt({
           <div className="space-y-3 text-sm">
             <div>
               <p className="text-gray-600 font-medium">Receipt Date</p>
-              <p className="text-lg font-semibold">{new Date(date).toLocaleDateString()}</p>
+              <p className="text-lg font-semibold">
+                {new Date(date).toLocaleDateString()}
+              </p>
             </div>
             <div>
               <p className="text-gray-600 font-medium">Payment Method</p>
@@ -89,8 +95,12 @@ export function PaymentReceipt({
 
         {/* Amount Section */}
         <div className="border-2 border-gray-300 rounded-lg p-6 mb-8 text-center bg-blue-50">
-          <p className="text-gray-600 text-sm font-medium mb-2">Payment Amount</p>
-          <p className="text-4xl font-bold text-blue-600">৳ {amount.toLocaleString()}</p>
+          <p className="text-gray-600 text-sm font-medium mb-2">
+            Payment Amount
+          </p>
+          <p className="text-4xl font-bold text-blue-600">
+            ৳ {amount.toLocaleString()}
+          </p>
         </div>
 
         {/* Notes */}
@@ -104,7 +114,8 @@ export function PaymentReceipt({
         {/* Footer */}
         <div className="border-t-2 border-gray-300 pt-6 mt-8">
           <p className="text-center text-xs text-gray-500 mb-4">
-            This is an automatically generated receipt. No signature is required.
+            This is an automatically generated receipt. No signature is
+            required.
           </p>
           <div className="flex justify-center">
             <QrCode className="size-16 text-gray-400" />

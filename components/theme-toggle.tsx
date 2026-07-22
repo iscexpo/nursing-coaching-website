@@ -14,7 +14,12 @@ export function ThemeToggle({ className }: { className?: string }) {
   ]
 
   return (
-    <div className={cn('inline-flex rounded-lg border border-border bg-secondary/50 p-0.5', className)}>
+    <div
+      className={cn(
+        'inline-flex rounded-lg border border-border bg-secondary/50 p-0.5',
+        className,
+      )}
+    >
       {options.map((opt) => {
         const Icon = opt.icon
         const active = theme === opt.value

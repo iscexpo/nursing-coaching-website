@@ -26,8 +26,7 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(attendance.userId, userId))
     }
 
-    const where =
-      conditions.length > 0 ? and(...conditions) : undefined
+    const where = conditions.length > 0 ? and(...conditions) : undefined
 
     const [summaryRow] = await db
       .select({
@@ -74,10 +73,12 @@ export async function GET(request: NextRequest) {
       .leftJoin(user, eq(attendance.userId, user.id))
       .where(where)
       .groupBy(attendance.userId, user.name)
-      .orderBy(desc(sql`case when count(*) > 0
+      .orderBy(
+        desc(sql`case when count(*) > 0
         then sum(case when ${attendance.status} in ('present', 'late') then 1 else 0 end)::float / count(*)::float * 100
         else 0
-      end`))
+      end`),
+      )
       .limit(20)
 
     return NextResponse.json({

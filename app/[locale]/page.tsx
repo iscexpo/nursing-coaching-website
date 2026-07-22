@@ -1,8 +1,6 @@
 import { setRequestLocale } from 'next-intl/server'
 import { SiteHeader } from '@/components/navigation'
 import { SiteFooter } from '@/components/site-footer'
-import { FloatingWhatsApp } from '@/components/floating-whatsapp'
-import { BackToTop } from '@/components/back-to-top'
 import { Hero } from '@/components/sections/hero'
 import { WhyUs } from '@/components/sections/why-us'
 import { Courses } from '@/components/sections/courses'
@@ -62,8 +60,6 @@ export default async function HomePage({
         <Contact />
       </main>
       <SiteFooter />
-      <FloatingWhatsApp />
-      <BackToTop />
     </>
   )
 }

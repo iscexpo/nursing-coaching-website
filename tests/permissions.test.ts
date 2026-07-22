@@ -97,8 +97,22 @@ describe('hasPermission', () => {
 describe('getSessionPermissions', () => {
   it('returns admin permissions for admin session', () => {
     const session = {
-      user: { id: '1', name: 'Test', email: 't@t.com', role: 'admin', createdAt: new Date(), updatedAt: new Date() },
-      session: { id: '1', token: 'x', userId: '1', expiresAt: new Date(), createdAt: new Date(), updatedAt: new Date() },
+      user: {
+        id: '1',
+        name: 'Test',
+        email: 't@t.com',
+        role: 'admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      session: {
+        id: '1',
+        token: 'x',
+        userId: '1',
+        expiresAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     }
     const perms = getSessionPermissions(session)
     expect(perms).toContain('admin.access' as Permission)
@@ -106,8 +120,22 @@ describe('getSessionPermissions', () => {
 
   it('returns empty for student session', () => {
     const session = {
-      user: { id: '1', name: 'Test', email: 't@t.com', role: 'student', createdAt: new Date(), updatedAt: new Date() },
-      session: { id: '1', token: 'x', userId: '1', expiresAt: new Date(), createdAt: new Date(), updatedAt: new Date() },
+      user: {
+        id: '1',
+        name: 'Test',
+        email: 't@t.com',
+        role: 'student',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      session: {
+        id: '1',
+        token: 'x',
+        userId: '1',
+        expiresAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     }
     const perms = getSessionPermissions(session)
     expect(perms).toHaveLength(0)

@@ -82,7 +82,26 @@
     "copied": "Copied!",
     "copyNumber": "Copy Number",
     "time": "Time",
-    "course": "Course"
+    "course": "Course",
+    "backToTop": "Back to top",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "image": "Image",
+    "previous": "Previous",
+    "next": "Next",
+    "story": "Story",
+    "signOut": "Sign Out",
+    "present": "Present",
+    "absent": "Absent",
+    "late": "Late",
+    "cash": "Cash",
+    "bank": "Bank",
+    "paid": "Paid",
+    "partial": "Partial",
+    "unpaid": "Unpaid",
+    "overdue": "Overdue"
   },
   "header": {
     "welcome": "Welcome to",
@@ -133,6 +152,27 @@
     "title": "Our Proud Students",
     "description": "Those whose dreams ISC Expo helped fulfill."
   },
+  "teachersSection": {
+    "eyebrow": "Our Teachers",
+    "title": "Experienced & Skilled Mentors",
+    "description": "Expert teachers providing direct supervision in every subject."
+  },
+  "faqSection": {
+    "eyebrow": "Frequently Asked",
+    "title": "Your Questions, Our Answers",
+    "noFaq": "No FAQ found."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or has been moved."
+  },
+  "director": {
+    "name": "Md. Miraz Islam",
+    "designation": "Founder & Director",
+    "messageLabel": "Director's Message",
+    "message": "Dear students, nursing is a great profession — of service and respect. The only dream behind establishing ISC Expo - Icon Skill & Career Expo is that every meritorious student of Khulna gets proper guidance and can enroll in their desired institution. With experienced faculty, modern teaching methods and a sincere environment, we are by your side.",
+    "signOff": "— Your Well-wisher"
+  },
   "freeClass": {
     "badge": "Completely Free",
     "title": "Join the Next Free Class",
@@ -141,7 +181,9 @@
     "date": "Date",
     "time": "Time",
     "seatsLeft": "Seats Left",
-    "seatsCount": "Only 15 seats"
+    "seatsCount": "Only 15 seats",
+    "timeValue": "10:00 AM",
+    "friday": "Friday"
   },
   "modelTestNotice": {
     "modelTest": {
@@ -252,23 +294,91 @@
   },
   "noticePage": {
     "title": "All Notices",
-    "description": "Latest notices, updates & important information from ISC Expo - Icon Skill & Career Expo."
+    "description": "Latest notices, updates & important information from ISC Expo - Icon Skill & Career Expo.",
+    "noNotices": "No notices available",
+    "comingSoon": "Notices will be published soon.",
+    "urgent": "Urgent"
   },
   "galleryPage": {
     "title": "Our Photos",
-    "description": "Photos from various events, seminars & classes at ISC Expo - Icon Skill & Career Expo."
+    "description": "Photos from various events, seminars & classes at ISC Expo - Icon Skill & Career Expo.",
+    "captions": {
+      "seminar": "Seminar",
+      "prizeGiving": "Prize Giving",
+      "batchPhoto": "Batch Photo",
+      "freeClass": "Free Class"
+    }
   },
   "contactPage": {
     "title": "Contact Us",
-    "description": "For any questions or information, contact us directly."
+    "description": "For any questions or information, contact us directly.",
+    "contactInfo": "Contact Information",
+    "officeHours": "Office Hours",
+    "officeSchedule": "Sat—Thu: 9:00 AM — 8:00 PM",
+    "officeClosed": "Friday: Closed",
+    "messageSent": "Message Sent!",
+    "messageSentDesc": "We will contact you soon.",
+    "sendMessage": "Send Message",
+    "yourMessage": "Message",
+    "yourMessagePlaceholder": "Type your message",
+    "sending": "Sending...",
+    "errorDefault": "Something went wrong. Please try again.",
+    "errorNetwork": "Network error. Please try again.",
+    "chatNow": "Chat Now"
   },
   "coursesPage": {
     "title": "All Courses",
-    "description": "From BNMC admission to job preparation — experienced teachers & modern teaching methods in every course."
+    "description": "From BNMC admission to job preparation — experienced teachers & modern teaching methods in every course.",
+    "noCourses": "No courses found",
+    "noImage": "No image available",
+    "enrollNow": "Enroll Now →",
+    "courseDetail": "Course Details",
+    "duration": "Duration",
+    "fee": "Fee",
+    "discount": "Discount",
+    "schedule": "Schedule",
+    "enrollInCourse": "Enroll in this Course"
   },
   "modelTestPage": {
     "title": "Weekly Model Test",
-    "description": "Participate in our weekly model tests modeled after BNMC admission exams and assess yourself."
+    "description": "Participate in our weekly model tests modeled after BNMC admission exams and assess yourself.",
+    "mcqBased": "MCQ Based Exam",
+    "mcqBasedDesc": "Questions following BNMC pattern",
+    "timedExam": "Timed Exam",
+    "timedExamDesc": "Real exam environment experience",
+    "instantResult": "Instant Result",
+    "instantResultDesc": "Results available right after submission",
+    "weeklyUpdate": "Weekly Updates",
+    "weeklyUpdateDesc": "New exams added regularly",
+    "availableExams": "Available Exams",
+    "noExams": "No exams found",
+    "noExamsDesc": "New exams will be added soon. Contact us on WhatsApp.",
+    "contactWhatsApp": "Contact on WhatsApp",
+    "exams": "exams",
+    "questions": "questions",
+    "minutes": "min",
+    "start": "Start",
+    "joinModelTest": "Join Model Test",
+    "joinModelTestDesc": "Fill out the form below to apply for the model test, or contact us directly on WhatsApp.",
+    "contactOnWhatsApp": "Contact on WhatsApp",
+    "callNow": "Call Now",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "applyForm": {
+      "name": "Name *",
+      "namePlaceholder": "Your name",
+      "phone": "Mobile Number *",
+      "preferredExam": "Preferred Exam",
+      "selectExam": "Select exam (optional)",
+      "preferredSubject": "Preferred Subject",
+      "subjectPlaceholder": "e.g. Anatomy",
+      "message": "Message",
+      "messageOptional": "Optional",
+      "applyButton": "Apply for Model Test",
+      "successMessage": "Application received",
+      "errorMessage": "Failed to submit application"
+    }
   },
   "admissionStatusPage": {
     "title": "What is the Status of Your Application?",

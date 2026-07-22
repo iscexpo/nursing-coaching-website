@@ -63,7 +63,12 @@ export function ConfirmDialog({
     >
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-lg">
         <div className="mb-4">
-          <h2 id="confirm-dialog-title" className="text-lg font-semibold text-foreground">{title}</h2>
+          <h2
+            id="confirm-dialog-title"
+            className="text-lg font-semibold text-foreground"
+          >
+            {title}
+          </h2>
           {description && (
             <p className="mt-2 text-sm text-muted-foreground">{description}</p>
           )}

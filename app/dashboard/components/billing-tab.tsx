@@ -126,7 +126,9 @@ export function BillingSection({
                 <EnrollmentStatusBadge status={e.status} />
               </div>
               <div className="mt-2 flex gap-4 text-sm">
-                <span>{tc('total')}: ৳{e.totalFee.toLocaleString()}</span>
+                <span>
+                  {tc('total')}: ৳{e.totalFee.toLocaleString()}
+                </span>
                 <span className="text-green">
                   {t('amountPaid')}: ৳{e.paidAmount.toLocaleString()}
                 </span>
@@ -160,9 +162,7 @@ export function BillingSection({
                 <Phone className="size-5" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-foreground">
-                  bKash
-                </p>
+                <p className="font-semibold text-foreground">bKash</p>
                 <p className="text-xs text-muted-foreground">{t('sendTo')}</p>
               </div>
             </button>
@@ -177,9 +177,7 @@ export function BillingSection({
                 <Phone className="size-5" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-foreground">
-                  Nagad
-                </p>
+                <p className="font-semibold text-foreground">Nagad</p>
                 <p className="text-xs text-muted-foreground">{t('sendTo')}</p>
               </div>
             </button>
@@ -320,7 +318,8 @@ export function BillingSection({
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="font-heading text-lg font-bold text-foreground">
-                {paymentMethod === 'bkash' ? 'bKash' : 'Nagad'} {t('submitPayment')}
+                {paymentMethod === 'bkash' ? 'bKash' : 'Nagad'}{' '}
+                {t('submitPayment')}
               </h3>
               <button
                 onClick={() => setShowPaymentModal(false)}

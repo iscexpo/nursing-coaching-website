@@ -32,10 +32,7 @@ const ENROLLMENT_TRANSITIONS: Record<EnrollmentStatus, EnrollmentStatus[]> = {
   suspended: ['active', 'cancelled'],
 }
 
-export function isValidEnrollmentTransition(
-  from: string,
-  to: string,
-): boolean {
+export function isValidEnrollmentTransition(from: string, to: string): boolean {
   const allowed = ENROLLMENT_TRANSITIONS[from as EnrollmentStatus]
   if (!allowed) return false
   return allowed.includes(to as EnrollmentStatus)
@@ -54,9 +51,7 @@ export function getEnrollmentTransitionError(
  * Get the timestamp column name for a given status transition.
  * Used to auto-set lifecycle timestamps when status changes.
  */
-export function getLifecycleTimestamp(
-  status: string,
-): string | null {
+export function getLifecycleTimestamp(status: string): string | null {
   switch (status) {
     case 'approved':
       return 'approvedAt'
@@ -156,13 +151,62 @@ const GRADE_TABLE: Array<{
   label: string
   labelBn: string
 }> = [
-  { min: 80, max: 100, grade: 'A+', gpa: 5.0, label: 'A+ (Outstanding)', labelBn: 'A+ (অসাধারণ)' },
-  { min: 70, max: 79, grade: 'A', gpa: 4.0, label: 'A (Excellent)', labelBn: 'A (সুন্দর)' },
-  { min: 60, max: 69, grade: 'B+', gpa: 3.5, label: 'B+ (Very Good)', labelBn: 'B+ (খুব ভালো)' },
-  { min: 50, max: 59, grade: 'B', gpa: 3.0, label: 'B (Good)', labelBn: 'B (ভালো)' },
-  { min: 40, max: 49, grade: 'C+', gpa: 2.5, label: 'C+ (Above Average)', labelBn: 'C+ (গড়ের উপরে)' },
-  { min: 33, max: 39, grade: 'C', gpa: 2.0, label: 'C (Average)', labelBn: 'C (গড়)' },
-  { min: 0, max: 32, grade: 'F', gpa: 0.0, label: 'F (Fail)', labelBn: 'F (ব্যর্থ)' },
+  {
+    min: 80,
+    max: 100,
+    grade: 'A+',
+    gpa: 5.0,
+    label: 'A+ (Outstanding)',
+    labelBn: 'A+ (অসাধারণ)',
+  },
+  {
+    min: 70,
+    max: 79,
+    grade: 'A',
+    gpa: 4.0,
+    label: 'A (Excellent)',
+    labelBn: 'A (সুন্দর)',
+  },
+  {
+    min: 60,
+    max: 69,
+    grade: 'B+',
+    gpa: 3.5,
+    label: 'B+ (Very Good)',
+    labelBn: 'B+ (খুব ভালো)',
+  },
+  {
+    min: 50,
+    max: 59,
+    grade: 'B',
+    gpa: 3.0,
+    label: 'B (Good)',
+    labelBn: 'B (ভালো)',
+  },
+  {
+    min: 40,
+    max: 49,
+    grade: 'C+',
+    gpa: 2.5,
+    label: 'C+ (Above Average)',
+    labelBn: 'C+ (গড়ের উপরে)',
+  },
+  {
+    min: 33,
+    max: 39,
+    grade: 'C',
+    gpa: 2.0,
+    label: 'C (Average)',
+    labelBn: 'C (গড়)',
+  },
+  {
+    min: 0,
+    max: 32,
+    grade: 'F',
+    gpa: 0.0,
+    label: 'F (Fail)',
+    labelBn: 'F (ব্যর্থ)',
+  },
 ]
 
 export function calculateGrade(score: number, total: number): GradeResult {
@@ -170,7 +214,12 @@ export function calculateGrade(score: number, total: number): GradeResult {
   const pct = Math.round((score / total) * 100)
   for (const row of GRADE_TABLE) {
     if (pct >= row.min && pct <= row.max) {
-      return { grade: row.grade, gpa: row.gpa, label: row.label, labelBn: row.labelBn }
+      return {
+        grade: row.grade,
+        gpa: row.gpa,
+        label: row.label,
+        labelBn: row.labelBn,
+      }
     }
   }
   return { grade: 'F', gpa: 0, label: 'F (Fail)', labelBn: 'F (ব্যর্থ)' }
@@ -186,7 +235,13 @@ export function calculateExamScore(
   answers: Record<string, number>,
   questions: Array<{ id: string; correctIndex: number }>,
   negativeMarking: boolean = false,
-): { score: number; correct: number; wrong: number; skipped: number; total: number } {
+): {
+  score: number
+  correct: number
+  wrong: number
+  skipped: number
+  total: number
+} {
   let correct = 0
   let wrong = 0
   let skipped = 0

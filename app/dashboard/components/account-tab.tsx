@@ -514,13 +514,21 @@ export function AccountSection({
           </div>
         ) : (
           <div className="space-y-3">
-            <InfoRow icon={UserCog} label={t('nameLabel')} value={profile?.name || '—'} />
+            <InfoRow
+              icon={UserCog}
+              label={t('nameLabel')}
+              value={profile?.name || '—'}
+            />
             <InfoRow
               icon={Phone}
               label={t('phoneLabel')}
               value={profile?.phoneNumber || '—'}
             />
-            <InfoRow icon={Mail} label={t('emailLabel')} value={profile?.email || '—'} />
+            <InfoRow
+              icon={Mail}
+              label={t('emailLabel')}
+              value={profile?.email || '—'}
+            />
             <InfoRow
               icon={BookOpen}
               label={tc('studentId')}
@@ -561,7 +569,13 @@ export function AccountSection({
             </p>
             <EduViewSection label="S.S.C" value={profile?.ssc || null} t={t} />
             <EduViewSection label="H.S.C" value={profile?.hsc || null} t={t} />
-            <EduViewSection label={t('honorsOptional').replace(' (ঐচ্ছিক)', '').replace(' (Optional)', '')} value={profile?.honors || null} t={t} />
+            <EduViewSection
+              label={t('honorsOptional')
+                .replace(' (ঐচ্ছিক)', '')
+                .replace(' (Optional)', '')}
+              value={profile?.honors || null}
+              t={t}
+            />
           </div>
         )}
       </div>
@@ -658,7 +672,9 @@ export function AccountSection({
             {passwordData.newPassword &&
               passwordData.confirmPassword &&
               passwordData.newPassword !== passwordData.confirmPassword && (
-                <p className="text-xs text-destructive">{t('passwordMismatchShort')}</p>
+                <p className="text-xs text-destructive">
+                  {t('passwordMismatchShort')}
+                </p>
               )}
             <button
               onClick={handleChangePassword}
@@ -679,9 +695,7 @@ export function AccountSection({
             </button>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            {t('passwordHint')}
-          </p>
+          <p className="text-sm text-muted-foreground">{t('passwordHint')}</p>
         )}
       </div>
     </div>

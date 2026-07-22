@@ -26,8 +26,7 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(enrollments.courseId, courseId))
     }
 
-    const where =
-      conditions.length > 0 ? and(...conditions) : undefined
+    const where = conditions.length > 0 ? and(...conditions) : undefined
 
     const [summaryRow] = await db
       .select({

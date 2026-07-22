@@ -470,9 +470,7 @@ export function StudentsPanel({
         setShowForm(false)
         setEditing(null)
         setForm(emptyForm())
-        success(
-          editing ? t('saveSuccess') : t('createSuccess'),
-        )
+        success(editing ? t('saveSuccess') : t('createSuccess'))
       } else {
         const err = await res.json().catch(() => ({ error: t('saveFailed') }))
         const msg = err.details
@@ -515,9 +513,7 @@ export function StudentsPanel({
         setResettingStudent(null)
         setNewPassword('')
       } else {
-        const err = await res
-          .json()
-          .catch(() => ({ error: t('resetFailed') }))
+        const err = await res.json().catch(() => ({ error: t('resetFailed') }))
         setResetError(err.error || t('resetFailed'))
       }
     } catch {
@@ -635,7 +631,9 @@ export function StudentsPanel({
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>{t('formLabels.studentId')}</label>
+                  <label className={labelCls}>
+                    {t('formLabels.studentId')}
+                  </label>
                   <input
                     type="text"
                     value={form.studentId}
@@ -647,7 +645,9 @@ export function StudentsPanel({
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>{t('formLabels.dateOfBirth')}</label>
+                  <label className={labelCls}>
+                    {t('formLabels.dateOfBirth')}
+                  </label>
                   <input
                     type="date"
                     value={form.dateOfBirth}
@@ -698,7 +698,9 @@ export function StudentsPanel({
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>{t('formLabels.policeStation')}</label>
+                  <label className={labelCls}>
+                    {t('formLabels.policeStation')}
+                  </label>
                   <input
                     type="text"
                     value={form.policeStation}
@@ -723,7 +725,9 @@ export function StudentsPanel({
                 </div>
               </div>
               <div className="mt-3">
-                <label className={labelCls}>{t('formLabels.fullAddress')}</label>
+                <label className={labelCls}>
+                  {t('formLabels.fullAddress')}
+                </label>
                 <input
                   type="text"
                   value={form.address}
@@ -743,7 +747,9 @@ export function StudentsPanel({
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className={labelCls}>{t('formLabels.guardianName')}</label>
+                  <label className={labelCls}>
+                    {t('formLabels.guardianName')}
+                  </label>
                   <input
                     type="text"
                     value={form.guardianName}
@@ -755,7 +761,9 @@ export function StudentsPanel({
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>{t('formLabels.guardianPhone')}</label>
+                  <label className={labelCls}>
+                    {t('formLabels.guardianPhone')}
+                  </label>
                   <input
                     type="text"
                     value={form.guardianPhone}
@@ -908,9 +916,7 @@ export function StudentsPanel({
                 <tr>
                   <td colSpan={7}>
                     <EmptyState
-                      title={
-                        search ? t('emptySearch') : t('emptyNoData')
-                      }
+                      title={search ? t('emptySearch') : t('emptyNoData')}
                     />
                   </td>
                 </tr>
@@ -953,7 +959,9 @@ export function StudentsPanel({
                         <span
                           className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${s.role === 'admin' ? 'bg-brand/10 text-brand' : 'bg-green/10 text-green'}`}
                         >
-                          {s.role === 'admin' ? t('roleAdmin') : t('roleStudent')}
+                          {s.role === 'admin'
+                            ? t('roleAdmin')
+                            : t('roleStudent')}
                         </span>
                         {s.admissionId && (
                           <span className="inline-flex rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-semibold text-brand">

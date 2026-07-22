@@ -98,12 +98,16 @@ describe('Lifecycle Timestamps', () => {
 describe('Auto-Expire', () => {
   it('returns true for active enrollment past expires_at', () => {
     const pastDate = new Date('2024-01-01')
-    expect(shouldAutoExpire('active', pastDate, new Date('2025-01-01'))).toBe(true)
+    expect(shouldAutoExpire('active', pastDate, new Date('2025-01-01'))).toBe(
+      true,
+    )
   })
 
   it('returns false for active enrollment before expires_at', () => {
     const futureDate = new Date('2030-01-01')
-    expect(shouldAutoExpire('active', futureDate, new Date('2025-01-01'))).toBe(false)
+    expect(shouldAutoExpire('active', futureDate, new Date('2025-01-01'))).toBe(
+      false,
+    )
   })
 
   it('returns false for non-active enrollment', () => {

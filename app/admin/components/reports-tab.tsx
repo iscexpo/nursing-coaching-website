@@ -31,7 +31,13 @@ import type {
   StudentPerformance,
 } from './types'
 
-type ReportType = 'enrollment-trends' | 'revenue' | 'attendance' | 'course-analytics' | 'fee-collection' | 'student-performance'
+type ReportType =
+  | 'enrollment-trends'
+  | 'revenue'
+  | 'attendance'
+  | 'course-analytics'
+  | 'fee-collection'
+  | 'student-performance'
 
 export function ReportsPanel({
   enrollments,
@@ -53,12 +59,28 @@ export function ReportsPanel({
   const t = useTranslations('admin.reports')
 
   const REPORT_TYPES = [
-    { id: 'enrollment-trends' as const, label: t('types.enrollmentTrends'), icon: Users },
+    {
+      id: 'enrollment-trends' as const,
+      label: t('types.enrollmentTrends'),
+      icon: Users,
+    },
     { id: 'revenue' as const, label: t('types.revenue'), icon: DollarSign },
     { id: 'attendance' as const, label: t('types.attendance'), icon: Calendar },
-    { id: 'course-analytics' as const, label: t('types.courseAnalytics'), icon: BarChart3 },
-    { id: 'fee-collection' as const, label: t('types.feeCollection'), icon: FileText },
-    { id: 'student-performance' as const, label: t('types.studentPerformance'), icon: TrendingUp },
+    {
+      id: 'course-analytics' as const,
+      label: t('types.courseAnalytics'),
+      icon: BarChart3,
+    },
+    {
+      id: 'fee-collection' as const,
+      label: t('types.feeCollection'),
+      icon: FileText,
+    },
+    {
+      id: 'student-performance' as const,
+      label: t('types.studentPerformance'),
+      icon: TrendingUp,
+    },
   ]
 
   const MONTHS_BN = [
@@ -410,8 +432,14 @@ export function ReportsPanel({
               <BarChart data={enrollmentTrends} xKey="period" yKey="count" />
             </ChartCard>
             <DataTable
-              headers={[t('dataTableHeaders.month'), t('dataTableHeaders.enrollmentCount')]}
-              rows={enrollmentTrends.map((en) => [en.period, en.count.toString()])}
+              headers={[
+                t('dataTableHeaders.month'),
+                t('dataTableHeaders.enrollmentCount'),
+              ]}
+              rows={enrollmentTrends.map((en) => [
+                en.period,
+                en.count.toString(),
+              ])}
             />
           </div>
         )
@@ -447,7 +475,12 @@ export function ReportsPanel({
               <RevenueChart data={revenueReport} />
             </ChartCard>
             <DataTable
-              headers={[t('dataTableHeaders.month'), t('dataTableHeaders.verified'), t('dataTableHeaders.pending'), t('dataTableHeaders.total')]}
+              headers={[
+                t('dataTableHeaders.month'),
+                t('dataTableHeaders.verified'),
+                t('dataTableHeaders.pending'),
+                t('dataTableHeaders.total'),
+              ]}
               rows={revenueReport.map((r) => [
                 r.period,
                 formatCurrency(r.verified),
@@ -878,10 +911,12 @@ function RevenueChart({ data }: { data: RevenueReport[] }) {
       ))}
       <div className="flex items-center gap-4 ml-4 text-xs">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-green" /> {t('dataTableHeaders.verified')}
+          <span className="w-3 h-3 rounded bg-green" />{' '}
+          {t('dataTableHeaders.verified')}
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-gold" /> {t('dataTableHeaders.pending')}
+          <span className="w-3 h-3 rounded bg-gold" />{' '}
+          {t('dataTableHeaders.pending')}
         </span>
       </div>
     </div>
@@ -927,22 +962,30 @@ function AttendanceChart({ data }: { data: AttendanceStats[] }) {
             <span className="text-3xl font-bold text-foreground">
               {total > 0 ? Math.round((present / total) * 100) : 0}%
             </span>
-            <span className="text-xs text-muted-foreground">{t('charts.attendanceOverview')}</span>
+            <span className="text-xs text-muted-foreground">
+              {t('charts.attendanceOverview')}
+            </span>
           </div>
         </div>
       </div>
       <div className="space-y-4 text-sm">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-green" />
-          <span>{t('attendancePresent')}: {present}</span>
+          <span>
+            {t('attendancePresent')}: {present}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-gold" />
-          <span>{t('attendanceLate')}: {data.reduce((s, d) => s + d.late, 0)}</span>
+          <span>
+            {t('attendanceLate')}: {data.reduce((s, d) => s + d.late, 0)}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-destructive" />
-          <span>{t('attendanceAbsent')}: {absent}</span>
+          <span>
+            {t('attendanceAbsent')}: {absent}
+          </span>
         </div>
       </div>
     </div>

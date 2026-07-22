@@ -26,9 +26,7 @@ export function FormField({
         </label>
       )}
       <div className="flex-1">{children}</div>
-      {error && (
-        <p className="text-xs text-red-500 font-medium">{error}</p>
-      )}
+      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
       {helpText && !error && (
         <p className="text-xs text-muted-foreground">{helpText}</p>
       )}

@@ -1,7 +1,16 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import { Plus, Pencil, X, Loader2, Ban, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+  Plus,
+  Pencil,
+  X,
+  Loader2,
+  Ban,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { EnrollmentStatusBadge } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
@@ -42,14 +51,17 @@ export function EnrollmentsPanel({
 }) {
   const t = useTranslations('admin.enrollments')
 
-  const STATUS_OPTIONS = useMemo(() => [
-    { value: 'pending', label: t('statusOptions.pending') },
-    { value: 'approved', label: t('statusOptions.approved') },
-    { value: 'active', label: t('statusOptions.active') },
-    { value: 'completed', label: t('statusOptions.completed') },
-    { value: 'rejected', label: t('statusOptions.rejected') },
-    { value: 'cancelled', label: t('statusOptions.cancelled') },
-  ], [t])
+  const STATUS_OPTIONS = useMemo(
+    () => [
+      { value: 'pending', label: t('statusOptions.pending') },
+      { value: 'approved', label: t('statusOptions.approved') },
+      { value: 'active', label: t('statusOptions.active') },
+      { value: 'completed', label: t('statusOptions.completed') },
+      { value: 'rejected', label: t('statusOptions.rejected') },
+      { value: 'cancelled', label: t('statusOptions.cancelled') },
+    ],
+    [t],
+  )
 
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
@@ -211,18 +223,24 @@ export function EnrollmentsPanel({
           else failCount++
         }
         if (failCount > 0) {
-          error(t('bulkPartialSuccess', { success: successCount, fail: failCount }))
+          error(
+            t('bulkPartialSuccess', { success: successCount, fail: failCount }),
+          )
         } else {
           success(t('bulkSuccess', { count: successCount }))
         }
       } else if (bulkAction === 'cancel') {
         for (const id of selectedIds) {
-          const res = await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
+          const res = await fetch(`/api/enrollments/${id}`, {
+            method: 'DELETE',
+          })
           if (res.ok) successCount++
           else failCount++
         }
         if (failCount > 0) {
-          error(t('bulkPartialDelete', { success: successCount, fail: failCount }))
+          error(
+            t('bulkPartialDelete', { success: successCount, fail: failCount }),
+          )
         } else {
           success(t('bulkDeleteSuccess', { count: successCount }))
         }
@@ -258,7 +276,9 @@ export function EnrollmentsPanel({
         const count = data.count || 0
         const errCount = data.errors?.length || 0
         if (errCount > 0 && count > 0) {
-          setAddError(t('partialCreateSuccess', { success: count, fail: errCount }))
+          setAddError(
+            t('partialCreateSuccess', { success: count, fail: errCount }),
+          )
         } else if (errCount > 0) {
           setAddError(
             data.details
@@ -280,8 +300,7 @@ export function EnrollmentsPanel({
         const details = data.details
           ? Object.entries(data.details)
               .map(
-                ([field, msgs]) =>
-                  `${field}: ${(msgs as string[]).join(', ')}`,
+                ([field, msgs]) => `${field}: ${(msgs as string[]).join(', ')}`,
               )
               .join('; ')
           : ''
@@ -343,8 +362,7 @@ export function EnrollmentsPanel({
   }
 
   async function handleCancel(id: string) {
-    if (!(await confirm(t('cancelConfirm'))))
-      return
+    if (!(await confirm(t('cancelConfirm')))) return
     setCancelling(id)
     try {
       const res = await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
@@ -388,16 +406,25 @@ export function EnrollmentsPanel({
 
       <FilterBar
         searchValue={search}
-        onSearchChange={(v) => { setSearch(v); resetPage() }}
+        onSearchChange={(v) => {
+          setSearch(v)
+          resetPage()
+        }}
         searchPlaceholder={t('searchPlaceholder')}
         filters={[
           {
             name: 'status',
             label: 'অবস্থা',
             type: 'select',
-            options: STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label })),
+            options: STATUS_OPTIONS.map((s) => ({
+              value: s.value,
+              label: s.label,
+            })),
             value: filter,
-            onChange: (value) => { setFilter(value); resetPage() },
+            onChange: (value) => {
+              setFilter(value)
+              resetPage()
+            },
           },
         ]}
       />
@@ -445,7 +472,8 @@ export function EnrollmentsPanel({
               <div className="flex items-center justify-between">
                 <label className={labelCls}>{t('courseSelectLabel')} *</label>
                 <span className="text-xs text-muted-foreground">
-                  {addForm.selectedCourseIds.length}{t('selectedCount')}
+                  {addForm.selectedCourseIds.length}
+                  {t('selectedCount')}
                 </span>
               </div>
               <div className="mt-1 rounded-lg border border-border bg-background overflow-hidden">
@@ -527,7 +555,9 @@ export function EnrollmentsPanel({
                 </div>
                 <div className="border-t border-border pt-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{t('totalFee')}</span>
+                    <span className="text-muted-foreground">
+                      {t('totalFee')}
+                    </span>
                     <span className="font-medium text-foreground">
                       ৳
                       {addCourseFees
@@ -606,7 +636,9 @@ export function EnrollmentsPanel({
                 <Plus className="size-4" />
               )}
               {addForm.selectedCourseIds.length > 1
-                ? t('createEnrollments', { count: addForm.selectedCourseIds.length })
+                ? t('createEnrollments', {
+                    count: addForm.selectedCourseIds.length,
+                  })
                 : t('createEnrollment')}
             </button>
           </div>
@@ -699,7 +731,9 @@ export function EnrollmentsPanel({
               </div>
             </div>
             <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
-              <p className="text-sm font-semibold text-foreground">{t('feeAndDiscount')}</p>
+              <p className="text-sm font-semibold text-foreground">
+                {t('feeAndDiscount')}
+              </p>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground">
@@ -772,7 +806,8 @@ export function EnrollmentsPanel({
       {selectedIds.length > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-lg bg-brand/5 p-3 border border-brand/20">
           <span className="text-sm font-medium text-brand">
-            {selectedIds.length}{t('selectedCount')}
+            {selectedIds.length}
+            {t('selectedCount')}
           </span>
           <div className="flex items-center gap-2">
             <select
@@ -792,7 +827,10 @@ export function EnrollmentsPanel({
                   (s) => s.value === bulkStatus,
                 )?.label
                 const ok = await confirm(
-                  t('bulkStatusChangeConfirm', { count: selectedIds.length, status: statusLabel! }),
+                  t('bulkStatusChangeConfirm', {
+                    count: selectedIds.length,
+                    status: statusLabel!,
+                  }),
                 )
                 if (ok) {
                   setBulkAction('status')
@@ -811,9 +849,7 @@ export function EnrollmentsPanel({
             </Button>
             <Button
               onClick={async () => {
-                const ok = await confirm(
-                  t('bulkCancelConfirm'),
-                )
+                const ok = await confirm(t('bulkCancelConfirm'))
                 if (ok) {
                   setBulkAction('cancel')
                   handleBulkAction()
@@ -849,8 +885,7 @@ export function EnrollmentsPanel({
                   <input
                     type="checkbox"
                     checked={
-                      selectedIds.length === paged.length &&
-                      paged.length > 0
+                      selectedIds.length === paged.length && paged.length > 0
                     }
                     onChange={toggleSelectAll}
                     className="size-4 rounded border-border text-brand focus:ring-brand"
@@ -891,7 +926,9 @@ export function EnrollmentsPanel({
                   <td colSpan={10} className="px-4 py-8">
                     <EmptyState
                       title={search ? t('emptySearch') : t('emptyNoData')}
-                      description={search ? t('emptySearchHint') : t('emptyCreateHint')}
+                      description={
+                        search ? t('emptySearchHint') : t('emptyCreateHint')
+                      }
                     />
                   </td>
                 </tr>
@@ -980,7 +1017,10 @@ export function EnrollmentsPanel({
             <span className="text-sm text-muted-foreground">দেখুন:</span>
             <select
               value={pageSize}
-              onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value))
+                setPage(1)
+              }}
               className="rounded border border-border bg-background px-2 py-1 text-sm text-foreground"
             >
               <option value={10}>১০</option>

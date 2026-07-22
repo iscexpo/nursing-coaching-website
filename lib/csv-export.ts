@@ -13,7 +13,7 @@ export interface ExportColumn {
  */
 export function arrayToCSV<T extends Record<string, any>>(
   data: T[],
-  columns: ExportColumn[]
+  columns: ExportColumn[],
 ): string {
   // Create header row
   const headers = columns.map((col) => `"${col.label}"`).join(',')
@@ -33,7 +33,7 @@ export function arrayToCSV<T extends Record<string, any>>(
         // Escape quotes in values
         return `"${String(value).replace(/"/g, '""')}"`
       })
-      .join(',')
+      .join(','),
   )
 
   return [headers, ...rows].join('\n')
@@ -64,7 +64,7 @@ export function downloadCSV(csvContent: string, filename: string): void {
 export function exportToCSV<T extends Record<string, any>>(
   data: T[],
   columns: ExportColumn[],
-  filename: string
+  filename: string,
 ): void {
   const csv = arrayToCSV(data, columns)
   downloadCSV(csv, filename)

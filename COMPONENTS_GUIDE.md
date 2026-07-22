@@ -7,6 +7,7 @@ This guide documents all available UI components for use in the ISC Expo LMS adm
 ## Form Components
 
 ### FormField
+
 **File:** `components/ui/form-field.tsx`
 
 Wraps form inputs with label, error message, and help text.
@@ -14,7 +15,7 @@ Wraps form inputs with label, error message, and help text.
 ```tsx
 import { FormField } from '@/components/ui/form-field'
 
-<FormField
+;<FormField
   label="Email Address"
   error={errors.email}
   helpText="We'll never share your email"
@@ -25,6 +26,7 @@ import { FormField } from '@/components/ui/form-field'
 ```
 
 **Props:**
+
 - `label?: string` - Field label
 - `error?: string` - Error message
 - `helpText?: string` - Help text below field
@@ -35,6 +37,7 @@ import { FormField } from '@/components/ui/form-field'
 ---
 
 ### ConfirmDialog
+
 **File:** `components/ui/confirm-dialog.tsx`
 
 Modal dialog for confirming actions with loading state.
@@ -59,6 +62,7 @@ const [isOpen, setIsOpen] = useState(false)
 ```
 
 **Props:**
+
 - `isOpen: boolean` - Show/hide dialog
 - `title: string` - Dialog title
 - `description?: string` - Additional text
@@ -72,6 +76,7 @@ const [isOpen, setIsOpen] = useState(false)
 ---
 
 ### Alert
+
 **File:** `components/ui/alert.tsx`
 
 Colored alert banner with dismiss button.
@@ -79,7 +84,7 @@ Colored alert banner with dismiss button.
 ```tsx
 import { Alert } from '@/components/ui/alert'
 
-<Alert
+;<Alert
   variant="error"
   title="Payment Failed"
   message="Unable to process payment. Please try again."
@@ -88,6 +93,7 @@ import { Alert } from '@/components/ui/alert'
 ```
 
 **Props:**
+
 - `message: string` - Alert message
 - `title?: string` - Alert title
 - `variant?: 'error' | 'warning' | 'success' | 'info'` - Alert type
@@ -100,6 +106,7 @@ import { Alert } from '@/components/ui/alert'
 ## Data Display Components
 
 ### StatusBadge
+
 **File:** `components/ui/status-badge.tsx`
 
 Colored badge for status display with icons.
@@ -118,6 +125,7 @@ import { StatusBadge, EnrollmentStatusBadge } from '@/components/ui/status-badge
 ```
 
 **Props:**
+
 - `status: string` - Status value
 - `customLabel?: string` - Override status label
 - `showIcon?: boolean` - Show icon (default true)
@@ -125,12 +133,14 @@ import { StatusBadge, EnrollmentStatusBadge } from '@/components/ui/status-badge
 - `className?: string` - Additional classes
 
 **Status Types:**
+
 - `pending`, `approved`, `rejected`, `active`, `inactive`
 - `completed`, `failed`, `warning`, `draft`, `published`
 
 ---
 
 ### DataTable with Enhanced Features
+
 **File:** `components/ui/data-table.tsx`
 
 Advanced table component with sorting, filtering, pagination.
@@ -199,6 +209,7 @@ const [pageSize, setPageSize] = useState(10)
 ## Filter & Search Components
 
 ### FilterBar
+
 **File:** `components/ui/filter-bar.tsx`
 
 Search bar with filter controls.
@@ -234,6 +245,7 @@ const [statusFilter, setStatusFilter] = useState('')
 ```
 
 **Props:**
+
 - `searchPlaceholder?: string` - Search input placeholder
 - `searchValue?: string` - Current search value
 - `onSearchChange?: (value: string) => void` - Search handler
@@ -244,6 +256,7 @@ const [statusFilter, setStatusFilter] = useState('')
 ---
 
 ### BulkActions
+
 **File:** `components/ui/bulk-actions.tsx`
 
 Toolbar showing bulk action buttons for selected items.
@@ -251,7 +264,7 @@ Toolbar showing bulk action buttons for selected items.
 ```tsx
 import { BulkActions } from '@/components/ui/bulk-actions'
 
-<BulkActions
+;<BulkActions
   selectedCount={selected.length}
   totalCount={students.length}
   actions={[
@@ -284,6 +297,7 @@ import { BulkActions } from '@/components/ui/bulk-actions'
 ## Calendar & Date Components
 
 ### CalendarView
+
 **File:** `components/ui/calendar-view.tsx`
 
 Monthly calendar with attendance color coding.
@@ -305,6 +319,7 @@ const attendanceData = {
 ```
 
 **Props:**
+
 - `attendanceData?: Record<string, 'present' | 'absent' | 'late'>` - Attendance records
 - `onDateClick?: (date: string) => void` - Date click handler
 - `onMonthChange?: (month: number, year: number) => void` - Month change handler
@@ -314,6 +329,7 @@ const attendanceData = {
 ---
 
 ### DateRangePicker
+
 **File:** `components/ui/date-range-picker.tsx`
 
 Date range selector with presets.
@@ -335,6 +351,7 @@ const [endDate, setEndDate] = useState('')
 ```
 
 **Props:**
+
 - `startDate?: string` - Start date (YYYY-MM-DD)
 - `endDate?: string` - End date (YYYY-MM-DD)
 - `onStartDateChange?: (date: string) => void` - Start date handler
@@ -348,6 +365,7 @@ const [endDate, setEndDate] = useState('')
 ## Chart & Report Components
 
 ### ChartCard
+
 **File:** `components/ui/chart-card.tsx`
 
 Card wrapper for chart components with loading/empty states.
@@ -355,20 +373,19 @@ Card wrapper for chart components with loading/empty states.
 ```tsx
 import { ChartCard } from '@/components/ui/chart-card'
 
-<ChartCard
+;<ChartCard
   title="Revenue Trend"
   description="Last 30 days"
   isLoading={isLoading}
   isEmpty={data.length === 0}
   error={error}
 >
-  <LineChart data={data}>
-    {/* Recharts content */}
-  </LineChart>
+  <LineChart data={data}>{/* Recharts content */}</LineChart>
 </ChartCard>
 ```
 
 **Props:**
+
 - `title?: string` - Card title
 - `description?: string` - Subtitle
 - `isLoading?: boolean` - Loading state
@@ -382,6 +399,7 @@ import { ChartCard } from '@/components/ui/chart-card'
 ## Print Components
 
 ### PaymentReceipt
+
 **File:** `components/payment-receipt.tsx`
 
 Printable payment receipt with QR code.
@@ -389,7 +407,7 @@ Printable payment receipt with QR code.
 ```tsx
 import { PaymentReceipt } from '@/components/payment-receipt'
 
-<PaymentReceipt
+;<PaymentReceipt
   receiptNumber="RCP-2026-001"
   date={new Date().toISOString()}
   amount={5000}
@@ -409,6 +427,7 @@ import { PaymentReceipt } from '@/components/payment-receipt'
 ## Modal Components
 
 ### StudentProfileModal
+
 **File:** `app/admin/components/student-profile-modal.tsx`
 
 Quick-view modal for student details.
@@ -430,6 +449,7 @@ const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 ## Error Handling
 
 ### ErrorBoundary
+
 **File:** `components/error-boundary.tsx`
 
 React error boundary component with retry UI.
@@ -437,7 +457,7 @@ React error boundary component with retry UI.
 ```tsx
 import { ErrorBoundary } from '@/components/error-boundary'
 
-<ErrorBoundary
+;<ErrorBoundary
   onError={(error, errorInfo) => {
     console.error('Component error:', error, errorInfo)
   }}
@@ -447,6 +467,7 @@ import { ErrorBoundary } from '@/components/error-boundary'
 ```
 
 **Props:**
+
 - `children: React.ReactNode` - Children to protect
 - `fallback?: (error: Error, retry: () => void) => React.ReactNode` - Custom error UI
 - `onError?: (error: Error, errorInfo: ErrorInfo) => void` - Error handler
@@ -456,6 +477,7 @@ import { ErrorBoundary } from '@/components/error-boundary'
 ## Utility Functions
 
 ### CSV Export
+
 **File:** `lib/csv-export.ts`
 
 ```tsx
@@ -469,7 +491,7 @@ exportToCSV(
     { key: 'email', label: 'Email Address' },
     { key: 'status', label: 'Status', formatter: (v) => v.toUpperCase() },
   ],
-  'students.csv'
+  'students.csv',
 )
 
 // Or manually create CSV
@@ -480,15 +502,16 @@ downloadCSV(csv, 'students.csv')
 ---
 
 ## Loading Skeletons
+
 **File:** `components/ui/skeleton.tsx`
 
 ```tsx
-import { 
+import {
   Skeleton,
   TableSkeleton,
   CardSkeleton,
   StatCardSkeleton,
-  DashboardSkeleton 
+  DashboardSkeleton
 } from '@/components/ui/skeleton'
 
 // Generic skeleton

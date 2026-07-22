@@ -1,7 +1,6 @@
 'use client'
 
 import { useMobileMenu } from '@/hooks/useMobileMenu'
-import { Button } from '@/components/ui/button'
 import { DarkModeToggle } from '@/components/dark-mode-toggle'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { useTranslations } from 'next-intl'
@@ -14,13 +13,12 @@ import { MobileDrawer } from '@/components/navigation/MobileDrawer'
 
 export function SiteHeader() {
   const t = useTranslations('common')
-  const th = useTranslations('header')
   const site = useSiteData()
-  const { open, setOpen, panelRef, triggerRef } = useMobileMenu()
+  const { open, setOpen } = useMobileMenu()
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-card backdrop-blur-md supports-[backdrop-filter]:bg-card/95 border-b border-border/50 shadow-sm">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2.5">
         <Link href="/" className="flex items-center gap-2.5">
           <img
             src={site.logo || '/logo.png'}
@@ -30,26 +28,17 @@ export function SiteHeader() {
           />
         </Link>
 
-        <DesktopNav t={t} th={th} />
+        <DesktopNav t={t} />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <LanguageSwitcher className="hidden sm:flex" />
           <DarkModeToggle />
-          <Button
-            render={<Link href="/auth/sign-in" />}
-            variant="outline"
-            size="lg"
-            className="hidden sm:inline-flex px-5"
+          <Link
+            href="/auth/sign-in"
+            className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
           >
             {t('login')}
-          </Button>
-          <Button
-            render={<Link href="/admission" />}
-            size="lg"
-            className="hidden sm:inline-flex px-6"
-          >
-            {t('enroll')}
-          </Button>
+          </Link>
           <MobileNavToggle
             onClick={() => setOpen(!open)}
             aria-label={t('openMenu')}
@@ -60,7 +49,7 @@ export function SiteHeader() {
 
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-md lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity duration-200"
           onClick={() => setOpen(false)}
         />
       )}

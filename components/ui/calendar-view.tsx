@@ -57,8 +57,18 @@ export function CalendarView({
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ]
 
   const calendarDays = []
@@ -70,7 +80,9 @@ export function CalendarView({
   }
 
   return (
-    <div className={`rounded-2xl border border-border bg-card p-6 shadow-sm ${className}`}>
+    <div
+      className={`rounded-2xl border border-border bg-card p-6 shadow-sm ${className}`}
+    >
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground">
           {months[month]} {year}
@@ -115,7 +127,7 @@ export function CalendarView({
                 }}
                 disabled={isLoading}
                 className={`w-full aspect-square rounded-lg border border-border text-sm font-medium transition-colors ${getStatusColor(
-                  `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+                  `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
                 )}`}
               >
                 {day}

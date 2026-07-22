@@ -82,7 +82,26 @@
     "copied": "কপি হয়েছে",
     "copyNumber": "নম্বর কপি করুন",
     "time": "সময়",
-    "course": "কোর্স"
+    "course": "কোর্স",
+    "backToTop": "উপরে যান",
+    "lightMode": "লাইট মোড",
+    "darkMode": "ডার্ক মোড",
+    "previousImage": "আগের ছবি",
+    "nextImage": "পরের ছবি",
+    "image": "ছবি",
+    "previous": "আগের",
+    "next": "পরের",
+    "story": "গল্প",
+    "signOut": "সাইন আউট",
+    "present": "উপস্থিত",
+    "absent": "অনুপস্থিত",
+    "late": "বিলম্বিত",
+    "cash": "নগদ",
+    "bank": "ব্যাংক",
+    "paid": "পরিশোধিত",
+    "partial": "আংশিক",
+    "unpaid": "অপরিশোধিত",
+    "overdue": "বিলম্বিত"
   },
   "header": {
     "welcome": "স্বাগতম",
@@ -133,6 +152,27 @@
     "title": "আমাদের গর্বিত শিক্ষার্থীরা",
     "description": "যাদের স্বপ্নপূরণে ISC Expo পাশে ছিল।"
   },
+  "teachersSection": {
+    "eyebrow": "আমাদের শিক্ষকমণ্ডলী",
+    "title": "অভিজ্ঞ ও দক্ষ মেন্টর",
+    "description": "প্রতিটি বিষয়ে বিশেষজ্ঞ শিক্ষকদের সরাসরি তত্ত্বাবধান।"
+  },
+  "faqSection": {
+    "eyebrow": "সাধারণ জিজ্ঞাসা",
+    "title": "আপনার প্রশ্ন, আমাদের উত্তর",
+    "noFaq": "কোনো FAQ পাওয়া যায়নি।"
+  },
+  "notFound": {
+    "title": "পৃষ্ঠা পাওয়া যায়নি",
+    "description": "আপনি যে পৃষ্ঠাটি খুঁজছেন তা বিদ্যমান নেই বা সরিয়ে ফেলা হয়েছে।"
+  },
+  "director": {
+    "name": "মোঃ মিরাজ ইসলাম",
+    "designation": "প্রতিষ্ঠাতা ও পরিচালক",
+    "messageLabel": "পরিচালকের বার্তা",
+    "message": "প্রিয় শিক্ষার্থী, নার্সিং একটি মহান পেশা — সেবা ও সম্মানের। ISC Expo - Icon Skill & Career Expo প্রতিষ্ঠার পেছনে আমাদের একটাই স্বপ্ন: খুলনার প্রতিটি মেধাবী শিক্ষার্থী যেন সঠিক দিকনির্দেশনা পেয়ে তার কাঙ্ক্ষিত প্রতিষ্ঠানে ভর্তি হতে পারে। অভিজ্ঞ শিক্ষকমণ্ডলী, আধুনিক পাঠদান পদ্ধতি ও আন্তরিক পরিবেশে আমরা আপনার পাশে আছি।",
+    "signOff": "— আপনাদের শুভাকাঙ্ক্ষী"
+  },
   "freeClass": {
     "badge": "সম্পূর্ণ ফ্রি",
     "title": "আগামী ফ্রি ক্লাসে অংশ নিন",
@@ -141,7 +181,9 @@
     "date": "তারিখ",
     "time": "সময়",
     "seatsLeft": "আসন বাকি",
-    "seatsCount": "মাত্র ১৫টি"
+    "seatsCount": "মাত্র ১৫টি",
+    "timeValue": "সকাল ১০:০০টা",
+    "friday": "শুক্রবার"
   },
   "modelTestNotice": {
     "modelTest": {
@@ -252,23 +294,91 @@
   },
   "noticePage": {
     "title": "সকল নোটিশ",
-    "description": "ISC Expo - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ, আপডেট ও গুরুত্বপূর্ণ তথ্য।"
+    "description": "ISC Expo - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ, আপডেট ও গুরুত্বপূর্ণ তথ্য।",
+    "noNotices": "কোনো নোটিশ নেই",
+    "comingSoon": "শীঘ্রই নোটিশ প্রকাশিত হবে।",
+    "urgent": "জরুরি"
   },
   "galleryPage": {
     "title": "আমাদের ছবি",
-    "description": "ISC Expo - Icon Skill & Career Expo-এর বিভিন্ন অনুষ্ঠান, সেমিনার ও ক্লাসের ছবি।"
+    "description": "ISC Expo - Icon Skill & Career Expo-এর বিভিন্ন অনুষ্ঠান, সেমিনার ও ক্লাসের ছবি।",
+    "captions": {
+      "seminar": "সেমিনার",
+      "prizeGiving": "পুরস্কার বিতরণী",
+      "batchPhoto": "ব্যাচ ফটো",
+      "freeClass": "ফ্রি ক্লাস"
+    }
   },
   "contactPage": {
     "title": "আমাদের সাথে যোগাযোগ করুন",
-    "description": "যেকোনো প্রশ্ন বা তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।"
+    "description": "যেকোনো প্রশ্ন বা তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।",
+    "contactInfo": "যোগাযোগের তথ্য",
+    "officeHours": "অফিস সময়",
+    "officeSchedule": "শনি—বৃহস্পতি: সকাল ৯:০০ — রাত ৮:০০",
+    "officeClosed": "শুক্রবার: বন্ধ",
+    "messageSent": "বার্তা পাঠানো হয়েছে!",
+    "messageSentDesc": "আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+    "sendMessage": "বার্তা পাঠান",
+    "yourMessage": "বার্তা",
+    "yourMessagePlaceholder": "আপনার বার্তা লিখুন",
+    "sending": "পাঠানো হচ্ছে...",
+    "errorDefault": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
+    "errorNetwork": "নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।",
+    "chatNow": "চ্যাট করুন"
   },
   "coursesPage": {
     "title": "সকল কোর্স সমূহ",
-    "description": "BNMC ভর্তি পরীক্ষা থেকে চাকরি প্রস্তুতি — প্রতিটি কোর্সে অভিজ্ঞ শিক্ষক ও আধুনিক পাঠদান পদ্ধতি।"
+    "description": "BNMC ভর্তি পরীক্ষা থেকে চাকরি প্রস্তুতি — প্রতিটি কোর্সে অভিজ্ঞ শিক্ষক ও আধুনিক পাঠদান পদ্ধতি।",
+    "noCourses": "কোনো কোর্স পাওয়া যায়নি",
+    "noImage": "কোনো ছবি নেই",
+    "enrollNow": "ভর্তি হোন →",
+    "courseDetail": "কোর্স বিবরণ",
+    "duration": "সময়কাল",
+    "fee": "ফি",
+    "discount": "ছাড়",
+    "schedule": "সময়সূচি",
+    "enrollInCourse": "এই কোর্সে ভর্তি নিন"
   },
   "modelTestPage": {
     "title": "সাপ্তাহিক মডেল টেস্ট",
-    "description": "BNMC ভর্তি পরীক্ষার আদলে আমাদের সাপ্তাহিক মডেল টেস্টে অংশ নিন এবং নিজেকে যাচাই করুন।"
+    "description": "BNMC ভর্তি পরীক্ষার আদলে আমাদের সাপ্তাহিক মডেল টেস্টে অংশ নিন এবং নিজেকে যাচাই করুন।",
+    "mcqBased": "MCQ ভিত্তিক পরীক্ষা",
+    "mcqBasedDesc": "BNMC প্যাটার্ন অনুযায়ী প্রশ্ন",
+    "timedExam": "টাইমড পরীক্ষা",
+    "timedExamDesc": "বাস্তব পরীক্ষার পরিবেশে পরীক্ষা",
+    "instantResult": "তাৎক্ষণিক ফলাফল",
+    "instantResultDesc": "সাবমিট করার সাথে সাথে ফলাফল",
+    "weeklyUpdate": "সাপ্তাহিক আপডেট",
+    "weeklyUpdateDesc": "নিয়মিত নতুন পরীক্ষা যোগ হয়",
+    "availableExams": "উপলব্ধ পরীক্ষাসমূহ",
+    "noExams": "কোনো পরীক্ষা পাওয়া যায়নি",
+    "noExamsDesc": "শীঘ্রই নতুন পরীক্ষা যোগ করা হবে। আমাদের WhatsApp-এ যোগাযোগ করুন।",
+    "contactWhatsApp": "WhatsApp-এ যোগাযোগ",
+    "exams": "টি পরীক্ষা",
+    "questions": "টি প্রশ্ন",
+    "minutes": "মিনিট",
+    "start": "শুরু করুন",
+    "joinModelTest": "মডেল টেস্টে যোগ দিন",
+    "joinModelTestDesc": "নিচের ফর্ম পূরণ করে মডেল টেস্টে আবেদন করুন, অথবা সরাসরি WhatsApp-এ যোগাযোগ করুন।",
+    "contactOnWhatsApp": "WhatsApp-এ যোগাযোগ",
+    "callNow": "ফোনে কল করুন",
+    "easy": "সহজ",
+    "medium": "মাঝারি",
+    "hard": "কঠিন",
+    "applyForm": {
+      "name": "নাম *",
+      "namePlaceholder": "আপনার নাম",
+      "phone": "মোবাইল নম্বর *",
+      "preferredExam": "পছন্দের পরীক্ষা",
+      "selectExam": "পরীক্ষা নির্বাচন করুন (ঐচ্ছিক)",
+      "preferredSubject": "পছন্দের বিষয়",
+      "subjectPlaceholder": "যেমন: অ্যানাটমি",
+      "message": "বার্তা",
+      "messageOptional": "ঐচ্ছিক",
+      "applyButton": "মডেল টেস্টে আবেদন করুন",
+      "successMessage": "আবেদন গৃহীত হয়েছে",
+      "errorMessage": "আবেদন জমা দিতে ব্যর্থ"
+    }
   },
   "admissionStatusPage": {
     "title": "আপনার আবেদন কী অবস্থায় আছে?",

@@ -60,9 +60,7 @@ export function MediaPanel({
     } catch (uploadError) {
       console.error('Upload failed:', uploadError)
       setError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : t('uploadFailed'),
+        uploadError instanceof Error ? uploadError.message : t('uploadFailed'),
       )
     } finally {
       setUploading(false)
@@ -70,8 +68,7 @@ export function MediaPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await toastConfirm(t('deleteConfirm'))))
-      return
+    if (!(await toastConfirm(t('deleteConfirm')))) return
 
     try {
       const response = await fetch(`/api/media/${id}`, { method: 'DELETE' })
@@ -86,9 +83,7 @@ export function MediaPanel({
     } catch (deleteError) {
       console.error('Delete failed:', deleteError)
       const msg =
-        deleteError instanceof Error
-          ? deleteError.message
-          : t('deleteFailed')
+        deleteError instanceof Error ? deleteError.message : t('deleteFailed')
       setError(msg)
       toastError(msg)
     }
@@ -101,9 +96,7 @@ export function MediaPanel({
           <h3 className="font-heading text-lg font-bold text-foreground">
             {t('title')}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            {t('subtitle')}
-          </p>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
       </div>
 
@@ -154,9 +147,7 @@ export function MediaPanel({
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>{t('acceptedTypes')}</li>
               <li>{t('maxSize')}</li>
-              <li>
-                {t('accessNote')}
-              </li>
+              <li>{t('accessNote')}</li>
             </ul>
             <button
               onClick={handleUpload}

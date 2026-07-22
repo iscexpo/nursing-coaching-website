@@ -81,9 +81,7 @@ export async function GET(request: NextRequest) {
       submissions: row.submissions,
       avgScore: row.avgScore,
       avgPercentage:
-        row.avgTotal > 0
-          ? Math.round((row.avgScore / row.avgTotal) * 100)
-          : 0,
+        row.avgTotal > 0 ? Math.round((row.avgScore / row.avgTotal) * 100) : 0,
     }))
 
     const ranges = [

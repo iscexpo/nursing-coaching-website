@@ -318,7 +318,9 @@ export function TeachersPanel({
                         onClick={() => toggleActive(teacher)}
                         className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${teacher.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
                       >
-                        {teacher.isActive ? t('statusActive') : t('statusInactive')}
+                        {teacher.isActive
+                          ? t('statusActive')
+                          : t('statusInactive')}
                       </button>
                     </td>
                     <td className="px-4 py-3 text-center">

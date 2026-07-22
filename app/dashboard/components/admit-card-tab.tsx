@@ -43,7 +43,9 @@ export function AdmitCardSection({
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="bg-brand p-4 text-center text-brand-foreground">
           <h3 className="font-heading text-lg font-bold">{site.nameBn}</h3>
-          <p className="text-xs opacity-80">{t('nursingCoaching')}, {site.city}</p>
+          <p className="text-xs opacity-80">
+            {t('nursingCoaching')}, {site.city}
+          </p>
         </div>
 
         <div className="p-6">

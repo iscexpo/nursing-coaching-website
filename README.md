@@ -138,11 +138,11 @@ npx tsx scripts/seed-demo-admin.ts
 
 ### Demo Admin Credentials
 
-| Field    | Value             |
-| -------- | ----------------- |
+| Field    | Value                  |
+| -------- | ---------------------- |
 | Email    | `admin@khulnasoft.com` |
-| Password | `Admin123!`       |
-| Phone    | `+8801784176442`  |
+| Password | `Admin123!`            |
+| Phone    | `+8801784176442`       |
 
 ## Project Structure
 

@@ -6,22 +6,21 @@ import { NAV_LINKS } from '@/lib/site-data'
 
 interface DesktopNavProps {
   t: ReturnType<typeof useTranslations>
-  th: ReturnType<typeof useTranslations>
 }
 
-export function DesktopNav({ t, th }: DesktopNavProps) {
+export function DesktopNav({ t }: DesktopNavProps) {
   return (
     <nav
-      className="hidden items-center gap-1 lg:flex"
+      className="hidden items-center gap-0.5 lg:flex"
       aria-label="Main navigation"
     >
       {NAV_LINKS.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-all duration-200 hover:bg-secondary/50 hover:text-brand"
+          className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
-          {link.label}
+          {t(link.labelKey as any)}
         </Link>
       ))}
     </nav>

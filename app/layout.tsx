@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl'
-import { Hind_Siliguri, Poppins } from 'next/font/google'
-import messages from '../messages/bn.json'
+import { getLocale, getMessages } from 'next-intl/server'
+import { Hind_Siliguri, Inter } from 'next/font/google'
 import { ToastProvider } from '@/components/ui/toast'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
@@ -11,25 +11,28 @@ const hindSiliguri = Hind_Siliguri({
   variable: '--font-hind',
 })
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-poppins',
+  variable: '--font-inter',
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
     <html
-      lang="bn"
-      className={`${hindSiliguri.variable} ${poppins.variable} bg-background`}
+      lang={locale}
+      className={`${hindSiliguri.variable} ${inter.variable} dark bg-background`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <ToastProvider>{children}</ToastProvider>
           </ThemeProvider>

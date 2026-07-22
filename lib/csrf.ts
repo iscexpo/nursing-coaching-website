@@ -74,7 +74,10 @@ export function csrfMiddleware(request: NextRequest): NextResponse | null {
  * Ensure a CSRF cookie exists on GET requests.
  * Call this after the CSRF middleware check.
  */
-export function ensureCsrfCookie(response: NextResponse, request: NextRequest): NextResponse {
+export function ensureCsrfCookie(
+  response: NextResponse,
+  request: NextRequest,
+): NextResponse {
   if (request.method === 'GET' && !request.cookies.get(CSRF_COOKIE)) {
     response.cookies.set(CSRF_COOKIE, generateToken(), {
       httpOnly: false, // JS needs to read it to set the header

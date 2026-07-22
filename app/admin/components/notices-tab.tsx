@@ -17,7 +17,11 @@ export function NoticesPanel({
   const t = useTranslations('admin.notices')
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Notice | null>(null)
-  const [form, setForm] = useState({ tag: t('tags.enrollment'), title: '', urgent: false })
+  const [form, setForm] = useState({
+    tag: t('tags.enrollment'),
+    title: '',
+    urgent: false,
+  })
   const [saving, setSaving] = useState(false)
 
   async function handleSave() {
@@ -173,9 +177,18 @@ export function NoticesPanel({
             className={`rounded-2xl border bg-card p-4 shadow-sm ${n.isUrgent ? 'border-gold/50' : 'border-border'}`}
           >
             <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status="active" customLabel={n.tag} showIcon={false} size="sm" />
+              <StatusBadge
+                status="active"
+                customLabel={n.tag}
+                showIcon={false}
+                size="sm"
+              />
               {n.isUrgent && (
-                <StatusBadge status="warning" customLabel={t('urgentBadge')} size="sm" />
+                <StatusBadge
+                  status="warning"
+                  customLabel={t('urgentBadge')}
+                  size="sm"
+                />
               )}
               <span className="ml-auto text-xs text-muted-foreground">
                 {new Date(n.createdAt).toLocaleDateString('bn-BD')}
@@ -198,9 +211,7 @@ export function NoticesPanel({
             </p>
           </div>
         ))}
-        {notices.length === 0 && (
-          <EmptyState title={t('emptyTitle')} />
-        )}
+        {notices.length === 0 && <EmptyState title={t('emptyTitle')} />}
       </div>
     </div>
   )

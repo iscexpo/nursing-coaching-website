@@ -33,7 +33,10 @@ export function ExamsPanel({
   const DIFFICULTY_LABELS: Record<string, { label: string; cls: string }> = {
     easy: { label: t('difficultyEasy'), cls: 'bg-green/10 text-green' },
     medium: { label: t('difficultyMedium'), cls: 'bg-brand/10 text-brand' },
-    hard: { label: t('difficultyHard'), cls: 'bg-destructive/10 text-destructive' },
+    hard: {
+      label: t('difficultyHard'),
+      cls: 'bg-destructive/10 text-destructive',
+    },
   }
 
   useEffect(() => {
@@ -217,84 +220,85 @@ export function ExamsPanel({
         {exams.length === 0 ? (
           <EmptyState title={t('emptyExams')} />
         ) : (
-        <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-secondary/30">
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    {t('tableHeaders.exam')}
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    {t('tableHeaders.subject')}
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    {t('tableHeaders.duration')}
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    {t('tableHeaders.questions')}
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    {t('tableHeaders.difficulty')}
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    {t('tableHeaders.status')}
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    {t('tableHeaders.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {exams.map((e) => (
-                  <tr
-                    key={e.id}
-                    className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
-                  >
-                    <td className="px-4 py-3 font-medium text-foreground">
-                      {e.title}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-brand">
-                        {e.subject}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center text-muted-foreground flex items-center justify-center gap-1">
-                      <Clock className="size-3.5" />
-                      {e.duration} {t('minutes')}
-                    </td>
-                    <td className="px-4 py-3 text-center text-foreground">
-                      {e.questionCount ?? 0}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${DIFFICULTY_LABELS[e.difficulty]?.cls || ''}`}
-                      >
-                        {DIFFICULTY_LABELS[e.difficulty]?.label || e.difficulty}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => toggleActive(e.id, e.isActive)}
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${e.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
-                      >
-                        {e.isActive ? t('statusActive') : t('statusInactive')}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleDeleteExam(e.id)}
-                        className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </td>
+          <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/30">
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">
+                      {t('tableHeaders.exam')}
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">
+                      {t('tableHeaders.subject')}
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">
+                      {t('tableHeaders.duration')}
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">
+                      {t('tableHeaders.questions')}
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">
+                      {t('tableHeaders.difficulty')}
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">
+                      {t('tableHeaders.status')}
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">
+                      {t('tableHeaders.actions')}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {exams.map((e) => (
+                    <tr
+                      key={e.id}
+                      className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
+                    >
+                      <td className="px-4 py-3 font-medium text-foreground">
+                        {e.title}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-brand">
+                          {e.subject}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center text-muted-foreground flex items-center justify-center gap-1">
+                        <Clock className="size-3.5" />
+                        {e.duration} {t('minutes')}
+                      </td>
+                      <td className="px-4 py-3 text-center text-foreground">
+                        {e.questionCount ?? 0}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${DIFFICULTY_LABELS[e.difficulty]?.cls || ''}`}
+                        >
+                          {DIFFICULTY_LABELS[e.difficulty]?.label ||
+                            e.difficulty}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => toggleActive(e.id, e.isActive)}
+                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${e.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
+                        >
+                          {e.isActive ? t('statusActive') : t('statusInactive')}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => handleDeleteExam(e.id)}
+                          className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
         )}
       </div>
 
@@ -306,78 +310,80 @@ export function ExamsPanel({
         </div>
 
         <FilterBar
-          filters={[{
-            name: 'exam',
-            label: t('tableHeaders.exam'),
-            type: 'select',
-            value: filterExam === 'all' ? '' : filterExam,
-            onChange: (v) => setFilterExam(v || 'all'),
-            options: exams.map((ex) => ({ value: ex.id, label: ex.title })),
-          }]}
+          filters={[
+            {
+              name: 'exam',
+              label: t('tableHeaders.exam'),
+              type: 'select',
+              value: filterExam === 'all' ? '' : filterExam,
+              onChange: (v) => setFilterExam(v || 'all'),
+              options: exams.map((ex) => ({ value: ex.id, label: ex.title })),
+            },
+          ]}
         />
 
         {filteredSubmissions.length === 0 ? (
           <EmptyState title={t('emptyResults')} />
         ) : (
-        <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-secondary/30">
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    {t('resultsTableHeaders.student')}
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    {t('resultsTableHeaders.exam')}
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    {t('resultsTableHeaders.score')}
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    {t('resultsTableHeaders.time')}
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    {t('resultsTableHeaders.date')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredSubmissions.map((s) => {
-                  const pct =
-                    s.total > 0 ? Math.round((s.score / s.total) * 100) : 0
-                  const exam = exams.find((e) => e.id === s.examId)
-                  return (
-                    <tr
-                      key={s.id}
-                      className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
-                    >
-                      <td className="px-4 py-3 font-medium text-foreground">
-                        {s.userStudentId || s.userId.slice(0, 8)}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {exam?.title || s.examId.slice(0, 8)}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="font-bold text-foreground">
-                          {s.score}
-                        </span>
-                        <span className="text-muted-foreground">
-                          /{s.total}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-center text-muted-foreground">
-                        {s.timeTaken ? `${s.timeTaken} ${t('seconds')}` : '—'}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {new Date(s.createdAt).toLocaleDateString('bn-BD')}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+          <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/30">
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">
+                      {t('resultsTableHeaders.student')}
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">
+                      {t('resultsTableHeaders.exam')}
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">
+                      {t('resultsTableHeaders.score')}
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">
+                      {t('resultsTableHeaders.time')}
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">
+                      {t('resultsTableHeaders.date')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSubmissions.map((s) => {
+                    const pct =
+                      s.total > 0 ? Math.round((s.score / s.total) * 100) : 0
+                    const exam = exams.find((e) => e.id === s.examId)
+                    return (
+                      <tr
+                        key={s.id}
+                        className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
+                      >
+                        <td className="px-4 py-3 font-medium text-foreground">
+                          {s.userStudentId || s.userId.slice(0, 8)}
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {exam?.title || s.examId.slice(0, 8)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="font-bold text-foreground">
+                            {s.score}
+                          </span>
+                          <span className="text-muted-foreground">
+                            /{s.total}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center text-muted-foreground">
+                          {s.timeTaken ? `${s.timeTaken} ${t('seconds')}` : '—'}
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {new Date(s.createdAt).toLocaleDateString('bn-BD')}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
         )}
       </div>
     </div>

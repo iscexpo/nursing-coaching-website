@@ -56,16 +56,13 @@ export function useDataTable<T extends { id: string }>({
   const [pageSize, setPageSize] = useState(defaultPageSize)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
-  const setSort = useCallback(
-    (key: keyof T) => {
-      setSortState((prev) => ({
-        key: String(key),
-        direction:
-          prev.key === String(key) && prev.direction === 'asc' ? 'desc' : 'asc',
-      }))
-    },
-    [],
-  )
+  const setSort = useCallback((key: keyof T) => {
+    setSortState((prev) => ({
+      key: String(key),
+      direction:
+        prev.key === String(key) && prev.direction === 'asc' ? 'desc' : 'asc',
+    }))
+  }, [])
 
   const setFilter = useCallback((key: string, value: string) => {
     setFiltersState((prev) => ({ ...prev, [key]: value }))
@@ -110,7 +107,8 @@ export function useDataTable<T extends { id: string }>({
       if (av == null && bv == null) return 0
       if (av == null) return 1
       if (bv == null) return -1
-      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir
+      if (typeof av === 'number' && typeof bv === 'number')
+        return (av - bv) * dir
       return String(av).localeCompare(String(bv)) * dir
     })
   }, [filteredData, sort])
@@ -144,7 +142,10 @@ export function useDataTable<T extends { id: string }>({
     setSelectedIds(new Set())
   }, [])
 
-  const isSelected = useCallback((id: string) => selectedIds.has(id), [selectedIds])
+  const isSelected = useCallback(
+    (id: string) => selectedIds.has(id),
+    [selectedIds],
+  )
 
   return {
     sortedData,

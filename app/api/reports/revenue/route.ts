@@ -34,9 +34,7 @@ export async function GET(request: NextRequest) {
       })
       .from(payments)
       .innerJoin(enrollments, paymentJoin)
-      .where(
-        and(...baseConditions, eq(payments.status, 'verified')),
-      )
+      .where(and(...baseConditions, eq(payments.status, 'verified')))
 
     const [pendingRow] = await db
       .select({
@@ -44,9 +42,7 @@ export async function GET(request: NextRequest) {
       })
       .from(payments)
       .innerJoin(enrollments, paymentJoin)
-      .where(
-        and(...baseConditions, eq(payments.status, 'pending')),
-      )
+      .where(and(...baseConditions, eq(payments.status, 'pending')))
 
     const totalPayments = summaryRow?.totalPayments ?? 0
     const totalRevenue = summaryRow?.totalRevenue ?? 0

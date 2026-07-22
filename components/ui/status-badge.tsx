@@ -1,6 +1,15 @@
 'use client'
 
-import { Check, CheckCircle2, Clock, X, XCircle, AlertCircle, Eye } from 'lucide-react'
+import {
+  Check,
+  CheckCircle2,
+  Clock,
+  X,
+  XCircle,
+  AlertCircle,
+  Eye,
+} from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type StatusType =
   | 'pending'
@@ -104,11 +113,13 @@ export function StatusBadge({
 
   if (!config) {
     return (
-      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 ${className}`}>
+      <span
+        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 ${className}`}
+      >
         {customLabel || status}
       </span>
-  )
-}
+    )
+  }
 
   const Icon = (config.icon || null) as React.ElementType | null
   const label = customLabel || config.label || status
@@ -133,18 +144,19 @@ export function AttendanceStatusBadge({
 }: {
   status: 'present' | 'absent' | 'late'
 }) {
+  const t = useTranslations('common')
   const map = {
     present: {
-      label: 'উপস্থিত',
+      label: t('present'),
       icon: CheckCircle2,
       cls: 'bg-green/10 text-green',
     },
     absent: {
-      label: 'অনুপস্থিত',
+      label: t('absent'),
       icon: XCircle,
       cls: 'bg-destructive/10 text-destructive',
     },
-    late: { label: 'বিলম্বিত', icon: AlertCircle, cls: 'bg-gold/10 text-gold' },
+    late: { label: t('late'), icon: AlertCircle, cls: 'bg-gold/10 text-gold' },
   }
   const s = map[status]
   return (
@@ -165,13 +177,13 @@ export function EnrollmentStatusBadge({
   ...props
 }: StatusBadgeProps & { status: string }) {
   const statusMap: Record<string, StatusType> = {
-    'pending': 'pending',
-    'approved': 'approved',
-    'rejected': 'rejected',
-    'active': 'active',
-    'completed': 'completed',
-    'expired': 'warning',
-    'suspended': 'failed',
+    pending: 'pending',
+    approved: 'approved',
+    rejected: 'rejected',
+    active: 'active',
+    completed: 'completed',
+    expired: 'warning',
+    suspended: 'failed',
   }
 
   return <StatusBadge status={statusMap[status] || 'pending'} {...props} />
@@ -185,11 +197,11 @@ export function PaymentStatusBadge({
   ...props
 }: StatusBadgeProps & { status: string }) {
   const statusMap: Record<string, StatusType> = {
-    'pending': 'pending',
-    'verified': 'approved',
-    'rejected': 'rejected',
-    'completed': 'completed',
-    'failed': 'failed',
+    pending: 'pending',
+    verified: 'approved',
+    rejected: 'rejected',
+    completed: 'completed',
+    failed: 'failed',
   }
 
   return <StatusBadge status={statusMap[status] || 'pending'} {...props} />
@@ -203,10 +215,10 @@ export function ExamStatusBadge({
   ...props
 }: StatusBadgeProps & { status: string }) {
   const statusMap: Record<string, StatusType> = {
-    'draft': 'draft',
-    'active': 'active',
-    'completed': 'completed',
-    'published': 'published',
+    draft: 'draft',
+    active: 'active',
+    completed: 'completed',
+    published: 'published',
   }
 
   return <StatusBadge status={statusMap[status] || 'draft'} {...props} />
@@ -216,11 +228,12 @@ export function ExamStatusBadge({
  * Payment method badge (bKash, Nagad, Cash, Bank)
  */
 export function MethodBadge({ method }: { method: string }) {
+  const t = useTranslations('common')
   const map: Record<string, { label: string; cls: string }> = {
     bkash: { label: 'bKash', cls: 'bg-[#E2136E]/10 text-[#E2136E]' },
     nagad: { label: 'Nagad', cls: 'bg-[#F6921E]/10 text-[#F6921E]' },
-    cash: { label: 'নগদ', cls: 'bg-green/10 text-green' },
-    bank: { label: 'ব্যাংক', cls: 'bg-brand/10 text-brand' },
+    cash: { label: t('cash'), cls: 'bg-green/10 text-green' },
+    bank: { label: t('bank'), cls: 'bg-brand/10 text-brand' },
   }
   const s = map[method] || {
     label: method,
@@ -239,11 +252,12 @@ export function MethodBadge({ method }: { method: string }) {
  * Invoice status badge
  */
 export function InvoiceStatusBadge({ status }: { status: string }) {
+  const t = useTranslations('common')
   const map: Record<string, { label: string; cls: string }> = {
-    paid: { label: 'পরিশোধিত', cls: 'bg-green/10 text-green' },
-    partial: { label: 'আংশিক', cls: 'bg-gold/10 text-gold' },
-    unpaid: { label: 'অপরিশোধিত', cls: 'bg-destructive/10 text-destructive' },
-    overdue: { label: 'বিলম্বিত', cls: 'bg-destructive/10 text-destructive' },
+    paid: { label: t('paid'), cls: 'bg-green/10 text-green' },
+    partial: { label: t('partial'), cls: 'bg-gold/10 text-gold' },
+    unpaid: { label: t('unpaid'), cls: 'bg-destructive/10 text-destructive' },
+    overdue: { label: t('overdue'), cls: 'bg-destructive/10 text-destructive' },
   }
   const s = map[status] || {
     label: status,

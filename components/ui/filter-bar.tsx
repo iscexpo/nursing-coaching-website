@@ -35,7 +35,9 @@ export function FilterBar({
   const hasActiveFilters = searchValue || filters.some((f) => f.value)
 
   return (
-    <div className={`space-y-3 rounded-lg border border-border bg-card p-4 ${className}`}>
+    <div
+      className={`space-y-3 rounded-lg border border-border bg-card p-4 ${className}`}
+    >
       {/* Search bar */}
       {onSearchChange && (
         <div className="relative">

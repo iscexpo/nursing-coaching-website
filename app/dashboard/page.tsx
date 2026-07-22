@@ -157,13 +157,21 @@ export default function DashboardPage() {
     return null
   }
 
-  const user = session.data.user as Record<string, unknown> & { name: string; phoneNumber?: string | null }
+  const user = session.data.user as Record<string, unknown> & {
+    name: string
+    phoneNumber?: string | null
+  }
   const totalDue = enrollments.reduce((s, e) => s + e.dueAmount, 0)
   const totalPaid = enrollments.reduce((s, e) => s + e.paidAmount, 0)
 
-  const welcomeParts = user.phoneNumber ? [`${tc('phone')}: ${user.phoneNumber}`] : []
+  const welcomeParts = user.phoneNumber
+    ? [`${tc('phone')}: ${user.phoneNumber}`]
+    : []
   if (user.studentId) welcomeParts.push(`ID: ${user.studentId}`)
-  if (totalDue > 0) welcomeParts.push(`${t('overview.dueLabel')}: ৳${totalDue.toLocaleString()}`)
+  if (totalDue > 0)
+    welcomeParts.push(
+      `${t('overview.dueLabel')}: ৳${totalDue.toLocaleString()}`,
+    )
 
   return (
     <PanelLayout

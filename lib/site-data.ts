@@ -14,15 +14,15 @@ export const SITE = {
 }
 
 export const NAV_LINKS = [
-  { label: 'হোম', href: '/' },
-  { label: 'কোর্স', href: '/courses' },
-  { label: 'ভর্তি', href: '/admission' },
-  { label: 'মডেল টেস্ট', href: '/model-test' },
-  { label: 'সাফল্য', href: '/#success' },
-  { label: 'শিক্ষক', href: '/#teachers' },
-  { label: 'নোটিশ', href: '/notice' },
-  { label: 'গ্যালারি', href: '/gallery' },
-  { label: 'যোগাযোগ', href: '/contact' },
+  { labelKey: 'home', href: '/' },
+  { labelKey: 'courses', href: '/courses' },
+  { labelKey: 'admission', href: '/admission' },
+  { labelKey: 'modelTest', href: '/model-test' },
+  { labelKey: 'success', href: '/#success' },
+  { labelKey: 'teachers', href: '/#teachers' },
+  { labelKey: 'notice', href: '/notice' },
+  { labelKey: 'gallery', href: '/gallery' },
+  { labelKey: 'contact', href: '/contact' },
 ]
 
 export const HERO_FEATURES = [
@@ -205,10 +205,10 @@ export const NOTICES = [
 ]
 
 export const GALLERY = [
-  { image: '/images/gallery-1.png', caption: 'সেমিনার' },
-  { image: '/images/gallery-2.png', caption: 'পুরস্কার বিতরণী' },
-  { image: '/images/gallery-3.png', caption: 'ব্যাচ ফটো' },
-  { image: '/images/gallery-4.png', caption: 'ফ্রি ক্লাস' },
+  { image: '/images/gallery-1.png', captionKey: 'seminar' },
+  { image: '/images/gallery-2.png', captionKey: 'prizeGiving' },
+  { image: '/images/gallery-3.png', captionKey: 'batchPhoto' },
+  { image: '/images/gallery-4.png', captionKey: 'freeClass' },
 ]
 
 export const FAQS = [

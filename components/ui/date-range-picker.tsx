@@ -53,7 +53,9 @@ export function DateRangePicker({
   }
 
   return (
-    <div className={`flex flex-col gap-3 rounded-lg border border-border bg-card p-4 ${className}`}>
+    <div
+      className={`flex flex-col gap-3 rounded-lg border border-border bg-card p-4 ${className}`}
+    >
       <div className="flex items-center gap-2 mb-2">
         <Calendar className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium text-foreground">Date Range</span>

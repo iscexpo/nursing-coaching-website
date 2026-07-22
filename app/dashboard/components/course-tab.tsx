@@ -73,19 +73,25 @@ export function CourseSection({
                 </p>
                 <div className="mt-3 space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{tc('total')}:</span>
+                    <span className="text-muted-foreground">
+                      {tc('total')}:
+                    </span>
                     <span className="font-medium">
                       ৳{enrollment.totalFee.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{tc('verified')}:</span>
+                    <span className="text-muted-foreground">
+                      {tc('verified')}:
+                    </span>
                     <span className="font-medium text-green">
                       ৳{enrollment.paidAmount.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t('dueAmount')}:</span>
+                    <span className="text-muted-foreground">
+                      {t('dueAmount')}:
+                    </span>
                     <span
                       className={`font-medium ${enrollment.dueAmount > 0 ? 'text-gold' : 'text-green'}`}
                     >
@@ -133,7 +139,9 @@ export function CourseSection({
                   </p>
                   <div className="mt-3 space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t('duration')}:</span>
+                      <span className="text-muted-foreground">
+                        {t('duration')}:
+                      </span>
                       <span className="font-medium">{course.duration}</span>
                     </div>
                     <div className="flex justify-between">

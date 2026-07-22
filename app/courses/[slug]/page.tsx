@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!course) {
     return {
-      title: 'কোর্স পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo',
+      title: 'Course not found | ISC Expo - Icon Skill & Career Expo',
       robots: { index: false },
     }
   }
@@ -90,12 +90,12 @@ export default async function CourseDetailPage({ params }: Props) {
           <div className="mx-auto max-w-4xl px-4">
             <Breadcrumb
               items={[
-                { label: 'কোর্স', href: '/courses' },
+                { label: 'Courses', href: '/courses' },
                 { label: course.title },
               ]}
             />
             <SectionHeading
-              eyebrow="কোর্স বিবরণ"
+              eyebrow="Course Details"
               title={course.title}
               description={course.shortDescription || ''}
             />
@@ -122,24 +122,24 @@ export default async function CourseDetailPage({ params }: Props) {
               <dl className="mt-6 grid gap-4 sm:grid-cols-2">
                 {course.duration && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">সময়কাল</dt>
+                    <dt className="text-xs text-muted-foreground">Duration</dt>
                     <dd className="mt-1 font-semibold text-foreground">
                       {course.duration}
                     </dd>
                   </div>
                 )}
                 <div className="rounded-lg bg-secondary/40 p-4">
-                  <dt className="text-xs text-muted-foreground">ফি</dt>
+                  <dt className="text-xs text-muted-foreground">Fee</dt>
                   <dd className="mt-1 font-semibold text-foreground">
                     ৳{course.fee.toLocaleString()}
                     {course.discountFee
-                      ? ` (ছাড়: ৳${course.discountFee.toLocaleString()})`
+                      ? ` (Discount: ৳${course.discountFee.toLocaleString()})`
                       : ''}
                   </dd>
                 </div>
                 {course.schedule && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">সময়সূচি</dt>
+                    <dt className="text-xs text-muted-foreground">Schedule</dt>
                     <dd className="mt-1 font-semibold text-foreground">
                       {course.schedule}
                     </dd>
@@ -152,7 +152,7 @@ export default async function CourseDetailPage({ params }: Props) {
                   href={`/admission?course=${course.slug}`}
                   className="inline-flex rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
                 >
-                  এই কোর্সে ভর্তি নিন
+                  Enroll in this course
                 </Link>
               </div>
             </div>

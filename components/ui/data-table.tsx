@@ -27,7 +27,12 @@ export function DataTable({
       </div>
       {onExport && (
         <div className="border-t border-border bg-secondary/20 px-5 py-3 flex justify-end">
-          <Button size="sm" variant="outline" onClick={onExport} className="gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onExport}
+            className="gap-2"
+          >
             <Download className="size-4" />
             Export CSV
           </Button>
@@ -37,10 +42,10 @@ export function DataTable({
   )
 }
 
-export function DataTableHead({ 
+export function DataTableHead({
   children,
-  sticky = true 
-}: { 
+  sticky = true,
+}: {
   children: React.ReactNode
   sticky?: boolean
 }) {
@@ -70,9 +75,9 @@ export function DataTableTh({
       : align === 'right'
         ? 'text-right'
         : 'text-left'
-  
+
   return (
-    <th 
+    <th
       className={`px-4 py-3 ${alignClass} font-semibold text-foreground ${
         sortable ? 'cursor-pointer hover:bg-secondary/50 transition-colors' : ''
       }`}
@@ -81,9 +86,7 @@ export function DataTableTh({
       <div className="flex items-center gap-2">
         {children}
         {sortable && sortDirection && (
-          <span className="text-xs">
-            {sortDirection === 'asc' ? '↑' : '↓'}
-          </span>
+          <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>
         )}
       </div>
     </th>
@@ -94,17 +97,17 @@ export function DataTableBody({ children }: { children: React.ReactNode }) {
   return <tbody>{children}</tbody>
 }
 
-export function DataTableRow({ 
+export function DataTableRow({
   children,
   selected = false,
   onSelect,
-}: { 
+}: {
   children: React.ReactNode
   selected?: boolean
   onSelect?: (selected: boolean) => void
 }) {
   return (
-    <tr 
+    <tr
       className={`border-b border-border last:border-0 ${selected ? 'bg-secondary/50' : 'hover:bg-secondary/20'}`}
       onClick={() => onSelect?.(!selected)}
     >
@@ -188,9 +191,11 @@ export function DataTablePagination({
           <option value="50">50</option>
           <option value="100">100</option>
         </select>
-        <span className="text-sm text-muted-foreground">of {totalItems} items</span>
+        <span className="text-sm text-muted-foreground">
+          of {totalItems} items
+        </span>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">
           Page {currentPage} of {totalPages}

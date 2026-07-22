@@ -22,7 +22,9 @@ export function StudentProfileModal({
       <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-card shadow-lg">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between border-b border-border bg-secondary/50 px-6 py-4">
-          <h2 className="text-lg font-semibold text-foreground">Student Profile</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Student Profile
+          </h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-secondary rounded-lg transition-colors"
@@ -41,11 +43,15 @@ export function StudentProfileModal({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Name:</span>
-                <span className="font-medium text-foreground">{student.name}</span>
+                <span className="font-medium text-foreground">
+                  {student.name}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Email:</span>
-                <span className="font-medium text-foreground">{student.email || 'N/A'}</span>
+                <span className="font-medium text-foreground">
+                  {student.email || 'N/A'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Phone:</span>
@@ -72,13 +78,17 @@ export function StudentProfileModal({
                 {student.address && (
                   <div>
                     <span className="text-muted-foreground">Address:</span>
-                    <p className="font-medium text-foreground mt-1">{student.address}</p>
+                    <p className="font-medium text-foreground mt-1">
+                      {student.address}
+                    </p>
                   </div>
                 )}
                 {student.district && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">District:</span>
-                    <span className="font-medium text-foreground">{student.district}</span>
+                    <span className="font-medium text-foreground">
+                      {student.district}
+                    </span>
                   </div>
                 )}
               </div>
@@ -118,7 +128,9 @@ export function StudentProfileModal({
               </h3>
               <div className="text-sm">
                 <span className="text-muted-foreground">Institution:</span>
-                <p className="font-medium text-foreground mt-1">{student.institution}</p>
+                <p className="font-medium text-foreground mt-1">
+                  {student.institution}
+                </p>
               </div>
             </div>
           )}
@@ -133,9 +145,13 @@ export function StudentProfileModal({
                 <span className="text-muted-foreground">Email Verified:</span>
                 <span className="font-medium">
                   {student.emailVerified ? (
-                    <span className="text-green-600 dark:text-green-400">✓ Yes</span>
+                    <span className="text-green-600 dark:text-green-400">
+                      ✓ Yes
+                    </span>
                   ) : (
-                    <span className="text-amber-600 dark:text-amber-400">✗ No</span>
+                    <span className="text-amber-600 dark:text-amber-400">
+                      ✗ No
+                    </span>
                   )}
                 </span>
               </div>
@@ -143,9 +159,13 @@ export function StudentProfileModal({
                 <span className="text-muted-foreground">Phone Verified:</span>
                 <span className="font-medium">
                   {student.phoneNumberVerified ? (
-                    <span className="text-green-600 dark:text-green-400">✓ Yes</span>
+                    <span className="text-green-600 dark:text-green-400">
+                      ✓ Yes
+                    </span>
                   ) : (
-                    <span className="text-amber-600 dark:text-amber-400">✗ No</span>
+                    <span className="text-amber-600 dark:text-amber-400">
+                      ✗ No
+                    </span>
                   )}
                 </span>
               </div>

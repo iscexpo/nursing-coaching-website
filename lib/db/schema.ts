@@ -143,10 +143,7 @@ export const courses = pgTable('courses', {
   discountFee: integer('discount_fee'),
   image: text('image'),
   features: jsonb('features').$type<string[]>().default([]),
-  category: text('category')
-    .$type<'icon' | 'isc'>()
-    .notNull()
-    .default('icon'),
+  category: text('category').$type<'icon' | 'isc'>().notNull().default('icon'),
   isActive: boolean('is_active').notNull().default(true),
   maxStudents: integer('max_students'),
   currentStudents: integer('current_students').notNull().default(0),

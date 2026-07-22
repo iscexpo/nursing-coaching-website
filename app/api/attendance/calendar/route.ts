@@ -23,7 +23,15 @@ export async function GET(request: NextRequest) {
     }
 
     const startDate = new Date(Number(year), Number(month), 1)
-    const endDate = new Date(Number(year), Number(month) + 1, 0, 23, 59, 59, 999)
+    const endDate = new Date(
+      Number(year),
+      Number(month) + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    )
 
     const conditions = [
       gte(attendance.date, startDate),

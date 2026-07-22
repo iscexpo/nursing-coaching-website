@@ -50,15 +50,16 @@ export function notifyEnrollmentStatusChange(params: {
   const message = messages[params.newStatus]
   if (!message) return
 
-  const typeMap: Record<string, 'info' | 'success' | 'warning' | 'enrollment'> = {
-    approved: 'success',
-    active: 'success',
-    completed: 'success',
-    rejected: 'warning',
-    cancelled: 'warning',
-    suspended: 'warning',
-    expired: 'warning',
-  }
+  const typeMap: Record<string, 'info' | 'success' | 'warning' | 'enrollment'> =
+    {
+      approved: 'success',
+      active: 'success',
+      completed: 'success',
+      rejected: 'warning',
+      cancelled: 'warning',
+      suspended: 'warning',
+      expired: 'warning',
+    }
 
   void notify({
     userId: params.userId,

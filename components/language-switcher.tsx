@@ -28,8 +28,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           className={cn(
             'rounded-md px-2 py-1 text-xs font-medium transition-colors',
             locale === loc
-              ? 'bg-brand text-brand-foreground'
-              : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+              ? 'bg-foreground text-background'
+              : 'text-muted-foreground hover:text-foreground',
           )}
           aria-label={loc === 'bn' ? t('bangla') : t('english')}
         >

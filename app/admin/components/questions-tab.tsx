@@ -214,7 +214,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                     />
                     {t('answerLabel')} {String.fromCharCode(65 + i)}{' '}
                     {i === form.correctIndex && (
-                      <span className="text-green text-xs">({t('correctLabel')})</span>
+                      <span className="text-green text-xs">
+                        ({t('correctLabel')})
+                      </span>
                     )}
                   </label>
                   <input
@@ -324,11 +326,7 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
         </div>
       )}
 
-      {!selectedExamId && (
-        <EmptyState
-          title={t('selectExamHint')}
-        />
-      )}
+      {!selectedExamId && <EmptyState title={t('selectExamHint')} />}
     </div>
   )
 }

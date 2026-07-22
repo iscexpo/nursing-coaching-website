@@ -59,9 +59,10 @@ export function CoursesPanel({
   const { success, error, confirm } = useToast()
 
   const filteredCourses = useMemo(() => {
-    let result = categoryFilter === 'all'
-      ? courses
-      : courses.filter((c) => c.category === categoryFilter)
+    let result =
+      categoryFilter === 'all'
+        ? courses
+        : courses.filter((c) => c.category === categoryFilter)
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase()
       result = result.filter((c) => c.title.toLowerCase().includes(q))
@@ -168,9 +169,7 @@ export function CoursesPanel({
         setShowForm(false)
         setEditing(null)
         resetForm()
-        success(
-          editing ? t('saveSuccess') : t('createSuccess'),
-        )
+        success(editing ? t('saveSuccess') : t('createSuccess'))
       } else {
         const err = await res.json().catch(() => ({ error: t('saveFailed') }))
         const msg = err.details
@@ -256,7 +255,8 @@ export function CoursesPanel({
             label: t('categoryFilter'),
             type: 'select',
             value: categoryFilter === 'all' ? '' : categoryFilter,
-            onChange: (v) => setCategoryFilter((v || 'all') as 'all' | 'icon' | 'isc'),
+            onChange: (v) =>
+              setCategoryFilter((v || 'all') as 'all' | 'icon' | 'isc'),
             options: [
               { value: 'icon', label: 'Icon' },
               { value: 'isc', label: 'ISC' },
@@ -372,7 +372,9 @@ export function CoursesPanel({
                   ) : (
                     <Upload className="size-3.5" />
                   )}
-                  {uploading ? t('formLabels.uploading') : t('formLabels.uploadImage')}
+                  {uploading
+                    ? t('formLabels.uploading')
+                    : t('formLabels.uploadImage')}
                 </button>
                 <input
                   type="url"
@@ -515,10 +517,7 @@ export function CoursesPanel({
       )}
 
       {filteredCourses.length === 0 ? (
-        <EmptyState
-          title={t('emptyState')}
-          description={t('emptyHint')}
-        />
+        <EmptyState title={t('emptyState')} description={t('emptyHint')} />
       ) : (
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -574,7 +573,9 @@ export function CoursesPanel({
                           className="mx-auto h-10 w-16 rounded object-cover border border-border"
                         />
                       ) : (
-                        <span className="text-xs text-muted-foreground">{t('noImage')}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {t('noImage')}
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
@@ -587,7 +588,9 @@ export function CoursesPanel({
                       ৳{c.fee.toLocaleString()}
                     </td>
                     <td className="px-4 py-3 text-center text-green">
-                      {c.discountFee ? `৳${c.discountFee.toLocaleString()}` : '—'}
+                      {c.discountFee
+                        ? `৳${c.discountFee.toLocaleString()}`
+                        : '—'}
                     </td>
                     <td className="px-4 py-3 text-center text-foreground">
                       {c.currentStudents}/{c.maxStudents || '∞'}

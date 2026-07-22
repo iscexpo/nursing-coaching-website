@@ -16,7 +16,12 @@ interface AlertProps {
 
 const variantConfig: Record<
   AlertVariant,
-  { icon: React.ElementType; bgColor: string; textColor: string; borderColor: string }
+  {
+    icon: React.ElementType
+    bgColor: string
+    textColor: string
+    borderColor: string
+  }
 > = {
   error: {
     icon: AlertCircle,

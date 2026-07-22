@@ -129,9 +129,7 @@ export function PaymentsPanel({
       onRefresh()
     } catch (error) {
       console.error('Failed to create payment:', error)
-      setFeedback(
-        error instanceof Error ? error.message : t('recordFailed'),
-      )
+      setFeedback(error instanceof Error ? error.message : t('recordFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -314,7 +312,8 @@ export function PaymentsPanel({
                       )?.name ||
                         enrollment.userName ||
                         t('tableHeaders.student')}{' '}
-                      — {enrollment.courseTitle || t('tableHeaders.course')} ({t('formLabels.dueAmount')}: ৳
+                      — {enrollment.courseTitle || t('tableHeaders.course')} (
+                      {t('formLabels.dueAmount')}: ৳
                       {enrollment.dueAmount.toLocaleString()})
                     </option>
                   ))}
