@@ -10,6 +10,7 @@ import {
   getEnrollmentTransitionError,
   getLifecycleTimestamp,
 } from '@/lib/lms-logic'
+import { notifyEnrollmentStatusChange } from '@/lib/notifications'
 
 export async function GET(
   request: NextRequest,
@@ -144,6 +145,15 @@ export async function PUT(
 
       return [result]
     })
+
+    if (parsed.data.status && parsed.data.status !== existing.status) {
+      void notifyEnrollmentStatusChange({
+        userId: existing.userId,
+        enrollmentId: existing.id,
+        previousStatus: existing.status,
+        newStatus: parsed.data.status,
+      })
+    }
 
     void writeAudit(
       buildAuditEntry(

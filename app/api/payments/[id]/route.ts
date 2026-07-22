@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { verifyPaymentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { notifyPaymentUpdate } from '@/lib/notifications'
 
 export async function GET(
   request: NextRequest,
@@ -122,6 +123,15 @@ export async function PUT(
 
       return updated
     })
+
+    if (status === 'verified' || status === 'rejected') {
+      void notifyPaymentUpdate({
+        userId: existing.userId,
+        amount: existing.amount,
+        method: existing.method,
+        status,
+      })
+    }
 
     void writeAudit(
       buildAuditEntry(
