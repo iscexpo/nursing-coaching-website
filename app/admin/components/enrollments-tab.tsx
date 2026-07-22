@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Plus, Pencil, X, Loader2, Ban, Check } from 'lucide-react'
+import { useState, useMemo, useCallback } from 'react'
+import { Plus, Pencil, X, Loader2, Ban, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { EnrollmentStatusBadge } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
 import { FilterBar } from '@/components/ui/filter-bar'
@@ -50,6 +50,8 @@ export function EnrollmentsPanel({
 }) {
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
   const [showAdd, setShowAdd] = useState(false)
   const [addForm, setAddForm] = useState<AddFormState>({
     userId: '',
@@ -81,6 +83,8 @@ export function EnrollmentsPanel({
   const [bulkStatus, setBulkStatus] = useState('active')
   const [bulkSaving, setBulkSaving] = useState(false)
 
+  const resetPage = useCallback(() => setPage(1), [])
+
   const activeCourses = courses.filter((c) => c.isActive)
   const filtered = enrollments.filter((e) => {
     if (filter && filter !== 'all' && e.status !== filter) return false
@@ -94,6 +98,13 @@ export function EnrollmentsPanel({
     }
     return true
   })
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const safePage = Math.min(page, totalPages)
+  const paged = useMemo(
+    () => filtered.slice((safePage - 1) * pageSize, safePage * pageSize),
+    [filtered, safePage, pageSize],
+  )
 
   const filteredActiveCourses = useMemo(() => {
     if (!courseSearch) return activeCourses
@@ -167,10 +178,10 @@ export function EnrollmentsPanel({
 
   // Bulk selection handlers
   function toggleSelectAll() {
-    if (selectedIds.length === filtered.length) {
+    if (selectedIds.length === paged.length) {
       setSelectedIds([])
     } else {
-      setSelectedIds(filtered.map((e) => e.id))
+      setSelectedIds(paged.map((e) => e.id))
     }
   }
 
@@ -374,7 +385,7 @@ export function EnrollmentsPanel({
 
       <FilterBar
         searchValue={search}
-        onSearchChange={setSearch}
+        onSearchChange={(v) => { setSearch(v); resetPage() }}
         searchPlaceholder="শিক্ষার্থী, ফোন বা কোর্স দিয়ে খুঁজুন..."
         filters={[
           {
@@ -383,7 +394,7 @@ export function EnrollmentsPanel({
             type: 'select',
             options: STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label })),
             value: filter,
-            onChange: (value) => setFilter(value),
+            onChange: (value) => { setFilter(value); resetPage() },
           },
         ]}
       />
@@ -835,8 +846,8 @@ export function EnrollmentsPanel({
                   <input
                     type="checkbox"
                     checked={
-                      selectedIds.length === filtered.length &&
-                      filtered.length > 0
+                      selectedIds.length === paged.length &&
+                      paged.length > 0
                     }
                     onChange={toggleSelectAll}
                     className="size-4 rounded border-border text-brand focus:ring-brand"
@@ -882,7 +893,7 @@ export function EnrollmentsPanel({
                   </td>
                 </tr>
               ) : (
-                filtered.map((e) => (
+                paged.map((e) => (
                   <tr
                     key={e.id}
                     className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
@@ -959,6 +970,52 @@ export function EnrollmentsPanel({
           </table>
         </div>
       </div>
+
+      {filtered.length > 0 && (
+        <div className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card px-5 py-3 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">দেখুন:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
+              className="rounded border border-border bg-background px-2 py-1 text-sm text-foreground"
+            >
+              <option value={10}>১০</option>
+              <option value={25}>২৫</option>
+              <option value={50}>৫০</option>
+              <option value={100}>১০০</option>
+            </select>
+            <span className="text-sm text-muted-foreground">
+              / {filtered.length} টি
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              পৃষ্ঠা {safePage} / {totalPages}
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPage(safePage - 1)}
+              disabled={safePage <= 1}
+              className="gap-1"
+            >
+              <ChevronLeft className="size-4" />
+              পূর্ববর্তী
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPage(safePage + 1)}
+              disabled={safePage >= totalPages}
+              className="gap-1"
+            >
+              পরবর্তী
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
