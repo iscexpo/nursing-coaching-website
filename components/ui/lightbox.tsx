@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +20,7 @@ export function Lightbox({
 }) {
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
+  const t = useTranslations('common')
 
   const close = useCallback(() => setOpen(false), [])
   const prev = useCallback(
@@ -59,7 +61,7 @@ export function Lightbox({
           <button
             onClick={close}
             className="absolute right-4 top-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-            aria-label="বন্ধ করুন"
+            aria-label={t('close')}
           >
             <X className="size-5" />
           </button>
@@ -70,7 +72,7 @@ export function Lightbox({
               prev()
             }}
             className="absolute left-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-            aria-label="আগের ছবি"
+            aria-label={t('previousImage')}
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -81,7 +83,7 @@ export function Lightbox({
               next()
             }}
             className="absolute right-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 md:right-16"
-            aria-label="পরের ছবি"
+            aria-label={t('nextImage')}
           >
             <ChevronRight className="size-5" />
           </button>
@@ -112,7 +114,7 @@ export function Lightbox({
                   'h-2 rounded-full transition-all',
                   i === index ? 'w-6 bg-white' : 'w-2 bg-white/40',
                 )}
-                aria-label={`ছবি ${i + 1}`}
+                aria-label={`${t('image')} ${i + 1}`}
               />
             ))}
           </div>

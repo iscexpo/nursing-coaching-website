@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Download,
   Loader2,
@@ -30,49 +31,13 @@ import type {
   StudentPerformance,
 } from './types'
 
-const REPORT_TYPES = [
-  { id: 'enrollment-trends', label: 'এনরোলমেন্ট ট্রেন্ড', icon: Users },
-  { id: 'revenue', label: 'রেভেনিউ রিপোর্ট', icon: DollarSign },
-  { id: 'attendance', label: 'উপস্থিতি পরিসংখ্যান', icon: Calendar },
-  { id: 'course-analytics', label: 'কোর্স অ্যানালিটিক্স', icon: BarChart3 },
-  { id: 'fee-collection', label: 'ফি সংগ্রহ রিপোর্ট', icon: FileText },
-  {
-    id: 'student-performance',
-    label: 'শিক্ষার্থী পারফরম্যান্স',
-    icon: TrendingUp,
-  },
-] as const
-
-type ReportType = (typeof REPORT_TYPES)[number]['id']
-
-const MONTHS_BN = [
-  'জানু',
-  'ফেব্রু',
-  'মার্চ',
-  'এপ্রিল',
-  'মে',
-  'জুন',
-  'জুলাই',
-  'আগস্ট',
-  'সেপ্টে',
-  'অক্টো',
-  'নভে',
-  'ডিসে',
-]
-
-function formatMonth(dateStr: string) {
-  const d = new Date(dateStr)
-  return `${MONTHS_BN[d.getMonth()]} ${d.getFullYear()}`
-}
-
-function formatCurrency(amount: number) {
-  return `৳${amount.toLocaleString('bn-BD')}`
-}
-
-function calculatePercentage(value: number, total: number) {
-  if (total === 0) return 0
-  return Math.round((value / total) * 100)
-}
+type ReportType =
+  | 'enrollment-trends'
+  | 'revenue'
+  | 'attendance'
+  | 'course-analytics'
+  | 'fee-collection'
+  | 'student-performance'
 
 export function ReportsPanel({
   enrollments,
@@ -91,6 +56,62 @@ export function ReportsPanel({
   examSubmissions: ExamSubmission[]
   exams: Exam[]
 }) {
+  const t = useTranslations('admin.reports')
+
+  const REPORT_TYPES = [
+    {
+      id: 'enrollment-trends' as const,
+      label: t('types.enrollmentTrends'),
+      icon: Users,
+    },
+    { id: 'revenue' as const, label: t('types.revenue'), icon: DollarSign },
+    { id: 'attendance' as const, label: t('types.attendance'), icon: Calendar },
+    {
+      id: 'course-analytics' as const,
+      label: t('types.courseAnalytics'),
+      icon: BarChart3,
+    },
+    {
+      id: 'fee-collection' as const,
+      label: t('types.feeCollection'),
+      icon: FileText,
+    },
+    {
+      id: 'student-performance' as const,
+      label: t('types.studentPerformance'),
+      icon: TrendingUp,
+    },
+  ]
+
+  const MONTHS_BN = [
+    t('months.jan'),
+    t('months.feb'),
+    t('months.mar'),
+    t('months.apr'),
+    t('months.may'),
+    t('months.jun'),
+    t('months.jul'),
+    t('months.aug'),
+    t('months.sep'),
+    t('months.oct'),
+    t('months.nov'),
+    t('months.dec'),
+  ]
+
+  function formatMonth(dateStr: string) {
+    const d = new Date(dateStr)
+    return `${MONTHS_BN[d.getMonth()]} ${d.getFullYear()}`
+  }
+
+  function formatCurrency(amount: number) {
+    return `৳${amount.toLocaleString('bn-BD')}`
+  }
+
+  function calculatePercentage(value: number, total: number) {
+    if (total === 0) return 0
+    return Math.round((value / total) * 100)
+  }
+
   const [activeReport, setActiveReport] =
     useState<ReportType>('enrollment-trends')
   const [dateRange, setDateRange] = useState({ start: '', end: '' })
@@ -310,19 +331,19 @@ export function ReportsPanel({
 
       switch (activeReport) {
         case 'enrollment-trends':
-          csv = ['মাস,এনরোলমেন্ট সংখ্যা\n']
-          enrollmentTrends.forEach((t) => csv.push(`${t.period},${t.count}`))
+          csv = [`${t('csvHeaders.enrollmentTrends')}\n`]
+          enrollmentTrends.forEach((e) => csv.push(`${e.period},${e.count}`))
           filename = 'enrollment-trends.csv'
           break
         case 'revenue':
-          csv = ['মাস,যাচাইকৃত,অপেক্ষমান,মোট\n']
+          csv = [`${t('csvHeaders.revenue')}\n`]
           revenueReport.forEach((r) =>
             csv.push(`${r.period},${r.verified},${r.pending},${r.total}`),
           )
           filename = 'revenue-report.csv'
           break
         case 'attendance':
-          csv = ['শিক্ষার্থী,উপস্থিত,বিলম্বিত,অনুপস্থিত,মোট,শতাংশ\n']
+          csv = [`${t('csvHeaders.attendance')}\n`]
           attendanceStats.forEach((s) =>
             csv.push(
               `${s.studentName},${s.present},${s.late},${s.absent},${s.total},${s.percentage}%`,
@@ -331,7 +352,7 @@ export function ReportsPanel({
           filename = 'attendance-report.csv'
           break
         case 'course-analytics':
-          csv = ['কোর্স,মোট এনরোলমেন্ট,সক্রিয়,সম্পন্ন,রেভেনিউ,গড় উপস্থিতি\n']
+          csv = [`${t('csvHeaders.courseAnalytics')}\n`]
           courseAnalytics.forEach((c) =>
             csv.push(
               `${c.courseTitle},${c.totalEnrollments},${c.activeStudents},${c.completedStudents},${c.totalRevenue},${c.averageAttendance}%`,
@@ -340,9 +361,7 @@ export function ReportsPanel({
           filename = 'course-analytics.csv'
           break
         case 'fee-collection':
-          csv = [
-            'শিক্ষার্থী,ফোন,কোর্স,মোট ফি,পরিশোধ,বকেয়া,অবস্থা,শেষ পেমেন্ট\n',
-          ]
+          csv = [`${t('csvHeaders.feeCollection')}\n`]
           feeCollectionReport.forEach((f) =>
             csv.push(
               `${f.studentName},${f.studentPhone},${f.courseTitle},${f.totalFee},${f.paidAmount},${f.dueAmount},${f.status},${f.lastPaymentDate || '—'}`,
@@ -351,7 +370,7 @@ export function ReportsPanel({
           filename = 'fee-collection-report.csv'
           break
         case 'student-performance':
-          csv = ['শিক্ষার্থী,পরীক্ষা দেওয়া,গড় স্কোর,সর্বোচ্চ,সর্বনিম্ন\n']
+          csv = [`${t('csvHeaders.studentPerformance')}\n`]
           studentPerformance.forEach((s) =>
             csv.push(
               `${s.studentName},${s.examsAttempted},${s.averageScore}%,${s.highestScore}%,${s.lowestScore}%`,
@@ -382,13 +401,13 @@ export function ReportsPanel({
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <StatCard
-                label="মোট এনরোলমেন্ট"
+                label={t('stats.totalEnrollments')}
                 value={filteredEnrollments.length}
                 icon={Users}
                 color="brand"
               />
               <StatCard
-                label="এই মাসে"
+                label={t('stats.thisMonth')}
                 value={
                   filteredEnrollments.filter(
                     (e) =>
@@ -400,7 +419,7 @@ export function ReportsPanel({
                 color="green"
               />
               <StatCard
-                label="ব� 기다"
+                label={t('stats.pending')}
                 value={
                   filteredEnrollments.filter((e) => e.status === 'pending')
                     .length
@@ -409,12 +428,18 @@ export function ReportsPanel({
                 color="gold"
               />
             </div>
-            <ChartCard title="মাসিক এনরোলমেন্ট ট্রেন্ড">
+            <ChartCard title={t('charts.monthlyEnrollmentTrend')}>
               <BarChart data={enrollmentTrends} xKey="period" yKey="count" />
             </ChartCard>
             <DataTable
-              headers={['মাস', 'এনরোলমেন্ট']}
-              rows={enrollmentTrends.map((t) => [t.period, t.count.toString()])}
+              headers={[
+                t('dataTableHeaders.month'),
+                t('dataTableHeaders.enrollmentCount'),
+              ]}
+              rows={enrollmentTrends.map((en) => [
+                en.period,
+                en.count.toString(),
+              ])}
             />
           </div>
         )
@@ -424,7 +449,7 @@ export function ReportsPanel({
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <StatCard
-                label="মোট রেভেনিউ"
+                label={t('stats.totalRevenue')}
                 value={formatCurrency(
                   revenueReport.reduce((s, r) => s + r.verified, 0),
                 )}
@@ -432,7 +457,7 @@ export function ReportsPanel({
                 color="green"
               />
               <StatCard
-                label="অপেক্ষমান"
+                label={t('stats.pending')}
                 value={formatCurrency(
                   revenueReport.reduce((s, r) => s + r.pending, 0),
                 )}
@@ -440,17 +465,22 @@ export function ReportsPanel({
                 color="gold"
               />
               <StatCard
-                label="মোট পেমেন্ট"
+                label={t('stats.totalPayments')}
                 value={filteredPayments.length}
                 icon={FileText}
                 color="brand"
               />
             </div>
-            <ChartCard title="মাসিক রেভেনিউ">
+            <ChartCard title={t('charts.monthlyRevenue')}>
               <RevenueChart data={revenueReport} />
             </ChartCard>
             <DataTable
-              headers={['মাস', 'যাচাইকৃত', 'অপেক্ষমান', 'মোট']}
+              headers={[
+                t('dataTableHeaders.month'),
+                t('dataTableHeaders.verified'),
+                t('dataTableHeaders.pending'),
+                t('dataTableHeaders.total'),
+              ]}
               rows={revenueReport.map((r) => [
                 r.period,
                 formatCurrency(r.verified),
@@ -466,7 +496,7 @@ export function ReportsPanel({
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <StatCard
-                label="গড় উপস্থিতি"
+                label={t('stats.averageAttendance')}
                 value={
                   attendanceStats.length > 0
                     ? `${Math.round(
@@ -479,29 +509,29 @@ export function ReportsPanel({
                 color="green"
               />
               <StatCard
-                label="মোট রেকর্ড"
+                label={t('stats.totalRecords')}
                 value={filteredAttendance.length}
                 icon={FileText}
                 color="brand"
               />
               <StatCard
-                label="শিক্ষার্থী নম্বর"
+                label={t('stats.studentCount')}
                 value={attendanceStats.length}
                 icon={Users}
                 color="blue"
               />
             </div>
-            <ChartCard title="উপস্থিতি ওভারভিউ">
+            <ChartCard title={t('charts.attendanceOverview')}>
               <AttendanceChart data={attendanceStats} />
             </ChartCard>
             <DataTable
               headers={[
-                'শিক্ষার্থী',
-                'উপস্থিত',
-                'বিলম্বিত',
-                'অনুপস্থিত',
-                'মোট',
-                'শতাংশ',
+                t('dataTableHeaders.student'),
+                t('dataTableHeaders.present'),
+                t('dataTableHeaders.late'),
+                t('dataTableHeaders.absent'),
+                t('dataTableHeaders.total'),
+                t('dataTableHeaders.percentage'),
               ]}
               rows={attendanceStats.map((s) => [
                 s.studentName,
@@ -518,17 +548,17 @@ export function ReportsPanel({
       case 'course-analytics':
         return (
           <div className="space-y-4">
-            <ChartCard title="কোর্স-ওয়ার অ্যানালিটিক্স">
+            <ChartCard title={t('charts.courseAnalytics')}>
               <CourseAnalyticsChart data={courseAnalytics} />
             </ChartCard>
             <DataTable
               headers={[
-                'কোর্স',
-                'মোট',
-                'সক্রিয়',
-                'সম্পন্ন',
-                'রেভেনিউ',
-                'গড় উপস্থিতি',
+                t('dataTableHeaders.course'),
+                t('dataTableHeaders.total'),
+                t('dataTableHeaders.active'),
+                t('dataTableHeaders.completed'),
+                t('dataTableHeaders.revenue'),
+                t('dataTableHeaders.averageAttendance'),
               ]}
               rows={courseAnalytics.map((c) => [
                 c.courseTitle,
@@ -555,19 +585,19 @@ export function ReportsPanel({
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <StatCard
-                label="মোট বকেয়া"
+                label={t('stats.totalDue')}
                 value={formatCurrency(totalDue)}
                 icon={DollarSign}
                 color="red"
               />
               <StatCard
-                label="মোট সংগ্রহ"
+                label={t('stats.totalCollected')}
                 value={formatCurrency(totalCollected)}
                 icon={TrendingUp}
                 color="green"
               />
               <StatCard
-                label="সম্পূর্ণ প্রদান"
+                label={t('stats.fullyPaid')}
                 value={
                   feeCollectionReport.filter((f) => f.status === 'paid').length
                 }
@@ -577,14 +607,14 @@ export function ReportsPanel({
             </div>
             <DataTable
               headers={[
-                'শিক্ষার্থী',
-                'ফোন',
-                'কোর্স',
-                'মোট ফি',
-                'পরিশোধ',
-                'বকেয়া',
-                'অবস্থা',
-                'শেষ পেমেন্ট',
+                t('dataTableHeaders.student'),
+                t('dataTableHeaders.phone'),
+                t('dataTableHeaders.course'),
+                t('dataTableHeaders.totalFee'),
+                t('dataTableHeaders.payment'),
+                t('dataTableHeaders.due'),
+                t('dataTableHeaders.status'),
+                t('dataTableHeaders.lastPayment'),
               ]}
               rows={feeCollectionReport.map((f) => [
                 f.studentName,
@@ -594,10 +624,10 @@ export function ReportsPanel({
                 formatCurrency(f.paidAmount),
                 formatCurrency(f.dueAmount),
                 f.status === 'paid'
-                  ? 'প্রদান'
+                  ? t('feeStatus.paid')
                   : f.status === 'partial'
-                    ? 'আংশিক'
-                    : 'বাকি',
+                    ? t('feeStatus.partial')
+                    : t('feeStatus.unpaid'),
                 f.lastPaymentDate ? formatMonth(f.lastPaymentDate) : '—',
               ])}
             />
@@ -609,13 +639,13 @@ export function ReportsPanel({
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <StatCard
-                label="মোট শিক্ষার্থী"
+                label={t('stats.totalStudents')}
                 value={studentPerformance.length}
                 icon={Users}
                 color="brand"
               />
               <StatCard
-                label="গড় স্কোর"
+                label={t('stats.averageScore')}
                 value={
                   studentPerformance.length > 0
                     ? `${Math.round(
@@ -630,7 +660,7 @@ export function ReportsPanel({
                 color="green"
               />
               <StatCard
-                label="পরীক্ষা দেওয়া"
+                label={t('stats.examsTaken')}
                 value={studentPerformance.reduce(
                   (s, p) => s + p.examsAttempted,
                   0,
@@ -639,16 +669,16 @@ export function ReportsPanel({
                 color="blue"
               />
             </div>
-            <ChartCard title="শিক্ষার্থী পারফরম্যান্স">
+            <ChartCard title={t('charts.studentPerformance')}>
               <PerformanceChart data={studentPerformance} />
             </ChartCard>
             <DataTable
               headers={[
-                'শিক্ষার্থী',
-                'পরীক্ষা',
-                'গড় স্কোর',
-                'সর্বোচ্চ',
-                'সর্বনিম্ন',
+                t('dataTableHeaders.student'),
+                t('dataTableHeaders.examsTaken'),
+                t('dataTableHeaders.averageScore'),
+                t('dataTableHeaders.highest'),
+                t('dataTableHeaders.lowest'),
               ]}
               rows={studentPerformance.map((s) => [
                 s.studentName,
@@ -691,7 +721,7 @@ export function ReportsPanel({
             }
             className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
           />
-          <span className="text-muted-foreground">থেকে</span>
+          <span className="text-muted-foreground">{t('dateRangeFrom')}</span>
           <input
             type="date"
             value={dateRange.end}
@@ -710,7 +740,7 @@ export function ReportsPanel({
             ) : (
               <Download className="size-4" />
             )}
-            এক্সপোর্ট CSV
+            {t('exportCsv')}
           </button>
         </div>
       </div>
@@ -773,6 +803,7 @@ function ChartCard({
 }
 
 function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
+  const t = useTranslations('admin.reports')
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden mt-4">
       <div className="overflow-x-auto">
@@ -808,7 +839,7 @@ function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
                   colSpan={headers.length}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
-                  কোনো ডেটা নেই
+                  {t('noData')}
                 </td>
               </tr>
             )}
@@ -854,6 +885,7 @@ function BarChart({
 }
 
 function RevenueChart({ data }: { data: RevenueReport[] }) {
+  const t = useTranslations('admin.reports')
   const maxValue = Math.max(...data.map((d) => d.total), 1)
   return (
     <div className="h-64 flex items-end justify-around gap-1 px-2">
@@ -866,12 +898,12 @@ function RevenueChart({ data }: { data: RevenueReport[] }) {
             <div
               className="bg-green rounded-t transition-all hover:bg-green/80"
               style={{ height: `${(d.verified / maxValue) * 240}px` }}
-              title={`${d.period} যাচাইকৃত: ${d.verified}`}
+              title={`${d.period} ${t('dataTableHeaders.verified')}: ${d.verified}`}
             />
             <div
               className="bg-gold rounded-t transition-all hover:bg-gold/80"
               style={{ height: `${(d.pending / maxValue) * 240}px` }}
-              title={`${d.period} অপেক্ষমান: ${d.pending}`}
+              title={`${d.period} ${t('dataTableHeaders.pending')}: ${d.pending}`}
             />
           </div>
           <span className="text-xs text-muted-foreground mt-2">{d.period}</span>
@@ -879,10 +911,12 @@ function RevenueChart({ data }: { data: RevenueReport[] }) {
       ))}
       <div className="flex items-center gap-4 ml-4 text-xs">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-green" /> যাচাইকৃত
+          <span className="w-3 h-3 rounded bg-green" />{' '}
+          {t('dataTableHeaders.verified')}
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-gold" /> অপেক্ষমান
+          <span className="w-3 h-3 rounded bg-gold" />{' '}
+          {t('dataTableHeaders.pending')}
         </span>
       </div>
     </div>
@@ -890,9 +924,10 @@ function RevenueChart({ data }: { data: RevenueReport[] }) {
 }
 
 function AttendanceChart({ data }: { data: AttendanceStats[] }) {
+  const t = useTranslations('admin.reports')
   if (data.length === 0)
     return (
-      <p className="text-center text-muted-foreground py-8">কোনো ডেটা নেই</p>
+      <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
     )
   const present = data.reduce((s, d) => s + d.present + d.late, 0)
   const absent = data.reduce((s, d) => s + d.absent, 0)
@@ -927,22 +962,30 @@ function AttendanceChart({ data }: { data: AttendanceStats[] }) {
             <span className="text-3xl font-bold text-foreground">
               {total > 0 ? Math.round((present / total) * 100) : 0}%
             </span>
-            <span className="text-xs text-muted-foreground">উপস্থিতি</span>
+            <span className="text-xs text-muted-foreground">
+              {t('charts.attendanceOverview')}
+            </span>
           </div>
         </div>
       </div>
       <div className="space-y-4 text-sm">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-green" />
-          <span>উপস্থিত: {present}</span>
+          <span>
+            {t('attendancePresent')}: {present}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-gold" />
-          <span>বিলম্বিত: {data.reduce((s, d) => s + d.late, 0)}</span>
+          <span>
+            {t('attendanceLate')}: {data.reduce((s, d) => s + d.late, 0)}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-destructive" />
-          <span>অনুপস্থিত: {absent}</span>
+          <span>
+            {t('attendanceAbsent')}: {absent}
+          </span>
         </div>
       </div>
     </div>
@@ -950,9 +993,10 @@ function AttendanceChart({ data }: { data: AttendanceStats[] }) {
 }
 
 function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
+  const t = useTranslations('admin.reports')
   if (data.length === 0)
     return (
-      <p className="text-center text-muted-foreground py-8">কোনো কোর্স নেই</p>
+      <p className="text-center text-muted-foreground py-8">{t('noCourses')}</p>
     )
   return (
     <div className="h-64 flex items-end justify-around gap-1 px-2 overflow-x-auto">
@@ -963,7 +1007,7 @@ function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
             style={{
               height: `${Math.max(40, (d.totalEnrollments / Math.max(...data.map((x) => x.totalEnrollments), 1)) * 240)}px`,
             }}
-            title={`${d.courseTitle}: ${d.totalEnrollments} এনরোলমেন্ট`}
+            title={`${d.courseTitle}: ${d.totalEnrollments} ${t('stats.totalEnrollments')}`}
           />
           <span className="text-xs text-muted-foreground mt-2 text-center truncate w-full">
             {d.courseTitle}
@@ -978,9 +1022,10 @@ function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
 }
 
 function PerformanceChart({ data }: { data: StudentPerformance[] }) {
+  const t = useTranslations('admin.reports')
   if (data.length === 0)
     return (
-      <p className="text-center text-muted-foreground py-8">কোনো ডেটা নেই</p>
+      <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
     )
   const sorted = [...data]
     .sort((a, b) => b.averageScore - a.averageScore)

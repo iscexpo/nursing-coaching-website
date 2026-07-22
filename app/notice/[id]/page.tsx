@@ -14,7 +14,7 @@ import { SITE } from '@/lib/site-data'
 type Props = { params: Promise<{ id: string }> }
 
 function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString('bn-BD', {
+  return new Date(date).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!notice) {
     return {
-      title: 'নোটিশ পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo',
+      title: 'Notice not found | ISC Expo - Icon Skill & Career Expo',
       robots: { index: false },
     }
   }
@@ -92,11 +92,11 @@ export default async function NoticeDetailPage({ params }: Props) {
           <div className="mx-auto max-w-3xl px-4">
             <Breadcrumb
               items={[
-                { label: 'নোটিশ', href: '/notice' },
+                { label: 'Notice', href: '/notice' },
                 { label: notice.title },
               ]}
             />
-            <SectionHeading eyebrow="নোটিশ" title={notice.title} />
+            <SectionHeading eyebrow="Notice" title={notice.title} />
             <p className="mt-2 text-sm text-muted-foreground">
               {formatDate(notice.createdAt)}
             </p>

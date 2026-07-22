@@ -8,12 +8,14 @@ import {
   Save,
   X,
   Loader2,
-  Search,
   Upload,
   Key,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { Student } from './types'
 import { useToast } from '@/components/ui/toast'
+import { EmptyState } from '@/components/ui/empty-state'
+import { FilterBar } from '@/components/ui/filter-bar'
 
 function resizeImage(
   file: File,
@@ -111,20 +113,6 @@ function emptyForm(): FormState {
   }
 }
 
-const BOARDS = [
-  'বোর্ড নির্বাচন করুন',
-  'ঢাকা বোর্ড',
-  'রাজশাহী বোর্ড',
-  'চট্টগ্রাম বোর্ড',
-  'যশোর বোর্ড',
-  'বরিশাল বোর্ড',
-  'সিলেট বোর্ড',
-  'রংপুর বোর্ড',
-  'ময়মনসিংহ বোর্ড',
-  'দিনাজপুর বোর্ড',
-  'কুমিল্লা বোর্ড',
-]
-
 function EduFields({
   label,
   value,
@@ -134,7 +122,22 @@ function EduFields({
   value: EducationField
   onChange: (v: EducationField) => void
 }) {
+  const t = useTranslations('admin.students')
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const boards = [
+    t('boards.select'),
+    t('boards.dhaka'),
+    t('boards.rajshahi'),
+    t('boards.chattogram'),
+    t('boards.jessore'),
+    t('boards.barisal'),
+    t('boards.sylhet'),
+    t('boards.rangpur'),
+    t('boards.mymensingh'),
+    t('boards.dinajpur'),
+    t('boards.comilla'),
+  ]
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -159,19 +162,19 @@ function EduFields({
       <div className="grid gap-2 sm:grid-cols-3">
         <div>
           <label className="block text-xs font-medium text-muted-foreground">
-            ফলাফল
+            {t('formLabels.result')}
           </label>
           <input
             type="text"
             value={value.result}
             onChange={(e) => onChange({ ...value, result: e.target.value })}
-            placeholder="যেমন: GPA 5.00"
+            placeholder={t('formLabels.resultPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="block text-xs font-medium text-muted-foreground">
-            প্রতিষ্ঠান
+            {t('formLabels.institution')}
           </label>
           <input
             type="text"
@@ -179,20 +182,20 @@ function EduFields({
             onChange={(e) =>
               onChange({ ...value, institution: e.target.value })
             }
-            placeholder="কলেজ/বিশ্ববিদ্যালয়"
+            placeholder={t('formLabels.institutionPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="block text-xs font-medium text-muted-foreground">
-            সাল
+            {t('formLabels.year')}
           </label>
           <select
             value={value.year}
             onChange={(e) => onChange({ ...value, year: e.target.value })}
             className={inputCls}
           >
-            <option value="">বছর নির্বাচন</option>
+            <option value="">{t('formLabels.yearSelect')}</option>
             {Array.from({ length: 27 }, (_, i) => 2026 - i).map((y) => (
               <option key={y} value={String(y)}>
                 {y}
@@ -204,19 +207,19 @@ function EduFields({
       <div className="grid gap-2 sm:grid-cols-3">
         <div>
           <label className="block text-xs font-medium text-muted-foreground">
-            রোল নম্বর
+            {t('formLabels.roll')}
           </label>
           <input
             type="text"
             value={value.roll}
             onChange={(e) => onChange({ ...value, roll: e.target.value })}
-            placeholder="রোল নম্বর"
+            placeholder={t('formLabels.rollPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="block text-xs font-medium text-muted-foreground">
-            রেজিস্ট্রেশন নম্বর
+            {t('formLabels.registration')}
           </label>
           <input
             type="text"
@@ -224,20 +227,20 @@ function EduFields({
             onChange={(e) =>
               onChange({ ...value, registrationNo: e.target.value })
             }
-            placeholder="রেজিস্ট্রেশন নম্বর"
+            placeholder={t('formLabels.registrationPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="block text-xs font-medium text-muted-foreground">
-            বোর্ড
+            {t('formLabels.board')}
           </label>
           <select
             value={value.board}
             onChange={(e) => onChange({ ...value, board: e.target.value })}
             className={inputCls}
           >
-            {BOARDS.map((b, i) => (
+            {boards.map((b, i) => (
               <option key={b} value={i === 0 ? '' : b}>
                 {b}
               </option>
@@ -259,7 +262,7 @@ function EduFields({
             onClick={() => fileInputRef.current?.click()}
             className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
           >
-            <Upload className="size-3.5" /> সার্টিফিকেট ছবি আপলোড
+            <Upload className="size-3.5" /> {t('formLabels.certificatePhoto')}
           </button>
         </div>
         {value.photoUrl && (
@@ -274,7 +277,7 @@ function EduFields({
               onClick={() => onChange({ ...value, photoUrl: '' })}
               className="text-xs text-destructive hover:underline"
             >
-              মুছুন
+              {t('formLabels.remove')}
             </button>
           </div>
         )}
@@ -290,6 +293,7 @@ function StudentPhotoUpload({
   value: string
   onChange: (url: string) => void
 }) {
+  const t = useTranslations('admin.students')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
 
@@ -333,13 +337,13 @@ function StudentPhotoUpload({
         ) : (
           <Upload className="size-3.5" />
         )}
-        {uploading ? 'আপলোড হচ্ছে...' : 'ছবি আপলোড'}
+        {uploading ? t('formLabels.uploading') : t('formLabels.uploadPhoto')}
       </button>
       <input
         type="url"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="অথবা URL পেস্ট করুন"
+        placeholder={t('formLabels.pasteUrl')}
         className={inputCls}
       />
       {value && (
@@ -354,7 +358,7 @@ function StudentPhotoUpload({
             onClick={() => onChange('')}
             className="text-xs text-destructive hover:underline"
           >
-            মুছুন
+            {t('formLabels.remove')}
           </button>
         </div>
       )}
@@ -369,6 +373,7 @@ export function StudentsPanel({
   students: Student[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.students')
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Student | null>(null)
   const [saving, setSaving] = useState(false)
@@ -410,7 +415,7 @@ export function StudentsPanel({
   async function handleSave() {
     if (!form.name.trim() || !form.email.trim()) return
     if (!editing && !form.password.trim()) {
-      setFormError('পাসওয়ার্ড আবশ্যক')
+      setFormError(t('formLabels.passwordRequired'))
       return
     }
     setSaving(true)
@@ -465,36 +470,32 @@ export function StudentsPanel({
         setShowForm(false)
         setEditing(null)
         setForm(emptyForm())
-        success(
-          editing
-            ? 'শিক্ষার্থী আপডেট করা হয়েছে'
-            : 'নতুন শিক্ষার্থী যোগ করা হয়েছে',
-        )
+        success(editing ? t('saveSuccess') : t('createSuccess'))
       } else {
-        const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
+        const err = await res.json().catch(() => ({ error: t('saveFailed') }))
         const msg = err.details
           ? Object.values(err.details).flat().join(', ')
-          : err.error || 'সংরক্ষণ ব্যর্থ'
+          : err.error || t('saveFailed')
         setFormError(msg)
         error(msg)
       }
     } catch {
-      setFormError('সংরক্ষণ ব্যর্থ')
+      setFormError(t('saveFailed'))
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete(id: string) {
-    const ok = await confirm('আপনি কি নিশ্চিত এই শিক্ষার্থী মুছে ফেলতে চান?')
+    const ok = await confirm(t('deleteConfirm'))
     if (!ok) return
     const res = await fetch(`/api/students/${id}`, { method: 'DELETE' })
     if (res.ok) {
       onRefresh()
-      success('শিক্ষার্থী মুছে ফেলা হয়েছে')
+      success(t('deleteSuccess'))
     } else {
       const err = await res.json().catch(() => ({}))
-      error(err.error || 'মুছে ফেলা ব্যর্থ')
+      error(err.error || t('deleteFailed'))
     }
   }
 
@@ -512,13 +513,11 @@ export function StudentsPanel({
         setResettingStudent(null)
         setNewPassword('')
       } else {
-        const err = await res
-          .json()
-          .catch(() => ({ error: 'পাসওয়ার্ড রিসেট ব্যর্থ' }))
-        setResetError(err.error || 'পাসওয়ার্ড রিসেট ব্যর্থ')
+        const err = await res.json().catch(() => ({ error: t('resetFailed') }))
+        setResetError(err.error || t('resetFailed'))
       }
     } catch {
-      setResetError('পাসওয়ার্ড রিসেট ব্যর্থ')
+      setResetError(t('resetFailed'))
     } finally {
       setResetSaving(false)
     }
@@ -538,7 +537,7 @@ export function StudentsPanel({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          শিক্ষার্থী ব্যবস্থাপনা
+          {t('management')}
         </h3>
         <button
           onClick={() => {
@@ -548,7 +547,7 @@ export function StudentsPanel({
           }}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
-          <Plus className="size-4" /> নতুন শিক্ষার্থী
+          <Plus className="size-4" /> {t('newStudent')}
         </button>
       </div>
 
@@ -556,7 +555,7 @@ export function StudentsPanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'শিক্ষার্থী সম্পাদনা' : 'নতুন শিক্ষার্থী যোগ'}
+              {editing ? t('editTitle') : t('formHeadingNew')}
             </h4>
             <button
               onClick={() => {
@@ -575,24 +574,24 @@ export function StudentsPanel({
               </div>
             )}
 
-            {/* ব্যক্তিগত তথ্য */}
+            {/* Personal info */}
             <div>
               <p className="text-sm font-semibold text-foreground mb-2 border-b border-border pb-1">
-                ব্যক্তিগত তথ্য
+                {t('personalInfo')}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className={labelCls}>নাম *</label>
+                  <label className={labelCls}>{t('formLabels.name')}</label>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="শিক্ষার্থীর নাম"
+                    placeholder={t('formLabels.namePlaceholder')}
                     className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>ইমেইল *</label>
+                  <label className={labelCls}>{t('formLabels.email')}</label>
                   <input
                     type="email"
                     value={form.email}
@@ -606,45 +605,49 @@ export function StudentsPanel({
               </div>
               {!editing && (
                 <div className="mt-3">
-                  <label className={labelCls}>পাসওয়ার্ড *</label>
+                  <label className={labelCls}>{t('formLabels.password')}</label>
                   <input
                     type="password"
                     value={form.password}
                     onChange={(e) =>
                       setForm({ ...form, password: e.target.value })
                     }
-                    placeholder="কমপক্ষে ৬ অক্ষর"
+                    placeholder={t('formLabels.passwordPlaceholder')}
                     className={inputCls}
                   />
                 </div>
               )}
               <div className="grid gap-3 sm:grid-cols-3 mt-3">
                 <div>
-                  <label className={labelCls}>ফোন নম্বর</label>
+                  <label className={labelCls}>{t('formLabels.phone')}</label>
                   <input
                     type="text"
                     value={form.phoneNumber}
                     onChange={(e) =>
                       setForm({ ...form, phoneNumber: e.target.value })
                     }
-                    placeholder="+8801..."
+                    placeholder={t('formLabels.phonePlaceholder')}
                     className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>শিক্ষার্থী আইডি</label>
+                  <label className={labelCls}>
+                    {t('formLabels.studentId')}
+                  </label>
                   <input
                     type="text"
                     value={form.studentId}
                     onChange={(e) =>
                       setForm({ ...form, studentId: e.target.value })
                     }
-                    placeholder="STU-001"
+                    placeholder={t('formLabels.studentIdPlaceholder')}
                     className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>জন্ম তারিখ</label>
+                  <label className={labelCls}>
+                    {t('formLabels.dateOfBirth')}
+                  </label>
                   <input
                     type="date"
                     value={form.dateOfBirth}
@@ -656,7 +659,7 @@ export function StudentsPanel({
                 </div>
               </div>
               <div className="mt-3">
-                <label className={labelCls}>ছবি</label>
+                <label className={labelCls}>{t('formLabels.image')}</label>
                 <div className="flex items-center gap-3 mt-1">
                   <StudentPhotoUpload
                     value={form.image}
@@ -666,123 +669,131 @@ export function StudentsPanel({
               </div>
             </div>
 
-            {/* ঠিকানা */}
+            {/* Address */}
             <div>
               <p className="text-sm font-semibold text-foreground mb-2 border-b border-border pb-1">
-                ঠিকানা
+                {t('formLabels.addressSection')}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className={labelCls}>গ্রাম</label>
+                  <label className={labelCls}>{t('formLabels.village')}</label>
                   <input
                     type="text"
                     value={form.village}
                     onChange={(e) =>
                       setForm({ ...form, village: e.target.value })
                     }
-                    placeholder="গ্রামের নাম"
+                    placeholder={t('formLabels.villagePlaceholder')}
                     className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>পোস্ট</label>
+                  <label className={labelCls}>{t('formLabels.post')}</label>
                   <input
                     type="text"
                     value={form.post}
                     onChange={(e) => setForm({ ...form, post: e.target.value })}
-                    placeholder="পোস্ট অফিস"
+                    placeholder={t('formLabels.postPlaceholder')}
                     className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>থানা</label>
+                  <label className={labelCls}>
+                    {t('formLabels.policeStation')}
+                  </label>
                   <input
                     type="text"
                     value={form.policeStation}
                     onChange={(e) =>
                       setForm({ ...form, policeStation: e.target.value })
                     }
-                    placeholder="থানা/উপজেলা"
+                    placeholder={t('formLabels.policeStationPlaceholder')}
                     className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>জেলা</label>
+                  <label className={labelCls}>{t('formLabels.district')}</label>
                   <input
                     type="text"
                     value={form.district}
                     onChange={(e) =>
                       setForm({ ...form, district: e.target.value })
                     }
-                    placeholder="জেলা"
+                    placeholder={t('formLabels.districtPlaceholder')}
                     className={inputCls}
                   />
                 </div>
               </div>
               <div className="mt-3">
-                <label className={labelCls}>পূর্ণ ঠিকানা</label>
+                <label className={labelCls}>
+                  {t('formLabels.fullAddress')}
+                </label>
                 <input
                   type="text"
                   value={form.address}
                   onChange={(e) =>
                     setForm({ ...form, address: e.target.value })
                   }
-                  placeholder="সম্পূর্ণ ঠিকানা (ঐচ্ছিক)"
+                  placeholder={t('formLabels.fullAddressPlaceholder')}
                   className={inputCls}
                 />
               </div>
             </div>
 
-            {/* অভিভাবক */}
+            {/* Guardian */}
             <div>
               <p className="text-sm font-semibold text-foreground mb-2 border-b border-border pb-1">
-                অভিভাবক
+                {t('formLabels.guardianSection')}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className={labelCls}>অভিভাবকের নাম</label>
+                  <label className={labelCls}>
+                    {t('formLabels.guardianName')}
+                  </label>
                   <input
                     type="text"
                     value={form.guardianName}
                     onChange={(e) =>
                       setForm({ ...form, guardianName: e.target.value })
                     }
-                    placeholder="বাবা/মা/অভিভাবক"
+                    placeholder={t('formLabels.guardianNamePlaceholder')}
                     className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>অভিভাবকের ফোন</label>
+                  <label className={labelCls}>
+                    {t('formLabels.guardianPhone')}
+                  </label>
                   <input
                     type="text"
                     value={form.guardianPhone}
                     onChange={(e) =>
                       setForm({ ...form, guardianPhone: e.target.value })
                     }
-                    placeholder="+8801..."
+                    placeholder={t('formLabels.phonePlaceholder')}
                     className={inputCls}
                   />
                 </div>
               </div>
             </div>
 
-            {/* শিক্ষাগত যোগ্যতা */}
+            {/* Education */}
             <div className="space-y-3">
               <p className="text-sm font-semibold text-foreground border-b border-border pb-1">
-                শিক্ষাগত যোগ্যতা
+                {t('formLabels.educationSection')}
               </p>
               <EduFields
-                label="S.S.C"
+                label={t('formLabels.ssc')}
                 value={form.ssc}
                 onChange={(v) => setForm({ ...form, ssc: v })}
               />
               <EduFields
-                label="H.S.C (ঐচ্ছিক)"
+                label={t('formLabels.hscOptional')}
                 value={form.hsc}
                 onChange={(v) => setForm({ ...form, hsc: v })}
               />
               <EduFields
-                label="অনার্স (ঐচ্ছিক)"
+                label={t('formLabels.honorsOptional')}
                 value={form.honors}
                 onChange={(v) => setForm({ ...form, honors: v })}
               />
@@ -798,28 +809,23 @@ export function StudentsPanel({
               ) : (
                 <Save className="size-4" />
               )}
-              {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+              {editing ? t('editTitle') : t('formHeadingNew')}
             </button>
           </div>
         </div>
       )}
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="নাম, ইমেইল, ফোন, আইডি বা জেলা দিয়ে খুঁজুন..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-        />
-      </div>
+      <FilterBar
+        searchPlaceholder={t('searchPlaceholder')}
+        searchValue={search}
+        onSearchChange={setSearch}
+      />
 
       {resettingStudent && (
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm dark:border-blue-900 dark:bg-blue-950/30">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              পাসওয়ার্ড রিসেট — {resettingStudent.name}
+              {t('passwordResetHeading')} — {resettingStudent.name}
             </h4>
             <button
               onClick={() => {
@@ -839,12 +845,12 @@ export function StudentsPanel({
               </div>
             )}
             <div>
-              <label className={labelCls}>নতুন পাসওয়ার্ড *</label>
+              <label className={labelCls}>{t('newPasswordLabel')}</label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="কমপক্ষে ৬ অক্ষর"
+                placeholder={t('formLabels.passwordPlaceholder')}
                 className={inputCls}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleResetPassword()
@@ -862,7 +868,7 @@ export function StudentsPanel({
                 ) : (
                   <Key className="size-4" />
                 )}
-                পাসওয়ার্ড আপডেট করুন
+                {t('updatePassword')}
               </button>
               <button
                 onClick={() => {
@@ -872,7 +878,7 @@ export function StudentsPanel({
                 }}
                 className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-secondary"
               >
-                বাতিল
+                {t('cancel')}
               </button>
             </div>
           </div>
@@ -885,22 +891,22 @@ export function StudentsPanel({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  নাম
+                  {t('tableHeaders.name')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  ইমেইল
+                  {t('tableHeaders.email')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  ফোন
+                  {t('tableHeaders.phone')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  জেলা
+                  {t('tableHeaders.district')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  শিক্ষার্থী আইডি
+                  {t('tableHeaders.studentId')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  ভূমিকা
+                  {t('tableHeaders.role')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
               </tr>
@@ -908,13 +914,10 @@ export function StudentsPanel({
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-8 text-center text-muted-foreground"
-                  >
-                    {search
-                      ? 'কোনো শিক্ষার্থী পাওয়া যায়নি'
-                      : 'এখনো কোনো শিক্ষার্থী যোগ করা হয়নি'}
+                  <td colSpan={7}>
+                    <EmptyState
+                      title={search ? t('emptySearch') : t('emptyNoData')}
+                    />
                   </td>
                 </tr>
               ) : (
@@ -956,11 +959,13 @@ export function StudentsPanel({
                         <span
                           className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${s.role === 'admin' ? 'bg-brand/10 text-brand' : 'bg-green/10 text-green'}`}
                         >
-                          {s.role === 'admin' ? 'অ্যাডমিন' : 'শিক্ষার্থী'}
+                          {s.role === 'admin'
+                            ? t('roleAdmin')
+                            : t('roleStudent')}
                         </span>
                         {s.admissionId && (
                           <span className="inline-flex rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-semibold text-brand">
-                            ভর্তি আবেদন
+                            {t('admissionBadge')}
                           </span>
                         )}
                       </div>
@@ -980,7 +985,7 @@ export function StudentsPanel({
                             setResetError('')
                           }}
                           className="rounded-lg p-1.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600"
-                          title="পাসওয়ার্ড রিসেট"
+                          title={t('passwordResetHeading')}
                         >
                           <Key className="size-4" />
                         </button>

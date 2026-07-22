@@ -15,6 +15,111 @@
       "when": 1783766681502,
       "tag": "0001_windy_nomad",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783767000000,
+      "tag": "0002_add_attendance_admit_cards",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783767100000,
+      "tag": "0003_add_student_address_education",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783767200000,
+      "tag": "0004_teachers",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783767300000,
+      "tag": "0005_audit_logs",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1783767400000,
+      "tag": "0006_student_lifecycle_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1783767500000,
+      "tag": "0007_admissions",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1783767600000,
+      "tag": "0008_media_files",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1783767700000,
+      "tag": "0009_subjects",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1783767800000,
+      "tag": "0010_admissions_education",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1783767900000,
+      "tag": "0011_enrollment_discount",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1783768000000,
+      "tag": "0012_add_course_code",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1783768100000,
+      "tag": "0013_add_user_admission_link",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1783768200000,
+      "tag": "0014_add_model_test_applicants",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1783768300000,
+      "tag": "0015_enrollment_lifecycle",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1783768400000,
+      "tag": "0016_exam_enhancements",
+      "breakpoints": true
     }
   ]
 }

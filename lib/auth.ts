@@ -1,11 +1,12 @@
 import { betterAuth } from 'better-auth'
 import { phoneNumber } from 'better-auth/plugins'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { db } from './db'
+import { getDb } from './db'
 import { validateEnv } from './env'
 import * as schema from './db/schema'
 
-const env = validateEnv()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _auth: any = null
 
 async function sendSupabaseSMS(phoneNumber: string, code: string) {
   const supabaseUrl = process.env.SUPABASE_URL
@@ -41,7 +42,7 @@ async function sendSupabaseSMS(phoneNumber: string, code: string) {
   }
 }
 
-function getTrustedOrigins() {
+function getTrustedOrigins(env: ReturnType<typeof validateEnv>) {
   const configured =
     env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',')
       .map((origin) => origin.trim())
@@ -75,44 +76,70 @@ function getTrustedOrigins() {
   return Array.from(normalized)
 }
 
-export const auth = betterAuth({
-  baseURL: env.BETTER_AUTH_URL || 'http://localhost:3000',
-  secret: env.BETTER_AUTH_SECRET,
-  trustedOrigins: getTrustedOrigins(),
-  database: drizzleAdapter(db, {
-    provider: 'pg',
-    schema,
-  }),
-  user: {
-    additionalFields: {
-      role: {
-        type: 'string',
-        required: false,
-        defaultValue: 'student',
-        input: false,
-      },
-      studentId: {
-        type: 'string',
-        required: false,
-        unique: true,
-        input: true,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createAuth(): any {
+  const env = validateEnv()
+  const db = getDb()
+
+  return betterAuth({
+    baseURL: env.BETTER_AUTH_URL || 'http://localhost:3000',
+    secret: env.BETTER_AUTH_SECRET,
+    trustedOrigins: getTrustedOrigins(env),
+    database: drizzleAdapter(db, {
+      provider: 'pg',
+      schema,
+    }),
+    user: {
+      additionalFields: {
+        role: {
+          type: 'string',
+          required: false,
+          defaultValue: 'student',
+          input: false,
+        },
+        studentId: {
+          type: 'string',
+          required: false,
+          unique: true,
+          input: true,
+        },
       },
     },
+    session: {
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
+      updateAge: 60 * 60 * 24, // refresh every 24h
+      // Limit concurrent sessions per user
+      // Better Auth doesn't natively enforce this, but we can
+      // use a hook. For now, store the limit as a config value
+      // and enforce it in the logout-all endpoint.
+      freshAge: 60 * 60, // 1 hour — sessions younger than this are "fresh"
+    },
+    emailAndPassword: {
+      enabled: true,
+    },
+    plugins: [
+      phoneNumber({
+        sendOTP: ({ phoneNumber: phone, code }) => {
+          sendSupabaseSMS(phone, code)
+        },
+        otpLength: 6,
+        expiresIn: 300,
+      }),
+    ],
+  })
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getAuth(): any {
+  if (!_auth) {
+    _auth = createAuth()
+  }
+  return _auth
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const auth: any = new Proxy({} as any, {
+  get(_, prop) {
+    return (getAuth() as any)[prop]
   },
-  session: {
-    expiresIn: 60 * 60 * 24 * 7,
-    updateAge: 60 * 60 * 24,
-  },
-  emailAndPassword: {
-    enabled: true,
-  },
-  plugins: [
-    phoneNumber({
-      sendOTP: ({ phoneNumber: phone, code }) => {
-        sendSupabaseSMS(phone, code)
-      },
-      otpLength: 6,
-      expiresIn: 300,
-    }),
-  ],
 })

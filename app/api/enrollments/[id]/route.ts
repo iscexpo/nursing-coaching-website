@@ -6,6 +6,11 @@ import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { updateEnrollmentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { rateLimit } from '@/lib/rate-limit'
+import {
+  getEnrollmentTransitionError,
+  getLifecycleTimestamp,
+} from '@/lib/lms-logic'
+import { notifyEnrollmentStatusChange } from '@/lib/notifications'
 
 export async function GET(
   request: NextRequest,
@@ -71,9 +76,26 @@ export async function PUT(
         { status: 404 },
       )
 
+    if (parsed.data.status && parsed.data.status !== existing.status) {
+      const transitionError = getEnrollmentTransitionError(
+        existing.status,
+        parsed.data.status,
+      )
+      if (transitionError) {
+        return NextResponse.json({ error: transitionError }, { status: 400 })
+      }
+    }
+
     const updateData: Record<string, unknown> = {
       ...parsed.data,
       updatedAt: new Date(),
+    }
+
+    if (parsed.data.status) {
+      const timestampCol = getLifecycleTimestamp(parsed.data.status)
+      if (timestampCol) {
+        updateData[timestampCol] = new Date()
+      }
     }
 
     if (
@@ -123,6 +145,15 @@ export async function PUT(
 
       return [result]
     })
+
+    if (parsed.data.status && parsed.data.status !== existing.status) {
+      void notifyEnrollmentStatusChange({
+        userId: existing.userId,
+        enrollmentId: existing.id,
+        previousStatus: existing.status,
+        newStatus: parsed.data.status,
+      })
+    }
 
     void writeAudit(
       buildAuditEntry(

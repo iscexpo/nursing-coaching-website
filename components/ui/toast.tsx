@@ -7,8 +7,10 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { useTranslations } from 'next-intl'
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ConfirmDialog } from './confirm-dialog'
 
 type ToastVariant = 'success' | 'error' | 'info'
 
@@ -28,11 +30,9 @@ type ToastContextValue = {
 const ToastContext = createContext<ToastContextValue | null>(null)
 
 const ICONS: Record<ToastVariant, ReactNode> = {
-  success: (
-    <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />
-  ),
+  success: <CheckCircle2 className="size-5 text-emerald-500" />,
   error: <AlertCircle className="size-5 text-destructive" />,
-  info: <Info className="size-5 text-brand" />,
+  info: <Info className="size-5 text-primary" />,
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -41,6 +41,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     message: string
     resolve: (ok: boolean) => void
   } | null>(null)
+  const t = useTranslations('common')
 
   const remove = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
@@ -95,37 +96,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         ))}
       </div>
 
-      {confirmState && (
-        <div
-          role="alertdialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 p-4"
-        >
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
-            <p className="text-sm text-foreground">{confirmState.message}</p>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  confirmState.resolve(false)
-                  setConfirmState(null)
-                }}
-                className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-secondary"
-              >
-                বাতিল
-              </button>
-              <button
-                onClick={() => {
-                  confirmState.resolve(true)
-                  setConfirmState(null)
-                }}
-                className="rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white hover:bg-destructive/90"
-              >
-                নিশ্চিত করুন
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={!!confirmState}
+        title={confirmState?.message || ''}
+        confirmText={t('confirm')}
+        cancelText={t('cancel')}
+        variant="destructive"
+        onConfirm={() => {
+          confirmState?.resolve(true)
+          setConfirmState(null)
+        }}
+        onCancel={() => {
+          confirmState?.resolve(false)
+          setConfirmState(null)
+        }}
+      />
     </ToastContext.Provider>
   )
 }

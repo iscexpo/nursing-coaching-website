@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Loader2, Send, CheckCircle2 } from 'lucide-react'
 
 type ExamOption = { id: string; title: string }
@@ -14,6 +15,7 @@ export function ModelTestApplyForm({ exams }: { exams: ExamOption[] }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState<string | null>(null)
+  const t = useTranslations('modelTest')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -34,17 +36,17 @@ export function ModelTestApplyForm({ exams }: { exams: ExamOption[] }) {
       })
       const data = await res.json()
       if (res.ok) {
-        setSuccess(data.message || 'আবেদন গৃহীত হয়েছে')
+        setSuccess(data.message || t('applyForm.successMessage'))
         setName('')
         setPhone('')
         setExamId('')
         setPreferredSubject('')
         setMessage('')
       } else {
-        setError(data.error || 'আবেদন জমা দিতে ব্যর্থ')
+        setError(data.error || t('applyForm.errorMessage'))
       }
     } catch {
-      setError('আবেদন জমা দিতে ব্যর্থ')
+      setError(t('applyForm.errorMessage'))
     } finally {
       setSaving(false)
     }
@@ -69,20 +71,20 @@ export function ModelTestApplyForm({ exams }: { exams: ExamOption[] }) {
 
       <div>
         <label className="block text-sm font-medium text-foreground">
-          নাম *
+          {t('applyForm.name')}
         </label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           className={inputCls}
-          placeholder="আপনার নাম"
+          placeholder={t('applyForm.namePlaceholder')}
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-foreground">
-          মোবাইল নম্বর *
+          {t('applyForm.phone')}
         </label>
         <input
           value={phone}
@@ -95,14 +97,14 @@ export function ModelTestApplyForm({ exams }: { exams: ExamOption[] }) {
 
       <div>
         <label className="block text-sm font-medium text-foreground">
-          পছন্দের পরীক্ষা
+          {t('applyForm.preferredExam')}
         </label>
         <select
           value={examId}
           onChange={(e) => setExamId(e.target.value)}
           className={inputCls}
         >
-          <option value="">পরীক্ষা নির্বাচন করুন (ঐচ্ছিক)</option>
+          <option value="">{t('applyForm.selectExam')}</option>
           {exams.map((ex) => (
             <option key={ex.id} value={ex.id}>
               {ex.title}
@@ -113,26 +115,26 @@ export function ModelTestApplyForm({ exams }: { exams: ExamOption[] }) {
 
       <div>
         <label className="block text-sm font-medium text-foreground">
-          পছন্দের বিষয়
+          {t('applyForm.preferredSubject')}
         </label>
         <input
           value={preferredSubject}
           onChange={(e) => setPreferredSubject(e.target.value)}
           className={inputCls}
-          placeholder="যেমন: অ্যানাটমি"
+          placeholder={t('applyForm.subjectPlaceholder')}
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-foreground">
-          বার্তা
+          {t('applyForm.message')}
         </label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={3}
           className={inputCls}
-          placeholder="ঐচ্ছিক"
+          placeholder={t('applyForm.messageOptional')}
         />
       </div>
 
@@ -146,7 +148,7 @@ export function ModelTestApplyForm({ exams }: { exams: ExamOption[] }) {
         ) : (
           <Send className="size-4" />
         )}
-        মডেল টেস্টে আবেদন করুন
+        {t('applyForm.applyButton')}
       </button>
     </form>
   )

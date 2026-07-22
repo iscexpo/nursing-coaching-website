@@ -53,7 +53,8 @@ export default function SignInPage() {
         return
       }
 
-      if (data?.user?.role === 'super-admin' || data?.user?.role === 'admin') {
+      const phoneUserRole = (data?.user as Record<string, unknown>)?.role
+      if (phoneUserRole === 'super-admin' || phoneUserRole === 'admin') {
         router.push('/admin')
       } else {
         router.push('/dashboard')
@@ -83,7 +84,8 @@ export default function SignInPage() {
         return
       }
 
-      if (data?.user?.role === 'super-admin' || data?.user?.role === 'admin') {
+      const emailUserRole = (data?.user as Record<string, unknown>)?.role
+      if (emailUserRole === 'super-admin' || emailUserRole === 'admin') {
         router.push('/admin')
       } else {
         router.push('/dashboard')

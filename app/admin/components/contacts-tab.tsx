@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Phone, Mail, CheckCircle2, Trash2, Loader2 } from 'lucide-react'
 import type { ContactInquiry } from './types'
 
@@ -11,6 +12,8 @@ export function ContactsPanel({
   contacts: ContactInquiry[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.contacts')
+  const tc = useTranslations('common')
   const [processing, setProcessing] = useState<string | null>(null)
 
   async function markResolved(id: string) {
@@ -44,7 +47,7 @@ export function ContactsPanel({
   return (
     <div className="space-y-4">
       <h3 className="font-heading text-lg font-bold text-foreground">
-        যোগাযোগ অনুরোধ
+        {t('title')}
       </h3>
 
       <div className="space-y-3">
@@ -59,7 +62,7 @@ export function ContactsPanel({
                   <h4 className="font-medium text-foreground">{c.name}</h4>
                   {!c.isResolved && (
                     <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
-                      নতুন
+                      {t('new')}
                     </span>
                   )}
                 </div>
@@ -87,7 +90,7 @@ export function ContactsPanel({
                   ) : (
                     <CheckCircle2 className="size-3.5" />
                   )}
-                  সমাধান হয়েছে
+                  {t('resolved')}
                 </button>
               )}
               <button
@@ -100,14 +103,14 @@ export function ContactsPanel({
                 ) : (
                   <Trash2 className="size-3.5" />
                 )}
-                মুছুন
+                {tc('delete')}
               </button>
             </div>
           </div>
         ))}
         {contacts.length === 0 && (
           <p className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center text-sm text-muted-foreground">
-            কোনো যোগাযোগ অনুরোধ নেই
+            {t('noContacts')}
           </p>
         )}
       </div>

@@ -8,13 +8,6 @@ import { SectionHeading } from '@/components/section-heading'
 import { GALLERY } from '@/lib/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 
-export const metadata = {
-  title: 'গ্যালারি | ISC Expo - Icon Skill & Career Expo',
-  description:
-    'ISC Expo - Icon Skill & Career Expo-এর ছবি গ্যালারি — সেমিনার, ব্যাচ ফটো, পুরস্কার বিতরণী ও ক্লাসের ছবি।',
-  alternates: { canonical: '/gallery' },
-}
-
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
@@ -53,14 +46,14 @@ export default async function GalleryPage({
                 >
                   <Image
                     src={g.image}
-                    alt={g.caption}
+                    alt={t(`captions.${g.captionKey}` as any)}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                   <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 transition-opacity group-hover:opacity-100">
                     <span className="text-sm font-semibold text-white">
-                      {g.caption}
+                      {t(`captions.${g.captionKey}` as any)}
                     </span>
                   </div>
                 </div>

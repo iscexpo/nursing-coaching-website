@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
+import { useTranslations } from 'next-intl'
 import { Check, Loader2, Plus, XCircle } from 'lucide-react'
-import { PaymentStatusBadge, MethodBadge } from '@/components/ui/badges'
+import { PaymentStatusBadge, MethodBadge } from '@/components/ui/status-badge'
+import { FilterBar } from '@/components/ui/filter-bar'
+import { Alert } from '@/components/ui/alert'
 import {
   getPaymentValidationErrors,
   type PaymentFormValues,
@@ -20,6 +23,7 @@ export function PaymentsPanel({
   students: Student[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.payments')
   const [filter, setFilter] = useState('all')
   const [updating, setUpdating] = useState<string | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -56,14 +60,12 @@ export function PaymentsPanel({
         body: JSON.stringify({ status }),
       })
       setFeedback(
-        status === 'verified'
-          ? 'পেমেন্ট যাচাই করা হয়েছে'
-          : 'পেমেন্ট প্রত্যাখ্যান করা হয়েছে',
+        status === 'verified' ? t('verifySuccess') : t('rejectSuccess'),
       )
       onRefresh()
     } catch (error) {
       console.error('Failed to update payment:', error)
-      setFeedback('পেমেন্ট আপডেট করা যায়নি')
+      setFeedback(t('verifyFailed'))
     } finally {
       setUpdating(null)
     }
@@ -119,17 +121,15 @@ export function PaymentsPanel({
 
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        throw new Error(data.error || 'পেমেন্ট রেকর্ড করা যায়নি')
+        throw new Error(data.error || t('recordFailed'))
       }
 
       setShowCreateModal(false)
-      setFeedback('পেমেন্ট রেকর্ড করা হয়েছে')
+      setFeedback(t('recordSuccess'))
       onRefresh()
     } catch (error) {
       console.error('Failed to create payment:', error)
-      setFeedback(
-        error instanceof Error ? error.message : 'পেমেন্ট রেকর্ড করা যায়নি',
-      )
+      setFeedback(error instanceof Error ? error.message : t('recordFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -137,34 +137,42 @@ export function PaymentsPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          পেমেন্ট ব্যবস্থাপনা
+          {t('management')}
         </h3>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={openCreateModal}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
-          >
-            <Plus className="size-4" /> নতুন পেমেন্ট
-          </button>
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-          >
-            <option value="all">সকল</option>
-            <option value="pending">অপেক্ষমান</option>
-            <option value="verified">যাচাইকৃত</option>
-            <option value="rejected">প্রত্যাখ্যাত</option>
-          </select>
-        </div>
+        <button
+          onClick={openCreateModal}
+          className="inline-flex items-center gap-2 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+        >
+          <Plus className="size-4" /> {t('newPayment')}
+        </button>
       </div>
 
+      <FilterBar
+        searchPlaceholder={t('searchPlaceholder')}
+        filters={[
+          {
+            name: 'status',
+            label: t('filterLabel'),
+            type: 'select',
+            options: [
+              { value: 'pending', label: t('statusPending') },
+              { value: 'verified', label: t('statusVerified') },
+              { value: 'rejected', label: t('statusRejected') },
+            ],
+            value: filter === 'all' ? '' : filter,
+            onChange: (value) => setFilter(value || 'all'),
+          },
+        ]}
+      />
+
       {feedback && (
-        <div className="rounded-xl border border-brand/20 bg-brand/5 px-4 py-3 text-sm text-brand">
-          {feedback}
-        </div>
+        <Alert
+          variant="success"
+          message={feedback}
+          onDismiss={() => setFeedback(null)}
+        />
       )}
 
       <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
@@ -173,31 +181,31 @@ export function PaymentsPanel({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  তারিখ
+                  {t('tableHeaders.date')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  শিক্ষার্থী
+                  {t('tableHeaders.student')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  কোর্স
+                  {t('tableHeaders.course')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  পরিমাণ
+                  {t('tableHeaders.amount')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  মাধ্যম
+                  {t('tableHeaders.method')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  ট্রানজেকশন ID
+                  {t('tableHeaders.transactionId')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  প্রেরক
+                  {t('tableHeaders.sender')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  স্ট্যাটাস
+                  {t('tableHeaders.status')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  কার্যক্রম
+                  {t('tableHeaders.actions')}
                 </th>
               </tr>
             </thead>
@@ -246,7 +254,7 @@ export function PaymentsPanel({
                             onClick={() => handleVerify(p.id, 'verified')}
                             disabled={updating === p.id}
                             className="rounded-lg bg-green/10 p-1.5 text-green hover:bg-green/20"
-                            title="যাচাই করুন"
+                            title={t('verifyAction')}
                           >
                             <Check className="size-4" />
                           </button>
@@ -254,7 +262,7 @@ export function PaymentsPanel({
                             onClick={() => handleVerify(p.id, 'rejected')}
                             disabled={updating === p.id}
                             className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
-                            title="প্রত্যাখ্যান করুন"
+                            title={t('rejectAction')}
                           >
                             <XCircle className="size-4" />
                           </button>
@@ -274,7 +282,7 @@ export function PaymentsPanel({
           <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="font-heading text-lg font-bold text-foreground">
-                নতুন পেমেন্ট রেকর্ড করুন
+                {t('addTitle')}
               </h3>
               <button
                 onClick={() => setShowCreateModal(false)}
@@ -287,7 +295,7 @@ export function PaymentsPanel({
             <form onSubmit={handleCreatePayment} className="space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  শিক্ষার্থী/এনরোলমেন্ট
+                  {t('formLabels.studentEnrollment')}
                 </label>
                 <select
                   value={selectedEnrollmentId}
@@ -295,7 +303,7 @@ export function PaymentsPanel({
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 >
                   {payableEnrollments.length === 0 && (
-                    <option value="">কোনো বকেয়া নেই</option>
+                    <option value="">{t('formLabels.noDues')}</option>
                   )}
                   {enrollments.map((enrollment) => (
                     <option key={enrollment.id} value={enrollment.id}>
@@ -303,15 +311,16 @@ export function PaymentsPanel({
                         (student) => student.id === enrollment.userId,
                       )?.name ||
                         enrollment.userName ||
-                        'শিক্ষার্থী'}{' '}
-                      — {enrollment.courseTitle || 'কোর্স'} (বকেয়া: ৳
+                        t('tableHeaders.student')}{' '}
+                      — {enrollment.courseTitle || t('tableHeaders.course')} (
+                      {t('formLabels.dueAmount')}: ৳
                       {enrollment.dueAmount.toLocaleString()})
                     </option>
                   ))}
                 </select>
                 {selectedEnrollment && (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    নির্বাচিত এনরোলমেন্টের বকেয়া: ৳
+                    {t('formLabels.dueAmount')}: ৳
                     {selectedEnrollment.dueAmount.toLocaleString()}
                   </p>
                 )}
@@ -320,7 +329,7 @@ export function PaymentsPanel({
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-foreground">
-                    পরিমাণ (৳)
+                    {t('formLabels.amount')}
                   </label>
                   <input
                     type="number"
@@ -333,7 +342,7 @@ export function PaymentsPanel({
                       }))
                     }
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-                    placeholder="যেমন: 5000"
+                    placeholder={t('formLabels.amountPlaceholder')}
                   />
                   {formErrors.amount && (
                     <p className="mt-1 text-xs text-destructive">
@@ -343,7 +352,7 @@ export function PaymentsPanel({
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-foreground">
-                    পেমেন্ট মাধ্যম
+                    {t('formLabels.paymentMethod')}
                   </label>
                   <select
                     value={form.method}
@@ -355,10 +364,10 @@ export function PaymentsPanel({
                     }
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                   >
-                    <option value="bkash">bKash</option>
-                    <option value="nagad">Nagad</option>
-                    <option value="cash">Cash</option>
-                    <option value="bank">Bank</option>
+                    <option value="bkash">{t('bkash')}</option>
+                    <option value="nagad">{t('nagad')}</option>
+                    <option value="cash">{t('cash')}</option>
+                    <option value="bank">{t('bank')}</option>
                   </select>
                 </div>
               </div>
@@ -366,7 +375,7 @@ export function PaymentsPanel({
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-foreground">
-                    ট্রানজেকশন ID
+                    {t('formLabels.transactionId')}
                   </label>
                   <input
                     type="text"
@@ -378,7 +387,7 @@ export function PaymentsPanel({
                       }))
                     }
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-                    placeholder="যেমন: TX123"
+                    placeholder={t('formLabels.transactionIdPlaceholder')}
                   />
                   {formErrors.transactionId && (
                     <p className="mt-1 text-xs text-destructive">
@@ -388,7 +397,7 @@ export function PaymentsPanel({
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-foreground">
-                    প্রেরক নম্বর
+                    {t('formLabels.senderNumber')}
                   </label>
                   <input
                     type="tel"
@@ -400,7 +409,7 @@ export function PaymentsPanel({
                       }))
                     }
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-                    placeholder="যেমন: 01XXXXXXXXX"
+                    placeholder={t('formLabels.senderPlaceholder')}
                   />
                   {formErrors.senderNumber && (
                     <p className="mt-1 text-xs text-destructive">
@@ -412,7 +421,7 @@ export function PaymentsPanel({
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  নোট
+                  {t('formLabels.notes')}
                 </label>
                 <textarea
                   value={form.notes}
@@ -424,7 +433,7 @@ export function PaymentsPanel({
                   }
                   rows={3}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-                  placeholder="অতিরিক্ত তথ্য"
+                  placeholder={t('formLabels.notesPlaceholder')}
                 />
               </div>
 
@@ -434,7 +443,7 @@ export function PaymentsPanel({
                   onClick={() => setShowCreateModal(false)}
                   className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary"
                 >
-                  বাতিল
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
@@ -444,7 +453,7 @@ export function PaymentsPanel({
                   {submitting ? (
                     <Loader2 className="mx-auto size-5 animate-spin" />
                   ) : (
-                    'রেকর্ড করুন'
+                    t('recordPayment')
                   )}
                 </button>
               </div>

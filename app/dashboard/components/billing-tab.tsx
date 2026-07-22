@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   CheckCircle2,
   XCircle,
@@ -13,7 +14,7 @@ import {
   EnrollmentStatusBadge,
   PaymentStatusBadge,
   MethodBadge,
-} from '@/components/ui/badges'
+} from '@/components/ui/status-badge'
 import type { Enrollment, Payment, Invoice } from './types'
 
 export function BillingSection({
@@ -27,6 +28,8 @@ export function BillingSection({
   invoices: Invoice[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('dashboard.billing')
+  const tc = useTranslations('common')
   const [selectedEnrollment, setSelectedEnrollment] = useState<string | null>(
     null,
   )
@@ -94,14 +97,13 @@ export function BillingSection({
       {success && (
         <div className="rounded-xl border border-green/30 bg-green/5 p-4 text-sm text-green flex items-center gap-2">
           <CheckCircle2 className="size-5" />
-          পেমেন্ট রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে! যাচাইকরণের জন্য অপেক্ষা
-          করুন।
+          {t('paymentSuccess')}
         </div>
       )}
 
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <h3 className="font-heading text-base font-bold text-foreground mb-3">
-          কোর্স নির্বাচন করুন
+          {t('selectEnrollment')}
         </h3>
         <div className="space-y-2">
           {enrollments.map((e) => (
@@ -124,16 +126,18 @@ export function BillingSection({
                 <EnrollmentStatusBadge status={e.status} />
               </div>
               <div className="mt-2 flex gap-4 text-sm">
-                <span>ফি: ৳{e.totalFee.toLocaleString()}</span>
+                <span>
+                  {tc('total')}: ৳{e.totalFee.toLocaleString()}
+                </span>
                 <span className="text-green">
-                  পরিশোধ: ৳{e.paidAmount.toLocaleString()}
+                  {t('amountPaid')}: ৳{e.paidAmount.toLocaleString()}
                 </span>
                 <span
                   className={
                     e.dueAmount > 0 ? 'text-gold font-medium' : 'text-green'
                   }
                 >
-                  বকেয়: ৳{e.dueAmount.toLocaleString()}
+                  {t('dueAmount')}: ৳{e.dueAmount.toLocaleString()}
                 </span>
               </div>
             </button>
@@ -144,7 +148,7 @@ export function BillingSection({
       {activeEnrollment && activeEnrollment.dueAmount > 0 && (
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground mb-3">
-            পেমেন্ট করুন
+            {t('submitPayment')}
           </h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <button
@@ -158,10 +162,8 @@ export function BillingSection({
                 <Phone className="size-5" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-foreground">
-                  bKash দিয়ে পেমেন্ট
-                </p>
-                <p className="text-xs text-muted-foreground">সেন্ড মানি করুন</p>
+                <p className="font-semibold text-foreground">bKash</p>
+                <p className="text-xs text-muted-foreground">{t('sendTo')}</p>
               </div>
             </button>
             <button
@@ -175,10 +177,8 @@ export function BillingSection({
                 <Phone className="size-5" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-foreground">
-                  Nagad দিয়ে পেমেন্ট
-                </p>
-                <p className="text-xs text-muted-foreground">সেন্ড মানি করুন</p>
+                <p className="font-semibold text-foreground">Nagad</p>
+                <p className="text-xs text-muted-foreground">{t('sendTo')}</p>
               </div>
             </button>
           </div>
@@ -189,7 +189,7 @@ export function BillingSection({
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="border-b border-border bg-secondary/30 px-5 py-3">
             <h3 className="font-heading text-base font-bold text-foreground">
-              পেমেন্ট ইতিহাস
+              {t('paymentHistory')}
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -197,19 +197,19 @@ export function BillingSection({
               <thead>
                 <tr className="border-b border-border">
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    তারিখ
+                    {tc('date')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    পরিমাণ
+                    {tc('amount')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    মাধ্যম
+                    {t('methodLabel')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    ট্রানজেকশন ID
+                    {t('transactionIdLabel')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    স্ট্যাটাস
+                    {tc('status')}
                   </th>
                 </tr>
               </thead>
@@ -246,7 +246,7 @@ export function BillingSection({
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="border-b border-border bg-secondary/30 px-5 py-3">
             <h3 className="font-heading text-base font-bold text-foreground">
-              ইনভয়েস
+              {t('invoiceLabel')}
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -254,19 +254,19 @@ export function BillingSection({
               <thead>
                 <tr className="border-b border-border">
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    ইনভয়েস নম্বর
+                    {t('invoiceLabel')} #
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    পরিমাণ
+                    {tc('amount')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    পরিশোধিত
+                    {t('amountPaid')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    বকেয়
+                    {t('amountDue')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    স্ট্যাটাস
+                    {tc('status')}
                   </th>
                 </tr>
               </thead>
@@ -299,10 +299,10 @@ export function BillingSection({
                         }`}
                       >
                         {inv.status === 'paid'
-                          ? 'পরিশোধিত'
+                          ? t('paid')
                           : inv.status === 'partial'
-                            ? 'আংশিক'
-                            : 'অপরিশোধিত'}
+                            ? t('partial')
+                            : t('unpaid')}
                       </span>
                     </td>
                   </tr>
@@ -318,7 +318,8 @@ export function BillingSection({
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="font-heading text-lg font-bold text-foreground">
-                {paymentMethod === 'bkash' ? 'bKash' : 'Nagad'} পেমেন্ট
+                {paymentMethod === 'bkash' ? 'bKash' : 'Nagad'}{' '}
+                {t('submitPayment')}
               </h3>
               <button
                 onClick={() => setShowPaymentModal(false)}
@@ -330,7 +331,7 @@ export function BillingSection({
 
             <div className="mb-4 rounded-xl border border-dashed border-border bg-secondary/30 p-4">
               <p className="text-sm font-medium text-foreground mb-2">
-                পেমেন্ট নম্বর:
+                {t('sendTo')}:
               </p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 rounded-lg bg-card px-3 py-2 font-mono text-lg font-bold text-foreground">
@@ -345,7 +346,7 @@ export function BillingSection({
                   ) : (
                     <Copy className="size-4" />
                   )}
-                  {copied ? 'কপি!' : 'কপি'}
+                  {copied ? tc('copied') : tc('copyNumber')}
                 </button>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
@@ -357,7 +358,7 @@ export function BillingSection({
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  পরিমাণ (৳)
+                  {t('amountLabel')}
                 </label>
                 <input
                   type="number"
@@ -369,7 +370,7 @@ export function BillingSection({
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  ট্রানজেকশন ID
+                  {t('transactionIdLabel')}
                 </label>
                 <input
                   type="text"
@@ -381,7 +382,7 @@ export function BillingSection({
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  প্রেরক নম্বর
+                  {t('senderNumberLabel')}
                 </label>
                 <input
                   type="tel"
@@ -398,7 +399,7 @@ export function BillingSection({
                 onClick={() => setShowPaymentModal(false)}
                 className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary"
               >
-                বাতিল
+                {tc('cancel')}
               </button>
               <button
                 onClick={handlePayment}
@@ -413,7 +414,7 @@ export function BillingSection({
                 {submitting ? (
                   <Loader2 className="mx-auto size-5 animate-spin" />
                 ) : (
-                  'পেমেন্ট জমা দিন'
+                  t('submitPaymentBtn')
                 )}
               </button>
             </div>

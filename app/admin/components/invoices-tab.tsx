@@ -1,6 +1,7 @@
 'use client'
 
-import { InvoiceStatusBadge } from '@/components/ui/badges'
+import { useTranslations } from 'next-intl'
+import { InvoiceStatusBadge } from '@/components/ui/status-badge'
 import type { Invoice, Enrollment } from './types'
 
 export function InvoicesPanel({
@@ -12,10 +13,13 @@ export function InvoicesPanel({
   enrollments: Enrollment[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.invoices')
+  const tc = useTranslations('common')
+
   return (
     <div className="space-y-4">
       <h3 className="font-heading text-lg font-bold text-foreground">
-        ইনভয়েস ব্যবস্থাপনা
+        {t('title')}
       </h3>
 
       <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
@@ -24,22 +28,22 @@ export function InvoicesPanel({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  ইনভয়েস নম্বর
+                  {t('invoiceNumber')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  মোট
+                  {t('total')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  পরিশোধিত
+                  {t('paid')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  বকেয়
+                  {t('due')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  স্ট্যাটাস
+                  {t('statusLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  তৈরি
+                  {t('created')}
                 </th>
               </tr>
             </thead>

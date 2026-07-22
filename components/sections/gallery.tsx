@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { getTranslations } from 'next-intl/server'
 import { Button } from '@/components/ui/button'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
@@ -8,6 +9,8 @@ import { getCmsContent } from '@/lib/content-server'
 import { cn } from '@/lib/utils'
 
 export async function Gallery() {
+  const t = await getTranslations('galleryPage')
+  const tc = await getTranslations('common')
   const content = await getCmsContent()
   const gallery = content.gallery
 
@@ -21,20 +24,20 @@ export async function Gallery() {
       <div className="mx-auto max-w-7xl px-4">
         <FadeIn>
           <SectionHeading
-            eyebrow="গ্যালারি"
-            title="আমাদের মুহূর্তগুলো"
-            description="সেমিনার, পুরস্কার বিতরণী, ফ্রি ক্লাস ও নানা আয়োজনের ঝলক।"
+            eyebrow={tc('gallery')}
+            title={t('title')}
+            description={t('description')}
           />
         </FadeIn>
-        <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 auto-rows-[200px]">
+        <div className="mt-12 grid grid-cols-2 gap-3 lg:grid-cols-4 auto-rows-[200px]">
           {gallery.map((g, i) => (
-            <FadeIn key={g.caption} delay={i * 80}>
+            <FadeIn key={g.caption} delay={i * 60}>
               <Lightbox
                 images={lightboxImages}
                 trigger={
                   <div
                     className={cn(
-                      'group relative overflow-hidden rounded-2xl',
+                      'group relative overflow-hidden rounded-lg',
                       i === 0 ? 'lg:row-span-2' : '',
                     )}
                   >
@@ -42,10 +45,12 @@ export async function Gallery() {
                       src={g.image || '/placeholder.svg'}
                       alt={g.caption}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="object-cover transition-opacity duration-200 group-hover:opacity-80"
                     />
-                    <div className="absolute inset-0 flex items-end bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <span className="font-medium text-card">{g.caption}</span>
+                    <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/50 to-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      <span className="text-sm font-medium text-white">
+                        {g.caption}
+                      </span>
                     </div>
                   </div>
                 }
@@ -53,14 +58,14 @@ export async function Gallery() {
             </FadeIn>
           ))}
         </div>
-        <FadeIn delay={400}>
+        <FadeIn delay={300}>
           <div className="mt-8 text-center">
             <Button
               render={<Link href="/gallery" />}
               variant="outline"
               size="lg"
             >
-              সম্পূর্ণ গ্যালারি দেখুন
+              {tc('viewAll')}
             </Button>
           </div>
         </FadeIn>

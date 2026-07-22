@@ -1,8 +1,27 @@
-import { auth } from './auth'
+import { auth, getAuth } from './auth'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-export type Session = typeof auth.$Infer.Session
+export type Session = {
+  user: {
+    id: string
+    name: string
+    email: string
+    role: string
+    studentId?: string | null
+    phoneNumber?: string | null
+    createdAt: Date
+    updatedAt: Date
+  }
+  session: {
+    id: string
+    token: string
+    userId: string
+    expiresAt: Date
+    createdAt: Date
+    updatedAt: Date
+  }
+}
 
 export async function getSession() {
   return await auth.api.getSession({ headers: await headers() })
