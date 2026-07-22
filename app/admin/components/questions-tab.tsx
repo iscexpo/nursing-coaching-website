@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import type { Exam, Question } from './types'
+import { EmptyState } from '@/components/ui/empty-state'
+import { FilterBar } from '@/components/ui/filter-bar'
 
 export function QuestionsPanel({ exams }: { exams: Exam[] }) {
   const [selectedExamId, setSelectedExamId] = useState<string>('')
@@ -134,23 +136,22 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
         </button>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-1">
-          পরীক্ষা বাছাই করুন
-        </label>
-        <select
-          value={selectedExamId}
-          onChange={(e) => setSelectedExamId(e.target.value)}
-          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-        >
-          <option value="">-- পরীক্ষা বাছাই করুন --</option>
-          {exams.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.title} ({e.subject}) — {e.questionCount ?? 0} প্রশ্ন
-            </option>
-          ))}
-        </select>
-      </div>
+      <FilterBar
+        searchPlaceholder="প্রশ্ন খুঁজুন..."
+        filters={[
+          {
+            name: 'exam',
+            label: 'পরীক্ষা',
+            type: 'select',
+            value: selectedExamId,
+            onChange: setSelectedExamId,
+            options: exams.map((e) => ({
+              label: `${e.title} (${e.subject}) — ${e.questionCount ?? 0} প্রশ্ন`,
+              value: e.id,
+            })),
+          },
+        ]}
+      />
 
       {subjects.length > 0 && (
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
@@ -308,11 +309,8 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                   ))}
                   {questions.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={4}
-                        className="px-4 py-8 text-center text-sm text-muted-foreground"
-                      >
-                        এই পরীক্ষায় কোনো প্রশ্ন নেই
+                      <td colSpan={4} className="px-4 py-8 text-center">
+                        <EmptyState title="এই পরীক্ষায় কোনো প্রশ্ন নেই" />
                       </td>
                     </tr>
                   )}
@@ -324,11 +322,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
       )}
 
       {!selectedExamId && (
-        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center">
-          <p className="text-sm text-muted-foreground">
-            প্রশ্ন দেখতে একটি পরীক্ষা বাছাই করুন
-          </p>
-        </div>
+        <EmptyState
+          title="প্রশ্ন দেখতে একটি পরীক্ষা বাছাই করুন"
+        />
       )}
     </div>
   )

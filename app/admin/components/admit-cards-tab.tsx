@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Loader2, CreditCard } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
 import type { Enrollment, Exam, AdmitCard } from './types'
 
 export function AdmitCardsPanel({
@@ -294,11 +295,8 @@ export function AdmitCardsPanel({
               })}
               {admitCards.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-8 text-center text-sm text-muted-foreground"
-                  >
-                    কোনো এডমিট কার্ড নেই
+                  <td colSpan={7} className="p-0">
+                    <EmptyState title="কোনো এডমিট কার্ড নেই" />
                   </td>
                 </tr>
               )}

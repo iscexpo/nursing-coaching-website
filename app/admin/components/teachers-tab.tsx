@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import type { Teacher } from './types'
 import { useToast } from '@/components/ui/toast'
+import { EmptyState } from '@/components/ui/empty-state'
 
 export function TeachersPanel({
   teachers,
@@ -263,77 +264,84 @@ export function TeachersPanel({
         </div>
       )}
 
-      <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-secondary/30">
-                <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  নাম
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  পদবি
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  বিষয়
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  ফোন
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  অবস্থা
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map((t) => (
-                <tr
-                  key={t.id}
-                  className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
-                >
-                  <td className="px-4 py-3 font-medium text-foreground">
-                    {t.name}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {t.designation || '—'}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {t.subject || '—'}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {t.phone || '—'}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={() => toggleActive(t)}
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${t.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
-                    >
-                      {t.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
-                    </button>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <button
-                        onClick={() => handleEdit(t)}
-                        className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                      >
-                        <Pencil className="size-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(t.id)}
-                        className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                  </td>
+      {teachers.length === 0 ? (
+        <EmptyState
+          title="কোনো শিক্ষক নেই"
+          description="এখনো কোনো শিক্ষক যোগ করা হয়নি।"
+        />
+      ) : (
+        <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-secondary/30">
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">
+                    নাম
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">
+                    পদবি
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">
+                    বিষয়
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">
+                    ফোন
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground">
+                    অবস্থা
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {teachers.map((t) => (
+                  <tr
+                    key={t.id}
+                    className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
+                  >
+                    <td className="px-4 py-3 font-medium text-foreground">
+                      {t.name}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {t.designation || '—'}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {t.subject || '—'}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {t.phone || '—'}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => toggleActive(t)}
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${t.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
+                      >
+                        {t.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleEdit(t)}
+                          className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(t.id)}
+                          className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

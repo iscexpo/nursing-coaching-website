@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, Save, X, Clock, Loader2 } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
+import { FilterBar } from '@/components/ui/filter-bar'
+import { ExamStatusBadge } from '@/components/ui/status-badge'
+import { useToast } from '@/components/ui/toast'
 import type { Exam, ExamSubmission } from './types'
 
 const DIFFICULTY_LABELS: Record<string, { label: string; cls: string }> = {
@@ -28,6 +32,7 @@ export function ExamsPanel({
   })
   const [saving, setSaving] = useState(false)
   const [subjects, setSubjects] = useState<{ name: string }[]>([])
+  const { confirm } = useToast()
 
   useEffect(() => {
     fetch('/api/subjects')
@@ -69,6 +74,7 @@ export function ExamsPanel({
   }
 
   async function handleDeleteExam(id: string) {
+    if (!(await confirm('আপনি কি নিশ্চিত এই পরীক্ষা মুছে ফেলতে চান?'))) return
     try {
       await fetch(`/api/exams/${id}`, { method: 'DELETE' })
       onRefresh()
@@ -206,6 +212,9 @@ export function ExamsPanel({
           </div>
         )}
 
+        {exams.length === 0 ? (
+          <EmptyState title="কোনো পরীক্ষা নেই" />
+        ) : (
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -265,7 +274,7 @@ export function ExamsPanel({
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => toggleActive(e.id, e.isActive)}
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${e.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${e.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
                       >
                         {e.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
                       </button>
@@ -280,20 +289,11 @@ export function ExamsPanel({
                     </td>
                   </tr>
                 ))}
-                {exams.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="px-4 py-8 text-center text-sm text-muted-foreground"
-                    >
-                      কোনো পরীক্ষা নেই
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
         </div>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -301,22 +301,22 @@ export function ExamsPanel({
           <h3 className="font-heading text-lg font-bold text-foreground">
             ফলাফল ব্যবস্থাপনা
           </h3>
-          <div className="flex items-center gap-2">
-            <select
-              value={filterExam}
-              onChange={(e) => setFilterExam(e.target.value)}
-              className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-            >
-              <option value="all">সকল পরীক্ষা</option>
-              {exams.map((ex) => (
-                <option key={ex.id} value={ex.id}>
-                  {ex.title}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
+        <FilterBar
+          filters={[{
+            name: 'exam',
+            label: 'পরীক্ষা',
+            type: 'select',
+            value: filterExam === 'all' ? '' : filterExam,
+            onChange: (v) => setFilterExam(v || 'all'),
+            options: exams.map((ex) => ({ value: ex.id, label: ex.title })),
+          }]}
+        />
+
+        {filteredSubmissions.length === 0 ? (
+          <EmptyState title="কোনো ফলাফল নেই" />
+        ) : (
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -372,20 +372,11 @@ export function ExamsPanel({
                     </tr>
                   )
                 })}
-                {filteredSubmissions.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-4 py-8 text-center text-sm text-muted-foreground"
-                    >
-                      কোনো ফলাফল নেই
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
         </div>
+        )}
       </div>
     </div>
   )

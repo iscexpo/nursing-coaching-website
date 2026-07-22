@@ -8,12 +8,13 @@ import {
   Save,
   X,
   Loader2,
-  Search,
   Upload,
   Key,
 } from 'lucide-react'
 import type { Student } from './types'
 import { useToast } from '@/components/ui/toast'
+import { EmptyState } from '@/components/ui/empty-state'
+import { FilterBar } from '@/components/ui/filter-bar'
 
 function resizeImage(
   file: File,
@@ -804,16 +805,11 @@ export function StudentsPanel({
         </div>
       )}
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="নাম, ইমেইল, ফোন, আইডি বা জেলা দিয়ে খুঁজুন..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-        />
-      </div>
+      <FilterBar
+        searchPlaceholder="নাম, ইমেইল, ফোন, আইডি বা জেলা দিয়ে খুঁজুন..."
+        searchValue={search}
+        onSearchChange={setSearch}
+      />
 
       {resettingStudent && (
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm dark:border-blue-900 dark:bg-blue-950/30">
@@ -908,13 +904,14 @@ export function StudentsPanel({
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-8 text-center text-muted-foreground"
-                  >
-                    {search
-                      ? 'কোনো শিক্ষার্থী পাওয়া যায়নি'
-                      : 'এখনো কোনো শিক্ষার্থী যোগ করা হয়নি'}
+                  <td colSpan={7}>
+                    <EmptyState
+                      title={
+                        search
+                          ? 'কোনো শিক্ষার্থী পাওয়া যায়নি'
+                          : 'এখনো কোনো শিক্ষার্থী যোগ করা হয়নি'
+                      }
+                    />
                   </td>
                 </tr>
               ) : (

@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
+import { StatusBadge } from '@/components/ui/status-badge'
 import type { Notice } from './types'
 
 export function NoticesPanel({
@@ -169,13 +171,9 @@ export function NoticesPanel({
             className={`rounded-2xl border bg-card p-4 shadow-sm ${n.isUrgent ? 'border-gold/50' : 'border-border'}`}
           >
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-brand">
-                {n.tag}
-              </span>
+              <StatusBadge status="active" customLabel={n.tag} showIcon={false} size="sm" />
               {n.isUrgent && (
-                <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
-                  জরুরি
-                </span>
+                <StatusBadge status="warning" customLabel="জরুরি" size="sm" />
               )}
               <span className="ml-auto text-xs text-muted-foreground">
                 {new Date(n.createdAt).toLocaleDateString('bn-BD')}
@@ -199,9 +197,7 @@ export function NoticesPanel({
           </div>
         ))}
         {notices.length === 0 && (
-          <p className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center text-sm text-muted-foreground">
-            কোনো নোটিশ নেই
-          </p>
+          <EmptyState title="কোনো নোটিশ নেই" />
         )}
       </div>
     </div>
