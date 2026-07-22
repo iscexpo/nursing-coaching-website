@@ -415,8 +415,8 @@ export default function AdminPage() {
   }
 
   if (
-    session.data.user.role !== 'admin' &&
-    session.data.user.role !== 'super-admin'
+    (session.data.user as Record<string, unknown>).role !== 'admin' &&
+    (session.data.user as Record<string, unknown>).role !== 'super-admin'
   ) {
     router.push('/dashboard')
     return null

@@ -102,7 +102,7 @@ export default function SignUpPage() {
         password,
         name,
         studentId: studentId || undefined,
-      })
+      } as Parameters<typeof authClient.signUp.email>[0] & Record<string, unknown>)
 
       if (signUpError) {
         setError(signUpError.message || t('signUpError'))

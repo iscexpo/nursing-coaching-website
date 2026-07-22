@@ -154,7 +154,7 @@ export default function DashboardPage() {
     return null
   }
 
-  const user = session.data.user
+  const user = session.data.user as Record<string, unknown> & { name: string; phoneNumber?: string | null }
   const totalDue = enrollments.reduce((s, e) => s + e.dueAmount, 0)
   const totalPaid = enrollments.reduce((s, e) => s + e.paidAmount, 0)
 
