@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react'
 import { ErrorBoundary } from '@/components/error-boundary'
 import {
   LayoutDashboard,
@@ -205,8 +205,24 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
 function TabSkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
-      <div className="h-8 w-48 rounded-lg bg-secondary" />
-      <div className="h-64 rounded-2xl bg-secondary/50" />
+      <div className="flex items-center justify-between">
+        <div className="h-7 w-40 rounded-lg bg-secondary" />
+        <div className="h-8 w-32 rounded-lg bg-secondary" />
+      </div>
+      <div className="flex gap-2">
+        <div className="h-10 w-64 rounded-lg bg-secondary" />
+        <div className="h-10 w-32 rounded-lg bg-secondary" />
+      </div>
+      <div className="rounded-2xl border border-border bg-card p-1">
+        <div className="space-y-2 p-4">
+          <div className="h-4 w-full rounded bg-secondary" />
+          <div className="h-4 w-3/4 rounded bg-secondary" />
+          <div className="h-4 w-1/2 rounded bg-secondary" />
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-12 w-full rounded-lg bg-secondary/50" />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -236,10 +252,12 @@ export default function AdminPage() {
     ModelTestApplicant[]
   >([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
 
   const fetchData = useCallback(
     async (tabId?: string) => {
       try {
+        setFetchError(null)
         const activeTab = tabId || tab
 
         const fetches: Promise<Response>[] = []
@@ -381,6 +399,7 @@ export default function AdminPage() {
         }
       } catch (error) {
         console.error('Failed to fetch data:', error)
+        setFetchError('ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।')
       } finally {
         setLoading(false)
       }
@@ -400,10 +419,36 @@ export default function AdminPage() {
 
   if (session.isPending || loading) {
     return (
+      <div className="min-h-screen p-6">
+        <div className="space-y-4 animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="h-8 w-48 rounded-lg bg-secondary" />
+            <div className="h-8 w-24 rounded-lg bg-secondary" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 rounded-2xl bg-secondary/50" />
+            ))}
+          </div>
+          <div className="h-96 rounded-2xl bg-secondary/50" />
+        </div>
+      </div>
+    )
+  }
+
+  if (fetchError && !loading) {
+    return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="size-8 animate-spin text-brand" />
-          <p className="text-muted-foreground">লোড হচ্ছে...</p>
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <AlertTriangle className="size-10 text-destructive" />
+          <p className="text-center text-foreground">{fetchError}</p>
+          <button
+            onClick={() => fetchData(tab)}
+            className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
+          >
+            <RefreshCw className="size-4" />
+            আবার চেষ্টা করুন
+          </button>
         </div>
       </div>
     )
