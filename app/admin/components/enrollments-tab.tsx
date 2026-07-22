@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Plus, Pencil, X, Loader2, Search, Ban, Check } from 'lucide-react'
-import { EnrollmentStatusBadge } from '@/components/ui/badges'
+import { Plus, Pencil, X, Loader2, Ban, Check } from 'lucide-react'
+import { EnrollmentStatusBadge } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
+import { FilterBar } from '@/components/ui/filter-bar'
+import { EmptyState } from '@/components/ui/empty-state'
 import type { Enrollment, Course, Student } from './types'
 import { useToast } from '@/components/ui/toast'
 
@@ -81,7 +83,7 @@ export function EnrollmentsPanel({
 
   const activeCourses = courses.filter((c) => c.isActive)
   const filtered = enrollments.filter((e) => {
-    if (filter !== 'all' && e.status !== filter) return false
+    if (filter && filter !== 'all' && e.status !== filter) return false
     if (search) {
       const q = search.toLowerCase()
       return (
@@ -348,41 +350,43 @@ export function EnrollmentsPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
           এনরোলমেন্ট ব্যবস্থাপনা
         </h3>
-        <div className="flex items-center gap-2">
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-          >
-            <option value="all">সকল</option>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={() => {
-              setShowAdd(true)
-              setAddForm({
-                userId: '',
-                selectedCourseIds: [],
-                notes: '',
-                discount: '0',
-              })
-              setCourseSearch('')
-              setAddError('')
-            }}
-            className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
-          >
-            <Plus className="size-4" /> নতুন এনরোলমেন্ট
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            setShowAdd(true)
+            setAddForm({
+              userId: '',
+              selectedCourseIds: [],
+              notes: '',
+              discount: '0',
+            })
+            setCourseSearch('')
+            setAddError('')
+          }}
+          className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+        >
+          <Plus className="size-4" /> নতুন এনরোলমেন্ট
+        </button>
       </div>
+
+      <FilterBar
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="শিক্ষার্থী, ফোন বা কোর্স দিয়ে খুঁজুন..."
+        filters={[
+          {
+            name: 'status',
+            label: 'অবস্থা',
+            type: 'select',
+            options: STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label })),
+            value: filter,
+            onChange: (value) => setFilter(value),
+          },
+        ]}
+      />
 
       {showAdd && (
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -751,17 +755,6 @@ export function EnrollmentsPanel({
         </div>
       )}
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="শিক্ষার্থী, ফোন বা কোর্স দিয়ে খুঁজুন..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-        />
-      </div>
-
       {selectedIds.length > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-lg bg-brand/5 p-3 border border-brand/20">
           <span className="text-sm font-medium text-brand">
@@ -881,13 +874,11 @@ export function EnrollmentsPanel({
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={10}
-                    className="px-4 py-8 text-center text-muted-foreground"
-                  >
-                    {search
-                      ? 'কোনো এনরোলমেন্ট পাওয়া যায়নি'
-                      : 'এখনো কোনো এনরোলমেন্ট নেই'}
+                  <td colSpan={10} className="px-4 py-8">
+                    <EmptyState
+                      title={search ? 'কোনো এনরোলমেন্ট পাওয়া যায়নি' : 'এখনো কোনো এনরোলমেন্ট নেই'}
+                      description={search ? 'অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন' : 'নতুন এনরোলমেন্ট তৈরি করুন'}
+                    />
                   </td>
                 </tr>
               ) : (

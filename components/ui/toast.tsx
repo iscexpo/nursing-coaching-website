@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ConfirmDialog } from './confirm-dialog'
 
 type ToastVariant = 'success' | 'error' | 'info'
 
@@ -95,37 +96,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         ))}
       </div>
 
-      {confirmState && (
-        <div
-          role="alertdialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 p-4"
-        >
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
-            <p className="text-sm text-foreground">{confirmState.message}</p>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  confirmState.resolve(false)
-                  setConfirmState(null)
-                }}
-                className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-secondary"
-              >
-                বাতিল
-              </button>
-              <button
-                onClick={() => {
-                  confirmState.resolve(true)
-                  setConfirmState(null)
-                }}
-                className="rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white hover:bg-destructive/90"
-              >
-                নিশ্চিত করুন
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={!!confirmState}
+        title={confirmState?.message || ''}
+        confirmText="নিশ্চিত করুন"
+        cancelText="বাতিল"
+        variant="destructive"
+        onConfirm={() => {
+          confirmState?.resolve(true)
+          setConfirmState(null)
+        }}
+        onCancel={() => {
+          confirmState?.resolve(false)
+          setConfirmState(null)
+        }}
+      />
     </ToastContext.Provider>
   )
 }

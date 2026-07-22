@@ -13,6 +13,7 @@ export interface BulkAction {
 
 interface BulkActionsProps {
   selectedCount: number
+  selectedIds: string[]
   totalCount: number
   actions: BulkAction[]
   onSelectAll?: (selected: boolean) => void
@@ -50,6 +51,7 @@ const DEFAULT_ACTIONS: Record<string, BulkAction> = {
 
 export function BulkActions({
   selectedCount,
+  selectedIds,
   totalCount,
   actions,
   onSelectAll,
@@ -92,7 +94,7 @@ export function BulkActions({
               key={action.id}
               size="sm"
               variant={action.variant || 'default'}
-              onClick={() => action.onClick(Array.from({ length: selectedCount }, (_, i) => i.toString()))}
+              onClick={() => action.onClick(selectedIds)}
               disabled={isLoading}
               className={Icon ? 'gap-2' : ''}
             >
