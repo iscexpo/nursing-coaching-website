@@ -1,6 +1,6 @@
 'use client'
 
-import { InvoiceStatusBadge } from '@/components/ui/badges'
+import { InvoiceStatusBadge } from '@/components/ui/status-badge'
 import type { Invoice, Enrollment } from './types'
 
 export function InvoicesPanel({

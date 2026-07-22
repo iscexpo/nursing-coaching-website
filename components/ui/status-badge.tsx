@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, Clock, X, AlertCircle, Eye } from 'lucide-react'
+import { Check, CheckCircle2, Clock, X, XCircle, AlertCircle, Eye } from 'lucide-react'
 
 type StatusType =
   | 'pending'
@@ -107,8 +107,8 @@ export function StatusBadge({
       <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 ${className}`}>
         {customLabel || status}
       </span>
-    )
-  }
+  )
+}
 
   const Icon = (config.icon || null) as React.ElementType | null
   const label = customLabel || config.label || status
@@ -121,6 +121,38 @@ export function StatusBadge({
     >
       {showIcon && Icon && <Icon className="size-3.5" />}
       {label}
+    </span>
+  )
+}
+
+/**
+ * Attendance status badge with icon
+ */
+export function AttendanceStatusBadge({
+  status,
+}: {
+  status: 'present' | 'absent' | 'late'
+}) {
+  const map = {
+    present: {
+      label: 'উপস্থিত',
+      icon: CheckCircle2,
+      cls: 'bg-green/10 text-green',
+    },
+    absent: {
+      label: 'অনুপস্থিত',
+      icon: XCircle,
+      cls: 'bg-destructive/10 text-destructive',
+    },
+    late: { label: 'বিলম্বিত', icon: AlertCircle, cls: 'bg-gold/10 text-gold' },
+  }
+  const s = map[status]
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${s.cls}`}
+    >
+      <s.icon className="size-3" />
+      {s.label}
     </span>
   )
 }

@@ -13,7 +13,7 @@ import {
   EnrollmentStatusBadge,
   PaymentStatusBadge,
   MethodBadge,
-} from '@/components/ui/badges'
+} from '@/components/ui/status-badge'
 import type { Enrollment, Payment, Invoice } from './types'
 
 export function BillingSection({

@@ -9,7 +9,7 @@ import {
   Wallet,
   Loader2,
 } from 'lucide-react'
-import { EnrollmentStatusBadge } from '@/components/ui/badges'
+import { EnrollmentStatusBadge } from '@/components/ui/status-badge'
 import type { Course, Enrollment } from './types'
 
 export function CourseSection({

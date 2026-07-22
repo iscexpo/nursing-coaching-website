@@ -4,7 +4,7 @@ import { BarChart3, Receipt, GraduationCap, CalendarCheck } from 'lucide-react'
 import {
   AttendanceStatusBadge,
   EnrollmentStatusBadge,
-} from '@/components/ui/badges'
+} from '@/components/ui/status-badge'
 import { StatCard } from '@/components/ui/stat-card'
 import type {
   Enrollment,

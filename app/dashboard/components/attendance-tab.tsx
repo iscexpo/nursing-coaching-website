@@ -1,7 +1,7 @@
 'use client'
 
 import { Clock } from 'lucide-react'
-import { AttendanceStatusBadge } from '@/components/ui/badges'
+import { AttendanceStatusBadge } from '@/components/ui/status-badge'
 import type { AttendanceRecord } from './types'
 
 export function AttendanceView({
