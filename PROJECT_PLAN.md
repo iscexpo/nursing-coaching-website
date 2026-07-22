@@ -64,7 +64,7 @@ Everything below is a **hard prerequisite** for all other phases.
 | # | Tab | Tasks |
 |---|-----|-------|
 | 2C.1 | **Overview** | Add revenue trend sparkline (last 30 days), today's attendance count, upcoming exams card, quick-action buttons. |
-| 2C.2 | **Courses** | Category filter tabs (All/Icon/Cornea) with counts, image thumbnail in list rows, clone course button. |
+| 2C.2 | **Courses** | Category filter tabs (All/Icon/ISC) with counts, image thumbnail in list rows, clone course button. |
 | 2C.3 | **Enrollments** | Status workflow badges (pending→approved→active), course filter dropdown, date range filter, bulk approve/reject. |
 | 2C.4 | **Payments** | Verify/reject buttons per row, method filter, transaction ID search, date range filter, CSV export. |
 | 2C.5 | **Exams** | Status badges (draft/active/completed), question count + submission count columns, clone exam button. |

@@ -144,7 +144,7 @@ export const courses = pgTable('courses', {
   image: text('image'),
   features: jsonb('features').$type<string[]>().default([]),
   category: text('category')
-    .$type<'icon' | 'cornea'>()
+    .$type<'icon' | 'isc'>()
     .notNull()
     .default('icon'),
   isActive: boolean('is_active').notNull().default(true),

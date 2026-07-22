@@ -97,7 +97,7 @@ After fixing the journal, verify:
 - **Bulk import** from CSV/Excel
 - **Course cloning** (duplicate a course with all settings)
 - **Image preview** in the course list (currently only shown in form)
-- **Category tabs** with counts (All / Icon / Cornea)
+- **Category tabs** with counts (All / Icon / ISC)
 
 #### Enrollments Tab
 - **Status workflow visualization** (pending → approved → active → completed/expired)

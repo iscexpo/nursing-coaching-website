@@ -49,7 +49,7 @@ export function CoursesPanel({
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'icon' | 'cornea'>(
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'icon' | 'isc'>(
     'all',
   )
   const [searchQuery, setSearchQuery] = useState('')
@@ -75,7 +75,7 @@ export function CoursesPanel({
     duration: '',
     fee: 0,
     discountFee: 0,
-    category: 'icon' as 'icon' | 'cornea',
+    category: 'icon' as 'icon' | 'isc',
     image: '',
     maxStudents: 0,
     schedule: '',
@@ -254,10 +254,10 @@ export function CoursesPanel({
             label: 'ক্যাটাগরি',
             type: 'select',
             value: categoryFilter === 'all' ? '' : categoryFilter,
-            onChange: (v) => setCategoryFilter((v || 'all') as 'all' | 'icon' | 'cornea'),
+            onChange: (v) => setCategoryFilter((v || 'all') as 'all' | 'icon' | 'isc'),
             options: [
               { value: 'icon', label: 'Icon' },
-              { value: 'cornea', label: 'Cornea' },
+              { value: 'isc', label: 'ISC' },
             ],
           },
         ]}
@@ -325,13 +325,13 @@ export function CoursesPanel({
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      category: e.target.value as 'icon' | 'cornea',
+                      category: e.target.value as 'icon' | 'isc',
                     })
                   }
                   className={inputCls}
                 >
                   <option value="icon">Icon</option>
-                  <option value="cornea">Cornea</option>
+                  <option value="isc">ISC</option>
                 </select>
               </div>
               <div>
@@ -560,7 +560,7 @@ export function CoursesPanel({
                       <div className="flex items-center gap-2">
                         {c.title}
                         <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                          {c.category === 'cornea' ? 'Cornea' : 'Icon'}
+                          {c.category === 'isc' ? 'ISC' : 'Icon'}
                         </span>
                       </div>
                     </td>
