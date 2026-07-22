@@ -2,17 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, Save, X, Clock, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/empty-state'
 import { FilterBar } from '@/components/ui/filter-bar'
 import { ExamStatusBadge } from '@/components/ui/status-badge'
 import { useToast } from '@/components/ui/toast'
 import type { Exam, ExamSubmission } from './types'
-
-const DIFFICULTY_LABELS: Record<string, { label: string; cls: string }> = {
-  easy: { label: 'সহজ', cls: 'bg-green/10 text-green' },
-  medium: { label: 'মাঝারি', cls: 'bg-brand/10 text-brand' },
-  hard: { label: 'কঠিন', cls: 'bg-destructive/10 text-destructive' },
-}
 
 export function ExamsPanel({
   exams,
@@ -23,6 +18,7 @@ export function ExamsPanel({
   submissions: ExamSubmission[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.exams')
   const [showExamForm, setShowExamForm] = useState(false)
   const [examForm, setExamForm] = useState({
     title: '',
@@ -33,6 +29,12 @@ export function ExamsPanel({
   const [saving, setSaving] = useState(false)
   const [subjects, setSubjects] = useState<{ name: string }[]>([])
   const { confirm } = useToast()
+
+  const DIFFICULTY_LABELS: Record<string, { label: string; cls: string }> = {
+    easy: { label: t('difficultyEasy'), cls: 'bg-green/10 text-green' },
+    medium: { label: t('difficultyMedium'), cls: 'bg-brand/10 text-brand' },
+    hard: { label: t('difficultyHard'), cls: 'bg-destructive/10 text-destructive' },
+  }
 
   useEffect(() => {
     fetch('/api/subjects')
@@ -74,7 +76,7 @@ export function ExamsPanel({
   }
 
   async function handleDeleteExam(id: string) {
-    if (!(await confirm('আপনি কি নিশ্চিত এই পরীক্ষা মুছে ফেলতে চান?'))) return
+    if (!(await confirm(t('deleteConfirm')))) return
     try {
       await fetch(`/api/exams/${id}`, { method: 'DELETE' })
       onRefresh()
@@ -101,14 +103,14 @@ export function ExamsPanel({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-heading text-lg font-bold text-foreground">
-            পরীক্ষা ব্যবস্থাপনা
+            {t('management')}
           </h3>
           <button
             onClick={() => setShowExamForm(!showExamForm)}
             className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
           >
             <Plus className="size-4" />
-            নতুন পরীক্ষা
+            {t('newExam')}
           </button>
         </div>
 
@@ -116,7 +118,7 @@ export function ExamsPanel({
           <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-heading font-semibold text-foreground">
-                নতুন পরীক্ষা তৈরি
+                {t('createForm')}
               </h4>
               <button
                 onClick={() => setShowExamForm(false)}
@@ -129,7 +131,7 @@ export function ExamsPanel({
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-foreground">
-                    পরীক্ষার নাম
+                    {t('formLabels.name')}
                   </label>
                   <input
                     type="text"
@@ -137,13 +139,13 @@ export function ExamsPanel({
                     onChange={(e) =>
                       setExamForm({ ...examForm, title: e.target.value })
                     }
-                    placeholder="যেমন: মডেল টেস্ট #৫"
+                    placeholder={t('formLabels.namePlaceholder')}
                     className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground">
-                    বিষয়
+                    {t('formLabels.subject')}
                   </label>
                   <select
                     value={examForm.subject}
@@ -161,7 +163,7 @@ export function ExamsPanel({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground">
-                    সময়কাল (মিনিট)
+                    {t('formLabels.duration')}
                   </label>
                   <input
                     type="number"
@@ -177,7 +179,7 @@ export function ExamsPanel({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground">
-                    কঠিনতা
+                    {t('formLabels.difficulty')}
                   </label>
                   <select
                     value={examForm.difficulty}
@@ -190,9 +192,9 @@ export function ExamsPanel({
                     }
                     className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                   >
-                    <option value="easy">সহজ</option>
-                    <option value="medium">মাঝারি</option>
-                    <option value="hard">কঠিন</option>
+                    <option value="easy">{t('difficultyEasy')}</option>
+                    <option value="medium">{t('difficultyMedium')}</option>
+                    <option value="hard">{t('difficultyHard')}</option>
                   </select>
                 </div>
               </div>
@@ -206,14 +208,14 @@ export function ExamsPanel({
                 ) : (
                   <Save className="size-4" />
                 )}
-                পরীক্ষা তৈরি করুন
+                {t('createButton')}
               </button>
             </div>
           </div>
         )}
 
         {exams.length === 0 ? (
-          <EmptyState title="কোনো পরীক্ষা নেই" />
+          <EmptyState title={t('emptyExams')} />
         ) : (
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -221,25 +223,25 @@ export function ExamsPanel({
               <thead>
                 <tr className="border-b border-border bg-secondary/30">
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    পরীক্ষা
+                    {t('tableHeaders.exam')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    বিষয়
+                    {t('tableHeaders.subject')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    সময়কাল
+                    {t('tableHeaders.duration')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    প্রশ্ন
+                    {t('tableHeaders.questions')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    কঠিনতা
+                    {t('tableHeaders.difficulty')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    অবস্থা
+                    {t('tableHeaders.status')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    কার্যক্রম
+                    {t('tableHeaders.actions')}
                   </th>
                 </tr>
               </thead>
@@ -259,7 +261,7 @@ export function ExamsPanel({
                     </td>
                     <td className="px-4 py-3 text-center text-muted-foreground flex items-center justify-center gap-1">
                       <Clock className="size-3.5" />
-                      {e.duration} মিনিট
+                      {e.duration} {t('minutes')}
                     </td>
                     <td className="px-4 py-3 text-center text-foreground">
                       {e.questionCount ?? 0}
@@ -276,7 +278,7 @@ export function ExamsPanel({
                         onClick={() => toggleActive(e.id, e.isActive)}
                         className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${e.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
                       >
-                        {e.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                        {e.isActive ? t('statusActive') : t('statusInactive')}
                       </button>
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -299,14 +301,14 @@ export function ExamsPanel({
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="font-heading text-lg font-bold text-foreground">
-            ফলাফল ব্যবস্থাপনা
+            {t('resultsManagement')}
           </h3>
         </div>
 
         <FilterBar
           filters={[{
             name: 'exam',
-            label: 'পরীক্ষা',
+            label: t('tableHeaders.exam'),
             type: 'select',
             value: filterExam === 'all' ? '' : filterExam,
             onChange: (v) => setFilterExam(v || 'all'),
@@ -315,7 +317,7 @@ export function ExamsPanel({
         />
 
         {filteredSubmissions.length === 0 ? (
-          <EmptyState title="কোনো ফলাফল নেই" />
+          <EmptyState title={t('emptyResults')} />
         ) : (
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -323,19 +325,19 @@ export function ExamsPanel({
               <thead>
                 <tr className="border-b border-border bg-secondary/30">
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    শিক্ষার্থী
+                    {t('resultsTableHeaders.student')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    পরীক্ষা
+                    {t('resultsTableHeaders.exam')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    স্কোর
+                    {t('resultsTableHeaders.score')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    সময়
+                    {t('resultsTableHeaders.time')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    তারিখ
+                    {t('resultsTableHeaders.date')}
                   </th>
                 </tr>
               </thead>
@@ -364,7 +366,7 @@ export function ExamsPanel({
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center text-muted-foreground">
-                        {s.timeTaken ? `${s.timeTaken} সে.` : '—'}
+                        {s.timeTaken ? `${s.timeTaken} ${t('seconds')}` : '—'}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {new Date(s.createdAt).toLocaleDateString('bn-BD')}

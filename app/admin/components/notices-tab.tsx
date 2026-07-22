@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/empty-state'
 import { StatusBadge } from '@/components/ui/status-badge'
 import type { Notice } from './types'
@@ -13,9 +14,10 @@ export function NoticesPanel({
   notices: Notice[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.notices')
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Notice | null>(null)
-  const [form, setForm] = useState({ tag: 'ভর্তি', title: '', urgent: false })
+  const [form, setForm] = useState({ tag: t('tags.enrollment'), title: '', urgent: false })
   const [saving, setSaving] = useState(false)
 
   async function handleSave() {
@@ -43,7 +45,7 @@ export function NoticesPanel({
           }),
         })
       }
-      setForm({ tag: 'ভর্তি', title: '', urgent: false })
+      setForm({ tag: t('tags.enrollment'), title: '', urgent: false })
       setEditing(null)
       setShowForm(false)
       onRefresh()
@@ -73,18 +75,18 @@ export function NoticesPanel({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          নোটিশ ব্যবস্থাপনা
+          {t('title')}
         </h3>
         <button
           onClick={() => {
             setShowForm(true)
             setEditing(null)
-            setForm({ tag: 'ভর্তি', title: '', urgent: false })
+            setForm({ tag: t('tags.enrollment'), title: '', urgent: false })
           }}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
-          নতুন নোটিশ
+          {t('newNotice')}
         </button>
       </div>
 
@@ -92,7 +94,7 @@ export function NoticesPanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'নোটিশ সম্পাদনা' : 'নতুন নোটিশ'}
+              {editing ? t('editTitle') : t('addTitle')}
             </h4>
             <button
               onClick={() => {
@@ -108,18 +110,18 @@ export function NoticesPanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ট্যাগ
+                  {t('tagLabel')}
                 </label>
                 <select
                   value={form.tag}
                   onChange={(e) => setForm({ ...form, tag: e.target.value })}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 >
-                  <option>ভর্তি</option>
-                  <option>ক্লাস</option>
-                  <option>পরীক্ষা</option>
-                  <option>ডেডলাইন</option>
-                  <option>সাধারণ</option>
+                  <option>{t('tags.enrollment')}</option>
+                  <option>{t('tags.class')}</option>
+                  <option>{t('tags.exam')}</option>
+                  <option>{t('tags.deadline')}</option>
+                  <option>{t('tags.general')}</option>
                 </select>
               </div>
               <div className="flex items-end gap-4">
@@ -132,19 +134,19 @@ export function NoticesPanel({
                     }
                     className="size-4 rounded border-border"
                   />
-                  জরুরি
+                  {t('isUrgentLabel')}
                 </label>
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                নোটিশ
+                {t('noticeLabel')}
               </label>
               <input
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="নোটিশের বিষয় লিখুন"
+                placeholder={t('noticePlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
@@ -158,7 +160,7 @@ export function NoticesPanel({
               ) : (
                 <Save className="size-4" />
               )}
-              {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+              {editing ? t('noticeUpdated') : t('noticeCreated')}
             </button>
           </div>
         </div>
@@ -173,7 +175,7 @@ export function NoticesPanel({
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status="active" customLabel={n.tag} showIcon={false} size="sm" />
               {n.isUrgent && (
-                <StatusBadge status="warning" customLabel="জরুরি" size="sm" />
+                <StatusBadge status="warning" customLabel={t('urgentBadge')} size="sm" />
               )}
               <span className="ml-auto text-xs text-muted-foreground">
                 {new Date(n.createdAt).toLocaleDateString('bn-BD')}
@@ -197,7 +199,7 @@ export function NoticesPanel({
           </div>
         ))}
         {notices.length === 0 && (
-          <EmptyState title="কোনো নোটিশ নেই" />
+          <EmptyState title={t('emptyTitle')} />
         )}
       </div>
     </div>

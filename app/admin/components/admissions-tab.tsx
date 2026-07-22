@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Phone, Trash2, Loader2, FileText } from 'lucide-react'
 import type { Admission, AdmissionStatus } from './types'
 import { useToast } from '@/components/ui/toast'
@@ -12,14 +13,6 @@ const STATUS_OPTIONS: AdmissionStatus[] = [
   'approved',
   'rejected',
 ]
-
-const STATUS_LABELS: Record<AdmissionStatus, string> = {
-  pending: 'অপেক্ষমাণ',
-  received: 'প্রাপ্ত',
-  processing: 'প্রক্রিয়াধীন',
-  approved: 'অনুমোদিত',
-  rejected: 'বাতিল',
-}
 
 const STATUS_STYLES: Record<AdmissionStatus, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -36,9 +29,18 @@ export function AdmissionsPanel({
   admissions: Admission[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.admissions')
   const { success, error, confirm } = useToast()
   const [processing, setProcessing] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
+
+  const STATUS_LABELS: Record<AdmissionStatus, string> = {
+    pending: t('statusLabels.pending'),
+    received: t('statusLabels.received'),
+    processing: t('statusLabels.processing'),
+    approved: t('statusLabels.approved'),
+    rejected: t('statusLabels.rejected'),
+  }
 
   async function updateStatus(id: string, status: AdmissionStatus) {
     setProcessing(id)
@@ -49,7 +51,7 @@ export function AdmissionsPanel({
         body: JSON.stringify({ status }),
       })
       onRefresh()
-      success('ভর্তি আবেদনের অবস্থা আপডেট করা হয়েছে')
+      success(t('statusUpdated'))
     } catch (updateError) {
       console.error('Failed to update admission:', updateError)
     } finally {
@@ -58,12 +60,12 @@ export function AdmissionsPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await confirm('আবেদনটি মুছে ফেলতে চান?'))) return
+    if (!(await confirm(t('confirmDelete')))) return
     setProcessing(id)
     try {
       await fetch(`/api/admissions/${id}`, { method: 'DELETE' })
       onRefresh()
-      success('ভর্তি আবেদন মুছে ফেলা হয়েছে')
+      success(t('deleted'))
     } catch (deleteError) {
       console.error('Failed to delete admission:', deleteError)
     } finally {
@@ -74,7 +76,7 @@ export function AdmissionsPanel({
   return (
     <div className="space-y-4">
       <h3 className="font-heading text-lg font-bold text-foreground">
-        ভর্তি আবেদন
+        {t('title')}
       </h3>
 
       <div className="space-y-3">
@@ -186,7 +188,7 @@ export function AdmissionsPanel({
 
         {admissions.length === 0 && (
           <p className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center text-sm text-muted-foreground">
-            কোনো ভর্তি আবেদন নেই
+            {t('noApplicants')}
           </p>
         )}
       </div>

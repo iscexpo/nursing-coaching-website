@@ -1,16 +1,18 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { Send, Loader2, Users, Upload, FileText } from 'lucide-react'
 
 const inputCls =
   'mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand'
 
 export function SmsPanel() {
+  const t = useTranslations('admin.sms')
   return (
     <div className="space-y-6">
       <h3 className="font-heading text-lg font-bold text-foreground">
-        SMS ব্যবস্থাপনা
+        {t('title')}
       </h3>
       <SingleSmsSection />
       <BulkSmsSection />
@@ -20,6 +22,7 @@ export function SmsPanel() {
 }
 
 function SingleSmsSection() {
+  const t = useTranslations('admin.sms')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
@@ -50,7 +53,7 @@ function SingleSmsSection() {
     } catch (e) {
       setStatus({
         ok: false,
-        text: e instanceof Error ? e.message : 'SMS পাঠানো যায়নি',
+        text: e instanceof Error ? e.message : t('smsFailed'),
       })
     } finally {
       setSending(false)
@@ -81,12 +84,12 @@ function SingleSmsSection() {
         </div>
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-foreground">
-            বার্তা
+            {t('messageLabel')}
           </label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="SMS লিখুন..."
+            placeholder={t('messagePlaceholder')}
             rows={3}
             className={inputCls}
           />
@@ -102,7 +105,7 @@ function SingleSmsSection() {
         ) : (
           <Send className="size-4" />
         )}
-        {sending ? 'পাঠানো হচ্ছে...' : 'SMS পাঠান'}
+        {sending ? t('sending') : t('sendBtn')}
       </button>
       {status && (
         <p
@@ -116,6 +119,7 @@ function SingleSmsSection() {
 }
 
 function BulkSmsSection() {
+  const t = useTranslations('admin.sms')
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(
@@ -142,7 +146,7 @@ function BulkSmsSection() {
     } catch (e) {
       setStatus({
         ok: false,
-        text: e instanceof Error ? e.message : 'SMS পাঠানো যায়নি',
+        text: e instanceof Error ? e.message : t('smsFailed'),
       })
     } finally {
       setSending(false)
@@ -162,12 +166,12 @@ function BulkSmsSection() {
       </p>
       <div>
         <label className="block text-sm font-medium text-foreground">
-          বার্তা
+          {t('messageLabel')}
         </label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="SMS লিখুন..."
+          placeholder={t('messagePlaceholder')}
           rows={3}
           className={inputCls}
         />
@@ -182,7 +186,7 @@ function BulkSmsSection() {
         ) : (
           <Users className="size-4" />
         )}
-        {sending ? 'পাঠানো হচ্ছে...' : 'সকলকে SMS পাঠান'}
+        {sending ? t('sending') : 'সকলকে SMS পাঠান'}
       </button>
       {status && (
         <p
@@ -196,6 +200,7 @@ function BulkSmsSection() {
 }
 
 function CsvImportSection() {
+  const t = useTranslations('admin.sms')
   const fileRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [message, setMessage] = useState('')
@@ -229,7 +234,7 @@ function CsvImportSection() {
     } catch (e) {
       setStatus({
         ok: false,
-        text: e instanceof Error ? e.message : 'SMS পাঠানো যায়নি',
+        text: e instanceof Error ? e.message : t('smsFailed'),
       })
     } finally {
       setSending(false)
@@ -261,12 +266,12 @@ function CsvImportSection() {
       </div>
       <div>
         <label className="block text-sm font-medium text-foreground">
-          বার্তা
+          {t('messageLabel')}
         </label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="SMS লিখুন..."
+          placeholder={t('messagePlaceholder')}
           rows={3}
           className={inputCls}
         />
@@ -281,7 +286,7 @@ function CsvImportSection() {
         ) : (
           <Upload className="size-4" />
         )}
-        {sending ? 'পাঠানো হচ্ছে...' : 'CSV থেকে SMS পাঠান'}
+        {sending ? t('sending') : 'CSV থেকে SMS পাঠান'}
       </button>
       {status && (
         <p

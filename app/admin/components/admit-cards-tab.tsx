@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Loader2, CreditCard } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import type { Enrollment, Exam, AdmitCard } from './types'
@@ -16,6 +17,7 @@ export function AdmitCardsPanel({
   admitCards: AdmitCard[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.admitCards')
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
@@ -97,14 +99,14 @@ export function AdmitCardsPanel({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          এডমিট কার্ড ব্যবস্থাপনা
+          {t('title')}
         </h3>
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
-          নতুন এডমিট কার্ড
+          {t('addNew')}
         </button>
       </div>
 
@@ -112,7 +114,7 @@ export function AdmitCardsPanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              নতুন এডমিট কার্ড তৈরি
+              {t('createTitle')}
             </h4>
             <button
               onClick={() => setShowForm(false)}
@@ -125,14 +127,14 @@ export function AdmitCardsPanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  শিক্ষার্থী
+                  {t('studentLabel')}
                 </label>
                 <select
                   value={form.userId}
                   onChange={(e) => setForm({ ...form, userId: e.target.value })}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 >
-                  <option value="">শিক্ষার্থী বাছাই করুন</option>
+                  <option value="">{t('selectStudent')}</option>
                   {uniqueStudents.map((s) => (
                     <option key={s.userId} value={s.userId}>
                       {s.userName || s.userId.slice(0, 8)} — {s.userPhone || ''}
@@ -142,14 +144,14 @@ export function AdmitCardsPanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  পরীক্ষা
+                  {t('examLabel')}
                 </label>
                 <select
                   value={form.examId}
                   onChange={(e) => handleExamSelect(e.target.value)}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 >
-                  <option value="">পরীক্ষা বাছাই করুন</option>
+                  <option value="">{t('selectExam')}</option>
                   {exams.map((e) => (
                     <option key={e.id} value={e.id}>
                       {e.title}
@@ -159,7 +161,7 @@ export function AdmitCardsPanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  পরীক্ষার তারিখ
+                  {t('examDateLabel')}
                 </label>
                 <input
                   type="text"
@@ -167,13 +169,13 @@ export function AdmitCardsPanel({
                   onChange={(e) =>
                     setForm({ ...form, examDate: e.target.value })
                   }
-                  placeholder="যেমন: ৯ আগস্ট ২০২৬"
+                  placeholder={t('examDatePlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সময়
+                  {t('timeLabel')}
                 </label>
                 <input
                   type="text"
@@ -181,25 +183,25 @@ export function AdmitCardsPanel({
                   onChange={(e) =>
                     setForm({ ...form, examTime: e.target.value })
                   }
-                  placeholder="যেমন: সকাল ১০:০০ — ১১:০০"
+                  placeholder={t('timePlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  কেন্দ্র
+                  {t('centerLabel')}
                 </label>
                 <input
                   type="text"
                   value={form.center}
                   onChange={(e) => setForm({ ...form, center: e.target.value })}
-                  placeholder="পরীক্ষা কেন্দ্র"
+                  placeholder={t('centerPlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সিট নম্বর (ঐচ্ছিক)
+                  {t('seatNumberLabel')}
                 </label>
                 <input
                   type="text"
@@ -207,7 +209,7 @@ export function AdmitCardsPanel({
                   onChange={(e) =>
                     setForm({ ...form, seatNumber: e.target.value })
                   }
-                  placeholder="সিট নম্বর"
+                  placeholder={t('seatNumberPlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
@@ -222,7 +224,7 @@ export function AdmitCardsPanel({
               ) : (
                 <CreditCard className="size-4" />
               )}
-              এডমিট কার্ড তৈরি করুন
+              {t('createBtn')}
             </button>
           </div>
         </div>
@@ -234,22 +236,22 @@ export function AdmitCardsPanel({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  শিক্ষার্থী
+                  {t('studentLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  পরীক্ষা
+                  {t('examLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  তারিখ
+                  {t('examDateLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  সময়
+                  {t('timeLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  কেন্দ্র
+                  {t('centerLabel')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  সিট
+                  {t('seatLabel')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
               </tr>
@@ -296,7 +298,7 @@ export function AdmitCardsPanel({
               {admitCards.length === 0 && (
                 <tr>
                   <td colSpan={7} className="p-0">
-                    <EmptyState title="কোনো এডমিট কার্ড নেই" />
+                    <EmptyState title={t('noCards')} />
                   </td>
                 </tr>
               )}

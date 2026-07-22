@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { Phone, Trash2, Loader2, FileText } from 'lucide-react'
 import type { ModelTestApplicant, ModelTestApplicantStatus } from './types'
 import { useToast } from '@/components/ui/toast'
@@ -11,13 +12,6 @@ const STATUS_OPTIONS: ModelTestApplicantStatus[] = [
   'registered',
   'rejected',
 ]
-
-const STATUS_LABELS: Record<ModelTestApplicantStatus, string> = {
-  pending: 'অপেক্ষমাণ',
-  contacted: 'যোগাযোগ করা হয়েছে',
-  registered: 'নিবন্ধিত',
-  rejected: 'বাতিল',
-}
 
 const STATUS_STYLES: Record<ModelTestApplicantStatus, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -33,9 +27,20 @@ export function ModelTestApplicantsPanel({
   applicants: ModelTestApplicant[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.modelTest')
   const { success, error, confirm } = useToast()
   const [processing, setProcessing] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
+
+  const statusLabels = useMemo(
+    () => ({
+      pending: t('statusLabels.pending'),
+      contacted: t('statusLabels.contacted'),
+      registered: t('statusLabels.registered'),
+      rejected: t('statusLabels.rejected'),
+    }),
+    [t],
+  )
 
   async function updateStatus(id: string, status: ModelTestApplicantStatus) {
     setProcessing(id)
@@ -46,7 +51,7 @@ export function ModelTestApplicantsPanel({
         body: JSON.stringify({ status }),
       })
       onRefresh()
-      success('আবেদনের অবস্থা আপডেট করা হয়েছে')
+      success(t('statusUpdated'))
     } catch (updateError) {
       console.error('Failed to update applicant:', updateError)
     } finally {
@@ -55,12 +60,12 @@ export function ModelTestApplicantsPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await confirm('আবেদনটি মুছে ফেলতে চান?'))) return
+    if (!(await confirm(t('confirmDelete')))) return
     setProcessing(id)
     try {
       await fetch(`/api/model-test-applicants/${id}`, { method: 'DELETE' })
       onRefresh()
-      success('আবেদন মুছে ফেলা হয়েছে')
+      success(t('deleted'))
     } catch (deleteError) {
       console.error('Failed to delete applicant:', deleteError)
     } finally {
@@ -71,7 +76,7 @@ export function ModelTestApplicantsPanel({
   return (
     <div className="space-y-4">
       <h3 className="font-heading text-lg font-bold text-foreground">
-        মডেল টেস্ট আবেদন
+        {t('title')}
       </h3>
 
       <div className="space-y-3">
@@ -87,7 +92,7 @@ export function ModelTestApplicantsPanel({
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLES[a.status]}`}
                   >
-                    {STATUS_LABELS[a.status]}
+                    {statusLabels[a.status]}
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
@@ -123,7 +128,7 @@ export function ModelTestApplicantsPanel({
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
-                    {STATUS_LABELS[s]}
+                    {statusLabels[s]}
                   </option>
                 ))}
               </select>
@@ -133,7 +138,7 @@ export function ModelTestApplicantsPanel({
                 className="flex items-center gap-1 rounded-lg bg-secondary px-2.5 py-1 text-xs font-medium text-foreground hover:bg-secondary/70"
               >
                 <FileText className="size-3.5" />
-                বিস্তারিত
+                {t('detailsBtn')}
               </button>
 
               <button
@@ -146,21 +151,21 @@ export function ModelTestApplicantsPanel({
                 ) : (
                   <Trash2 className="size-3.5" />
                 )}
-                মুছুন
+                Delete
               </button>
             </div>
 
             {expanded === a.id && (
               <div className="mt-4 space-y-2 rounded-xl bg-secondary/50 p-4 text-sm">
                 <p className="text-xs text-muted-foreground">
-                  পছন্দের বিষয়: {a.preferredSubject || '—'}
+                  {t('preferredSubject')}: {a.preferredSubject || '—'}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  পরীক্ষা: {a.examTitle || '—'}
+                  {t('exam')}: {a.examTitle || '—'}
                 </p>
                 {!a.message && (
                   <p className="text-xs text-muted-foreground">
-                    কোনো বার্তা প্রদান করা হয়নি।
+                    {t('noMessage')}
                   </p>
                 )}
               </div>
@@ -170,7 +175,7 @@ export function ModelTestApplicantsPanel({
 
         {applicants.length === 0 && (
           <p className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center text-sm text-muted-foreground">
-            কোনো মডেল টেস্ট আবেদন নেই
+            {t('noApplicants')}
           </p>
         )}
       </div>

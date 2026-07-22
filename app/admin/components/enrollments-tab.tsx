@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { Plus, Pencil, X, Loader2, Ban, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { EnrollmentStatusBadge } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
 import { FilterBar } from '@/components/ui/filter-bar'
@@ -28,15 +29,6 @@ type EditState = {
   discount: string
 }
 
-const STATUS_OPTIONS = [
-  { value: 'pending', label: 'অপেক্ষমান' },
-  { value: 'approved', label: 'অনুমোদিত' },
-  { value: 'active', label: 'সক্রিয়' },
-  { value: 'completed', label: 'সম্পন্ন' },
-  { value: 'rejected', label: 'প্রত্যাখ্যাত' },
-  { value: 'cancelled', label: 'বাতিল' },
-]
-
 export function EnrollmentsPanel({
   enrollments,
   courses,
@@ -48,6 +40,17 @@ export function EnrollmentsPanel({
   students: Student[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.enrollments')
+
+  const STATUS_OPTIONS = useMemo(() => [
+    { value: 'pending', label: t('statusOptions.pending') },
+    { value: 'approved', label: t('statusOptions.approved') },
+    { value: 'active', label: t('statusOptions.active') },
+    { value: 'completed', label: t('statusOptions.completed') },
+    { value: 'rejected', label: t('statusOptions.rejected') },
+    { value: 'cancelled', label: t('statusOptions.cancelled') },
+  ], [t])
+
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -208,9 +211,9 @@ export function EnrollmentsPanel({
           else failCount++
         }
         if (failCount > 0) {
-          error(`${successCount}টি আপডেট হয়েছে, ${failCount}টি ব্যর্থ`)
+          error(t('bulkPartialSuccess', { success: successCount, fail: failCount }))
         } else {
-          success(`${successCount}টি এনরোলমেন্ট আপডেট করা হয়েছে`)
+          success(t('bulkSuccess', { count: successCount }))
         }
       } else if (bulkAction === 'cancel') {
         for (const id of selectedIds) {
@@ -219,16 +222,16 @@ export function EnrollmentsPanel({
           else failCount++
         }
         if (failCount > 0) {
-          error(`${successCount}টি বাতিল হয়েছে, ${failCount}টি ব্যর্থ`)
+          error(t('bulkPartialDelete', { success: successCount, fail: failCount }))
         } else {
-          success(`${successCount}টি এনরোলমেন্ট বাতিল করা হয়েছে`)
+          success(t('bulkDeleteSuccess', { count: successCount }))
         }
       }
       setSelectedIds([])
       setBulkAction(null)
       onRefresh()
     } catch {
-      error('বাল্ক অপারেশন ব্যর্থ')
+      error(t('bulkFailed'))
     } finally {
       setBulkSaving(false)
     }
@@ -255,12 +258,12 @@ export function EnrollmentsPanel({
         const count = data.count || 0
         const errCount = data.errors?.length || 0
         if (errCount > 0 && count > 0) {
-          setAddError(`${count}টি এনরোলমেন্ট তৈরি হয়েছে, ${errCount}টি ব্যর্থ`)
+          setAddError(t('partialCreateSuccess', { success: count, fail: errCount }))
         } else if (errCount > 0) {
           setAddError(
             data.details
               ?.map((d: { courseId: string; error: string }) => d.error)
-              .join(', ') || 'এনরোলমেন্ট তৈরি ব্যর্থ',
+              .join(', ') || t('createFailed'),
           )
           return
         }
@@ -285,11 +288,11 @@ export function EnrollmentsPanel({
         setAddError(
           details
             ? `${data.error} (${details})`
-            : data.error || 'এনরোলমেন্ট তৈরি ব্যর্থ',
+            : data.error || t('createFailed'),
         )
       }
     } catch {
-      setAddError('এনরোলমেন্ট তৈরি ব্যর্থ')
+      setAddError(t('createFailed'))
     } finally {
       setAddSaving(false)
     }
@@ -329,31 +332,31 @@ export function EnrollmentsPanel({
         setEditing(null)
         onRefresh()
       } else {
-        const err = await res.json().catch(() => ({ error: 'আপডেট ব্যর্থ' }))
-        setEditError(err.error || 'আপডেট ব্যর্থ')
+        const err = await res.json().catch(() => ({ error: t('updateFailed') }))
+        setEditError(err.error || t('updateFailed'))
       }
     } catch {
-      setEditError('আপডেট ব্যর্থ')
+      setEditError(t('updateFailed'))
     } finally {
       setEditSaving(false)
     }
   }
 
   async function handleCancel(id: string) {
-    if (!(await confirm('আপনি কি নিশ্চিত এই এনরোলমেন্ট বাতিল করতে চান?')))
+    if (!(await confirm(t('cancelConfirm'))))
       return
     setCancelling(id)
     try {
       const res = await fetch(`/api/enrollments/${id}`, { method: 'DELETE' })
       if (res.ok) {
         onRefresh()
-        success('এনরোলমেন্ট বাতিল করা হয়েছে')
+        success(t('cancelSuccess'))
       } else {
         const err = await res.json().catch(() => ({}))
-        error(err.error || 'বাতিল ব্যর্থ')
+        error(err.error || t('cancelFailed'))
       }
     } catch {
-      error('বাতিল ব্যর্থ')
+      error(t('cancelFailed'))
     } finally {
       setCancelling(null)
     }
@@ -363,7 +366,7 @@ export function EnrollmentsPanel({
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          এনরোলমেন্ট ব্যবস্থাপনা
+          {t('management')}
         </h3>
         <button
           onClick={() => {
@@ -379,14 +382,14 @@ export function EnrollmentsPanel({
           }}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
-          <Plus className="size-4" /> নতুন এনরোলমেন্ট
+          <Plus className="size-4" /> {t('newEnrollment')}
         </button>
       </div>
 
       <FilterBar
         searchValue={search}
         onSearchChange={(v) => { setSearch(v); resetPage() }}
-        searchPlaceholder="শিক্ষার্থী, ফোন বা কোর্স দিয়ে খুঁজুন..."
+        searchPlaceholder={t('searchPlaceholder')}
         filters={[
           {
             name: 'status',
@@ -403,7 +406,7 @@ export function EnrollmentsPanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              নতুন এনরোলমেন্ট
+              {t('newEnrollment')}
             </h4>
             <button
               onClick={() => setShowAdd(false)}
@@ -420,7 +423,7 @@ export function EnrollmentsPanel({
             )}
 
             <div>
-              <label className={labelCls}>শিক্ষার্থী *</label>
+              <label className={labelCls}>{t('studentLabel')} *</label>
               <select
                 value={addForm.userId}
                 onChange={(e) =>
@@ -428,7 +431,7 @@ export function EnrollmentsPanel({
                 }
                 className={inputCls}
               >
-                <option value="">শিক্ষার্থী নির্বাচন করুন</option>
+                <option value="">{t('studentLabel')} নির্বাচন করুন</option>
                 {students.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -440,16 +443,16 @@ export function EnrollmentsPanel({
 
             <div>
               <div className="flex items-center justify-between">
-                <label className={labelCls}>কোর্স নির্বাচন করুন *</label>
+                <label className={labelCls}>{t('courseSelectLabel')} *</label>
                 <span className="text-xs text-muted-foreground">
-                  {addForm.selectedCourseIds.length}টি নির্বাচিত
+                  {addForm.selectedCourseIds.length}{t('selectedCount')}
                 </span>
               </div>
               <div className="mt-1 rounded-lg border border-border bg-background overflow-hidden">
                 <div className="p-2 border-b border-border">
                   <input
                     type="text"
-                    placeholder="কোর্স খুঁজুন..."
+                    placeholder={t('courseSearchPlaceholder')}
                     value={courseSearch}
                     onChange={(e) => setCourseSearch(e.target.value)}
                     className="w-full rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
@@ -505,7 +508,7 @@ export function EnrollmentsPanel({
             {addForm.selectedCourseIds.length > 0 && (
               <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
                 <p className="text-sm font-semibold text-foreground">
-                  নির্বাচিত কোর্সসমূহ
+                  {t('selectedCourses')}
                 </p>
                 <div className="space-y-1">
                   {addCourseFees.map((cf) => (
@@ -524,7 +527,7 @@ export function EnrollmentsPanel({
                 </div>
                 <div className="border-t border-border pt-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">মোট ফি</span>
+                    <span className="text-muted-foreground">{t('totalFee')}</span>
                     <span className="font-medium text-foreground">
                       ৳
                       {addCourseFees
@@ -533,7 +536,7 @@ export function EnrollmentsPanel({
                     </span>
                   </div>
                   <div>
-                    <label className={labelCls}>ছাড় (৳)</label>
+                    <label className={labelCls}>{t('discountLabel')}</label>
                     <input
                       type="number"
                       min="0"
@@ -547,13 +550,13 @@ export function EnrollmentsPanel({
                     />
                     {addDiscountNum > addMaxDiscount && (
                       <p className="mt-1 text-xs text-destructive">
-                        ছাড় কোর্স ফির চেয়ে বেশি হতে পারে না
+                        {t('discountExceedsFee')}
                       </p>
                     )}
                   </div>
                   <div className="flex items-center justify-between text-sm mt-2 pt-2 border-t border-border">
                     <span className="text-muted-foreground">
-                      পরিশোধযোগ্য ফি
+                      {t('payableFee')}
                     </span>
                     <span className="font-semibold text-green">
                       ৳{addTotalFee.toLocaleString()}
@@ -561,7 +564,7 @@ export function EnrollmentsPanel({
                   </div>
                   {addDiscountNum > 0 && (
                     <div className="text-xs text-muted-foreground">
-                      মোট ছাড়: ৳
+                      {t('totalDiscount')}: ৳
                       {(
                         addDiscountNum * addForm.selectedCourseIds.length
                       ).toLocaleString()}
@@ -579,7 +582,7 @@ export function EnrollmentsPanel({
                 onChange={(e) =>
                   setAddForm({ ...addForm, notes: e.target.value })
                 }
-                placeholder="ঐচ্ছিক নোট"
+                placeholder={t('notesPlaceholder')}
                 maxLength={1000}
                 className={inputCls}
               />
@@ -603,8 +606,8 @@ export function EnrollmentsPanel({
                 <Plus className="size-4" />
               )}
               {addForm.selectedCourseIds.length > 1
-                ? `${addForm.selectedCourseIds.length}টি এনরোলমেন্ট তৈরি করুন`
-                : 'এনরোলমেন্ট তৈরি করুন'}
+                ? t('createEnrollments', { count: addForm.selectedCourseIds.length })
+                : t('createEnrollment')}
             </button>
           </div>
         </div>
@@ -614,7 +617,7 @@ export function EnrollmentsPanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              এনরোলমেন্ট সম্পাদনা — {editing.userName || '—'}
+              {t('editTitle')} — {editing.userName || '—'}
             </h4>
             <button
               onClick={() => setEditing(null)}
@@ -696,18 +699,18 @@ export function EnrollmentsPanel({
               </div>
             </div>
             <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
-              <p className="text-sm font-semibold text-foreground">ফি ও ছাড়</p>
+              <p className="text-sm font-semibold text-foreground">{t('feeAndDiscount')}</p>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground">
-                    কোর্স ফি
+                    {t('courseFee')}
                   </label>
                   <div className="mt-1 text-sm text-foreground">
                     ৳{editCourseFee.toLocaleString()}
                   </div>
                 </div>
                 <div>
-                  <label className={labelCls}>ছাড় (৳)</label>
+                  <label className={labelCls}>{t('discountLabel')}</label>
                   <input
                     type="number"
                     min="0"
@@ -722,7 +725,7 @@ export function EnrollmentsPanel({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground">
-                    পরিশোধযোগ্য ফি
+                    {t('payableFee')}
                   </label>
                   <div className="mt-1 text-sm font-semibold text-green">
                     ৳{editTotalFee.toLocaleString()}
@@ -769,7 +772,7 @@ export function EnrollmentsPanel({
       {selectedIds.length > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-lg bg-brand/5 p-3 border border-brand/20">
           <span className="text-sm font-medium text-brand">
-            {selectedIds.length}টি নির্বাচিত
+            {selectedIds.length}{t('selectedCount')}
           </span>
           <div className="flex items-center gap-2">
             <select
@@ -789,7 +792,7 @@ export function EnrollmentsPanel({
                   (s) => s.value === bulkStatus,
                 )?.label
                 const ok = await confirm(
-                  `নির্বাচিত ${selectedIds.length}টি এনরোলমেন্টের স্ট্যাটাস "${statusLabel}" এ পরিবর্তন করতে চান?`,
+                  t('bulkStatusChangeConfirm', { count: selectedIds.length, status: statusLabel! }),
                 )
                 if (ok) {
                   setBulkAction('status')
@@ -804,12 +807,12 @@ export function EnrollmentsPanel({
               ) : (
                 <Check className="size-4" />
               )}
-              স্টেটাস আপডেট
+              {t('bulkUpdateStatus')}
             </Button>
             <Button
               onClick={async () => {
                 const ok = await confirm(
-                  'নির্বাচিত এনরোলমেন্টগুলো বাতিল করতে চান?',
+                  t('bulkCancelConfirm'),
                 )
                 if (ok) {
                   setBulkAction('cancel')
@@ -825,7 +828,7 @@ export function EnrollmentsPanel({
               ) : (
                 <Ban className="size-4" />
               )}
-              বাতিল করুন
+              {t('cancelAction')}
             </Button>
             <button
               onClick={() => setSelectedIds([])}
@@ -854,31 +857,31 @@ export function EnrollmentsPanel({
                   />
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  শিক্ষার্থী
+                  {t('tableHeaders.student')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  ফোন
+                  {t('tableHeaders.phone')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  কোর্স
+                  {t('tableHeaders.course')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  ছাড়
+                  {t('tableHeaders.discount')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  মোট ফি
+                  {t('tableHeaders.totalFee')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  পরিশোধ
+                  {t('tableHeaders.payment')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  বকেয়
+                  {t('tableHeaders.due')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  অবস্থা
+                  {t('tableHeaders.status')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  কার্যক্রম
+                  {t('tableHeaders.actions')}
                 </th>
               </tr>
             </thead>
@@ -887,8 +890,8 @@ export function EnrollmentsPanel({
                 <tr>
                   <td colSpan={10} className="px-4 py-8">
                     <EmptyState
-                      title={search ? 'কোনো এনরোলমেন্ট পাওয়া যায়নি' : 'এখনো কোনো এনরোলমেন্ট নেই'}
-                      description={search ? 'অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন' : 'নতুন এনরোলমেন্ট তৈরি করুন'}
+                      title={search ? t('emptySearch') : t('emptyNoData')}
+                      description={search ? t('emptySearchHint') : t('emptyCreateHint')}
                     />
                   </td>
                 </tr>
@@ -943,7 +946,7 @@ export function EnrollmentsPanel({
                             <button
                               onClick={() => handleEditClick(e)}
                               className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                              title="সম্পাদনা"
+                              title={t('editAction')}
                             >
                               <Pencil className="size-4" />
                             </button>
@@ -951,7 +954,7 @@ export function EnrollmentsPanel({
                               onClick={() => handleCancel(e.id)}
                               disabled={cancelling === e.id}
                               className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                              title="বাতিল করুন"
+                              title={t('cancelAction')}
                             >
                               {cancelling === e.id ? (
                                 <Loader2 className="size-4 animate-spin" />

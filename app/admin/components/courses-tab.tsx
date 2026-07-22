@@ -2,6 +2,7 @@
 
 import { useState, useRef, useMemo } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { Course } from './types'
 import { useToast } from '@/components/ui/toast'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -44,6 +45,7 @@ export function CoursesPanel({
   courses: Course[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.courses')
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Course | null>(null)
   const [saving, setSaving] = useState(false)
@@ -107,7 +109,7 @@ export function CoursesPanel({
       const resized = await resizeImage(file)
       const formData = new FormData()
       formData.append('file', resized, 'course.jpg')
-      formData.append('altText', form.title || 'কোর্স ছবি')
+      formData.append('altText', form.title || t('formLabels.imageAlt'))
       const res = await fetch('/api/media', { method: 'POST', body: formData })
       if (res.ok) {
         const data = await res.json()
@@ -124,15 +126,15 @@ export function CoursesPanel({
   async function handleSave() {
     if (!form.title.trim() || !form.slug.trim()) return
     if (!form.description.trim()) {
-      setFormError('বিস্তারিত বিবরণ আবশ্যক')
+      setFormError(t('validation.descriptionRequired'))
       return
     }
     if (!form.duration.trim()) {
-      setFormError('সময়কাল আবশ্যক')
+      setFormError(t('validation.durationRequired'))
       return
     }
     if (!form.fee || form.fee <= 0) {
-      setFormError('ফি আবশ্যক এবং ০-এর বেশি হতে হবে')
+      setFormError(t('validation.feeRequired'))
       return
     }
     setSaving(true)
@@ -167,19 +169,19 @@ export function CoursesPanel({
         setEditing(null)
         resetForm()
         success(
-          editing ? 'কোর্স আপডেট করা হয়েছে' : 'নতুন কোর্স যোগ করা হয়েছে',
+          editing ? t('saveSuccess') : t('createSuccess'),
         )
       } else {
-        const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
+        const err = await res.json().catch(() => ({ error: t('saveFailed') }))
         const msg = err.details
           ? Object.values(err.details).flat().join(', ')
-          : err.error || 'সংরক্ষণ ব্যর্থ'
+          : err.error || t('saveFailed')
         setFormError(msg)
         error(msg)
       }
     } catch (saveError) {
-      setFormError('সংরক্ষণ ব্যর্থ')
-      error('সংরক্ষণ ব্যর্থ')
+      setFormError(t('saveFailed'))
+      error(t('saveFailed'))
       console.error('Failed to save course:', saveError)
     } finally {
       setSaving(false)
@@ -187,11 +189,11 @@ export function CoursesPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await confirm('আপনি কি নিশ্চিত এই কোর্স মুছে ফেলতে চান?'))) return
+    if (!(await confirm(t('deleteConfirm')))) return
     try {
       await fetch(`/api/courses/${id}`, { method: 'DELETE' })
       onRefresh()
-      success('কোর্স মুছে ফেলা হয়েছে')
+      success(t('deleteSuccess'))
     } catch (deleteError) {
       console.error('Failed to delete course:', deleteError)
     }
@@ -229,7 +231,7 @@ export function CoursesPanel({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          কোর্স ব্যবস্থাপনা
+          {t('management')}
         </h3>
         <button
           onClick={() => {
@@ -240,7 +242,7 @@ export function CoursesPanel({
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
-          নতুন কোর্স
+          {t('newCourse')}
         </button>
       </div>
 
@@ -251,7 +253,7 @@ export function CoursesPanel({
         filters={[
           {
             name: 'category',
-            label: 'ক্যাটাগরি',
+            label: t('categoryFilter'),
             type: 'select',
             value: categoryFilter === 'all' ? '' : categoryFilter,
             onChange: (v) => setCategoryFilter((v || 'all') as 'all' | 'icon' | 'isc'),
@@ -271,7 +273,7 @@ export function CoursesPanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'কোর্স সম্পাদনা' : 'নতুন কোর্স যোগ'}
+              {editing ? t('editTitle') : t('addTitle')}
             </h4>
             <button
               onClick={() => {
@@ -292,19 +294,19 @@ export function CoursesPanel({
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  কোর্সের নাম
+                  {t('formLabels.name')}
                 </label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="যেমন: নার্সিং অ্যাডমিশন কোচিং"
+                  placeholder={t('formLabels.namePlaceholder')}
                   className={inputCls}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  কোর্স কোড
+                  {t('formLabels.code')}
                 </label>
                 <input
                   type="text"
@@ -312,13 +314,13 @@ export function CoursesPanel({
                   onChange={(e) =>
                     setForm({ ...form, courseCode: e.target.value })
                   }
-                  placeholder="যেমন: NAC-2025"
+                  placeholder={t('formLabels.codePlaceholder')}
                   className={inputCls}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ক্যাটাগরি
+                  {t('formLabels.category')}
                 </label>
                 <select
                   value={form.category}
@@ -336,20 +338,20 @@ export function CoursesPanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  স্লাগ (URL)
+                  {t('formLabels.slug')}
                 </label>
                 <input
                   type="text"
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  placeholder="যেমন: nursing-admission"
+                  placeholder={t('formLabels.slugPlaceholder')}
                   className={inputCls}
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                ছবি
+                {t('formLabels.image')}
               </label>
               <div className="mt-1 flex items-center gap-3">
                 <input
@@ -370,13 +372,13 @@ export function CoursesPanel({
                   ) : (
                     <Upload className="size-3.5" />
                   )}
-                  {uploading ? 'আপলোড হচ্ছে...' : 'ছবি আপলোড'}
+                  {uploading ? t('formLabels.uploading') : t('formLabels.uploadImage')}
                 </button>
                 <input
                   type="url"
                   value={form.image}
                   onChange={(e) => setForm({ ...form, image: e.target.value })}
-                  placeholder="অথবা URL পেস্ট করুন"
+                  placeholder={t('formLabels.imageOrUrl')}
                   className={inputCls}
                 />
               </div>
@@ -392,14 +394,14 @@ export function CoursesPanel({
                     onClick={() => setForm({ ...form, image: '' })}
                     className="text-xs text-destructive hover:underline"
                   >
-                    মুছুন
+                    {t('formLabels.remove')}
                   </button>
                 </div>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                সংক্ষিপ্ত বিবরণ
+                {t('formLabels.shortDescription')}
               </label>
               <input
                 type="text"
@@ -407,13 +409,13 @@ export function CoursesPanel({
                 onChange={(e) =>
                   setForm({ ...form, shortDescription: e.target.value })
                 }
-                placeholder="কোর্স সম্পর্কে সংক্ষিপ্ত"
+                placeholder={t('formLabels.shortDescriptionPlaceholder')}
                 className={inputCls}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                বিস্তারিত বিবরণ
+                {t('formLabels.description')}
               </label>
               <textarea
                 value={form.description}
@@ -421,14 +423,14 @@ export function CoursesPanel({
                   setForm({ ...form, description: e.target.value })
                 }
                 rows={3}
-                placeholder="কোর্সের বিস্তারিত বিবরণ"
+                placeholder={t('formLabels.descriptionPlaceholder')}
                 className={inputCls}
               />
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সময়কাল
+                  {t('formLabels.duration')}
                 </label>
                 <input
                   type="text"
@@ -436,13 +438,13 @@ export function CoursesPanel({
                   onChange={(e) =>
                     setForm({ ...form, duration: e.target.value })
                   }
-                  placeholder="যেমন: ১ বছর"
+                  placeholder={t('formLabels.durationPlaceholder')}
                   className={inputCls}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ফি (৳)
+                  {t('formLabels.fee')}
                 </label>
                 <input
                   type="number"
@@ -455,7 +457,7 @@ export function CoursesPanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ছাড়ের ফি (৳)
+                  {t('formLabels.discountFee')}
                 </label>
                 <input
                   type="number"
@@ -470,7 +472,7 @@ export function CoursesPanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সর্বোচ্চ আসন
+                  {t('formLabels.maxStudents')}
                 </label>
                 <input
                   type="number"
@@ -483,7 +485,7 @@ export function CoursesPanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সময়সূচি
+                  {t('formLabels.schedule')}
                 </label>
                 <input
                   type="text"
@@ -491,7 +493,7 @@ export function CoursesPanel({
                   onChange={(e) =>
                     setForm({ ...form, schedule: e.target.value })
                   }
-                  placeholder="যেমন: শনি-বৃহ ৬:০০-৮:০০"
+                  placeholder={t('formLabels.schedulePlaceholder')}
                   className={inputCls}
                 />
               </div>
@@ -506,7 +508,7 @@ export function CoursesPanel({
               ) : (
                 <Save className="size-4" />
               )}
-              {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+              {editing ? t('updateButton') : t('newCourse')}
             </button>
           </div>
         </div>
@@ -514,8 +516,8 @@ export function CoursesPanel({
 
       {filteredCourses.length === 0 ? (
         <EmptyState
-          title="কোনো কোর্স পাওয়া যায়নি"
-          description="নতুন কোর্স যোগ করুন অথবা ফিল্টার পরিবর্তন করুন"
+          title={t('emptyState')}
+          description={t('emptyHint')}
         />
       ) : (
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
@@ -524,28 +526,28 @@ export function CoursesPanel({
               <thead>
                 <tr className="border-b border-border bg-secondary/30">
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    কোর্স
+                    {t('tableHeaders.course')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    ছবি
+                    {t('tableHeaders.image')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    কোড
+                    {t('tableHeaders.code')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    সময়কাল
+                    {t('tableHeaders.duration')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    ফি
+                    {t('tableHeaders.fee')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    ছাড়
+                    {t('tableHeaders.discount')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    শিক্ষার্থী
+                    {t('tableHeaders.students')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    অবস্থা
+                    {t('tableHeaders.status')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
                 </tr>
@@ -572,7 +574,7 @@ export function CoursesPanel({
                           className="mx-auto h-10 w-16 rounded object-cover border border-border"
                         />
                       ) : (
-                        <span className="text-xs text-muted-foreground">নেই</span>
+                        <span className="text-xs text-muted-foreground">{t('noImage')}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
@@ -595,7 +597,7 @@ export function CoursesPanel({
                         onClick={() => toggleActive(c)}
                         className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${c.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
                       >
-                        {c.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                        {c.isActive ? t('statusActive') : t('statusInactive')}
                       </button>
                     </td>
                     <td className="px-4 py-3 text-center">

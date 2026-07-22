@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Loader2, Image, FileText } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { MediaFile } from './types'
 import { useToast } from '@/components/ui/toast'
 
@@ -12,6 +13,7 @@ export function MediaPanel({
   mediaFiles: MediaFile[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.media')
   const {
     success: toastSuccess,
     error: toastError,
@@ -26,7 +28,7 @@ export function MediaPanel({
 
   async function handleUpload() {
     if (!file) {
-      setError('অনুগ্রহ করে একটি ফাইল নির্বাচন করুন')
+      setError(t('uploadFailed'))
       return
     }
 
@@ -47,10 +49,10 @@ export function MediaPanel({
 
       const result = await response.json()
       if (!response.ok) {
-        throw new Error(result.error || 'ফাইল আপলোড ব্যর্থ হয়েছে')
+        throw new Error(result.error || t('uploadFailed'))
       }
 
-      setStatus('মিডিয়া ফাইল সফলভাবে আপলোড হয়েছে')
+      setStatus(t('uploadSuccess'))
       setFile(null)
       setAltText('')
       setDescription('')
@@ -60,7 +62,7 @@ export function MediaPanel({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : 'ফাইল আপলোড ব্যর্থ হয়েছে',
+          : t('uploadFailed'),
       )
     } finally {
       setUploading(false)
@@ -68,7 +70,7 @@ export function MediaPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await toastConfirm('আপনি কি নিশ্চিত যে এই মিডিয়া ফাইল মুছতে চান?')))
+    if (!(await toastConfirm(t('deleteConfirm'))))
       return
 
     try {
@@ -76,17 +78,17 @@ export function MediaPanel({
       if (!response.ok) {
         const result = await response
           .json()
-          .catch(() => ({ error: 'মুছা যায়নি' }))
-        throw new Error(result.error || 'মুছা যায়নি')
+          .catch(() => ({ error: t('deleteFailed') }))
+        throw new Error(result.error || t('deleteFailed'))
       }
       onRefresh()
-      toastSuccess('মিডিয়া ফাইল মুছে ফেলা হয়েছে')
+      toastSuccess(t('deleteSuccess'))
     } catch (deleteError) {
       console.error('Delete failed:', deleteError)
       const msg =
         deleteError instanceof Error
           ? deleteError.message
-          : 'মুছতে ব্যর্থ হয়েছে'
+          : t('deleteFailed')
       setError(msg)
       toastError(msg)
     }
@@ -97,10 +99,10 @@ export function MediaPanel({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-heading text-lg font-bold text-foreground">
-            মিডিয়া লাইব্রেরি
+            {t('title')}
           </h3>
           <p className="text-sm text-muted-foreground">
-            ছবি ও PDF আপলোড করুন, পরে সেগুলি সাইটে ব্যবহার করুন।
+            {t('subtitle')}
           </p>
         </div>
       </div>
@@ -110,31 +112,31 @@ export function MediaPanel({
           <div className="md:col-span-2 space-y-3">
             <div>
               <label className="block text-sm font-medium text-foreground">
-                ALT টেক্সট
+                {t('altTextLabel')}
               </label>
               <input
                 type="text"
                 value={altText}
                 onChange={(e) => setAltText(e.target.value)}
-                placeholder="বিকল্প টেক্সট (ঐচ্ছিক)"
+                placeholder={t('altTextPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                বিবরণ
+                {t('descriptionLabel')}
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                placeholder="মিডিয়া ফাইলের সংক্ষিপ্ত বিবরণ (ঐচ্ছিক)"
+                placeholder={t('descriptionPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                ফাইল
+                {t('fileLabel')}
               </label>
               <input
                 type="file"
@@ -147,13 +149,13 @@ export function MediaPanel({
 
           <div className="space-y-3 rounded-2xl border border-border bg-muted p-4">
             <div className="text-sm font-semibold text-foreground">
-              আপলোড নির্দেশনা
+              {t('uploadInstructions')}
             </div>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>সমর্থিত ফাইল টাইপ: JPG, PNG, WEBP, GIF, PDF</li>
-              <li>সর্বোচ্চ সাইজ: 5MB</li>
+              <li>{t('acceptedTypes')}</li>
+              <li>{t('maxSize')}</li>
               <li>
-                আপলোড করার পর ফাইলটি public/media থেকে সরাসরি অ্যাক্সেসible হবে
+                {t('accessNote')}
               </li>
             </ul>
             <button
@@ -166,7 +168,7 @@ export function MediaPanel({
               ) : (
                 <Plus className="size-4" />
               )}
-              আপলোড করুন
+              {uploading ? t('uploading') : t('uploadBtn')}
             </button>
             {error && (
               <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -184,7 +186,7 @@ export function MediaPanel({
 
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <h4 className="font-heading mb-4 text-base font-semibold text-foreground">
-          মিডিয়া ফাইলসমূহ
+          {t('filesTitle')}
         </h4>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {mediaFiles.map((media) => (
@@ -232,13 +234,13 @@ export function MediaPanel({
                     rel="noreferrer"
                     className="text-xs text-brand underline"
                   >
-                    দেখুন
+                    {t('viewLink')}
                   </a>
                   <button
                     onClick={() => handleDelete(media.id)}
                     className="inline-flex items-center gap-1 rounded-lg border border-destructive px-3 py-1 text-xs font-semibold text-destructive hover:bg-destructive/10"
                   >
-                    <Trash2 className="size-4" /> মুছুন
+                    <Trash2 className="size-4" /> {t('deleteBtn')}
                   </button>
                 </div>
               </div>
@@ -246,7 +248,7 @@ export function MediaPanel({
           ))}
           {mediaFiles.length === 0 && (
             <div className="col-span-full rounded-2xl border border-border bg-background p-6 text-center text-muted-foreground">
-              এখনো কোনো মিডিয়া ফাইল যোগ করা হয়নি।
+              {t('noMedia')}
             </div>
           )}
         </div>

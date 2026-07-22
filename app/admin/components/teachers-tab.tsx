@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { Teacher } from './types'
 import { useToast } from '@/components/ui/toast'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -13,6 +14,7 @@ export function TeachersPanel({
   teachers: Teacher[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.teachers')
   const { success, error, confirm } = useToast()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Teacher | null>(null)
@@ -67,16 +69,16 @@ export function TeachersPanel({
         setEditing(null)
         resetForm()
       } else {
-        const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
+        const err = await res.json().catch(() => ({ error: t('saveFailed') }))
         const msg = err.details
           ? Object.values(err.details).flat().join(', ')
-          : err.error || 'সংরক্ষণ ব্যর্থ'
+          : err.error || t('saveFailed')
         setFormError(msg)
         error(msg)
       }
     } catch (saveError) {
-      setFormError('সংরক্ষণ ব্যর্থ')
-      error('সংরক্ষণ ব্যর্থ')
+      setFormError(t('saveFailed'))
+      error(t('saveFailed'))
       console.error('Failed to save teacher:', saveError)
     } finally {
       setSaving(false)
@@ -84,11 +86,11 @@ export function TeachersPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await confirm('আপনি কি নিশ্চিত এই শিক্ষক মুছে ফেলতে চান?'))) return
+    if (!(await confirm(t('deleteConfirm')))) return
     try {
       await fetch(`/api/teachers/${id}`, { method: 'DELETE' })
       onRefresh()
-      success('শিক্ষক মুছে ফেলা হয়েছে')
+      success(t('deleted'))
     } catch (deleteError) {
       console.error('Failed to delete teacher:', deleteError)
     }
@@ -121,7 +123,7 @@ export function TeachersPanel({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          শিক্ষক ব্যবস্থাপনা
+          {t('title')}
         </h3>
         <button
           onClick={() => {
@@ -132,7 +134,7 @@ export function TeachersPanel({
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
-          নতুন শিক্ষক
+          {t('newTeacher')}
         </button>
       </div>
 
@@ -140,7 +142,7 @@ export function TeachersPanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'শিক্ষক সম্পাদনা' : 'নতুন শিক্ষক যোগ'}
+              {editing ? t('editTitle') : t('addTitle')}
             </h4>
             <button
               onClick={() => {
@@ -161,19 +163,19 @@ export function TeachersPanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  নাম
+                  {t('nameLabel')}
                 </label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="যেমন: জনাব রহমান"
+                  placeholder={t('namePlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  পদবি
+                  {t('designationLabel')}
                 </label>
                 <input
                   type="text"
@@ -181,13 +183,13 @@ export function TeachersPanel({
                   onChange={(e) =>
                     setForm({ ...form, designation: e.target.value })
                   }
-                  placeholder="যেমন: সিনিয়র লেকচারার"
+                  placeholder={t('designationPlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  বিষয়
+                  {t('subjectLabel')}
                 </label>
                 <input
                   type="text"
@@ -195,56 +197,56 @@ export function TeachersPanel({
                   onChange={(e) =>
                     setForm({ ...form, subject: e.target.value })
                   }
-                  placeholder="যেমন: জীববিজ্ঞান"
+                  placeholder={t('subjectPlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ফোন
+                  {t('phoneLabel')}
                 </label>
                 <input
                   type="text"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  placeholder="01XXXXXXXXX"
+                  placeholder={t('phonePlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ইমেইল
+                  {t('emailLabel')}
                 </label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="teacher@example.com"
+                  placeholder={t('emailPlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ছবি (URL)
+                  {t('imageLabel')}
                 </label>
                 <input
                   type="text"
                   value={form.image}
                   onChange={(e) => setForm({ ...form, image: e.target.value })}
-                  placeholder="https://..."
+                  placeholder={t('imagePlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                বিবরণ
+                {t('bioLabel')}
               </label>
               <textarea
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 rows={3}
-                placeholder="শিক্ষকের সংক্ষিপ্ত পরিচিতি"
+                placeholder={t('bioPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
@@ -258,7 +260,7 @@ export function TeachersPanel({
               ) : (
                 <Save className="size-4" />
               )}
-              {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+              {editing ? t('updateBtn') : t('saveBtn')}
             </button>
           </div>
         </div>
@@ -266,8 +268,8 @@ export function TeachersPanel({
 
       {teachers.length === 0 ? (
         <EmptyState
-          title="কোনো শিক্ষক নেই"
-          description="এখনো কোনো শিক্ষক যোগ করা হয়নি।"
+          title={t('emptyTitle')}
+          description={t('emptyDescription')}
         />
       ) : (
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
@@ -276,59 +278,59 @@ export function TeachersPanel({
               <thead>
                 <tr className="border-b border-border bg-secondary/30">
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    নাম
+                    {t('tableHeaders.name')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    পদবি
+                    {t('tableHeaders.designation')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    বিষয়
+                    {t('tableHeaders.subject')}
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-foreground">
-                    ফোন
+                    {t('tableHeaders.phone')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground">
-                    অবস্থা
+                    {t('tableHeaders.status')}
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
                 </tr>
               </thead>
               <tbody>
-                {teachers.map((t) => (
+                {teachers.map((teacher) => (
                   <tr
-                    key={t.id}
+                    key={teacher.id}
                     className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
                   >
                     <td className="px-4 py-3 font-medium text-foreground">
-                      {t.name}
+                      {teacher.name}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {t.designation || '—'}
+                      {teacher.designation || '—'}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {t.subject || '—'}
+                      {teacher.subject || '—'}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {t.phone || '—'}
+                      {teacher.phone || '—'}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
-                        onClick={() => toggleActive(t)}
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${t.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
+                        onClick={() => toggleActive(teacher)}
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${teacher.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
                       >
-                        {t.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                        {teacher.isActive ? t('statusActive') : t('statusInactive')}
                       </button>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <button
-                          onClick={() => handleEdit(t)}
+                          onClick={() => handleEdit(teacher)}
                           className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
                         >
                           <Pencil className="size-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(t.id)}
+                          onClick={() => handleDelete(teacher.id)}
                           className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                         >
                           <Trash2 className="size-4" />

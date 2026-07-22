@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Loader2,
   Save,
@@ -140,6 +141,7 @@ function TextInput({
 }
 
 export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
+  const t = useTranslations('admin.settings')
   const [form, setForm] = useState<FormState>(defaultForm)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -176,7 +178,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           })
         }
       } catch {
-        setMessage('লোড করতে ব্যর্থ হয়েছে')
+        setMessage(t('loadFailed'))
         setMessageType('error')
       } finally {
         setLoading(false)
@@ -200,12 +202,12 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('altText', 'সাইট লোগো')
+      formData.append('altText', t('logoAlt'))
 
       const res = await fetch('/api/media', { method: 'POST', body: formData })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
-        throw new Error(err.error || 'আপলোড ব্যর্থ')
+        throw new Error(err.error || t('logoUploadFailed'))
       }
 
       const media = await res.json()
@@ -215,12 +217,10 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
       setCurrentMediaId(media.id)
 
       updateSite('logo', media.url)
-      setMessage(
-        'লোগো আপলোড হয়েছে - সংরক্ষণ করতে "সংরক্ষণ করুন" বাটনে ক্লিক করুন',
-      )
+      setMessage(t('logoUploadSuccess'))
       setMessageType('success')
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'আপলোড ব্যর্থ')
+      setMessage(error instanceof Error ? error.message : t('logoUploadFailed'))
       setMessageType('error')
     } finally {
       setUploading(false)
@@ -271,10 +271,10 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           }
         }
 
-        throw new Error(errorData.error || 'সংরক্ষণ ব্যর্থ')
+        throw new Error(errorData.error || t('saveFailed'))
       }
 
-      setMessage('সেটিংস সফলভাবে সংরক্ষিত হয়েছে')
+      setMessage(t('settingsUpdated'))
       setMessageType('success')
 
       // Clear rollback state on successful save
@@ -283,7 +283,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
 
       onRefresh()
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'সংরক্ষণ ব্যর্থ')
+      setMessage(error instanceof Error ? error.message : t('saveFailed'))
       setMessageType('error')
     } finally {
       setSaving(false)
@@ -307,10 +307,10 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
     <div className="space-y-4">
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          সাইট সেটিংস
+          {t('siteSettings')}
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          সাইটের নাম, লোগো, যোগাযোগ ও সোশ্যাল লিংক কনফিগার করুন
+          {t('siteSettingsDescription')}
         </p>
       </div>
 
@@ -330,19 +330,19 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         {/* Logo + Site Name */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
           <h4 className="font-heading font-semibold text-foreground">
-            সাইট পরিচিতি
+            {t('siteIdentity')}
           </h4>
 
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">
-              লোগো
+              {t('logoLabel')}
             </label>
             <div className="flex items-center gap-4">
               <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-muted flex items-center justify-center">
                 {form.site.logo ? (
                   <img
                     src={form.site.logo}
-                    alt="লোগো"
+                    alt={t('logoAlt')}
                     className="size-full object-contain"
                   />
                 ) : (
@@ -368,7 +368,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                   ) : (
                     <Upload className="size-3.5" />
                   )}
-                  {uploading ? 'আপলোড হচ্ছে...' : 'লোগো আপলোড'}
+                  {uploading ? t('logoUploading') : t('logoUpload')}
                 </button>
                 {form.site.logo && (
                   <button
@@ -377,14 +377,14 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                     className="ml-2 inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
                   >
                     <X className="size-3.5" />
-                    সরান
+                    {t('logoRemove')}
                   </button>
                 )}
               </div>
             </div>
           </div>
 
-          <Field label="সাইটের নাম (বাংলা)">
+          <Field label={t('siteNameBn')}>
             <TextInput
               value={form.site.nameBn}
               onChange={(v) => updateSite('nameBn', v)}
@@ -392,7 +392,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             />
           </Field>
 
-          <Field label="সাইটের নাম (English)">
+          <Field label={t('siteNameEn')}>
             <TextInput
               value={form.site.nameEn}
               onChange={(v) => updateSite('nameEn', v)}
@@ -400,27 +400,27 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             />
           </Field>
 
-          <Field label="ট্যাগলাইন">
+          <Field label={t('tagline')}>
             <TextInput
               value={form.site.tagline}
               onChange={(v) => updateSite('tagline', v)}
-              placeholder="সাফল্যের জন্য প্রস্তুতি"
+              placeholder={t('taglinePlaceholder')}
             />
           </Field>
 
-          <Field label="শহর">
+          <Field label={t('city')}>
             <TextInput
               value={form.site.city}
               onChange={(v) => updateSite('city', v)}
-              placeholder="খুলনা"
+              placeholder={t('cityPlaceholder')}
             />
           </Field>
 
-          <Field label="পূর্ণ ঠিকানা">
+          <Field label={t('fullAddress')}>
             <textarea
               value={form.site.addressBn}
               onChange={(e) => updateSite('addressBn', e.target.value)}
-              placeholder="কলাবাগান মোড়, খুলনা মেডিকেল কলেজ হাসপাতালের সামনে, খুলনা।"
+              placeholder={t('fullAddressPlaceholder')}
               rows={2}
               className={inputClass + ' resize-none'}
             />
@@ -430,18 +430,18 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         {/* Contact Info */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
           <h4 className="font-heading font-semibold text-foreground">
-            যোগাযোগ
+            {t('contactSection')}
           </h4>
 
-          <Field label="ফোন নম্বর">
+          <Field label={t('phoneLabel')}>
             <TextInput
               value={form.site.phone}
               onChange={(v) => updateSite('phone', v)}
-              placeholder="01784-176442"
+              placeholder={t('contactPhone')}
             />
           </Field>
 
-          <Field label="ফোন লিংক (href)">
+          <Field label={t('phoneHrefLabel')}>
             <TextInput
               value={form.site.phoneHref}
               onChange={(v) => updateSite('phoneHref', v)}
@@ -449,16 +449,16 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             />
           </Field>
 
-          <Field label="ইমেইল">
+          <Field label={t('emailLabel')}>
             <TextInput
               value={form.site.email}
               onChange={(v) => updateSite('email', v)}
-              placeholder="info@iscexpo.edu.bd"
+              placeholder={t('contactEmail')}
             />
           </Field>
 
           <h4 className="font-heading font-semibold text-foreground pt-2">
-            সোশ্যাল লিংক
+            {t('socialLinks')}
           </h4>
 
           <Field label="WhatsApp">
@@ -497,9 +497,9 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         {/* SMS Config */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
           <h4 className="font-heading font-semibold text-foreground">
-            SMS কনফিগারেশন
+            {t('smsConfig')}
           </h4>
-          <Field label="প্রোভাইডার">
+          <Field label={t('smsProvider')}>
             <select
               value={form.smsProvider}
               onChange={(e) =>
@@ -507,7 +507,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               }
               className={selectClass}
             >
-              <option value="none">বন্ধ</option>
+              <option value="none">{t('smsOff')}</option>
               <option value="grameenphone">Grameenphone Bulk SMS</option>
               <option value="sasbulksms">SAS Bulk SMS</option>
               <option value="shiram">Shiram System SMS</option>
@@ -516,14 +516,14 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           </Field>
           {form.smsProvider === 'shiram' ? (
             <>
-              <Field label="ইমেইল">
+              <Field label={t('smsEmailLabel')}>
                 <TextInput
                   value={form.smsEmail}
                   onChange={(v) => setForm({ ...form, smsEmail: v })}
                   placeholder="example@shiramsystem.com"
                 />
               </Field>
-              <Field label="API পাসওয়ার্ড">
+              <Field label={t('smsPasswordLabel')}>
                 <input
                   type="password"
                   value={form.smsPassword}
@@ -537,7 +537,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             </>
           ) : (
             <>
-              <Field label="API Key">
+              <Field label={t('smsApiKeyLabel')}>
                 <TextInput
                   value={form.smsApiKey}
                   onChange={(v) => setForm({ ...form, smsApiKey: v })}
@@ -545,7 +545,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               </Field>
             </>
           )}
-          <Field label="Sender ID / Mask">
+          <Field label={t('smsSenderIdLabel')}>
             <TextInput
               value={form.smsSenderId}
               onChange={(v) => setForm({ ...form, smsSenderId: v })}
@@ -557,9 +557,9 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         {/* Payment Gateway */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
           <h4 className="font-heading font-semibold text-foreground">
-            পেমেন্ট গেটওয়ে
+            {t('paymentGateway')}
           </h4>
-          <Field label="গেটওয়ে">
+          <Field label={t('gatewayLabel')}>
             <select
               value={form.paymentGateway}
               onChange={(e) =>
@@ -567,24 +567,24 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               }
               className={selectClass}
             >
-              <option value="none">বন্ধ</option>
+              <option value="none">{t('gatewayOff')}</option>
               <option value="sslcommerz">SSLCommerz</option>
               <option value="stripe">Stripe</option>
             </select>
           </Field>
-          <Field label="API Key">
+          <Field label={t('apiKeyLabel')}>
             <TextInput
               value={form.paymentGatewayApiKey}
               onChange={(v) => setForm({ ...form, paymentGatewayApiKey: v })}
             />
           </Field>
-          <Field label="Secret">
+          <Field label={t('secretLabel')}>
             <TextInput
               value={form.paymentGatewaySecret}
               onChange={(v) => setForm({ ...form, paymentGatewaySecret: v })}
             />
           </Field>
-          <Field label="Webhook Secret">
+          <Field label={t('webhookSecretLabel')}>
             <TextInput
               value={form.paymentGatewayWebhookSecret}
               onChange={(v) =>
@@ -599,14 +599,14 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
         <div>
           <h4 className="font-heading font-semibold text-foreground">
-            হিরো সেকশন
+            {t('heroSection')}
           </h4>
           <p className="mt-1 text-sm text-muted-foreground">
-            হোমপেজের শীর্ষে প্রদর্শিত প্রধান ব্যানার কনটেন্ট
+            {t('heroDescription')}
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="আইব্রো (ছোট শিরোনাম)">
+          <Field label={t('heroEyebrow')}>
             <TextInput
               value={form.hero.eyebrow}
               onChange={(v) =>
@@ -618,7 +618,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               placeholder="BNMC ভর্তি পরীক্ষার সম্পূর্ণ প্রস্তুতি"
             />
           </Field>
-          <Field label="শিরোনাম">
+          <Field label={t('heroTitle')}>
             <TextInput
               value={form.hero.title}
               onChange={(v) =>
@@ -631,7 +631,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             />
           </Field>
         </div>
-        <Field label="বিবরণ">
+        <Field label={t('heroDescriptionLabel')}>
           <textarea
             value={form.hero.subtitle}
             onChange={(e) =>
@@ -646,7 +646,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
           />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="প্রাথমিক বোতাম টেক্সট">
+          <Field label={t('heroPrimaryCta')}>
             <TextInput
               value={form.hero.primaryCta}
               onChange={(v) =>
@@ -658,7 +658,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               placeholder="ভর্তি হোন"
             />
           </Field>
-          <Field label="সেকেন্ডারি বোতাম টেক্সট">
+          <Field label={t('heroSecondaryCta')}>
             <TextInput
               value={form.hero.secondaryCta}
               onChange={(v) =>
@@ -678,10 +678,10 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-heading font-semibold text-foreground">
-              কেন ISC Expo?
+              {t('whyIscSection')}
             </h4>
             <p className="mt-1 text-sm text-muted-foreground">
-              হোমপেজে প্রদর্শিত "কেন ISC Expo?" কার্ড পরিচালনা করুন
+              {t('whyIscDescription')}
             </p>
           </div>
           <button
@@ -694,13 +694,13 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             }
             className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 transition-colors"
           >
-            <Plus className="size-4" /> নতুন যোগ করুন
+            <Plus className="size-4" /> {t('addNew')}
           </button>
         </div>
 
         {form.whyCornia.length === 0 && (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            কোনো কার্ড নেই। উপরের বোতামে ক্লিক করে যোগ করুন।
+            {t('whyIscEmpty')}
           </p>
         )}
 
@@ -714,7 +714,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                 <div className="flex items-center gap-2">
                   <GripVertical className="size-4 text-muted-foreground" />
                   <span className="text-xs font-medium text-muted-foreground">
-                    কার্ড {index + 1}
+                    {t('whyIscCard')} {index + 1}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -732,7 +732,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         })
                       }
                       className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-                      title="উপরে সরান"
+                      title={t('moveUp')}
                     >
                       <svg
                         className="size-3.5"
@@ -759,7 +759,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         })
                       }
                       className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-                      title="নিচে সরান"
+                      title={t('moveDown')}
                     >
                       <svg
                         className="size-3.5"
@@ -788,7 +788,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  শিরোনাম
+                  {t('whyIscTitleLabel')}
                 </label>
                 <input
                   type="text"
@@ -800,13 +800,13 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                       return { ...prev, whyCornia: arr }
                     })
                   }
-                  placeholder="শিরোনাম লিখুন"
+                  placeholder={t('whyIscTitlePlaceholder')}
                   className={inputClass}
                 />
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  বিবরণ
+                  {t('whyIscDescLabel')}
                 </label>
                 <textarea
                   value={item.description}
@@ -820,7 +820,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                       return { ...prev, whyCornia: arr }
                     })
                   }
-                  placeholder="বিবরণ লিখুন"
+                  placeholder={t('whyIscDescPlaceholder')}
                   rows={2}
                   className={inputClass + ' resize-none'}
                 />
@@ -835,10 +835,10 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-heading font-semibold text-foreground">
-              পরিসংখ্যান (Counters)
+              {t('counterSection')}
             </h4>
             <p className="mt-1 text-sm text-muted-foreground">
-              হোমপেজে প্রদর্শিত পরিসংখ্যান সংখ্যা পরিচালনা করুন
+              {t('counterDescription')}
             </p>
           </div>
           <button
@@ -851,13 +851,13 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             }
             className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 transition-colors"
           >
-            <Plus className="size-4" /> নতুন যোগ করুন
+            <Plus className="size-4" /> {t('addNew')}
           </button>
         </div>
 
         {form.counters.length === 0 && (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            কোনো পরিসংখ্যান নেই। উপরের বোতামে ক্লিক করে যোগ করুন।
+            {t('counterEmpty')}
           </p>
         )}
 
@@ -869,7 +869,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground">
-                  পরিসংখ্যান {index + 1}
+                  {t('counterItem')} {index + 1}
                 </span>
                 <div className="flex items-center gap-1">
                   {index > 0 && (
@@ -886,7 +886,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         })
                       }
                       className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-                      title="উপরে সরান"
+                      title={t('moveUp')}
                     >
                       <svg
                         className="size-3.5"
@@ -913,7 +913,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         })
                       }
                       className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-                      title="নিচে সরান"
+                      title={t('moveDown')}
                     >
                       <svg
                         className="size-3.5"
@@ -943,7 +943,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-1">
-                    মান
+                    {t('counterValueLabel')}
                   </label>
                   <input
                     type="text"
@@ -955,13 +955,13 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         return { ...prev, counters: arr }
                       })
                     }
-                    placeholder="৫০০০+"
+                    placeholder={t('counterValuePlaceholder')}
                     className={inputClass}
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-1">
-                    লেবেল
+                    {t('counterLabelLabel')}
                   </label>
                   <input
                     type="text"
@@ -973,7 +973,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         return { ...prev, counters: arr }
                       })
                     }
-                    placeholder="শিক্ষার্থী"
+                    placeholder={t('counterLabelPlaceholder')}
                     className={inputClass}
                   />
                 </div>
@@ -988,10 +988,10 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-heading font-semibold text-foreground">
-              সাধারণ জিজ্ঞাসা (FAQ)
+              {t('faqSection')}
             </h4>
             <p className="mt-1 text-sm text-muted-foreground">
-              হোমপেজে প্রদর্শিত প্রশ্নোত্তর পরিচালনা করুন
+              {t('faqDescription')}
             </p>
           </div>
           <button
@@ -1004,13 +1004,13 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
             }
             className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 transition-colors"
           >
-            <Plus className="size-4" /> নতুন যোগ করুন
+            <Plus className="size-4" /> {t('addNew')}
           </button>
         </div>
 
         {form.faqs.length === 0 && (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            কোনো FAQ নেই। উপরের বোতামে ক্লিক করে যোগ করুন।
+            {t('faqEmpty')}
           </p>
         )}
 
@@ -1024,7 +1024,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                 <div className="flex items-center gap-2">
                   <GripVertical className="size-4 text-muted-foreground" />
                   <span className="text-xs font-medium text-muted-foreground">
-                    প্রশ্ন {index + 1}
+                    {t('faqQuestion')} {index + 1}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -1042,7 +1042,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         })
                       }
                       className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-                      title="উপরে সরান"
+                      title={t('moveUp')}
                     >
                       <svg
                         className="size-3.5"
@@ -1069,7 +1069,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                         })
                       }
                       className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-                      title="নিচে সরান"
+                      title={t('moveDown')}
                     >
                       <svg
                         className="size-3.5"
@@ -1098,7 +1098,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  প্রশ্ন
+                  {t('faqQuestionLabel')}
                 </label>
                 <input
                   type="text"
@@ -1110,13 +1110,13 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                       return { ...prev, faqs }
                     })
                   }
-                  placeholder="প্রশ্ন লিখুন"
+                  placeholder={t('faqQuestionPlaceholder')}
                   className={inputClass}
                 />
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  উত্তর
+                  {t('faqAnswerLabel')}
                 </label>
                 <textarea
                   value={faq.answer}
@@ -1127,7 +1127,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
                       return { ...prev, faqs }
                     })
                   }
-                  placeholder="উত্তর লিখুন"
+                  placeholder={t('faqAnswerPlaceholder')}
                   rows={3}
                   className={inputClass + ' resize-none'}
                 />
@@ -1147,7 +1147,7 @@ export function SettingsPanel({ onRefresh }: { onRefresh: () => void }) {
         ) : (
           <Save className="size-4" />
         )}
-        সংরক্ষণ করুন
+        {t('saveSuccess')}
       </button>
     </div>
   )

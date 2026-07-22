@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   CheckCircle2,
   UserCog,
@@ -27,19 +28,21 @@ type EducationData = {
   board: string
   photoUrl: string
 }
-const BOARDS = [
-  'বোর্ড নির্বাচন করুন',
-  'ঢাকা বোর্ড',
-  'রাজশাহী বোর্ড',
-  'চট্টগ্রাম বোর্ড',
-  'যশোর বোর্ড',
-  'বরিশাল বোর্ড',
-  'সিলেট বোর্ড',
-  'রংপুর বোর্ড',
-  'ময়মনসিংহ বোর্ড',
-  'দিনাজপুর বোর্ড',
-  'কুমিল্লা বোর্ড',
-]
+
+const BOARD_KEYS = [
+  'boards.select',
+  'boards.dhaka',
+  'boards.rajshahi',
+  'boards.chattogram',
+  'boards.jessore',
+  'boards.barisal',
+  'boards.sylhet',
+  'boards.rangpur',
+  'boards.mymensingh',
+  'boards.dinajpur',
+  'boards.comilla',
+] as const
+
 const inputCls =
   'w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand'
 
@@ -47,12 +50,21 @@ function EduEditSection({
   label,
   value,
   onChange,
+  t,
+  tBoard,
 }: {
   label: string
   value: EducationData
   onChange: (v: EducationData) => void
+  t: (key: string) => string
+  tBoard: (key: string) => string
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const boardOptions = useMemo(
+    () => BOARD_KEYS.map((k) => ({ key: k, label: tBoard(k) })),
+    [tBoard],
+  )
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -76,19 +88,19 @@ function EduEditSection({
       <div className="grid gap-2 sm:grid-cols-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            ফলাফল
+            {t('resultLabel')}
           </label>
           <input
             type="text"
             value={value.result}
             onChange={(e) => onChange({ ...value, result: e.target.value })}
-            placeholder="যেমন: GPA 5.00"
+            placeholder={t('gpaPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            প্রতিষ্ঠান
+            {t('institutionFieldLabel')}
           </label>
           <input
             type="text"
@@ -96,20 +108,20 @@ function EduEditSection({
             onChange={(e) =>
               onChange({ ...value, institution: e.target.value })
             }
-            placeholder="কলেজ/বিশ্ববিদ্যালয়"
+            placeholder={t('institutionPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            সাল
+            {t('yearLabel')}
           </label>
           <select
             value={value.year}
             onChange={(e) => onChange({ ...value, year: e.target.value })}
             className={inputCls}
           >
-            <option value="">বছর নির্বাচন</option>
+            <option value="">{t('yearSelectPlaceholder')}</option>
             {Array.from({ length: 27 }, (_, i) => 2026 - i).map((y) => (
               <option key={y} value={String(y)}>
                 {y}
@@ -121,19 +133,19 @@ function EduEditSection({
       <div className="grid gap-2 sm:grid-cols-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            রোল নম্বর
+            {t('rollFieldLabel')}
           </label>
           <input
             type="text"
             value={value.roll}
             onChange={(e) => onChange({ ...value, roll: e.target.value })}
-            placeholder="রোল নম্বর"
+            placeholder={t('rollPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            রেজিস্ট্রেশন নম্বর
+            {t('regFieldLabel')}
           </label>
           <input
             type="text"
@@ -141,22 +153,22 @@ function EduEditSection({
             onChange={(e) =>
               onChange({ ...value, registrationNo: e.target.value })
             }
-            placeholder="রেজিস্ট্রেশন নম্বর"
+            placeholder={t('regPlaceholder')}
             className={inputCls}
           />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            বোর্ড
+            {t('boardFieldLabel')}
           </label>
           <select
             value={value.board}
             onChange={(e) => onChange({ ...value, board: e.target.value })}
             className={inputCls}
           >
-            {BOARDS.map((b, i) => (
-              <option key={b} value={i === 0 ? '' : b}>
-                {b}
+            {boardOptions.map((b, i) => (
+              <option key={b.key} value={i === 0 ? '' : b.label}>
+                {b.label}
               </option>
             ))}
           </select>
@@ -175,7 +187,7 @@ function EduEditSection({
           onClick={() => fileInputRef.current?.click()}
           className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
         >
-          <Upload className="size-3.5" /> সার্টিফিকেট ছবি আপলোড
+          <Upload className="size-3.5" /> {t('certificatePhoto')}
         </button>
         {value.photoUrl && (
           <div className="flex items-center gap-2">
@@ -189,7 +201,7 @@ function EduEditSection({
               onClick={() => onChange({ ...value, photoUrl: '' })}
               className="text-xs text-destructive hover:underline"
             >
-              মুছুন
+              {t('deletePhoto')}
             </button>
           </div>
         )}
@@ -201,18 +213,20 @@ function EduEditSection({
 function EduViewSection({
   label,
   value,
+  t,
 }: {
   label: string
   value: EducationData | null
+  t: (key: string) => string
 }) {
   if (!value) return null
   const fields = [
-    { label: 'ফলাফল', val: value.result },
-    { label: 'প্রতিষ্ঠান', val: value.institution },
-    { label: 'সাল', val: value.year },
-    { label: 'রোল', val: value.roll },
-    { label: 'রেজিস্ট্রেশন', val: value.registrationNo },
-    { label: 'বোর্ড', val: value.board },
+    { label: t('resultLabel'), val: value.result },
+    { label: t('institutionFieldLabel'), val: value.institution },
+    { label: t('yearLabel'), val: value.year },
+    { label: t('rollFieldLabel'), val: value.roll },
+    { label: t('regFieldLabel'), val: value.registrationNo },
+    { label: t('boardFieldLabel'), val: value.board },
   ].filter((f) => f.val)
   if (fields.length === 0 && !value.photoUrl) return null
   return (
@@ -229,7 +243,7 @@ function EduViewSection({
       {value.photoUrl && (
         <img
           src={value.photoUrl}
-          alt={`${label} সার্টিফিকেট`}
+          alt={`${label} certificate`}
           className="h-16 w-16 rounded object-cover border border-border"
         />
       )}
@@ -244,6 +258,8 @@ export function AccountSection({
   profile: UserProfile | null
   onRefresh: () => void
 }) {
+  const t = useTranslations('dashboard.account')
+  const tc = useTranslations('common')
   const [editing, setEditing] = useState(false)
   const [changingPassword, setChangingPassword] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -290,7 +306,7 @@ export function AccountSection({
       })
       if (res.ok) {
         setEditing(false)
-        setSuccess('প্রোফাইল আপডেট হয়েছে!')
+        setSuccess(t('profileUpdated'))
         onRefresh()
         setTimeout(() => setSuccess(''), 3000)
       }
@@ -303,11 +319,11 @@ export function AccountSection({
 
   async function handleChangePassword() {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('নতুন পাসওয়ার্ড মিলেনি!')
+      alert(t('passwordMismatch'))
       return
     }
     if (passwordData.newPassword.length < 6) {
-      alert('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে!')
+      alert(t('passwordTooShort'))
       return
     }
     setSaving(true)
@@ -327,10 +343,10 @@ export function AccountSection({
           newPassword: '',
           confirmPassword: '',
         })
-        setSuccess('পাসওয়ার্ড পরিবর্তন হয়েছে!')
+        setSuccess(t('passwordChanged'))
         setTimeout(() => setSuccess(''), 3000)
       } else {
-        alert('বর্তমান পাসওয়ার্ড ভুল!')
+        alert(t('wrongPassword'))
       }
     } catch (error) {
       console.error('Failed to change password:', error)
@@ -351,13 +367,13 @@ export function AccountSection({
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading text-base font-bold text-foreground">
-            প্রোফাইল তথ্য
+            {t('personalInfo')}
           </h3>
           <button
             onClick={() => setEditing(!editing)}
             className="text-sm font-medium text-brand hover:text-brand/80"
           >
-            {editing ? 'বাতিল' : 'সম্পাদনা'}
+            {editing ? tc('cancel') : tc('edit')}
           </button>
         </div>
 
@@ -365,7 +381,7 @@ export function AccountSection({
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">
-                নাম
+                {t('nameLabel')}
               </label>
               <input
                 type="text"
@@ -378,7 +394,7 @@ export function AccountSection({
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">
-                ইমেইল
+                {t('emailLabel')}
               </label>
               <input
                 type="email"
@@ -391,7 +407,7 @@ export function AccountSection({
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">
-                ঠিকানা
+                {tc('address')}
               </label>
               <input
                 type="text"
@@ -405,7 +421,7 @@ export function AccountSection({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  জন্ম তারিখ
+                  {t('dobLabel')}
                 </label>
                 <input
                   type="date"
@@ -418,7 +434,7 @@ export function AccountSection({
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  প্রতিষ্ঠান
+                  {t('institutionLabel')}
                 </label>
                 <input
                   type="text"
@@ -433,7 +449,7 @@ export function AccountSection({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  অভিভাবকের নাম
+                  {t('guardianNameLabel')}
                 </label>
                 <input
                   type="text"
@@ -446,7 +462,7 @@ export function AccountSection({
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">
-                  অভিভাবকের ফোন
+                  {t('guardianPhoneLabel')}
                 </label>
                 <input
                   type="tel"
@@ -460,22 +476,28 @@ export function AccountSection({
             </div>
             <div className="space-y-2">
               <p className="text-sm font-semibold text-foreground border-b border-border pb-1">
-                শিক্ষাগত যোগ্যতা
+                {t('educationQualification')}
               </p>
               <EduEditSection
                 label="S.S.C"
                 value={formData.ssc}
                 onChange={(v) => setFormData({ ...formData, ssc: v })}
+                t={t}
+                tBoard={(key: string) => t(key)}
               />
               <EduEditSection
-                label="H.S.C (ঐচ্ছিক)"
+                label={t('hscOptional')}
                 value={formData.hsc}
                 onChange={(v) => setFormData({ ...formData, hsc: v })}
+                t={t}
+                tBoard={(key: string) => t(key)}
               />
               <EduEditSection
-                label="অনার্স (ঐচ্ছিক)"
+                label={t('honorsOptional')}
                 value={formData.honors}
                 onChange={(v) => setFormData({ ...formData, honors: v })}
+                t={t}
+                tBoard={(key: string) => t(key)}
               />
             </div>
             <button
@@ -486,47 +508,47 @@ export function AccountSection({
               {saving ? (
                 <Loader2 className="mx-auto size-5 animate-spin" />
               ) : (
-                'সংরক্ষণ করুন'
+                tc('save')
               )}
             </button>
           </div>
         ) : (
           <div className="space-y-3">
-            <InfoRow icon={UserCog} label="নাম" value={profile?.name || '—'} />
+            <InfoRow icon={UserCog} label={t('nameLabel')} value={profile?.name || '—'} />
             <InfoRow
               icon={Phone}
-              label="ফোন"
+              label={t('phoneLabel')}
               value={profile?.phoneNumber || '—'}
             />
-            <InfoRow icon={Mail} label="ইমেইল" value={profile?.email || '—'} />
+            <InfoRow icon={Mail} label={t('emailLabel')} value={profile?.email || '—'} />
             <InfoRow
               icon={BookOpen}
-              label="শিক্ষার্থী ID"
+              label={tc('studentId')}
               value={profile?.studentId || '—'}
             />
             <InfoRow
               icon={MapPin}
-              label="ঠিকানা"
+              label={tc('address')}
               value={profile?.address || '—'}
             />
             <InfoRow
               icon={Calendar}
-              label="জন্ম তারিখ"
+              label={t('dobLabel')}
               value={profile?.dateOfBirth || '—'}
             />
             <InfoRow
               icon={GraduationCap}
-              label="প্রতিষ্ঠান"
+              label={t('institutionLabel')}
               value={profile?.institution || '—'}
             />
             <InfoRow
               icon={UserCog}
-              label="অভিভাবক"
+              label={t('guardianNameLabel')}
               value={profile?.guardianName || '—'}
             />
             <InfoRow
               icon={Phone}
-              label="অভিভাবকের ফোন"
+              label={t('guardianPhoneLabel')}
               value={profile?.guardianPhone || '—'}
             />
           </div>
@@ -535,11 +557,11 @@ export function AccountSection({
         {!editing && (profile?.ssc || profile?.hsc || profile?.honors) && (
           <div className="mt-4 space-y-2 border-t border-border pt-4">
             <p className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-              <GraduationCap className="size-4" /> শিক্ষাগত যোগ্যতা
+              <GraduationCap className="size-4" /> {t('educationQualification')}
             </p>
-            <EduViewSection label="S.S.C" value={profile?.ssc || null} />
-            <EduViewSection label="H.S.C" value={profile?.hsc || null} />
-            <EduViewSection label="অনার্স" value={profile?.honors || null} />
+            <EduViewSection label="S.S.C" value={profile?.ssc || null} t={t} />
+            <EduViewSection label="H.S.C" value={profile?.hsc || null} t={t} />
+            <EduViewSection label={t('honorsOptional').replace(' (ঐচ্ছিক)', '').replace(' (Optional)', '')} value={profile?.honors || null} t={t} />
           </div>
         )}
       </div>
@@ -547,13 +569,13 @@ export function AccountSection({
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading text-base font-bold text-foreground">
-            পাসওয়ার্ড পরিবর্তন
+            {t('changePassword')}
           </h3>
           <button
             onClick={() => setChangingPassword(!changingPassword)}
             className="text-sm font-medium text-brand hover:text-brand/80"
           >
-            {changingPassword ? 'বাতিল' : 'পরিবর্তন'}
+            {changingPassword ? tc('cancel') : t('changePasswordBtn')}
           </button>
         </div>
 
@@ -561,7 +583,7 @@ export function AccountSection({
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">
-                বর্তমান পাসওয়ার্ড
+                {t('currentPasswordLabel')}
               </label>
               <div className="relative">
                 <input
@@ -590,7 +612,7 @@ export function AccountSection({
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">
-                নতুন পাসওয়ার্ড
+                {t('newPasswordLabel')}
               </label>
               <div className="relative">
                 <input
@@ -619,7 +641,7 @@ export function AccountSection({
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">
-                পাসওয়ার্ড নিশ্চিত করুন
+                {t('confirmPasswordLabel')}
               </label>
               <input
                 type="password"
@@ -636,7 +658,7 @@ export function AccountSection({
             {passwordData.newPassword &&
               passwordData.confirmPassword &&
               passwordData.newPassword !== passwordData.confirmPassword && (
-                <p className="text-xs text-destructive">পাসওয়ার্ড মিলেনি</p>
+                <p className="text-xs text-destructive">{t('passwordMismatchShort')}</p>
               )}
             <button
               onClick={handleChangePassword}
@@ -652,13 +674,13 @@ export function AccountSection({
               {saving ? (
                 <Loader2 className="mx-auto size-5 animate-spin" />
               ) : (
-                'পাসওয়ার্ড আপডেট করুন'
+                t('updatePasswordBtn')
               )}
             </button>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
-            পাসওয়ার্ড পরিবর্তন করতে উপরের বোতামে ক্লিক করুন।
+            {t('passwordHint')}
           </p>
         )}
       </div>
