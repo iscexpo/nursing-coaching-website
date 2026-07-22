@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { LogOut, Menu, X, ChevronRight } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 interface Tab {
   id: string
@@ -118,6 +119,9 @@ export function PanelLayout({
             </p>
             <p className="text-xs text-muted-foreground">{welcomeMessage}</p>
           </div>
+          <div className="mb-2">
+            <ThemeToggle className="w-full justify-center" />
+          </div>
           <button
             onClick={onSignOut}
             className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
@@ -143,6 +147,7 @@ export function PanelLayout({
               {siteName}
             </p>
           </div>
+          <ThemeToggle />
           <button
             onClick={onSignOut}
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
