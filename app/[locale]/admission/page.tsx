@@ -10,6 +10,7 @@ import { SectionHeading } from '@/components/section-heading'
 import { useSiteData } from '@/hooks/use-site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { FadeIn } from '@/components/ui/fade-in'
+import { SITE } from '@/lib/site-data'
 import {
   Loader2,
   CheckCircle2,
@@ -358,7 +359,7 @@ export default function AdmissionPage() {
               <SectionHeading
                 eyebrow={tc('admission')}
                 title={t('title')}
-                description="ISC Expo - Icon Skill & Career Expo-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।"
+                description={`${SITE.nameBn}-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।`}
               />
             </FadeIn>
           </div>

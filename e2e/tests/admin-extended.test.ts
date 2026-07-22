@@ -465,7 +465,7 @@ test.describe('Admin Panel - Extended Features', () => {
     test('should update contact information', async ({ page }) => {
       await page.fill('input[placeholder*="01784-176442"]', '01712345678')
       await page.fill(
-        'input[placeholder*="info@iscexpo.edu.bd"]',
+        'input[placeholder*="@"]',
         'test@example.com',
       )
 

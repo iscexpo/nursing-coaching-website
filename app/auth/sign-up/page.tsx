@@ -164,7 +164,7 @@ export default function SignUpPage() {
           <div className="flex items-center gap-3 mb-8">
             <Image
               src="/logo.png"
-              alt="ISC Expo - Icon Skill & Career Expo"
+              alt={site.nameEn}
               width={48}
               height={30}
               className="object-contain"
@@ -174,7 +174,7 @@ export default function SignUpPage() {
             </span>
           </div>
           <h2 className="font-heading text-3xl font-extrabold leading-tight">
-            ISC Expo পরিবারে
+            {site.nameBn} পরিবারে
             <span className="mt-1 block text-gold">যোগ দিন</span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
@@ -213,7 +213,7 @@ export default function SignUpPage() {
             >
               <Image
                 src="/logo.png"
-                alt="ISC Expo - Icon Skill & Career Expo"
+                alt={site.nameEn}
                 width={36}
                 height={22}
                 className="object-contain"
@@ -226,7 +226,7 @@ export default function SignUpPage() {
               নিবন্ধন করুন
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              ISC Expo - Icon Skill & Career Expo-এ যোগ দিন
+              {site.nameBn}-এ যোগ দিন
             </p>
           </div>
 

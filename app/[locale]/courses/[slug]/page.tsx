@@ -37,12 +37,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!course) {
     return {
-      title: 'Course Not Found | ISC Expo - Icon Skill & Career Expo',
+      title: `Course Not Found | ${SITE.name}`,
       robots: { index: false },
     }
   }
 
-  const title = `${course.title} | ISC Expo - Icon Skill & Career Expo`
+  const title = `${course.title} | ${SITE.name}`
   const description = course.shortDescription || course.description
   return {
     title,

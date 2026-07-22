@@ -6,11 +6,7 @@ import { auth } from '@/lib/auth'
 import { getSession, requireAdmin } from '@/lib/permissions'
 import { updateAdmissionSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-
-function deriveStudentEmail(phone: string): string {
-  const normalized = phone.replace(/[^0-9]/g, '')
-  return `student-${normalized}@iscexpo.edu.bd`
-}
+import { deriveStudentEmail } from '@/lib/domain'
 
 async function generateNextStudentId(): Promise<string> {
   const rows = await db

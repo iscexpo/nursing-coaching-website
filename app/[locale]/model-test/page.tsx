@@ -20,9 +20,9 @@ import { FadeIn } from '@/components/ui/fade-in'
 import { ModelTestApplyForm } from '@/components/model-test-apply-form'
 
 export const metadata = {
-  title: 'Model Test | ISC Expo - Icon Skill & Career Expo',
+  title: `Model Test | ${SITE.name}`,
   description:
-    'Participate in weekly model tests at ISC Expo - Icon Skill & Career Expo. Prepare for BNMC admission exams.',
+    `Participate in weekly model tests at ${SITE.name}. Prepare for BNMC admission exams.`,
   alternates: { canonical: '/model-test' },
 }
 

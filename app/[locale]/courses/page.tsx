@@ -11,11 +11,12 @@ import { SectionHeading } from '@/components/section-heading'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { SITE } from '@/lib/site-data'
 
 export const metadata = {
-  title: 'All Courses | ISC Expo - Icon Skill & Career Expo',
+  title: `All Courses | ${SITE.name}`,
   description:
-    'All courses from ISC Expo - Icon Skill & Career Expo — Nursing admission, council, B.Sc Nursing, Post Basic, job preparation & online batch.',
+    `All courses from ${SITE.name} — Nursing admission, council, B.Sc Nursing, Post Basic, job preparation & online batch.`,
   alternates: { canonical: '/courses' },
 }
 

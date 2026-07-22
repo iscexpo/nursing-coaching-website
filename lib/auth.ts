@@ -57,10 +57,7 @@ function getTrustedOrigins(env: ReturnType<typeof validateEnv>) {
     'https://0.0.0.0:3000',
     'http://[::1]:3000',
     'https://[::1]:3000',
-    'https://iscexpo.edu.bd',
-    'http://iscexpo.edu.bd',
-    'https://www.iscexpo.edu.bd',
-    'http://www.iscexpo.edu.bd',
+
   ]
   const normalized = new Set<string>()
 
