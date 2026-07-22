@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
 import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react'
@@ -143,28 +144,28 @@ const SmsPanel = lazy(() =>
 )
 
 const TABS = [
-  { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
-  { id: 'courses', label: 'কোর্স', icon: GraduationCap },
-  { id: 'enrollments', label: 'এনরোলমেন্ট', icon: BookOpen },
-  { id: 'payments', label: 'পেমেন্ট', icon: Wallet },
-  { id: 'invoices', label: 'ইনভয়েস', icon: Receipt },
-  { id: 'notices', label: 'নোটিশ', icon: Megaphone },
-  { id: 'sms', label: 'SMS', icon: MessageSquare },
-  { id: 'media', label: 'মিডিয়া', icon: Image },
-  { id: 'exams', label: 'পরীক্ষা', icon: FileText },
-  { id: 'subjects', label: 'বিষয়', icon: BookOpen },
-  { id: 'questions', label: 'প্রশ্নব্যাংক', icon: HelpCircle },
-  { id: 'results', label: 'ফলাফল', icon: BarChart3 },
-  { id: 'teachers', label: 'শিক্ষক', icon: Presentation },
-  { id: 'students', label: 'শিক্ষার্থী', icon: Users },
-  { id: 'attendance', label: 'উপস্থিতি', icon: CalendarCheck },
-  { id: 'admit-cards', label: 'এডমিট কার্ড', icon: CreditCard },
-  { id: 'contacts', label: 'যোগাযোগ', icon: Users },
-  { id: 'admissions', label: 'ভর্তি আবেদন', icon: FileText },
-  { id: 'model-test', label: 'মডেল টেস্ট', icon: FileText },
-  { id: 'notifications', label: 'নোটিফিকেশন', icon: Bell },
-  { id: 'reports', label: 'রিপোর্ট', icon: LineChart },
-  { id: 'settings', label: 'সেটিংস', icon: BarChart3 },
+  { id: 'overview', icon: LayoutDashboard },
+  { id: 'courses', icon: GraduationCap },
+  { id: 'enrollments', icon: BookOpen },
+  { id: 'payments', icon: Wallet },
+  { id: 'invoices', icon: Receipt },
+  { id: 'notices', icon: Megaphone },
+  { id: 'sms', icon: MessageSquare },
+  { id: 'media', icon: Image },
+  { id: 'exams', icon: FileText },
+  { id: 'subjects', icon: BookOpen },
+  { id: 'questions', icon: HelpCircle },
+  { id: 'results', icon: BarChart3 },
+  { id: 'teachers', icon: Presentation },
+  { id: 'students', icon: Users },
+  { id: 'attendance', icon: CalendarCheck },
+  { id: 'admit-cards', icon: CreditCard },
+  { id: 'contacts', icon: Users },
+  { id: 'admissions', icon: FileText },
+  { id: 'model-test', icon: FileText },
+  { id: 'notifications', icon: Bell },
+  { id: 'reports', icon: LineChart },
+  { id: 'settings', icon: BarChart3 },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -231,6 +232,8 @@ export default function AdminPage() {
   const router = useRouter()
   const session = authClient.useSession()
   const site = useSiteData()
+  const t = useTranslations('admin')
+  const tc = useTranslations('admin.common')
   const [tab, setTab] = useState<TabId>('overview')
   const [courses, setCourses] = useState<Course[]>([])
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
@@ -399,7 +402,7 @@ export default function AdminPage() {
         }
       } catch (error) {
         console.error('Failed to fetch data:', error)
-        setFetchError('ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।')
+        setFetchError(t('dataLoadError'))
       } finally {
         setLoading(false)
       }
@@ -447,7 +450,7 @@ export default function AdminPage() {
             className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
           >
             <RefreshCw className="size-4" />
-            আবার চেষ্টা করুন
+            {tc('retry')}
           </button>
         </div>
       </div>
@@ -478,16 +481,17 @@ export default function AdminPage() {
     (a) => a.status === 'pending',
   ).length
 
-  const tabsWithBadges = TABS.map((t) => ({
-    ...t,
+  const tabsWithBadges = TABS.map((tabItem) => ({
+    ...tabItem,
+    label: t(`tabs.${tabItem.id}`),
     badge:
-      t.id === 'enrollments'
+      tabItem.id === 'enrollments'
         ? pendingEnrollments
-        : t.id === 'payments'
+        : tabItem.id === 'payments'
           ? pendingPayments
-          : t.id === 'admissions'
+          : tabItem.id === 'admissions'
             ? pendingAdmissions
-            : t.id === 'model-test'
+            : tabItem.id === 'model-test'
               ? pendingModelTest
               : undefined,
   }))
@@ -495,9 +499,9 @@ export default function AdminPage() {
   return (
     <PanelLayout
       siteName={site.nameBn}
-      panelTitle="অ্যাডমিন প্যানেল"
+      panelTitle={t('panelTitle')}
       userName={session.data.user.name}
-      welcomeMessage="অ্যাডমিন হিসেবে লগইন করেছেন"
+      welcomeMessage={t('welcomeMessage')}
       tabs={tabsWithBadges}
       activeTab={tab}
       onTabChange={(id) => setTab(id as TabId)}

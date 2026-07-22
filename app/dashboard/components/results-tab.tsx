@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { ExamSubmission } from './types'
 
 export function ResultsTable({
@@ -7,6 +8,8 @@ export function ResultsTable({
 }: {
   examSubmissions: ExamSubmission[]
 }) {
+  const t = useTranslations('dashboard.results')
+
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
@@ -14,16 +17,16 @@ export function ResultsTable({
           <thead>
             <tr className="border-b border-border bg-secondary/30">
               <th className="px-4 py-3 text-left font-semibold text-foreground">
-                পরীক্ষা
+                {t('examLabel')}
               </th>
               <th className="px-4 py-3 text-left font-semibold text-foreground">
-                তারিখ
+                {t('dateLabel')}
               </th>
               <th className="px-4 py-3 text-center font-semibold text-foreground">
-                স্কোর
+                {t('scoreLabel')}
               </th>
               <th className="px-4 py-3 text-center font-semibold text-foreground">
-                পারফরম্যান্স
+                {t('performanceLabel')}
               </th>
             </tr>
           </thead>
@@ -34,7 +37,7 @@ export function ResultsTable({
               return (
                 <tr key={r.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-medium text-foreground">
-                    {r.examTitle || 'পরীক্ষা'}
+                    {r.examTitle || t('examLabel')}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {new Date(r.createdAt).toLocaleDateString('bn-BD')}
@@ -70,7 +73,7 @@ export function ResultsTable({
                   colSpan={4}
                   className="px-4 py-8 text-center text-sm text-muted-foreground"
                 >
-                  কোনো ফলাফল নেই
+                  {t('noResults')}
                 </td>
               </tr>
             )}

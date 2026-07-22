@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { BarChart3, Receipt, GraduationCap, CalendarCheck } from 'lucide-react'
 import {
   AttendanceStatusBadge,
@@ -28,6 +29,7 @@ export function OverviewTab({
   totalDue: number
   totalPaid: number
 }) {
+  const t = useTranslations('dashboard.overview')
   const avgScore =
     examSubmissions.length > 0
       ? Math.round(
@@ -45,25 +47,25 @@ export function OverviewTab({
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="সক্রিয় কোর্স"
-          value={`${activeEnrollments.length}টি`}
+          label={t('activeCourses')}
+          value={`${activeEnrollments.length}${t('courseCount')}`}
           icon={GraduationCap}
           color="brand"
         />
         <StatCard
-          label="গড় স্কোর"
+          label={t('averageScore')}
           value={`${avgScore}%`}
           icon={BarChart3}
           color="green"
         />
         <StatCard
-          label="মোট পেমেন্ট"
+          label={t('totalPayment')}
           value={`৳${totalPaid.toLocaleString()}`}
           icon={Receipt}
           color="green"
         />
         <StatCard
-          label="লাইফসাইকেল ইভেন্ট"
+          label={t('lifecycleEvents')}
           value={`${lifecycleEvents.length}`}
           icon={CalendarCheck}
           color="gold"
@@ -72,7 +74,7 @@ export function OverviewTab({
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">
-            সর্বশেষ ফলাফল
+            {t('recentResults')}
           </h3>
           <div className="mt-3 space-y-2">
             {examSubmissions.slice(0, 3).map((r) => (
@@ -81,7 +83,7 @@ export function OverviewTab({
                 className="flex items-center justify-between text-sm"
               >
                 <span className="text-foreground">
-                  {r.examTitle || 'পরীক্ষা'}
+                  {r.examTitle || t('examFallback')}
                 </span>
                 <span className="font-semibold text-brand">
                   {r.score}/{r.total}
@@ -89,13 +91,13 @@ export function OverviewTab({
               </div>
             ))}
             {examSubmissions.length === 0 && (
-              <p className="text-xs text-muted-foreground">কোনো ফলাফল নেই</p>
+              <p className="text-xs text-muted-foreground">{t('noResults')}</p>
             )}
           </div>
         </div>
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">
-            সাম্প্রতিক উপস্থিতি
+            {t('recentAttendance')}
           </h3>
           <div className="mt-3 space-y-2">
             {attendance
@@ -114,7 +116,7 @@ export function OverviewTab({
               ))}
             {attendance.length === 0 && (
               <p className="text-xs text-muted-foreground">
-                কোনো উপস্থিতি রেকর্ড নেই
+                {t('noAttendance')}
               </p>
             )}
           </div>
@@ -123,7 +125,7 @@ export function OverviewTab({
       {enrollments.length > 0 && (
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">
-            আমার এনরোলমেন্ট
+            {t('myEnrollments')}
           </h3>
           <div className="mt-3 space-y-3">
             {enrollments.slice(0, 3).map((e) => (
@@ -133,7 +135,7 @@ export function OverviewTab({
               >
                 <div>
                   <span className="font-medium text-foreground">
-                    {e.courseTitle || 'কোর্স'}
+                    {e.courseTitle || t('courseFallback')}
                   </span>
                   <span className="ml-2 text-muted-foreground">
                     ({e.courseDuration || ''})
@@ -148,7 +150,7 @@ export function OverviewTab({
       {lifecycleEvents.length > 0 && (
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">
-            স্টুডেন্ট লাইফসাইকেল
+            {t('studentLifecycle')}
           </h3>
           <div className="mt-3 space-y-3">
             {lifecycleEvents.slice(0, 3).map((event) => (
@@ -169,7 +171,7 @@ export function OverviewTab({
                 <p className="text-xs text-muted-foreground">
                   {event.enrollmentId
                     ? `এনরোলমেন্ট: ${event.enrollmentId.slice(0, 8)}`
-                    : 'এনরোলমেন্ট আইডি নেই'}
+                    : t('noEnrollmentId')}
                 </p>
                 {event.details &&
                   typeof event.details === 'object' &&

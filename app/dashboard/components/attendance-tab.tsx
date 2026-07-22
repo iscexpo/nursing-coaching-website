@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Clock } from 'lucide-react'
 import { AttendanceStatusBadge } from '@/components/ui/status-badge'
 import type { AttendanceRecord } from './types'
@@ -9,6 +10,7 @@ export function AttendanceView({
 }: {
   attendance: AttendanceRecord[]
 }) {
+  const t = useTranslations('dashboard.attendance')
   const presentDays = attendance.filter((a) => a.status === 'present').length
   const lateDays = attendance.filter((a) => a.status === 'late').length
   const absentDays = attendance.filter((a) => a.status === 'absent').length
@@ -21,22 +23,22 @@ export function AttendanceView({
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm text-center">
           <p className="text-3xl font-bold text-green">{presentDays}</p>
-          <p className="text-xs text-muted-foreground">উপস্থিত</p>
+          <p className="text-xs text-muted-foreground">{t('present')}</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm text-center">
           <p className="text-3xl font-bold text-gold">{lateDays}</p>
-          <p className="text-xs text-muted-foreground">বিলম্বিত</p>
+          <p className="text-xs text-muted-foreground">{t('late')}</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm text-center">
           <p className="text-3xl font-bold text-destructive">{absentDays}</p>
-          <p className="text-xs text-muted-foreground">অনুপস্থিত</p>
+          <p className="text-xs text-muted-foreground">{t('absent')}</p>
         </div>
       </div>
 
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <h3 className="font-heading text-base font-bold text-foreground">
-            সর্বমোট উপস্থিতি
+            {t('title')}
           </h3>
           <span className="text-2xl font-bold text-brand">{pct}%</span>
         </div>
@@ -57,13 +59,13 @@ export function AttendanceView({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  তারিখ
+                  {t('dateLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
                   সময়
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  অবস্থা
+                  {t('statusLabel')}
                 </th>
               </tr>
             </thead>
@@ -88,7 +90,7 @@ export function AttendanceView({
                     colSpan={3}
                     className="px-4 py-8 text-center text-sm text-muted-foreground"
                   >
-                    কোনো উপস্থিতি রেকর্ড নেই
+                    {t('noAttendance')}
                   </td>
                 </tr>
               )}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import {
   CheckCircle2,
   Check,
@@ -21,6 +22,8 @@ export function CourseSection({
   enrollments: Enrollment[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('dashboard.courses')
+  const tc = useTranslations('common')
   const [enrolling, setEnrolling] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
@@ -51,7 +54,7 @@ export function CourseSection({
       {enrollments.length > 0 && (
         <div>
           <h3 className="font-heading text-lg font-bold text-foreground mb-4">
-            আমার কোর্সসমূহ
+            {t('myCourses')}
           </h3>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {enrollments.map((enrollment) => (
@@ -70,19 +73,19 @@ export function CourseSection({
                 </p>
                 <div className="mt-3 space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">মোট ফি:</span>
+                    <span className="text-muted-foreground">{tc('total')}:</span>
                     <span className="font-medium">
                       ৳{enrollment.totalFee.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">পরিশোধিত:</span>
+                    <span className="text-muted-foreground">{tc('verified')}:</span>
                     <span className="font-medium text-green">
                       ৳{enrollment.paidAmount.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">বকেয়:</span>
+                    <span className="text-muted-foreground">{t('dueAmount')}:</span>
                     <span
                       className={`font-medium ${enrollment.dueAmount > 0 ? 'text-gold' : 'text-green'}`}
                     >
@@ -96,7 +99,7 @@ export function CourseSection({
                     className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand/10 px-3 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/20"
                   >
                     <Wallet className="size-4" />
-                    পেমেন্ট করুন
+                    {t('billing.submitPayment')}
                   </Link>
                 )}
               </div>
@@ -107,7 +110,7 @@ export function CourseSection({
 
       <div>
         <h3 className="font-heading text-lg font-bold text-foreground mb-4">
-          উপলব্ধ কোর্সসমূহ
+          {t('availableCourses')}
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {courses
@@ -130,11 +133,11 @@ export function CourseSection({
                   </p>
                   <div className="mt-3 space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">সময়কাল:</span>
+                      <span className="text-muted-foreground">{t('duration')}:</span>
                       <span className="font-medium">{course.duration}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">ফি:</span>
+                      <span className="text-muted-foreground">{t('fee')}:</span>
                       <span className="font-medium">
                         ৳{course.fee.toLocaleString()}
                       </span>
@@ -142,7 +145,7 @@ export function CourseSection({
                     {course.discountFee && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">
-                          ছাড়ের পর:
+                          {t('discountFee')}:
                         </span>
                         <span className="font-bold text-green">
                           ৳{course.discountFee.toLocaleString()}
@@ -153,12 +156,12 @@ export function CourseSection({
                   {isEnrolled ? (
                     <div className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg bg-green/10 px-3 py-2 text-sm font-medium text-green">
                       <CheckCircle2 className="size-4" />
-                      এনরোলড
+                      {t('enrolled')}
                     </div>
                   ) : justEnrolled ? (
                     <div className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg bg-green/10 px-3 py-2 text-sm font-medium text-green">
                       <Check className="size-4" />
-                      সফলভাবে এনরোল হয়েছে!
+                      {t('enrollSuccess')}
                     </div>
                   ) : (
                     <button
@@ -171,7 +174,7 @@ export function CourseSection({
                       ) : (
                         <>
                           <GraduationCap className="size-4" />
-                          এনরোল হন
+                          {t('enrollNow')}
                         </>
                       )}
                     </button>

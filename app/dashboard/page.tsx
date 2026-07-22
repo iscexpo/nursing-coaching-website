@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
 import {
@@ -35,13 +36,13 @@ import type {
 } from './components/types'
 
 const TABS = [
-  { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
-  { id: 'courses', label: 'আমার কোর্স', icon: GraduationCap },
-  { id: 'billing', label: 'বিলিং ও পেমেন্ট', icon: Receipt },
-  { id: 'account', label: 'অ্যাকাউন্ট', icon: UserCog },
-  { id: 'admit-card', label: 'এডমিট কার্ড', icon: CreditCard },
-  { id: 'results', label: 'ফলাফল', icon: BarChart3 },
-  { id: 'attendance', label: 'উপস্থিতি', icon: CalendarCheck },
+  { id: 'overview', icon: LayoutDashboard },
+  { id: 'courses', icon: GraduationCap },
+  { id: 'billing', icon: Receipt },
+  { id: 'account', icon: UserCog },
+  { id: 'admit-card', icon: CreditCard },
+  { id: 'results', icon: BarChart3 },
+  { id: 'attendance', icon: CalendarCheck },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -50,6 +51,8 @@ export default function DashboardPage() {
   const router = useRouter()
   const session = authClient.useSession()
   const site = useSiteData()
+  const t = useTranslations('dashboard')
+  const tc = useTranslations('common')
   const [tab, setTab] = useState<TabId>('overview')
   const [courses, setCourses] = useState<Course[]>([])
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
@@ -143,7 +146,7 @@ export default function DashboardPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="size-8 animate-spin text-brand" />
-          <p className="text-muted-foreground">লোড হচ্ছে...</p>
+          <p className="text-muted-foreground">{tc('loading')}</p>
         </div>
       </div>
     )
@@ -158,18 +161,21 @@ export default function DashboardPage() {
   const totalDue = enrollments.reduce((s, e) => s + e.dueAmount, 0)
   const totalPaid = enrollments.reduce((s, e) => s + e.paidAmount, 0)
 
-  const welcomeParts = user.phoneNumber ? [`ফোন: ${user.phoneNumber}`] : []
+  const welcomeParts = user.phoneNumber ? [`${tc('phone')}: ${user.phoneNumber}`] : []
   if (user.studentId) welcomeParts.push(`ID: ${user.studentId}`)
-  if (totalDue > 0) welcomeParts.push(`বকেয়: ৳${totalDue.toLocaleString()}`)
+  if (totalDue > 0) welcomeParts.push(`${t('overview.dueLabel')}: ৳${totalDue.toLocaleString()}`)
 
   return (
     <PanelLayout
       siteName={site.nameBn}
-      panelTitle="শিক্ষার্থী প্যানেল"
+      panelTitle={t('panelTitle')}
       userName={user.name}
       welcomeMessage={welcomeParts.join(' | ')}
       tabs={
-        TABS as unknown as {
+        TABS.map((tabItem) => ({
+          ...tabItem,
+          label: t(`tabs.${tabItem.id}`),
+        })) as {
           id: string
           label: string
           icon: React.ElementType
