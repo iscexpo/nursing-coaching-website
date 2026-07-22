@@ -2,7 +2,9 @@
 
 import { useState, type FormEvent } from 'react'
 import { Check, Loader2, Plus, XCircle } from 'lucide-react'
-import { PaymentStatusBadge, MethodBadge } from '@/components/ui/badges'
+import { PaymentStatusBadge, MethodBadge } from '@/components/ui/status-badge'
+import { FilterBar } from '@/components/ui/filter-bar'
+import { Alert } from '@/components/ui/alert'
 import {
   getPaymentValidationErrors,
   type PaymentFormValues,
@@ -137,34 +139,42 @@ export function PaymentsPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
           পেমেন্ট ব্যবস্থাপনা
         </h3>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={openCreateModal}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
-          >
-            <Plus className="size-4" /> নতুন পেমেন্ট
-          </button>
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-          >
-            <option value="all">সকল</option>
-            <option value="pending">অপেক্ষমান</option>
-            <option value="verified">যাচাইকৃত</option>
-            <option value="rejected">প্রত্যাখ্যাত</option>
-          </select>
-        </div>
+        <button
+          onClick={openCreateModal}
+          className="inline-flex items-center gap-2 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+        >
+          <Plus className="size-4" /> নতুন পেমেন্ট
+        </button>
       </div>
 
+      <FilterBar
+        searchPlaceholder="শিক্ষার্থী, কোর্স বা ট্রানজেকশন ID দিয়ে খুঁজুন..."
+        filters={[
+          {
+            name: 'status',
+            label: 'স্ট্যাটাস',
+            type: 'select',
+            options: [
+              { value: 'pending', label: 'অপেক্ষমান' },
+              { value: 'verified', label: 'যাচাইকৃত' },
+              { value: 'rejected', label: 'প্রত্যাখ্যাত' },
+            ],
+            value: filter === 'all' ? '' : filter,
+            onChange: (value) => setFilter(value || 'all'),
+          },
+        ]}
+      />
+
       {feedback && (
-        <div className="rounded-xl border border-brand/20 bg-brand/5 px-4 py-3 text-sm text-brand">
-          {feedback}
-        </div>
+        <Alert
+          variant="success"
+          message={feedback}
+          onDismiss={() => setFeedback(null)}
+        />
       )}
 
       <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">

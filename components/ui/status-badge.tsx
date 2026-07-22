@@ -179,3 +179,49 @@ export function ExamStatusBadge({
 
   return <StatusBadge status={statusMap[status] || 'draft'} {...props} />
 }
+
+/**
+ * Payment method badge (bKash, Nagad, Cash, Bank)
+ */
+export function MethodBadge({ method }: { method: string }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    bkash: { label: 'bKash', cls: 'bg-[#E2136E]/10 text-[#E2136E]' },
+    nagad: { label: 'Nagad', cls: 'bg-[#F6921E]/10 text-[#F6921E]' },
+    cash: { label: 'নগদ', cls: 'bg-green/10 text-green' },
+    bank: { label: 'ব্যাংক', cls: 'bg-brand/10 text-brand' },
+  }
+  const s = map[method] || {
+    label: method,
+    cls: 'bg-secondary text-muted-foreground',
+  }
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${s.cls}`}
+    >
+      {s.label}
+    </span>
+  )
+}
+
+/**
+ * Invoice status badge
+ */
+export function InvoiceStatusBadge({ status }: { status: string }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    paid: { label: 'পরিশোধিত', cls: 'bg-green/10 text-green' },
+    partial: { label: 'আংশিক', cls: 'bg-gold/10 text-gold' },
+    unpaid: { label: 'অপরিশোধিত', cls: 'bg-destructive/10 text-destructive' },
+    overdue: { label: 'বিলম্বিত', cls: 'bg-destructive/10 text-destructive' },
+  }
+  const s = map[status] || {
+    label: status,
+    cls: 'bg-secondary text-muted-foreground',
+  }
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${s.cls}`}
+    >
+      {s.label}
+    </span>
+  )
+}
