@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
 import { useSiteData } from '@/hooks/use-site-data'
 import { Loader2 } from 'lucide-react'
+import { ErrorBoundary } from '@/components/error-boundary'
 import {
   LayoutDashboard,
   GraduationCap,
@@ -465,35 +466,37 @@ export default function AdminPage() {
         />
       )}
       <Suspense fallback={<TabSkeleton />}>
-        {tab === 'courses' && (
-          <CoursesPanel courses={courses} onRefresh={fetchData} />
-        )}
-        {tab === 'enrollments' && (
-          <EnrollmentsPanel
-            enrollments={enrollments}
-            courses={courses}
-            students={students}
-            onRefresh={fetchData}
-          />
-        )}
-        {tab === 'payments' && (
-          <PaymentsPanel
-            payments={payments}
-            enrollments={enrollments}
-            students={students}
-            onRefresh={fetchData}
-          />
-        )}
-        {tab === 'invoices' && (
-          <InvoicesPanel
-            invoices={invoices}
-            enrollments={enrollments}
-            onRefresh={fetchData}
-          />
-        )}
-        {tab === 'notices' && (
-          <NoticesPanel notices={notices} onRefresh={fetchData} />
-        )}
+        <ErrorBoundary>
+          {tab === 'courses' && (
+            <CoursesPanel courses={courses} onRefresh={fetchData} />
+          )}
+          {tab === 'enrollments' && (
+            <EnrollmentsPanel
+              enrollments={enrollments}
+              courses={courses}
+              students={students}
+              onRefresh={fetchData}
+            />
+          )}
+          {tab === 'payments' && (
+            <PaymentsPanel
+              payments={payments}
+              enrollments={enrollments}
+              students={students}
+              onRefresh={fetchData}
+            />
+          )}
+          {tab === 'invoices' && (
+            <InvoicesPanel
+              invoices={invoices}
+              enrollments={enrollments}
+              onRefresh={fetchData}
+            />
+          )}
+          {tab === 'notices' && (
+            <NoticesPanel notices={notices} onRefresh={fetchData} />
+          )}
+        </ErrorBoundary>
         {tab === 'sms' && <SmsPanel />}
         {tab === 'media' && (
           <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />
