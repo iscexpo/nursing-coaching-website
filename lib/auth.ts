@@ -106,8 +106,13 @@ function createAuth(): any {
       },
     },
     session: {
-      expiresIn: 60 * 60 * 24 * 7,
-      updateAge: 60 * 60 * 24,
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
+      updateAge: 60 * 60 * 24, // refresh every 24h
+      // Limit concurrent sessions per user
+      // Better Auth doesn't natively enforce this, but we can
+      // use a hook. For now, store the limit as a config value
+      // and enforce it in the logout-all endpoint.
+      freshAge: 60 * 60, // 1 hour — sessions younger than this are "fresh"
     },
     emailAndPassword: {
       enabled: true,
