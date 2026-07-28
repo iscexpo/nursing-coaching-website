@@ -8,7 +8,7 @@ let _db: PostgresJsDatabase<typeof schema> | null = null
 export function getDb(): PostgresJsDatabase<typeof schema> {
   if (!_db) {
     const env = validateEnv()
-    const client = postgres(env.DATABASE_URL)
+    const client = postgres(env.DATABASE_URL, { prepare: false })
     _db = drizzle(client, { schema })
   }
   return _db
