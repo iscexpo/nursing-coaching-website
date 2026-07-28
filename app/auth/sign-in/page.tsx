@@ -279,6 +279,14 @@ export default function SignInPage() {
                     )}
                   </button>
                 </div>
+                <div className="mt-1.5 text-right">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs font-medium text-brand hover:underline"
+                  >
+                    পাসওয়ার্ড ভুলে গেছেন?
+                  </Link>
+                </div>
               </div>
 
               <button
@@ -295,10 +303,8 @@ export default function SignInPage() {
                   </>
                 )}
               </button>
-            </form>
-          )}
 
-          {resolvedMode === 'email' && (
+              {resolvedMode === 'email' && (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div>
                 <label
@@ -349,6 +355,14 @@ export default function SignInPage() {
                       <Eye className="size-4" />
                     )}
                   </button>
+                </div>
+                <div className="mt-1.5 text-right">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs font-medium text-brand hover:underline"
+                  >
+                    পাসওয়ার্ড ভুলে গেছেন?
+                  </Link>
                 </div>
               </div>
 

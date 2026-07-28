@@ -112,6 +112,11 @@ function createAuth(): any {
     },
     emailAndPassword: {
       enabled: true,
+      sendResetPassword: async ({ user, url }) => {
+        console.log(
+          `[Reset Password] Reset link for ${user.email}: ${url}`,
+        )
+      },
     },
     plugins: [
       phoneNumber({

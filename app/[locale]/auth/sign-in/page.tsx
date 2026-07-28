@@ -282,6 +282,14 @@ export default function SignInPage() {
                     )}
                   </button>
                 </div>
+                <div className="mt-1.5 text-right">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs font-medium text-brand hover:underline"
+                  >
+                    {t('forgotPassword')}
+                  </Link>
+                </div>
               </div>
 
               <button
@@ -352,6 +360,14 @@ export default function SignInPage() {
                       <Eye className="size-4" />
                     )}
                   </button>
+                </div>
+                <div className="mt-1.5 text-right">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs font-medium text-brand hover:underline"
+                  >
+                    {t('forgotPassword')}
+                  </Link>
                 </div>
               </div>
 
