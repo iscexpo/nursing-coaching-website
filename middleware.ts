@@ -31,7 +31,13 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  if (isApi || isDashboard || isAdmin || isAuthPage) {
+  if (isAdmin || isDashboard) {
+    const response = NextResponse.next()
+    ensureCsrfCookie(response, request)
+    return response
+  }
+
+  if (isApi || isAuthPage) {
     const response = handleI18nRouting(request)
     ensureCsrfCookie(response, request)
     return response
