@@ -232,6 +232,7 @@ export interface MediaFile {
   size: number
   altText: string | null
   description: string | null
+  category: 'general' | 'gallery'
   uploadedBy: string | null
   createdAt: string
   updatedAt: string

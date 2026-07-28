@@ -302,6 +302,7 @@
   "galleryPage": {
     "title": "আমাদের ছবি",
     "description": "ISC Expo - Icon Skill & Career Expo-এর বিভিন্ন অনুষ্ঠান, সেমিনার ও ক্লাসের ছবি।",
+    "noImages": "এখনো কোনো গ্যালারির ছবি নেই। অ্যাডমিন প্যানেল থেকে গ্যালারির ছবি আপলোড করা যাবে।",
     "captions": {
       "seminar": "সেমিনার",
       "prizeGiving": "পুরস্কার বিতরণী",
@@ -1273,6 +1274,9 @@
       "descriptionLabel": "বিবরণ",
       "descriptionPlaceholder": "মিডিয়া ফাইলের সংক্ষিপ্ত বিবরণ (ঐচ্ছিক)",
       "fileLabel": "ফাইল",
+      "categoryLabel": "বিভাগ",
+      "categoryGeneral": "সাধারণ",
+      "categoryGallery": "গ্যালারি",
       "acceptedTypes": "সমর্থিত ফাইল টাইপ: JPG, PNG, WEBP, GIF, PDF",
       "maxSize": "সর্বোচ্চ সাইজ: 5MB",
       "accessNote": "আপলোড করার পর ফাইলটি public/media থেকে সরাসরি অ্যাক্সেসible হবে",

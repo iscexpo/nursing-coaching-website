@@ -22,6 +22,7 @@ export function MediaPanel({
   const [file, setFile] = useState<File | null>(null)
   const [altText, setAltText] = useState('')
   const [description, setDescription] = useState('')
+  const [category, setCategory] = useState<'general' | 'gallery'>('general')
   const [uploading, setUploading] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -41,6 +42,7 @@ export function MediaPanel({
       formData.append('file', file)
       formData.append('altText', altText)
       formData.append('description', description)
+      formData.append('category', category)
 
       const response = await fetch('/api/media', {
         method: 'POST',
@@ -56,6 +58,7 @@ export function MediaPanel({
       setFile(null)
       setAltText('')
       setDescription('')
+      setCategory('general')
       onRefresh()
     } catch (uploadError) {
       console.error('Upload failed:', uploadError)
@@ -126,6 +129,19 @@ export function MediaPanel({
                 placeholder={t('descriptionPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground">
+                {t('categoryLabel')}
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value as 'general' | 'gallery')}
+                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+              >
+                <option value="general">{t('categoryGeneral')}</option>
+                <option value="gallery">{t('categoryGallery')}</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
@@ -207,6 +223,9 @@ export function MediaPanel({
                   {(media.size / 1024).toFixed(1)} KB
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-brand/10 px-2 py-1 text-xs font-medium text-brand">
+                    {media.category === 'gallery' ? t('categoryGallery') : t('categoryGeneral')}
+                  </span>
                   {media.altText && (
                     <span className="rounded-full bg-secondary px-2 py-1 text-xs text-foreground">
                       ALT

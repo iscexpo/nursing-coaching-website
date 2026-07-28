@@ -21,6 +21,7 @@ const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
 const metadataSchema = z.object({
   altText: z.string().max(200).optional().or(z.literal('')),
   description: z.string().max(1000).optional().or(z.literal('')),
+  category: z.enum(['general', 'gallery']).optional().default('general'),
 })
 
 export async function GET() {
@@ -57,8 +58,9 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file')
     const altText = formData.get('altText')?.toString() || ''
     const description = formData.get('description')?.toString() || ''
+    const category = (formData.get('category')?.toString() as 'general' | 'gallery') || 'general'
 
-    const parsed = metadataSchema.safeParse({ altText, description })
+    const parsed = metadataSchema.safeParse({ altText, description, category })
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
@@ -158,6 +160,7 @@ export async function POST(request: NextRequest) {
         size: file.size,
         altText: parsed.data.altText || null,
         description: parsed.data.description || null,
+        category: parsed.data.category || 'general',
         url: blobUrl,
         uploadedBy: auth.session.user.id,
       })

@@ -302,6 +302,7 @@
   "galleryPage": {
     "title": "Our Photos",
     "description": "Photos from various events, seminars & classes at ISC Expo - Icon Skill & Career Expo.",
+    "noImages": "No gallery images available yet. Gallery images can be uploaded from the admin panel.",
     "captions": {
       "seminar": "Seminar",
       "prizeGiving": "Prize Giving",
@@ -1278,6 +1279,9 @@
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Brief description of the media file (optional)",
       "fileLabel": "File",
+      "categoryLabel": "Category",
+      "categoryGeneral": "General",
+      "categoryGallery": "Gallery",
       "acceptedTypes": "Supported file types: JPG, PNG, WEBP, GIF, PDF",
       "maxSize": "Maximum size: 5MB",
       "accessNote": "After uploading, the file will be accessible directly from public/media",

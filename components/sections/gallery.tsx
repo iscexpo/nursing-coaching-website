@@ -8,11 +8,40 @@ import { Lightbox } from '@/components/ui/lightbox'
 import { getCmsContent } from '@/lib/content-server'
 import { cn } from '@/lib/utils'
 
+interface GalleryImage {
+  id: string
+  url: string
+  altText: string | null
+  description: string | null
+}
+
+async function getGalleryImages(): Promise<GalleryImage[]> {
+  try {
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const res = await fetch(`${origin}/api/media/public?category=gallery`, {
+      next: { revalidate: 300 },
+    })
+    if (!res.ok) return []
+    const json = await res.json()
+    return json.data || []
+  } catch {
+    return []
+  }
+}
+
 export async function Gallery() {
   const t = await getTranslations('galleryPage')
   const tc = await getTranslations('common')
   const content = await getCmsContent()
-  const gallery = content.gallery
+  const mediaImages = await getGalleryImages()
+
+  const gallery =
+    mediaImages.length > 0
+      ? mediaImages.map((img) => ({
+          image: img.url,
+          caption: img.altText || img.description || '',
+        }))
+      : content.gallery
 
   const lightboxImages = gallery.map((g) => ({
     src: g.image || '/placeholder.svg',
@@ -31,7 +60,7 @@ export async function Gallery() {
         </FadeIn>
         <div className="mt-12 grid grid-cols-2 gap-3 lg:grid-cols-4 auto-rows-[200px]">
           {gallery.map((g, i) => (
-            <FadeIn key={g.caption} delay={i * 60}>
+            <FadeIn key={g.caption + i} delay={i * 60}>
               <Lightbox
                 images={lightboxImages}
                 trigger={

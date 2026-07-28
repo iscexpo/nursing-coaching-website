@@ -574,6 +574,10 @@ export const mediaFiles = pgTable(
     size: integer('size').notNull(),
     altText: text('alt_text'),
     description: text('description'),
+    category: text('category')
+      .$type<'general' | 'gallery'>()
+      .notNull()
+      .default('general'),
     uploadedBy: text('uploaded_by').references(() => user.id, {
       onDelete: 'set null',
     }),
@@ -583,6 +587,7 @@ export const mediaFiles = pgTable(
   (table) => [
     index('media_files_uploaded_by_idx').on(table.uploadedBy),
     index('media_files_created_idx').on(table.createdAt),
+    index('media_files_category_idx').on(table.category),
   ],
 )
 
