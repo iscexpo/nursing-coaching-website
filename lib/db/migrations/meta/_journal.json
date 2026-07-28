@@ -120,6 +120,13 @@
       "when": 1783768400000,
       "tag": "0016_exam_enhancements",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1785225002921,
+      "tag": "0017_course_categories",
+      "breakpoints": true
     }
   ]
 }
