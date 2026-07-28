@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
@@ -15,7 +16,8 @@ export async function GET() {
       .from(teachers)
       .orderBy(desc(teachers.createdAt))
     return NextResponse.json({ data: rows })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch teachers' },
       { status: 500 },
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
     const [teacher] = await db
       .insert(teachers)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         name: d.name,
         email: d.email || null,
         phone: d.phone || null,
@@ -53,7 +55,8 @@ export async function POST(request: NextRequest) {
       .returning()
 
     return NextResponse.json(teacher, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create teacher' },
       { status: 500 },

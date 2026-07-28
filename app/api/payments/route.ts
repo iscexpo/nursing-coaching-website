@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
@@ -40,7 +41,8 @@ export async function GET(request: NextRequest) {
       .where(where)
 
     return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch payments' },
       { status: 500 },
@@ -110,7 +112,7 @@ export async function POST(request: NextRequest) {
       const [payment] = await tx
         .insert(payments)
         .values({
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           userId: enrollment.userId,
           enrollmentId,
           amount,
@@ -173,7 +175,8 @@ export async function POST(request: NextRequest) {
     )
 
     return NextResponse.json(result, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create payment' },
       { status: 500 },

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { admissions, user } from '@/lib/db/schema'
@@ -60,7 +61,7 @@ async function ensureStudentFromAdmission(admission: {
     return existingPhone
   }
 
-  const password = crypto.randomUUID().replace(/-/g, '').slice(0, 10)
+  const password = randomUUID().replace(/-/g, '').slice(0, 10)
 
   const result = await auth.api.signUpEmail({
     body: {

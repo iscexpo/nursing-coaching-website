@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { contactInquiries } from '@/lib/db/schema'
@@ -32,7 +33,8 @@ export async function GET(request: NextRequest) {
       .offset((page - 1) * limit)
 
     return NextResponse.json({ data, page, limit })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch inquiries' },
       { status: 500 },
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
     const { name, phone, message } = parsed.data
 
     await db.insert(contactInquiries).values({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name,
       phone,
       message,
@@ -89,7 +91,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 },
     )
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to submit inquiry' },
       { status: 500 },

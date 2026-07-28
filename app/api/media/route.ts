@@ -34,7 +34,8 @@ export async function GET() {
       .from(mediaFiles)
       .orderBy(desc(mediaFiles.createdAt))
     return NextResponse.json({ data: rows })
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch media files:', error)
     return NextResponse.json(
       { error: 'Failed to fetch media files' },
       { status: 500 },

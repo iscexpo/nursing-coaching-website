@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { exams, modelTestApplicants } from '@/lib/db/schema'
@@ -35,12 +36,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
     }
 
-    const reference = `MT-${crypto.randomUUID().slice(0, 8).toUpperCase()}`
+    const reference = `MT-${randomUUID().slice(0, 8).toUpperCase()}`
 
     const [created] = await db
       .insert(modelTestApplicants)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         reference,
         name,
         phone,

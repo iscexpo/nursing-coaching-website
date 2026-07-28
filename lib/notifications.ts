@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 
@@ -14,7 +15,7 @@ export async function notify(params: {
 }): Promise<void> {
   try {
     await db.insert(notifications).values({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       userId: params.userId,
       title: params.title,
       message: params.message,

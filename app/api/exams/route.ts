@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { exams, questions } from '@/lib/db/schema'
@@ -51,7 +52,8 @@ export async function GET(request: NextRequest) {
       .offset((page - 1) * limit)
 
     return NextResponse.json({ data, page, limit })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch exams' },
       { status: 500 },
@@ -79,7 +81,7 @@ export async function POST(request: NextRequest) {
     const [exam] = await db
       .insert(exams)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         ...parsed.data,
       })
       .returning()
@@ -100,7 +102,8 @@ export async function POST(request: NextRequest) {
     )
 
     return NextResponse.json(exam, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create exam' },
       { status: 500 },

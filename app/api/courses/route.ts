@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
     const [course] = await db
       .insert(courses)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         ...parsed.data,
       })
       .returning()

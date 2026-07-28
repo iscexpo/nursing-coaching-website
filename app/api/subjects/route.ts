@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { randomUUID } from 'node:crypto'
 import { db } from '@/lib/db'
 import { subjects } from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
@@ -7,12 +8,16 @@ import { createSubjectSchema } from '@/lib/validations'
 
 export async function GET() {
   try {
+    const auth = await requireAdmin()
+    if (!auth.ok) return auth.response
+
     const data = await db
       .select()
       .from(subjects)
       .orderBy(asc(subjects.sortOrder), asc(subjects.name))
     return NextResponse.json({ data })
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch subjects:', error)
     return NextResponse.json(
       { error: 'Failed to fetch subjects' },
       { status: 500 },
@@ -49,13 +54,14 @@ export async function POST(request: NextRequest) {
     const [created] = await db
       .insert(subjects)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         ...parsed.data,
       })
       .returning()
 
     return NextResponse.json(created, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error('Failed to create subject:', error)
     return NextResponse.json(
       { error: 'Failed to create subject' },
       { status: 500 },

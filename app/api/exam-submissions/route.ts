@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
@@ -39,7 +40,8 @@ export async function GET(request: NextRequest) {
       .where(where)
 
     return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch submissions' },
       { status: 500 },
@@ -112,7 +114,7 @@ export async function POST(request: NextRequest) {
     const [submission] = await db
       .insert(examSubmissions)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         userId: session.user.id,
         examId,
         score: scoring.score,
@@ -135,7 +137,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 },
     )
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to submit exam' },
       { status: 500 },

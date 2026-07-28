@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { questions } from '@/lib/db/schema'
@@ -43,7 +44,8 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json({ data: sanitized, page, limit })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch questions' },
       { status: 500 },
@@ -71,13 +73,14 @@ export async function POST(request: NextRequest) {
     const [question] = await db
       .insert(questions)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         ...parsed.data,
       })
       .returning()
 
     return NextResponse.json(question, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create question' },
       { status: 500 },

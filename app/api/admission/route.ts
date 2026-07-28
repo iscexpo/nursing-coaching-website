@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { courses, contactInquiries, admissions } from '@/lib/db/schema'
@@ -38,11 +39,11 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
 
-    const reference = `ADM-${crypto.randomUUID().slice(0, 8).toUpperCase()}`
+    const reference = `ADM-${randomUUID().slice(0, 8).toUpperCase()}`
 
     await db.transaction(async (tx) => {
       await tx.insert(admissions).values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         reference,
         name,
         phone,
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
       })
 
       await tx.insert(contactInquiries).values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         name,
         phone,
         message: `ভর্তি আবেদন (${reference}): ${course.title} | ${message || 'কোনো বিশেষ বার্তা নেই'}`,
@@ -85,7 +86,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 },
     )
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to submit admission' },
       { status: 500 },
