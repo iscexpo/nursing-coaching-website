@@ -23,14 +23,18 @@ async function main() {
   for (const t of tables) {
     const tableName = t.table_name as string
     const [count] = await sql`SELECT COUNT(*) as cnt FROM ${sql(tableName)}`
-    console.log(`  ${tableName.padEnd(35)} ${String(count.cnt).padStart(6)} rows`)
+    console.log(
+      `  ${tableName.padEnd(35)} ${String(count.cnt).padStart(6)} rows`,
+    )
   }
 
   console.log('\n=== Cleanup ===')
-  const [testUsers] = await sql`SELECT COUNT(*) as cnt FROM "user" WHERE email LIKE '%test%' OR email LIKE '%example%'`
+  const [testUsers] =
+    await sql`SELECT COUNT(*) as cnt FROM "user" WHERE email LIKE '%test%' OR email LIKE '%example%'`
   console.log(`  Test/example users: ${testUsers.cnt}`)
 
-  const [expiredOtps] = await sql`SELECT COUNT(*) as cnt FROM otp WHERE expires_at < NOW()`
+  const [expiredOtps] =
+    await sql`SELECT COUNT(*) as cnt FROM otp WHERE expires_at < NOW()`
   console.log(`  Expired OTPs: ${expiredOtps.cnt}`)
 
   const [orphanedSessions] = await sql`

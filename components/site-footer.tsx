@@ -27,13 +27,22 @@ export function SiteFooter() {
               {site.addressBn}
             </p>
             <div className="mt-4 flex gap-3">
-              <a href="#" className="inline-flex w-10 h-10 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition-colors">
+              <a
+                href="#"
+                className="inline-flex w-10 h-10 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition-colors"
+              >
                 f
               </a>
-              <a href="#" className="inline-flex w-10 h-10 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition-colors">
+              <a
+                href="#"
+                className="inline-flex w-10 h-10 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition-colors"
+              >
                 𝕏
               </a>
-              <a href="#" className="inline-flex w-10 h-10 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition-colors">
+              <a
+                href="#"
+                className="inline-flex w-10 h-10 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition-colors"
+              >
                 in
               </a>
             </div>
@@ -111,7 +120,8 @@ export function SiteFooter() {
         {/* Bottom section */}
         <div className="border-t border-white/20 dark:border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {site.nameBn}. {t('allRightsReserved')}.
+            © {new Date().getFullYear()} {site.nameBn}. {t('allRightsReserved')}
+            .
           </p>
           <p className="text-xs text-muted-foreground">
             Designed with ❤️ by ISC Team

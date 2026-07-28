@@ -90,7 +90,7 @@ export default async function NoticePage() {
                       </span>
                       {n.isUrgent && (
                         <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
-                           Urgent
+                          Urgent
                         </span>
                       )}
                       <span className="ml-auto text-xs text-muted-foreground">

@@ -464,10 +464,7 @@ test.describe('Admin Panel - Extended Features', () => {
 
     test('should update contact information', async ({ page }) => {
       await page.fill('input[placeholder*="01784-176442"]', '01712345678')
-      await page.fill(
-        'input[placeholder*="@"]',
-        'test@example.com',
-      )
+      await page.fill('input[placeholder*="@"]', 'test@example.com')
 
       await expect(page.locator('text=ফোন নম্বর')).toBeVisible()
       await expect(page.locator('text=ইমেইল')).toBeVisible()

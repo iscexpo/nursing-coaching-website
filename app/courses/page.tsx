@@ -14,8 +14,7 @@ import { SITE } from '@/lib/site-data'
 
 export const metadata = {
   title: `Courses | ${SITE.name}`,
-  description:
-    `All courses at ${SITE.name} — nursing admission, council, B.Sc Nursing, Post Basic, job preparation and online batches.`,
+  description: `All courses at ${SITE.name} — nursing admission, council, B.Sc Nursing, Post Basic, job preparation and online batches.`,
   alternates: { canonical: '/courses' },
 }
 

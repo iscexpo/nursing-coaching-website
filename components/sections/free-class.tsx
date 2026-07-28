@@ -22,7 +22,11 @@ export async function FreeClass() {
   const locale = await getLocale()
 
   const INFO = [
-    { icon: CalendarDays, label: t('date'), value: await getNextFriday(locale) },
+    {
+      icon: CalendarDays,
+      label: t('date'),
+      value: await getNextFriday(locale),
+    },
     { icon: Clock, label: t('time'), value: t('timeValue') },
     { icon: Users, label: t('seatsLeft'), value: t('seatsCount') },
   ]

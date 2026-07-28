@@ -131,8 +131,7 @@ export default function SignInPage() {
             <span className="mt-1 block text-gold">যাত্রা শুরু করুন</span>
           </h2>
           <p className="mt-4 text-brand-foreground/80 leading-relaxed">
-            {site.nameBn}-এ লগইন করে আপনার কোর্স, ফলাফল ও
-            পেমেন্ট ট্র্যাক করুন।
+            {site.nameBn}-এ লগইন করে আপনার কোর্স, ফলাফল ও পেমেন্ট ট্র্যাক করুন।
           </p>
           <div className="mt-10 grid grid-cols-3 gap-4 text-center">
             <div className="rounded-2xl bg-brand-foreground/10 p-4 backdrop-blur-sm">

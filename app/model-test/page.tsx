@@ -20,8 +20,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: `Model Test | ${SITE.name}`,
-  description:
-    `Participate in weekly model tests at ${SITE.name}. Prepare for BNMC admission exams.`,
+  description: `Participate in weekly model tests at ${SITE.name}. Prepare for BNMC admission exams.`,
   alternates: { canonical: '/model-test' },
 }
 
@@ -213,11 +212,11 @@ export default async function ModelTestPage() {
                               <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
                                 <span className="flex items-center gap-1">
                                   <FileCheck className="size-3" />
-                                   {exam.questionCount} questions
+                                  {exam.questionCount} questions
                                 </span>
                                 <span className="flex items-center gap-1">
                                   <Clock className="size-3" />
-                                   {exam.duration} minutes
+                                  {exam.duration} minutes
                                 </span>
                               </div>
                               <Link
@@ -246,7 +245,8 @@ export default async function ModelTestPage() {
               Join Model Tests
             </h2>
             <p className="mt-3 text-muted-foreground">
-              To participate in model tests, visit our office to register or contact us on WhatsApp.
+              To participate in model tests, visit our office to register or
+              contact us on WhatsApp.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
               <a

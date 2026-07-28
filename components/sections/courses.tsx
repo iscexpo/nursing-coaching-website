@@ -45,7 +45,10 @@ export async function Courses() {
   if (data.length === 0) return null
 
   return (
-    <section id="courses" className="relative bg-gradient-to-b from-background via-background to-purple-50/20 dark:to-purple-950/10 py-20 md:py-28 overflow-hidden">
+    <section
+      id="courses"
+      className="relative bg-gradient-to-b from-background via-background to-purple-50/20 dark:to-purple-950/10 py-20 md:py-28 overflow-hidden"
+    >
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/3 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />

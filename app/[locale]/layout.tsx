@@ -59,18 +59,14 @@ export async function generateMetadata({
       locale: isEn ? 'en_US' : 'bn_BD',
       url: SITE.url,
       siteName: SITE.nameBn,
-      title: isEn
-        ? `${SITE.name} | Khulna`
-        : `${SITE.nameBn} | খুলনা`,
+      title: isEn ? `${SITE.name} | Khulna` : `${SITE.nameBn} | খুলনা`,
       description: isEn
         ? "One of Khulna's most trusted nursing admission coaching."
         : 'খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং।',
     },
     twitter: {
       card: 'summary_large_image',
-      title: isEn
-        ? `${SITE.name} | Khulna`
-        : `${SITE.nameBn} | খুলনা`,
+      title: isEn ? `${SITE.name} | Khulna` : `${SITE.nameBn} | খুলনা`,
       description: isEn
         ? "Khulna's trusted nursing admission coaching"
         : 'খুলনার বিশ্বস্ত নার্সিং কোচিং — BNMC, B.Sc Nursing ও চাকরি প্রস্তুতি।',

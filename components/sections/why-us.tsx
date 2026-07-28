@@ -50,10 +50,12 @@ export async function WhyUs() {
               <FadeIn key={item.title} delay={i * 80}>
                 <div className="group relative h-full rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 transition-all duration-300 hover:border-white/40 dark:hover:border-white/20 hover:bg-white/60 dark:hover:bg-slate-900/60 hover:shadow-xl hover:shadow-blue-500/10">
                   {/* Icon background */}
-                  <div className={`flex size-12 items-center justify-center rounded-xl ${lightColors[i % 4]} transition-all duration-300 group-hover:scale-110`}>
+                  <div
+                    className={`flex size-12 items-center justify-center rounded-xl ${lightColors[i % 4]} transition-all duration-300 group-hover:scale-110`}
+                  >
                     <Icon className={`size-6 ${colors[i % 4]} text-white`} />
                   </div>
-                  
+
                   {/* Content */}
                   <h3 className="mt-4 text-lg font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {item.title}

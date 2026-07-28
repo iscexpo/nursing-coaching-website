@@ -128,7 +128,9 @@ export default async function CourseDetailPage({ params }: Props) {
               <dl className="mt-6 grid gap-4 sm:grid-cols-2">
                 {course.duration && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">{t('duration')}</dt>
+                    <dt className="text-xs text-muted-foreground">
+                      {t('duration')}
+                    </dt>
                     <dd className="mt-1 font-semibold text-foreground">
                       {course.duration}
                     </dd>
@@ -145,7 +147,9 @@ export default async function CourseDetailPage({ params }: Props) {
                 </div>
                 {course.schedule && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">{t('schedule')}</dt>
+                    <dt className="text-xs text-muted-foreground">
+                      {t('schedule')}
+                    </dt>
                     <dd className="mt-1 font-semibold text-foreground">
                       {course.schedule}
                     </dd>

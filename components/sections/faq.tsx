@@ -13,10 +13,7 @@ export async function Faq() {
     <section className="bg-background py-16 md:py-20">
       <div className="mx-auto max-w-3xl px-4">
         <FadeIn>
-          <SectionHeading
-            eyebrow={t('eyebrow')}
-            title={t('title')}
-          />
+          <SectionHeading eyebrow={t('eyebrow')} title={t('title')} />
         </FadeIn>
         {faqs.length > 0 ? (
           <FaqAccordion faqs={faqs} />

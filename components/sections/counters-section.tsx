@@ -15,7 +15,7 @@ export async function Counters() {
       <div className="relative mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {content.counters.map((c, i) => (
-            <div 
+            <div
               key={c.label}
               className="group rounded-xl border border-white/20 bg-white/10 backdrop-blur-md p-6 text-center transition-all duration-300 hover:bg-white/20 hover:border-white/40"
             >

@@ -21,8 +21,7 @@ import { ModelTestApplyForm } from '@/components/model-test-apply-form'
 
 export const metadata = {
   title: `Model Test | ${SITE.name}`,
-  description:
-    `Participate in weekly model tests at ${SITE.name}. Prepare for BNMC admission exams.`,
+  description: `Participate in weekly model tests at ${SITE.name}. Prepare for BNMC admission exams.`,
   alternates: { canonical: '/model-test' },
 }
 

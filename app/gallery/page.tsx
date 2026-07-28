@@ -15,8 +15,7 @@ const CAPTION_FALLBACKS: Record<string, string> = {
 
 export const metadata = {
   title: `Gallery | ${SITE.name}`,
-  description:
-    `Photo gallery of ${SITE.name} — seminars, batch photos, prize giving ceremonies and classes.`,
+  description: `Photo gallery of ${SITE.name} — seminars, batch photos, prize giving ceremonies and classes.`,
   alternates: { canonical: '/gallery' },
 }
 
