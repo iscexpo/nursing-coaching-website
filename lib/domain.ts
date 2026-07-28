@@ -1,12 +1,12 @@
 function getSiteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || 'https://iscexpo.edu.bd'
+  return process.env.NEXT_PUBLIC_SITE_URL || 'https://www.iscexpo.edu.bd'
 }
 
 function getSiteHostname(): string {
   try {
     return new URL(getSiteUrl()).hostname
   } catch {
-    return 'iscexpo.edu.bd'
+    return 'www.iscexpo.edu.bd'
   }
 }
 
