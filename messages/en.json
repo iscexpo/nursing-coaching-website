@@ -76,7 +76,6 @@
     "subject": "Subject",
     "score": "Score",
     "percentage": "Percentage",
-    "phone": "Phone",
     "createdAt": "Created at",
     "updatedAt": "Updated at",
     "copied": "Copied!",
@@ -90,7 +89,6 @@
     "nextImage": "Next image",
     "image": "Image",
     "previous": "Previous",
-    "next": "Next",
     "story": "Story",
     "signOut": "Sign Out",
     "present": "Present",
@@ -1407,6 +1405,14 @@
         "rejected": "Rejected",
         "enrolled": "Enrolled"
       }
+    },
+    "groups": {
+      "academics": "Academics",
+      "students": "Students",
+      "finance": "Finance",
+      "admissions": "Admissions",
+      "communications": "Communications",
+      "system": "System"
     }
   },
   "dashboard": {

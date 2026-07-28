@@ -19,7 +19,7 @@
     "readMore": "বিস্তারিত",
     "viewAll": "সব দেখুন",
     "back": "পূর্ববর্তী",
-    "next": "পরের ধাপ",
+    "next": "পরের",
     "submit": "দাখিল করুন",
     "loading": "লোড হচ্ছে...",
     "error": "ত্রুটি",
@@ -76,7 +76,6 @@
     "subject": "বিষয়",
     "score": "স্কোর",
     "percentage": "শতাংশ",
-    "phone": "ফোন",
     "createdAt": "তৈরির তারিখ",
     "updatedAt": "আপডেটের তারিখ",
     "copied": "কপি হয়েছে",
@@ -90,7 +89,6 @@
     "nextImage": "পরের ছবি",
     "image": "ছবি",
     "previous": "আগের",
-    "next": "পরের",
     "story": "গল্প",
     "signOut": "সাইন আউট",
     "present": "উপস্থিত",
@@ -1405,6 +1403,14 @@
         "rejected": "বাতিল",
         "enrolled": "ভর্তি সম্পন্ন"
       }
+    },
+    "groups": {
+      "academics": "শিক্ষা",
+      "students": "শিক্ষার্থী",
+      "finance": "আর্থিক",
+      "admissions": "ভর্তি",
+      "communications": "যোগাযোগ",
+      "system": "সিস্টেম"
     }
   },
   "dashboard": {

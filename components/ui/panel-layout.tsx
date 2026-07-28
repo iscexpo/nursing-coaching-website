@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { LogOut, Menu, X, ChevronRight } from 'lucide-react'
+import { LogOut, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 interface Tab {
@@ -11,6 +11,7 @@ interface Tab {
   label: string
   icon: React.ElementType
   badge?: number
+  group?: string
 }
 
 export function PanelLayout({
@@ -35,9 +36,29 @@ export function PanelLayout({
   children: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
+    new Set(),
+  )
   const t = useTranslations('common')
+  const tGroups = useTranslations('admin.groups')
 
   const activeTabData = tabs.find((t) => t.id === activeTab)
+
+  const toggleGroup = (group: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev)
+      if (next.has(group)) {
+        next.delete(group)
+      } else {
+        next.add(group)
+      }
+      return next
+    })
+  }
+
+  const groupedTabs = tabs.filter((t) => t.group)
+  const ungroupedTabs = tabs.filter((t) => !t.group)
+  const groups = [...new Set(groupedTabs.map((t) => t.group!))]
 
   return (
     <div className="min-h-screen bg-background">
@@ -75,7 +96,7 @@ export function PanelLayout({
 
         <nav className="flex-1 overflow-y-auto px-2 py-2">
           <div className="space-y-0.5">
-            {tabs.map((t) => {
+            {ungroupedTabs.map((t) => {
               const isActive = activeTab === t.id
               return (
                 <button
@@ -98,6 +119,57 @@ export function PanelLayout({
                     </span>
                   )}
                 </button>
+              )
+            })}
+
+            {groups.map((group) => {
+              const groupTabItems = groupedTabs.filter((t) => t.group === group)
+              const isCollapsed = collapsedGroups.has(group)
+              const groupLabel = tGroups(group) || group
+
+              return (
+                <div key={group} className="space-y-0.5">
+                  <button
+                    onClick={() => toggleGroup(group)}
+                    className="flex w-full items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {isCollapsed ? (
+                      <ChevronRight className="size-3 shrink-0" />
+                    ) : (
+                      <ChevronDown className="size-3 shrink-0" />
+                    )}
+                    <span className="truncate">{groupLabel}</span>
+                  </button>
+                  {!isCollapsed && (
+                    <div className="ml-2 space-y-0.5 border-l border-border pl-2">
+                      {groupTabItems.map((t) => {
+                        const isActive = activeTab === t.id
+                        return (
+                          <button
+                            key={t.id}
+                            onClick={() => {
+                              onTabChange(t.id)
+                              setSidebarOpen(false)
+                            }}
+                            className={`flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-colors ${
+                              isActive
+                                ? 'bg-muted text-foreground'
+                                : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            <t.icon className="size-4 shrink-0" />
+                            <span className="truncate">{t.label}</span>
+                            {t.badge !== undefined && t.badge > 0 && (
+                              <span className="ml-auto shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold leading-none text-muted-foreground">
+                                {t.badge}
+                              </span>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>
