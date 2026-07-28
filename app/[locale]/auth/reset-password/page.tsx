@@ -12,7 +12,7 @@ import { ArrowLeft, ArrowRight, Loader2, CheckCircle2, AlertCircle } from 'lucid
 export default function ResetPasswordPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const token = searchParams.get('token')
+  const token = searchParams.get('token') || undefined
   const site = useSiteData()
   const t = useTranslations('auth.resetPassword')
   const tc = useTranslations('common')
