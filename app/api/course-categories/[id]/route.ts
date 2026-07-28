@@ -72,7 +72,8 @@ export async function PUT(
       .returning()
 
     return NextResponse.json(updated)
-  } catch {
+  } catch (error) {
+    console.error('Failed to update course category:', error)
     return NextResponse.json(
       { error: 'Failed to update course category' },
       { status: 500 },
@@ -102,7 +103,8 @@ export async function DELETE(
 
     await db.delete(courseCategories).where(eq(courseCategories.id, id))
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (error) {
+    console.error('Failed to delete course category:', error)
     return NextResponse.json(
       { error: 'Failed to delete course category' },
       { status: 500 },

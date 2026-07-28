@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { randomUUID } from 'node:crypto'
 import { db } from '@/lib/db'
 import { courseCategories } from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
@@ -12,7 +13,8 @@ export async function GET() {
       .from(courseCategories)
       .orderBy(asc(courseCategories.sortOrder), asc(courseCategories.name))
     return NextResponse.json({ data })
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch course categories:', error)
     return NextResponse.json(
       { error: 'Failed to fetch course categories' },
       { status: 500 },
@@ -61,13 +63,14 @@ export async function POST(request: NextRequest) {
     const [created] = await db
       .insert(courseCategories)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         ...parsed.data,
       })
       .returning()
 
     return NextResponse.json(created, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error('Failed to create course category:', error)
     return NextResponse.json(
       { error: 'Failed to create course category' },
       { status: 500 },
