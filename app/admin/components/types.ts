@@ -249,6 +249,17 @@ export interface NotificationRecord {
   createdAt: string
 }
 
+export interface CourseCategory {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  sortOrder: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Subject {
   id: string
   name: string

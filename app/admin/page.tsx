@@ -47,6 +47,7 @@ import type {
   Subject,
   Admission,
   ModelTestApplicant,
+  CourseCategory,
 } from './components/types'
 
 const CoursesPanel = lazy(() =>
@@ -139,6 +140,11 @@ const SubjectsPanel = lazy(() =>
     default: m.SubjectsPanel,
   })),
 )
+const CourseCategoriesPanel = lazy(() =>
+  import('./components/course-categories-tab').then((m) => ({
+    default: m.CourseCategoriesPanel,
+  })),
+)
 const SmsPanel = lazy(() =>
   import('./components/sms-tab').then((m) => ({ default: m.SmsPanel })),
 )
@@ -154,6 +160,7 @@ const TABS = [
   { id: 'media', icon: Image },
   { id: 'exams', icon: FileText },
   { id: 'subjects', icon: BookOpen },
+  { id: 'course-categories', icon: BookOpen },
   { id: 'questions', icon: HelpCircle },
   { id: 'results', icon: BarChart3 },
   { id: 'teachers', icon: Presentation },
@@ -192,6 +199,7 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   notifications: ['notifications'],
   settings: [],
   subjects: ['subjects'],
+  'course-categories': ['courseCategories'],
   reports: [
     'courses',
     'enrollments',
@@ -250,6 +258,7 @@ export default function AdminPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [subjectsList, setSubjectsList] = useState<Subject[]>([])
+  const [courseCategories, setCourseCategories] = useState<CourseCategory[]>([])
   const [admissions, setAdmissions] = useState<Admission[]>([])
   const [modelTestApplicants, setModelTestApplicants] = useState<
     ModelTestApplicant[]
@@ -328,6 +337,10 @@ export default function AdminPage() {
           fetches.push(fetch('/api/subjects'))
           fetchKeys.push('subjects')
         }
+        if (needed.includes('courseCategories')) {
+          fetches.push(fetch('/api/course-categories'))
+          fetchKeys.push('courseCategories')
+        }
         if (needed.includes('admissions')) {
           fetches.push(fetch('/api/admissions'))
           fetchKeys.push('admissions')
@@ -390,6 +403,9 @@ export default function AdminPage() {
                 break
               case 'subjects':
                 setSubjectsList(data)
+                break
+              case 'courseCategories':
+                setCourseCategories(data)
                 break
               case 'admissions':
                 setAdmissions(data)
@@ -560,6 +576,12 @@ export default function AdminPage() {
         {tab === 'questions' && <QuestionsPanel exams={exams} />}
         {tab === 'subjects' && (
           <SubjectsPanel subjects={subjectsList} onRefresh={fetchData} />
+        )}
+        {tab === 'course-categories' && (
+          <CourseCategoriesPanel
+            categories={courseCategories}
+            onRefresh={fetchData}
+          />
         )}
         {tab === 'results' && (
           <ResultsPanel exams={exams} submissions={examSubmissions} />

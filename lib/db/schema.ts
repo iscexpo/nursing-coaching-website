@@ -375,6 +375,21 @@ export const notices = pgTable(
   (table) => [index('notices_created_idx').on(table.createdAt)],
 )
 
+export const courseCategories = pgTable(
+  'course_categories',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').unique().notNull(),
+    slug: text('slug').unique().notNull(),
+    description: text('description'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [index('course_categories_is_active_idx').on(table.isActive)],
+)
+
 export const subjects = pgTable(
   'subjects',
   {
