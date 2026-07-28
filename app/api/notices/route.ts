@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest) {
       .offset((page - 1) * limit)
 
     return NextResponse.json({ data: allNotices, page, limit })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch notices' },
       { status: 500 },
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
     const [notice] = await db
       .insert(notices)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         ...parsed.data,
       })
       .returning()
@@ -82,7 +84,8 @@ export async function POST(request: NextRequest) {
     )
 
     return NextResponse.json(notice, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create notice' },
       { status: 500 },

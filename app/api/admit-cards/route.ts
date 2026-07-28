@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
@@ -38,7 +39,8 @@ export async function GET(request: NextRequest) {
       .where(where)
 
     return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch admit cards' },
       { status: 500 },
@@ -66,13 +68,14 @@ export async function POST(request: NextRequest) {
     const [card] = await db
       .insert(admitCards)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         ...parsed.data,
       })
       .returning()
 
     return NextResponse.json(card, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create admit card' },
       { status: 500 },

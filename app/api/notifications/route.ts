@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
@@ -18,7 +19,8 @@ export async function GET() {
       .orderBy(desc(notifications.createdAt))
 
     return NextResponse.json(data)
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch notifications' },
       { status: 500 },
@@ -55,7 +57,7 @@ export async function POST(request: NextRequest) {
     const [notification] = await db
       .insert(notifications)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         userId,
         title,
         message,
@@ -65,7 +67,8 @@ export async function POST(request: NextRequest) {
       .returning()
 
     return NextResponse.json(notification, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create notification' },
       { status: 500 },

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
@@ -50,7 +51,8 @@ export async function GET(request: NextRequest) {
       .where(where)
 
     return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch attendance' },
       { status: 500 },
@@ -103,7 +105,7 @@ export async function POST(request: NextRequest) {
     const [record] = await db
       .insert(attendance)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         userId,
         date,
         status,
@@ -113,7 +115,8 @@ export async function POST(request: NextRequest) {
       .returning()
 
     return NextResponse.json(record, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to mark attendance' },
       { status: 500 },

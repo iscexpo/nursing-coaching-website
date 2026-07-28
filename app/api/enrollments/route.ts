@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import {
@@ -85,7 +86,8 @@ export async function GET(request: NextRequest) {
       .where(countWhere)
 
     return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch enrollments' },
       { status: 500 },
@@ -192,7 +194,7 @@ export async function POST(request: NextRequest) {
         const [enrollment] = await tx
           .insert(enrollments)
           .values({
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             userId: targetUserId,
             courseId: cid,
             totalFee,
@@ -211,7 +213,7 @@ export async function POST(request: NextRequest) {
           .where(eq(courses.id, cid))
 
         await tx.insert(studentLifecycleEvents).values({
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           studentId: targetUserId,
           enrollmentId: enrollment.id,
           eventType: 'enrollment.pending',

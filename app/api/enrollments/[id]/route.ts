@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
@@ -133,7 +134,7 @@ export async function PUT(
         .returning()
 
       await tx.insert(studentLifecycleEvents).values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         studentId: existing.userId,
         enrollmentId: existing.id,
         eventType,
@@ -242,7 +243,7 @@ export async function DELETE(
       }
 
       await tx.insert(studentLifecycleEvents).values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         studentId: existing.userId,
         enrollmentId: existing.id,
         eventType: 'enrollment.cancelled',

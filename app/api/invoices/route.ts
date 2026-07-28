@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/db/schema'
@@ -56,7 +57,8 @@ export async function GET(request: NextRequest) {
       .where(where)
 
     return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to fetch invoices' },
       { status: 500 },
@@ -88,7 +90,7 @@ export async function POST(request: NextRequest) {
     const [invoice] = await db
       .insert(invoices)
       .values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         invoiceNumber,
         userId,
         enrollmentId,
@@ -100,7 +102,8 @@ export async function POST(request: NextRequest) {
       .returning()
 
     return NextResponse.json(invoice, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json(
       { error: 'Failed to create invoice' },
       { status: 500 },

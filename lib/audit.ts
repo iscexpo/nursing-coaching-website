@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { db } from './db'
 import { auditLogs, studentLifecycleEvents } from './db/schema'
 import type { Session } from './permissions'
@@ -38,7 +39,7 @@ export interface LifecycleEntry {
 
 export async function writeAudit(entry: AuditEntry) {
   await db.insert(auditLogs).values({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     actorId: entry.actorId ?? null,
     actorEmail: entry.actorEmail ?? null,
     actorRole: entry.actorRole ?? null,
@@ -52,7 +53,7 @@ export async function writeAudit(entry: AuditEntry) {
 
 export async function writeLifecycleEvent(entry: LifecycleEntry) {
   await db.insert(studentLifecycleEvents).values({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     studentId: entry.studentId,
     enrollmentId: entry.enrollmentId ?? null,
     eventType: entry.eventType,
