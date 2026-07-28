@@ -408,10 +408,10 @@
       "teachers": "Teachers",
       "students": "Students",
       "attendance": "Attendance",
-      "admitCards": "Admit Cards",
+      "admit-cards": "Admit Cards",
       "contacts": "Contacts",
       "admissions": "Admissions",
-      "modelTest": "Model Test",
+      "model-test": "Model Test",
       "notifications": "Notifications",
       "reports": "Reports",
       "settings": "Settings"
@@ -1291,7 +1291,7 @@
       "courses": "My Courses",
       "billing": "Billing & Payment",
       "account": "Account",
-      "admitCard": "Admit Card",
+      "admit-card": "Admit Card",
       "results": "Results",
       "attendance": "Attendance"
     },

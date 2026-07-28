@@ -408,10 +408,10 @@
       "teachers": "শিক্ষক",
       "students": "শিক্ষার্থী",
       "attendance": "উপস্থিতি",
-      "admitCards": "এডমিট কার্ড",
+      "admit-cards": "এডমিট কার্ড",
       "contacts": "যোগাযোগ",
       "admissions": "ভর্তি আবেদন",
-      "modelTest": "মডেল টেস্ট",
+      "model-test": "মডেল টেস্ট",
       "notifications": "নোটিফিকেশন",
       "reports": "রিপোর্ট",
       "settings": "সেটিংস"
@@ -1289,7 +1289,7 @@
       "courses": "আমার কোর্স",
       "billing": "বিলিং ও পেমেন্ট",
       "account": "অ্যাকাউন্ট",
-      "admitCard": "এডমিট কার্ড",
+      "admit-card": "এডমিট কার্ড",
       "results": "ফলাফল",
       "attendance": "উপস্থিতি"
     },
