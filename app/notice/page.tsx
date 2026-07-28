@@ -9,10 +9,11 @@ import { Breadcrumb } from '@/components/breadcrumb'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
+import { SITE } from '@/lib/site-data'
 
 export const metadata = {
-  title: 'নোটিশ | ISC Expo - Icon Skill & Career Expo',
-  description: 'ISC Expo - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ ও আপডেট।',
+  title: `Notice | ${SITE.name}`,
+  description: `Latest notices and updates from ${SITE.name}.`,
   alternates: { canonical: '/notice' },
 }
 
@@ -31,7 +32,7 @@ async function getNotices() {
 
 function formatDate(date: Date) {
   const d = new Date(date)
-  return d.toLocaleDateString('bn-BD', {
+  return d.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -47,11 +48,11 @@ export default async function NoticePage() {
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
-            <Breadcrumb items={[{ label: 'নোটিশ' }]} />
+            <Breadcrumb items={[{ label: 'Notice' }]} />
             <SectionHeading
-              eyebrow="নোটিশ বোর্ড"
-              title="সকল নোটিশ"
-              description="ISC Expo - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ, আপডেট ও গুরুত্বপূর্ণ তথ্য।"
+              eyebrow="Notice Board"
+              title="All Notices"
+              description={`Latest notices, updates and important information from ${SITE.name}.`}
             />
           </div>
         </section>
@@ -61,10 +62,10 @@ export default async function NoticePage() {
             {allNotices.length === 0 ? (
               <div className="rounded-2xl border border-border bg-card p-12 text-center shadow-sm">
                 <h3 className="font-heading text-lg font-bold text-foreground">
-                  কোনো নোটিশ নেই
+                  No notices available
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  শীঘ্রই নোটিশ প্রকাশিত হবে।
+                  Notices will be published soon.
                 </p>
               </div>
             ) : (
@@ -89,7 +90,7 @@ export default async function NoticePage() {
                       </span>
                       {n.isUrgent && (
                         <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
-                          জরুরি
+                           Urgent
                         </span>
                       )}
                       <span className="ml-auto text-xs text-muted-foreground">

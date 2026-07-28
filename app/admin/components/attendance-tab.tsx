@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Loader2, Calendar } from 'lucide-react'
 import type { Enrollment, AttendanceRecord } from './types'
 
@@ -13,6 +14,7 @@ export function AttendancePanel({
   attendance: AttendanceRecord[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.attendance')
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
@@ -69,16 +71,16 @@ export function AttendancePanel({
   }
 
   const statusLabel: Record<string, { label: string; cls: string }> = {
-    present: { label: 'উপস্থিত', cls: 'bg-green/10 text-green' },
-    late: { label: 'বিলম্বিত', cls: 'bg-gold/10 text-gold' },
-    absent: { label: 'অনুপস্থিত', cls: 'bg-destructive/10 text-destructive' },
+    present: { label: t('present'), cls: 'bg-green/10 text-green' },
+    late: { label: t('late'), cls: 'bg-gold/10 text-gold' },
+    absent: { label: t('absent'), cls: 'bg-destructive/10 text-destructive' },
   }
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          উপস্থিতি ব্যবস্থাপনা
+          {t('title')}
         </h3>
         <div className="flex items-center gap-2">
           <input
@@ -92,7 +94,7 @@ export function AttendancePanel({
             className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
           >
             <Plus className="size-4" />
-            উপস্থিতি নিন
+            {t('takeAttendance')}
           </button>
         </div>
       </div>
@@ -101,7 +103,7 @@ export function AttendancePanel({
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              উপস্থিতি নির্ধারণ
+              {t('markTitle')}
             </h4>
             <button
               onClick={() => setShowForm(false)}
@@ -114,14 +116,14 @@ export function AttendancePanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  শিক্ষার্থী
+                  {t('studentLabel')}
                 </label>
                 <select
                   value={form.userId}
                   onChange={(e) => setForm({ ...form, userId: e.target.value })}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 >
-                  <option value="">শিক্ষার্থী বাছাই করুন</option>
+                  <option value="">{t('selectStudent')}</option>
                   {uniqueStudents.map((s) => (
                     <option key={s.userId} value={s.userId}>
                       {s.userName || s.userId.slice(0, 8)} — {s.userPhone || ''}
@@ -131,7 +133,7 @@ export function AttendancePanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  তারিখ
+                  {t('dateLabel')}
                 </label>
                 <input
                   type="date"
@@ -142,7 +144,7 @@ export function AttendancePanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  অবস্থা
+                  {t('statusLabel')}
                 </label>
                 <select
                   value={form.status}
@@ -154,20 +156,20 @@ export function AttendancePanel({
                   }
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 >
-                  <option value="present">উপস্থিত</option>
-                  <option value="late">বিলম্বিত</option>
-                  <option value="absent">অনুপস্থিত</option>
+                  <option value="present">{t('present')}</option>
+                  <option value="late">{t('late')}</option>
+                  <option value="absent">{t('absent')}</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সময় (ঐচ্ছিক)
+                  {t('timeOptional')}
                 </label>
                 <input
                   type="text"
                   value={form.time}
                   onChange={(e) => setForm({ ...form, time: e.target.value })}
-                  placeholder="যেমন: সকাল ১০:০০"
+                  placeholder={t('timePlaceholder')}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
@@ -182,7 +184,7 @@ export function AttendancePanel({
               ) : (
                 <Calendar className="size-4" />
               )}
-              উপস্থিতি সংরক্ষণ
+              {t('saveBtn')}
             </button>
           </div>
         </div>
@@ -194,16 +196,16 @@ export function AttendancePanel({
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  তারিখ
+                  {t('dateLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  শিক্ষার্থী
+                  {t('studentLabel')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  অবস্থা
+                  {t('statusLabel')}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  সময়
+                  {t('timeLabel')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
               </tr>
@@ -239,7 +241,7 @@ export function AttendancePanel({
                         onClick={() => handleDelete(a.id)}
                         className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                       >
-                        মুছুন
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -251,7 +253,7 @@ export function AttendancePanel({
                     colSpan={5}
                     className="px-4 py-8 text-center text-sm text-muted-foreground"
                   >
-                    কোনো উপস্থিতি রেকর্ড নেই
+                    {t('noRecords')}
                   </td>
                 </tr>
               )}

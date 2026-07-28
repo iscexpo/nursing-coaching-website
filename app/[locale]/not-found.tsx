@@ -5,7 +5,8 @@ import { SiteFooter } from '@/components/site-footer'
 import { Home } from 'lucide-react'
 
 export default async function NotFound() {
-  const t = await getTranslations('common')
+  const t = await getTranslations('notFound')
+  const tc = await getTranslations('common')
   return (
     <>
       <SiteHeader />
@@ -17,17 +18,17 @@ export default async function NotFound() {
           </p>
         </div>
         <h1 className="mt-4 font-heading text-2xl font-bold text-foreground">
-          পৃষ্ঠা পাওয়া যায়নি
+          {t('title')}
         </h1>
         <p className="mt-2 max-w-md text-muted-foreground">
-          আপনি যে পৃষ্ঠাটি খুঁজছেন তা বিদ্যমান নেই বা সরিয়ে ফেলা হয়েছে।
+          {t('description')}
         </p>
         <Link
           href="/"
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5"
         >
           <Home className="size-4" />
-          {t('home')}
+          {tc('home')}
         </Link>
       </main>
       <SiteFooter />

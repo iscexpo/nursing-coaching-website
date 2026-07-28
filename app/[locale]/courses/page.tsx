@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -11,11 +11,12 @@ import { SectionHeading } from '@/components/section-heading'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { SITE } from '@/lib/site-data'
 
 export const metadata = {
-  title: 'কোর্স সমূহ | ISC Expo - Icon Skill & Career Expo',
+  title: `All Courses | ${SITE.name}`,
   description:
-    'ISC Expo - Icon Skill & Career Expo-এর সকল কোর্স — নার্সিং ভর্তি, কাউন্সিল, B.Sc Nursing, Post Basic, চাকরি প্রস্তুতি ও অনলাইন ব্যাচ।',
+    `All courses from ${SITE.name} — Nursing admission, council, B.Sc Nursing, Post Basic, job preparation & online batch.`,
   alternates: { canonical: '/courses' },
 }
 
@@ -26,6 +27,8 @@ export default async function CoursesPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
+  const t = await getTranslations('coursesPage')
+  const tc = await getTranslations('common')
   let data: {
     id: string
     slug: string
@@ -62,11 +65,11 @@ export default async function CoursesPage({
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
-            <Breadcrumb items={[{ label: 'কোর্স' }]} />
+            <Breadcrumb items={[{ label: tc('courses') }]} />
             <SectionHeading
-              eyebrow="আমাদের কোর্স"
-              title="সকল কোর্স সমূহ"
-              description="BNMC ভর্তি পরীক্ষা থেকে চাকরি প্রস্তুতি — প্রতিটি কোর্সে অভিজ্ঞ শিক্ষক ও আধুনিক পাঠদান পদ্ধতি।"
+              eyebrow={tc('courses')}
+              title={t('title')}
+              description={t('description')}
             />
           </div>
         </section>
@@ -75,7 +78,7 @@ export default async function CoursesPage({
           <div className="mx-auto max-w-7xl px-4">
             {data.length === 0 ? (
               <p className="text-center text-sm text-muted-foreground">
-                কোনো কোর্স পাওয়া যায়নি
+                {t('noCourses')}
               </p>
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -95,7 +98,7 @@ export default async function CoursesPage({
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground">
-                          কোনো ছবি নেই
+                          {t('noImage')}
                         </div>
                       )}
                     </div>
@@ -116,7 +119,7 @@ export default async function CoursesPage({
                           ৳{c.fee.toLocaleString()}
                         </span>
                         <span className="text-sm font-medium text-brand group-hover:underline">
-                          ভর্তি হোন →
+                          {t('enrollNow')}
                         </span>
                       </div>
                     </div>

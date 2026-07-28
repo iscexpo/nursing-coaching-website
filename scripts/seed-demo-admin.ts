@@ -48,7 +48,7 @@ async function main() {
   await client.end()
 
   // Step 2: Create admin via Better Auth API (handles password hashing correctly)
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@cornia.co'
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@khulnasoft.com'
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!'
   const adminName = process.env.ADMIN_NAME || 'Demo Admin'
   const adminPhone = process.env.ADMIN_PHONE || '+8801784176442'

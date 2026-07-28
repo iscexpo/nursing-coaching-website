@@ -24,8 +24,8 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(SITE.url),
     title: isEn
-      ? 'ISC Expo - Icon Skill & Career Expo | Khulna — Nursing Admission Preparation'
-      : 'ISC Expo - Icon Skill & Career Expo | খুলনা — BNMC নার্সিং ভর্তি প্রস্তুতি',
+      ? `${SITE.name} | Khulna — Nursing Admission Preparation`
+      : `${SITE.nameBn} | খুলনা — BNMC নার্সিং ভর্তি প্রস্তুতি`,
     description: isEn
       ? "One of Khulna's most trusted nursing admission coaching. Complete preparation for BNMC admission, B.Sc Nursing, Post Basic B.Sc & job preparation."
       : 'খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং। BNMC ভর্তি পরীক্ষা, B.Sc Nursing, Post Basic B.Sc, কাউন্সিল ও চাকরি প্রস্তুতির সম্পূর্ণ সমাধান।',
@@ -60,8 +60,8 @@ export async function generateMetadata({
       url: SITE.url,
       siteName: SITE.nameBn,
       title: isEn
-        ? 'ISC Expo - Icon Skill & Career Expo | Khulna'
-        : 'ISC Expo - Icon Skill & Career Expo | খুলনা',
+        ? `${SITE.name} | Khulna`
+        : `${SITE.nameBn} | খুলনা`,
       description: isEn
         ? "One of Khulna's most trusted nursing admission coaching."
         : 'খুলনার অন্যতম বিশ্বস্ত নার্সিং ভর্তি কোচিং।',
@@ -69,8 +69,8 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: isEn
-        ? 'ISC Expo - Icon Skill & Career Expo | Khulna'
-        : 'ISC Expo - Icon Skill & Career Expo | খুলনা',
+        ? `${SITE.name} | Khulna`
+        : `${SITE.nameBn} | খুলনা`,
       description: isEn
         ? "Khulna's trusted nursing admission coaching"
         : 'খুলনার বিশ্বস্ত নার্সিং কোচিং — BNMC, B.Sc Nursing ও চাকরি প্রস্তুতি।',

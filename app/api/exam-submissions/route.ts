@@ -4,6 +4,7 @@ import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
 import { getSession, isAdmin } from '@/lib/permissions'
 import { submitExamSchema, paginationSchema } from '@/lib/validations'
+import { calculateExamScore, calculateGrade } from '@/lib/lms-logic'
 
 export async function GET(request: NextRequest) {
   try {
@@ -87,7 +88,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Only fetch the fields required for scoring; never expose correct answers.
     const examQuestions = await db
       .select({
         id: questions.id,
@@ -102,13 +102,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    let score = 0
-    for (const q of examQuestions) {
-      const userAnswer = answers[q.id]
-      if (userAnswer !== undefined && userAnswer === q.correctIndex) {
-        score++
-      }
-    }
+    const scoring = calculateExamScore(
+      answers,
+      examQuestions,
+      false, // TODO: read from exam.negativeMarking when column is added
+    )
+    const grade = calculateGrade(scoring.score, scoring.total)
 
     const [submission] = await db
       .insert(examSubmissions)
@@ -116,8 +115,8 @@ export async function POST(request: NextRequest) {
         id: crypto.randomUUID(),
         userId: session.user.id,
         examId,
-        score,
-        total: examQuestions.length,
+        score: scoring.score,
+        total: scoring.total,
         answers,
         timeTaken,
       })
@@ -126,7 +125,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         ...submission,
-        total: examQuestions.length,
+        total: scoring.total,
+        grading: grade,
+        breakdown: {
+          correct: scoring.correct,
+          wrong: scoring.wrong,
+          skipped: scoring.skipped,
+        },
       },
       { status: 201 },
     )

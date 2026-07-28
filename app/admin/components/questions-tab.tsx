@@ -1,10 +1,15 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import type { Exam, Question } from './types'
+import { EmptyState } from '@/components/ui/empty-state'
+import { FilterBar } from '@/components/ui/filter-bar'
 
 export function QuestionsPanel({ exams }: { exams: Exam[] }) {
+  const t = useTranslations('admin.questions')
+  const tc = useTranslations('common')
   const [selectedExamId, setSelectedExamId] = useState<string>('')
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(false)
@@ -114,7 +119,7 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          প্রশ্নব্যাংক
+          {t('title')}
         </h3>
         <button
           onClick={() => {
@@ -130,27 +135,26 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 disabled:opacity-50"
         >
           <Plus className="size-4" />
-          নতুন প্রশ্ন
+          {t('addNew')}
         </button>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-1">
-          পরীক্ষা বাছাই করুন
-        </label>
-        <select
-          value={selectedExamId}
-          onChange={(e) => setSelectedExamId(e.target.value)}
-          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-        >
-          <option value="">-- পরীক্ষা বাছাই করুন --</option>
-          {exams.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.title} ({e.subject}) — {e.questionCount ?? 0} প্রশ্ন
-            </option>
-          ))}
-        </select>
-      </div>
+      <FilterBar
+        searchPlaceholder={t('searchPlaceholder')}
+        filters={[
+          {
+            name: 'exam',
+            label: t('examLabel'),
+            type: 'select',
+            value: selectedExamId,
+            onChange: setSelectedExamId,
+            options: exams.map((e) => ({
+              label: `${e.title} (${e.subject}) — ${e.questionCount ?? 0} ${t('questionCount')}`,
+              value: e.id,
+            })),
+          },
+        ]}
+      />
 
       {subjects.length > 0 && (
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
@@ -172,7 +176,7 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'প্রশ্ন সম্পাদনা' : 'নতুন প্রশ্ন যোগ করুন'}
+              {editing ? t('editTitle') : t('addTitle')}
             </h4>
             <button
               onClick={() => {
@@ -187,13 +191,13 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium text-foreground">
-                প্রশ্ন
+                {t('questionLabel')}
               </label>
               <textarea
                 value={form.question}
                 onChange={(e) => setForm({ ...form, question: e.target.value })}
                 rows={2}
-                placeholder="প্রশ্ন লিখুন..."
+                placeholder={t('questionPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
@@ -208,9 +212,11 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                       onChange={() => setForm({ ...form, correctIndex: i })}
                       className="size-4"
                     />
-                    উত্তর {String.fromCharCode(65 + i)}{' '}
+                    {t('answerLabel')} {String.fromCharCode(65 + i)}{' '}
                     {i === form.correctIndex && (
-                      <span className="text-green text-xs">(সঠিক)</span>
+                      <span className="text-green text-xs">
+                        ({t('correctLabel')})
+                      </span>
                     )}
                   </label>
                   <input
@@ -226,7 +232,7 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                       newOpts[i] = e.target.value
                       setForm({ ...form, options: newOpts })
                     }}
-                    placeholder={`উত্তর ${String.fromCharCode(65 + i)}`}
+                    placeholder={`${t('answerLabel')} ${String.fromCharCode(65 + i)}`}
                     className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </div>
@@ -242,7 +248,7 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
               ) : (
                 <Save className="size-4" />
               )}
-              {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+              {editing ? t('updateBtn') : t('saveBtn')}
             </button>
           </div>
         </div>
@@ -263,10 +269,10 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                       #
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-foreground">
-                      প্রশ্ন
+                      {t('questionLabel')}
                     </th>
                     <th className="px-4 py-3 text-center font-semibold text-foreground">
-                      সঠিক
+                      {t('correctLabel')}
                     </th>
                     <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
                   </tr>
@@ -308,11 +314,8 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                   ))}
                   {questions.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={4}
-                        className="px-4 py-8 text-center text-sm text-muted-foreground"
-                      >
-                        এই পরীক্ষায় কোনো প্রশ্ন নেই
+                      <td colSpan={4} className="px-4 py-8 text-center">
+                        <EmptyState title={t('noQuestionsForExam')} />
                       </td>
                     </tr>
                   )}
@@ -323,13 +326,7 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
         </div>
       )}
 
-      {!selectedExamId && (
-        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center">
-          <p className="text-sm text-muted-foreground">
-            প্রশ্ন দেখতে একটি পরীক্ষা বাছাই করুন
-          </p>
-        </div>
-      )}
+      {!selectedExamId && <EmptyState title={t('selectExamHint')} />}
     </div>
   )
 }

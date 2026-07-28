@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Send, Loader2, Bell, CheckCheck } from 'lucide-react'
 import type { NotificationRecord } from './types'
 
@@ -11,6 +12,7 @@ export function NotificationsPanel({
   notifications: NotificationRecord[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.notifications')
   const [form, setForm] = useState({ title: '', message: '', target: 'all' })
   const [sending, setSending] = useState(false)
 
@@ -52,7 +54,7 @@ export function NotificationsPanel({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-heading text-lg font-bold text-foreground">
-            নোটিফিকেশন পাঠান
+            {t('sendNotification')}
           </h3>
         </div>
 
@@ -60,25 +62,25 @@ export function NotificationsPanel({
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium text-foreground">
-                শিরোনাম
+                {t('titleLabel')}
               </label>
               <input
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="নোটিফিকেশনের শিরোনাম"
+                placeholder={t('titlePlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                বার্তা
+                {t('bodyLabel')}
               </label>
               <textarea
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 rows={3}
-                placeholder="নোটিফিকেশনের বিবরণ"
+                placeholder={t('messagePlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
@@ -92,7 +94,7 @@ export function NotificationsPanel({
               ) : (
                 <Send className="size-4" />
               )}
-              পাঠান
+              {t('sendBtn')}
             </button>
           </div>
         </div>
@@ -101,10 +103,10 @@ export function NotificationsPanel({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-heading text-lg font-bold text-foreground">
-            সর্বশেষ নোটিফিকেশন
+            {t('latestNotifications')}
             {unreadCount > 0 && (
               <span className="ml-2 rounded-full bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
-                {unreadCount} নতুন
+                {unreadCount} {t('newCount')}
               </span>
             )}
           </h3>
@@ -114,7 +116,7 @@ export function NotificationsPanel({
               className="flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80"
             >
               <CheckCheck className="size-3.5" />
-              সব পড়েছি
+              {t('markAllRead')}
             </button>
           )}
         </div>
@@ -150,7 +152,7 @@ export function NotificationsPanel({
           ))}
           {notifications.length === 0 && (
             <p className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-              কোনো নোটিফিকেশন নেই
+              {t('noNotifications')}
             </p>
           )}
         </div>

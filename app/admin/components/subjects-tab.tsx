@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Save, X, GripVertical, Loader2 } from 'lucide-react'
 
 interface Subject {
@@ -17,6 +18,8 @@ interface SubjectsPanelProps {
 }
 
 export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
+  const t = useTranslations('admin.subjects')
+  const tc = useTranslations('common')
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
@@ -95,7 +98,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          বিষয় ব্যবস্থাপনা
+          {t('title')}
         </h3>
         <button
           onClick={() => {
@@ -106,7 +109,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
-          নতুন বিষয়
+          {t('addNew')}
         </button>
       </div>
 
@@ -114,7 +117,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'বিষয় সম্পাদনা' : 'নতুন বিষয় যোগ করুন'}
+              {editing ? t('editTitle') : t('addTitle')}
             </h4>
             <button
               onClick={() => {
@@ -130,13 +133,13 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
           <div className="flex items-end gap-3">
             <div className="flex-1">
               <label className="block text-sm font-medium text-foreground">
-                বিষয়ের নাম
+                {t('nameLabel')}
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="যেমন: বাংলা, ইংরেজি, পদার্থবিজ্ঞান"
+                placeholder={t('namePlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -156,7 +159,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
               ) : (
                 <Save className="size-4" />
               )}
-              {editing ? 'সংরক্ষণ' : 'যোগ করুন'}
+              {editing ? t('saveBtn') : t('addBtn')}
             </button>
           </div>
         </div>
@@ -168,13 +171,13 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  বিষয়ের নাম
+                  {t('nameLabel')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  অবস্থা
+                  {t('statusLabel')}
                 </th>
                 <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  কার্যক্রম
+                  {t('actionsLabel')}
                 </th>
               </tr>
             </thead>
@@ -197,7 +200,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                       onClick={() => handleToggleActive(s.id, s.isActive)}
                       className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${s.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
                     >
-                      {s.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                      {s.isActive ? t('active') : t('inactive')}
                     </button>
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -206,7 +209,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                         onClick={() => handleUpdate(s)}
                         className="rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
                       >
-                        সম্পাদনা
+                        {t('editBtn')}
                       </button>
                       <button
                         onClick={() => handleDelete(s.id)}
@@ -224,8 +227,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                     colSpan={3}
                     className="px-4 py-8 text-center text-sm text-muted-foreground"
                   >
-                    কোনো বিষয় নেই। উপরে &ldquo;নতুন বিষয়&rdquo; বোতামে ক্লিক
-                    করুন।
+                    {t('noSubjects')}
                   </td>
                 </tr>
               )}

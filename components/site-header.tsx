@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Menu, X, Phone } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DarkModeToggle } from '@/components/dark-mode-toggle'
 import { LanguageSwitcher } from '@/components/language-switcher'
@@ -15,7 +15,6 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const site = useSiteData()
   const t = useTranslations('common')
-  const th = useTranslations('header')
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -56,14 +55,14 @@ export function SiteHeader() {
   }, [open])
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-card backdrop-blur-md supports-[backdrop-filter]:bg-card/95 border-b border-border/50 shadow-sm">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="flex items-center gap-2.5">
+    <header className="sticky top-0 z-50 w-full border-b border-white/20 dark:border-white/10 bg-background/70 dark:bg-background/40 backdrop-blur-2xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:py-4">
+        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
           <img
             src={site.logo || '/logo.png'}
             alt={site.nameBn}
             width={200}
-            className="h-auto object-contain"
+            className="h-auto w-28 md:w-32 object-contain"
           />
         </Link>
 
@@ -75,9 +74,9 @@ export function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-all duration-200 hover:bg-secondary/50 hover:text-brand"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5"
             >
-              {link.label}
+              {t(link.labelKey as any)}
             </Link>
           ))}
         </nav>
@@ -85,26 +84,17 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher className="hidden sm:flex" />
           <DarkModeToggle />
-          <Button
-            render={<Link href="/auth/sign-in" />}
-            variant="outline"
-            size="lg"
-            className="hidden sm:inline-flex px-5"
+          <Link
+            href="/auth/sign-in"
+            className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5 sm:inline-flex"
           >
             {t('login')}
-          </Button>
-          <Button
-            render={<Link href="/admission" />}
-            size="lg"
-            className="hidden sm:inline-flex px-6"
-          >
-            {t('enroll')}
-          </Button>
+          </Link>
           <Button
             ref={triggerRef}
             variant="ghost"
-            size="icon-lg"
-            className="lg:hidden touch-target p-2"
+            size="icon"
+            className="lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={t('openMenu')}
           >
@@ -113,61 +103,50 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Mobile menu - slide in panel */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-md lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity duration-200"
           onClick={() => setOpen(false)}
         />
       )}
       <div
         className={cn(
-          'fixed inset-y-0 right-0 z-[50] h-full w-full max-w-sm transform border-l border-border/50 bg-card shadow-xl transition-transform duration-300 ease-in-out lg:hidden',
+          'fixed inset-y-0 right-0 z-[50] h-full w-full max-w-sm transform border-l border-border bg-background transition-transform duration-200 ease-in-out lg:hidden',
           open ? 'translate-x-0' : 'translate-x-full',
         )}
       >
-        <div className="flex items-center justify-between p-5 border-b border-border/50">
-          <h2 className="font-heading text-xl font-bold text-foreground">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <span className="text-sm font-medium text-foreground">
             {t('menu')}
-          </h2>
+          </span>
           <button
             onClick={() => setOpen(false)}
-            className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all"
+            className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
             aria-label={t('closeMenu')}
           >
             <X className="size-5" />
           </button>
         </div>
-        <nav className="flex flex-col gap-1.5 p-4">
+        <nav className="flex flex-col gap-0.5 p-2">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="flex items-center rounded-lg px-5 py-4 text-base font-medium text-foreground/80 transition-all duration-200 hover:bg-secondary/50 hover:text-brand"
+              className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
             >
-              {link.label}
+              {t(link.labelKey as any)}
             </Link>
           ))}
-          <div className="mt-8 flex flex-col gap-4 border-t border-border/50 pt-6">
+          <div className="mt-4 border-t border-border pt-4">
             <LanguageSwitcher className="justify-center" />
-            <Button
-              render={
-                <Link href="/auth/sign-in" onClick={() => setOpen(false)} />
-              }
-              variant="outline"
-              className="w-full h-12 text-base font-semibold"
-              size="lg"
+            <Link
+              href="/auth/sign-in"
+              onClick={() => setOpen(false)}
+              className="mt-3 block w-full rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {t('login')}
-            </Button>
-            <Button
-              render={<Link href="/admission" onClick={() => setOpen(false)} />}
-              className="w-full h-12 text-base font-semibold"
-              size="lg"
-            >
-              {t('enroll')}
-            </Button>
+            </Link>
           </div>
         </nav>
       </div>

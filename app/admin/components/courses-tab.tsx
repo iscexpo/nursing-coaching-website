@@ -2,8 +2,11 @@
 
 import { useState, useRef, useMemo } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { Course } from './types'
 import { useToast } from '@/components/ui/toast'
+import { EmptyState } from '@/components/ui/empty-state'
+import { FilterBar } from '@/components/ui/filter-bar'
 
 function resizeImage(
   file: File,
@@ -42,24 +45,30 @@ export function CoursesPanel({
   courses: Course[]
   onRefresh: () => void
 }) {
+  const t = useTranslations('admin.courses')
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Course | null>(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'icon' | 'cornea'>(
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'icon' | 'isc'>(
     'all',
   )
+  const [searchQuery, setSearchQuery] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { success, error, confirm } = useToast()
 
-  const filteredCourses = useMemo(
-    () =>
+  const filteredCourses = useMemo(() => {
+    let result =
       categoryFilter === 'all'
         ? courses
-        : courses.filter((c) => c.category === categoryFilter),
-    [courses, categoryFilter],
-  )
+        : courses.filter((c) => c.category === categoryFilter)
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      result = result.filter((c) => c.title.toLowerCase().includes(q))
+    }
+    return result
+  }, [courses, categoryFilter, searchQuery])
   const [form, setForm] = useState({
     slug: '',
     courseCode: '',
@@ -69,7 +78,7 @@ export function CoursesPanel({
     duration: '',
     fee: 0,
     discountFee: 0,
-    category: 'icon' as 'icon' | 'cornea',
+    category: 'icon' as 'icon' | 'isc',
     image: '',
     maxStudents: 0,
     schedule: '',
@@ -101,7 +110,7 @@ export function CoursesPanel({
       const resized = await resizeImage(file)
       const formData = new FormData()
       formData.append('file', resized, 'course.jpg')
-      formData.append('altText', form.title || 'কোর্স ছবি')
+      formData.append('altText', form.title || t('formLabels.imageAlt'))
       const res = await fetch('/api/media', { method: 'POST', body: formData })
       if (res.ok) {
         const data = await res.json()
@@ -118,15 +127,15 @@ export function CoursesPanel({
   async function handleSave() {
     if (!form.title.trim() || !form.slug.trim()) return
     if (!form.description.trim()) {
-      setFormError('বিস্তারিত বিবরণ আবশ্যক')
+      setFormError(t('validation.descriptionRequired'))
       return
     }
     if (!form.duration.trim()) {
-      setFormError('সময়কাল আবশ্যক')
+      setFormError(t('validation.durationRequired'))
       return
     }
     if (!form.fee || form.fee <= 0) {
-      setFormError('ফি আবশ্যক এবং ০-এর বেশি হতে হবে')
+      setFormError(t('validation.feeRequired'))
       return
     }
     setSaving(true)
@@ -160,20 +169,18 @@ export function CoursesPanel({
         setShowForm(false)
         setEditing(null)
         resetForm()
-        success(
-          editing ? 'কোর্স আপডেট করা হয়েছে' : 'নতুন কোর্স যোগ করা হয়েছে',
-        )
+        success(editing ? t('saveSuccess') : t('createSuccess'))
       } else {
-        const err = await res.json().catch(() => ({ error: 'সংরক্ষণ ব্যর্থ' }))
+        const err = await res.json().catch(() => ({ error: t('saveFailed') }))
         const msg = err.details
           ? Object.values(err.details).flat().join(', ')
-          : err.error || 'সংরক্ষণ ব্যর্থ'
+          : err.error || t('saveFailed')
         setFormError(msg)
         error(msg)
       }
     } catch (saveError) {
-      setFormError('সংরক্ষণ ব্যর্থ')
-      error('সংরক্ষণ ব্যর্থ')
+      setFormError(t('saveFailed'))
+      error(t('saveFailed'))
       console.error('Failed to save course:', saveError)
     } finally {
       setSaving(false)
@@ -181,11 +188,11 @@ export function CoursesPanel({
   }
 
   async function handleDelete(id: string) {
-    if (!(await confirm('আপনি কি নিশ্চিত এই কোর্স মুছে ফেলতে চান?'))) return
+    if (!(await confirm(t('deleteConfirm')))) return
     try {
       await fetch(`/api/courses/${id}`, { method: 'DELETE' })
       onRefresh()
-      success('কোর্স মুছে ফেলা হয়েছে')
+      success(t('deleteSuccess'))
     } catch (deleteError) {
       console.error('Failed to delete course:', deleteError)
     }
@@ -223,39 +230,50 @@ export function CoursesPanel({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          কোর্স ব্যবস্থাপনা
+          {t('management')}
         </h3>
-        <div className="flex items-center gap-2">
-          <select
-            value={categoryFilter}
-            onChange={(e) =>
-              setCategoryFilter(e.target.value as 'all' | 'icon' | 'cornea')
-            }
-            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none"
-          >
-            <option value="all">সকল ক্যাটাগরি</option>
-            <option value="icon">Icon</option>
-            <option value="cornea">Cornea</option>
-          </select>
-          <button
-            onClick={() => {
-              setShowForm(true)
-              setEditing(null)
-              resetForm()
-            }}
-            className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
-          >
-            <Plus className="size-4" />
-            নতুন কোর্স
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            setShowForm(true)
+            setEditing(null)
+            resetForm()
+          }}
+          className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+        >
+          <Plus className="size-4" />
+          {t('newCourse')}
+        </button>
       </div>
+
+      <FilterBar
+        searchPlaceholder="কোর্স খুঁজুন..."
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        filters={[
+          {
+            name: 'category',
+            label: t('categoryFilter'),
+            type: 'select',
+            value: categoryFilter === 'all' ? '' : categoryFilter,
+            onChange: (v) =>
+              setCategoryFilter((v || 'all') as 'all' | 'icon' | 'isc'),
+            options: [
+              { value: 'icon', label: 'Icon' },
+              { value: 'isc', label: 'ISC' },
+            ],
+          },
+        ]}
+        onClearFilters={() => {
+          setCategoryFilter('all')
+          setSearchQuery('')
+        }}
+      />
 
       {showForm && (
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'কোর্স সম্পাদনা' : 'নতুন কোর্স যোগ'}
+              {editing ? t('editTitle') : t('addTitle')}
             </h4>
             <button
               onClick={() => {
@@ -276,19 +294,19 @@ export function CoursesPanel({
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  কোর্সের নাম
+                  {t('formLabels.name')}
                 </label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="যেমন: নার্সিং অ্যাডমিশন কোচিং"
+                  placeholder={t('formLabels.namePlaceholder')}
                   className={inputCls}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  কোর্স কোড
+                  {t('formLabels.code')}
                 </label>
                 <input
                   type="text"
@@ -296,44 +314,44 @@ export function CoursesPanel({
                   onChange={(e) =>
                     setForm({ ...form, courseCode: e.target.value })
                   }
-                  placeholder="যেমন: NAC-2025"
+                  placeholder={t('formLabels.codePlaceholder')}
                   className={inputCls}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ক্যাটাগরি
+                  {t('formLabels.category')}
                 </label>
                 <select
                   value={form.category}
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      category: e.target.value as 'icon' | 'cornea',
+                      category: e.target.value as 'icon' | 'isc',
                     })
                   }
                   className={inputCls}
                 >
                   <option value="icon">Icon</option>
-                  <option value="cornea">Cornea</option>
+                  <option value="isc">ISC</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  স্লাগ (URL)
+                  {t('formLabels.slug')}
                 </label>
                 <input
                   type="text"
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  placeholder="যেমন: nursing-admission"
+                  placeholder={t('formLabels.slugPlaceholder')}
                   className={inputCls}
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                ছবি
+                {t('formLabels.image')}
               </label>
               <div className="mt-1 flex items-center gap-3">
                 <input
@@ -354,13 +372,15 @@ export function CoursesPanel({
                   ) : (
                     <Upload className="size-3.5" />
                   )}
-                  {uploading ? 'আপলোড হচ্ছে...' : 'ছবি আপলোড'}
+                  {uploading
+                    ? t('formLabels.uploading')
+                    : t('formLabels.uploadImage')}
                 </button>
                 <input
                   type="url"
                   value={form.image}
                   onChange={(e) => setForm({ ...form, image: e.target.value })}
-                  placeholder="অথবা URL পেস্ট করুন"
+                  placeholder={t('formLabels.imageOrUrl')}
                   className={inputCls}
                 />
               </div>
@@ -376,14 +396,14 @@ export function CoursesPanel({
                     onClick={() => setForm({ ...form, image: '' })}
                     className="text-xs text-destructive hover:underline"
                   >
-                    মুছুন
+                    {t('formLabels.remove')}
                   </button>
                 </div>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                সংক্ষিপ্ত বিবরণ
+                {t('formLabels.shortDescription')}
               </label>
               <input
                 type="text"
@@ -391,13 +411,13 @@ export function CoursesPanel({
                 onChange={(e) =>
                   setForm({ ...form, shortDescription: e.target.value })
                 }
-                placeholder="কোর্স সম্পর্কে সংক্ষিপ্ত"
+                placeholder={t('formLabels.shortDescriptionPlaceholder')}
                 className={inputCls}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
-                বিস্তারিত বিবরণ
+                {t('formLabels.description')}
               </label>
               <textarea
                 value={form.description}
@@ -405,14 +425,14 @@ export function CoursesPanel({
                   setForm({ ...form, description: e.target.value })
                 }
                 rows={3}
-                placeholder="কোর্সের বিস্তারিত বিবরণ"
+                placeholder={t('formLabels.descriptionPlaceholder')}
                 className={inputCls}
               />
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সময়কাল
+                  {t('formLabels.duration')}
                 </label>
                 <input
                   type="text"
@@ -420,13 +440,13 @@ export function CoursesPanel({
                   onChange={(e) =>
                     setForm({ ...form, duration: e.target.value })
                   }
-                  placeholder="যেমন: ১ বছর"
+                  placeholder={t('formLabels.durationPlaceholder')}
                   className={inputCls}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ফি (৳)
+                  {t('formLabels.fee')}
                 </label>
                 <input
                   type="number"
@@ -439,7 +459,7 @@ export function CoursesPanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  ছাড়ের ফি (৳)
+                  {t('formLabels.discountFee')}
                 </label>
                 <input
                   type="number"
@@ -454,7 +474,7 @@ export function CoursesPanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সর্বোচ্চ আসন
+                  {t('formLabels.maxStudents')}
                 </label>
                 <input
                   type="number"
@@ -467,7 +487,7 @@ export function CoursesPanel({
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground">
-                  সময়সূচি
+                  {t('formLabels.schedule')}
                 </label>
                 <input
                   type="text"
@@ -475,7 +495,7 @@ export function CoursesPanel({
                   onChange={(e) =>
                     setForm({ ...form, schedule: e.target.value })
                   }
-                  placeholder="যেমন: শনি-বৃহ ৬:০০-৮:০০"
+                  placeholder={t('formLabels.schedulePlaceholder')}
                   className={inputCls}
                 />
               </div>
@@ -490,114 +510,122 @@ export function CoursesPanel({
               ) : (
                 <Save className="size-4" />
               )}
-              {editing ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+              {editing ? t('updateButton') : t('newCourse')}
             </button>
           </div>
         </div>
       )}
 
-      <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-secondary/30">
-                <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  কোর্স
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  ছবি
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  কোড
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-foreground">
-                  সময়কাল
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  ফি
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  ছাড়
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  শিক্ষার্থী
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">
-                  অবস্থা
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCourses.map((c) => (
-                <tr
-                  key={c.id}
-                  className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
-                >
-                  <td className="px-4 py-3 font-medium text-foreground">
-                    <div className="flex items-center gap-2">
-                      {c.title}
-                      <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                        {c.category === 'cornea' ? 'Cornea' : 'Icon'}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {c.image ? (
-                      <img
-                        src={c.image}
-                        alt=""
-                        className="mx-auto h-10 w-16 rounded object-cover border border-border"
-                      />
-                    ) : (
-                      <span className="text-xs text-muted-foreground">নেই</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {c.courseCode || '—'}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {c.duration}
-                  </td>
-                  <td className="px-4 py-3 text-center text-foreground">
-                    ৳{c.fee.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-center text-green">
-                    {c.discountFee ? `৳${c.discountFee.toLocaleString()}` : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-center text-foreground">
-                    {c.currentStudents}/{c.maxStudents || '∞'}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={() => toggleActive(c)}
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${c.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
-                    >
-                      {c.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
-                    </button>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <button
-                        onClick={() => handleEdit(c)}
-                        className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                      >
-                        <Pencil className="size-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(c.id)}
-                        className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                  </td>
+      {filteredCourses.length === 0 ? (
+        <EmptyState title={t('emptyState')} description={t('emptyHint')} />
+      ) : (
+        <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-secondary/30">
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">
+                    {t('tableHeaders.course')}
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground">
+                    {t('tableHeaders.image')}
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">
+                    {t('tableHeaders.code')}
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">
+                    {t('tableHeaders.duration')}
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground">
+                    {t('tableHeaders.fee')}
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground">
+                    {t('tableHeaders.discount')}
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground">
+                    {t('tableHeaders.students')}
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground">
+                    {t('tableHeaders.status')}
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-foreground"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredCourses.map((c) => (
+                  <tr
+                    key={c.id}
+                    className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
+                  >
+                    <td className="px-4 py-3 font-medium text-foreground">
+                      <div className="flex items-center gap-2">
+                        {c.title}
+                        <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                          {c.category === 'isc' ? 'ISC' : 'Icon'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {c.image ? (
+                        <img
+                          src={c.image}
+                          alt=""
+                          className="mx-auto h-10 w-16 rounded object-cover border border-border"
+                        />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          {t('noImage')}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {c.courseCode || '—'}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {c.duration}
+                    </td>
+                    <td className="px-4 py-3 text-center text-foreground">
+                      ৳{c.fee.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-center text-green">
+                      {c.discountFee
+                        ? `৳${c.discountFee.toLocaleString()}`
+                        : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-center text-foreground">
+                      {c.currentStudents}/{c.maxStudents || '∞'}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => toggleActive(c)}
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${c.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
+                      >
+                        {c.isActive ? t('statusActive') : t('statusInactive')}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleEdit(c)}
+                          className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(c.id)}
+                          className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

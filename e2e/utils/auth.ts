@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test'
 
 export async function loginAsAdmin(page: Page) {
-  const email = process.env.TEST_ADMIN_EMAIL || 'admin@cornia.co'
+  const email = process.env.TEST_ADMIN_EMAIL || 'admin@khulnasoft.com'
   const password = process.env.TEST_ADMIN_PASSWORD || 'Admin123!'
 
   await page.goto('/auth/sign-in')

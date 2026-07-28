@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -37,12 +37,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!course) {
     return {
-      title: 'কোর্স পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo',
+      title: `Course Not Found | ${SITE.name}`,
       robots: { index: false },
     }
   }
 
-  const title = `${course.title} | ISC Expo - Icon Skill & Career Expo`
+  const title = `${course.title} | ${SITE.name}`
   const description = course.shortDescription || course.description
   return {
     title,
@@ -62,6 +62,8 @@ export default async function CourseDetailPage({ params }: Props) {
   const { locale, slug } = await params
   setRequestLocale(locale)
   const course = await getCourse(slug)
+  const t = await getTranslations('coursesPage')
+  const tc = await getTranslations('common')
 
   if (!course) notFound()
 
@@ -70,7 +72,7 @@ export default async function CourseDetailPage({ params }: Props) {
     '@type': 'Course',
     name: course.title,
     description: course.description,
-    inLanguage: 'bn',
+    inLanguage: locale === 'en' ? 'en' : 'bn',
     provider: {
       '@type': 'Organization',
       name: SITE.nameBn,
@@ -94,12 +96,12 @@ export default async function CourseDetailPage({ params }: Props) {
           <div className="mx-auto max-w-4xl px-4">
             <Breadcrumb
               items={[
-                { label: 'কোর্স', href: '/courses' },
+                { label: tc('courses'), href: '/courses' },
                 { label: course.title },
               ]}
             />
             <SectionHeading
-              eyebrow="কোর্স বিবরণ"
+              eyebrow={t('courseDetail')}
               title={course.title}
               description={course.shortDescription || ''}
             />
@@ -126,24 +128,24 @@ export default async function CourseDetailPage({ params }: Props) {
               <dl className="mt-6 grid gap-4 sm:grid-cols-2">
                 {course.duration && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">সময়কাল</dt>
+                    <dt className="text-xs text-muted-foreground">{t('duration')}</dt>
                     <dd className="mt-1 font-semibold text-foreground">
                       {course.duration}
                     </dd>
                   </div>
                 )}
                 <div className="rounded-lg bg-secondary/40 p-4">
-                  <dt className="text-xs text-muted-foreground">ফি</dt>
+                  <dt className="text-xs text-muted-foreground">{t('fee')}</dt>
                   <dd className="mt-1 font-semibold text-foreground">
                     ৳{course.fee.toLocaleString()}
                     {course.discountFee
-                      ? ` (ছাড়: ৳${course.discountFee.toLocaleString()})`
+                      ? ` (${t('discount')}: ৳${course.discountFee.toLocaleString()})`
                       : ''}
                   </dd>
                 </div>
                 {course.schedule && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">সময়সূচি</dt>
+                    <dt className="text-xs text-muted-foreground">{t('schedule')}</dt>
                     <dd className="mt-1 font-semibold text-foreground">
                       {course.schedule}
                     </dd>
@@ -156,7 +158,7 @@ export default async function CourseDetailPage({ params }: Props) {
                   href={`/admission?course=${course.slug}`}
                   className="inline-flex rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
                 >
-                  এই কোর্সে ভর্তি নিন
+                  {t('enrollInCourse')}
                 </Link>
               </div>
             </div>

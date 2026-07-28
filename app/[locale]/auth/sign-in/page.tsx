@@ -56,7 +56,8 @@ export default function SignInPage() {
         return
       }
 
-      if (data?.user?.role === 'super-admin' || data?.user?.role === 'admin') {
+      const phoneUserRole = (data?.user as Record<string, unknown>)?.role
+      if (phoneUserRole === 'super-admin' || phoneUserRole === 'admin') {
         router.push('/admin')
       } else {
         router.push('/dashboard')
@@ -86,7 +87,8 @@ export default function SignInPage() {
         return
       }
 
-      if (data?.user?.role === 'super-admin' || data?.user?.role === 'admin') {
+      const emailUserRole = (data?.user as Record<string, unknown>)?.role
+      if (emailUserRole === 'super-admin' || emailUserRole === 'admin') {
         router.push('/admin')
       } else {
         router.push('/dashboard')
@@ -118,7 +120,7 @@ export default function SignInPage() {
           <div className="flex items-center gap-3 mb-8">
             <Image
               src="/logo.png"
-              alt="ISC Expo - Icon Skill & Career Expo"
+              alt={site.nameEn}
               width={48}
               height={30}
               className="object-contain"
@@ -170,7 +172,7 @@ export default function SignInPage() {
             >
               <Image
                 src="/logo.png"
-                alt="ISC Expo - Icon Skill & Career Expo"
+                alt={site.nameEn}
                 width={36}
                 height={22}
                 className="object-contain"

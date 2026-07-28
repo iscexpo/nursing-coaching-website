@@ -34,13 +34,13 @@ export default function ContactPage() {
 
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error || 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।')
+        setError(data.error || t('errorDefault'))
         return
       }
 
       setSubmitted(true)
     } catch {
-      setError('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।')
+      setError(t('errorNetwork'))
     } finally {
       setLoading(false)
     }
@@ -63,7 +63,7 @@ export default function ContactPage() {
     {
       icon: MessageCircle,
       label: 'WhatsApp',
-      value: 'চ্যাট করুন',
+      value: t('chatNow'),
       href: site.whatsapp,
     },
   ]
@@ -88,7 +88,7 @@ export default function ContactPage() {
             <div className="grid gap-8 lg:grid-cols-2">
               <div className="space-y-6">
                 <h3 className="font-heading text-lg font-bold text-foreground">
-                  যোগাযোগের তথ্য
+                  {t('contactInfo')}
                 </h3>
                 <div className="space-y-4">
                   {infoItems.map((item) => (
@@ -129,11 +129,11 @@ export default function ContactPage() {
 
                 <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
                   <h4 className="font-heading text-sm font-semibold text-foreground">
-                    অফিস সময়
+                    {t('officeHours')}
                   </h4>
                   <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-                    <p>শনি—বৃহস্পতি: সকাল ৯:০০ — রাত ৮:০০</p>
-                    <p>শুক্রবার: বন্ধ</p>
+                    <p>{t('officeSchedule')}</p>
+                    <p>{t('officeClosed')}</p>
                   </div>
                 </div>
               </div>
@@ -157,10 +157,10 @@ export default function ContactPage() {
                       </svg>
                     </div>
                     <h3 className="font-heading text-xl font-bold text-foreground">
-                      বার্তা পাঠানো হয়েছে!
+                      {t('messageSent')}
                     </h3>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।
+                      {t('messageSentDesc')}
                     </p>
                   </div>
                 ) : (
@@ -169,7 +169,7 @@ export default function ContactPage() {
                     className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
                   >
                     <h3 className="font-heading text-lg font-bold text-foreground">
-                      বার্তা পাঠান
+                      {t('sendMessage')}
                     </h3>
 
                     {error && (
@@ -192,7 +192,7 @@ export default function ContactPage() {
                         onChange={(e) =>
                           setForm({ ...form, name: e.target.value })
                         }
-                        placeholder="আপনার নাম"
+                        placeholder={tCommon('fullName')}
                         required
                         className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                       />
@@ -221,7 +221,7 @@ export default function ContactPage() {
                         htmlFor="c-msg"
                         className="block text-sm font-medium text-foreground"
                       >
-                        বার্তা
+                        {t('yourMessage')}
                       </label>
                       <textarea
                         id="c-msg"
@@ -230,7 +230,7 @@ export default function ContactPage() {
                           setForm({ ...form, message: e.target.value })
                         }
                         rows={4}
-                        placeholder="আপনার বার্তা লিখুন"
+                        placeholder={t('yourMessagePlaceholder')}
                         required
                         className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                       />
@@ -241,7 +241,7 @@ export default function ContactPage() {
                       className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 disabled:opacity-50"
                     >
                       {loading && <Loader2 className="size-4 animate-spin" />}
-                      {loading ? 'পাঠানো হচ্ছে...' : 'বার্তা পাঠান'}
+                      {loading ? t('sending') : t('sendMessage')}
                     </button>
                   </form>
                 )}

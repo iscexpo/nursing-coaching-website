@@ -10,7 +10,7 @@ export async function SuccessStories() {
   const stories = content.successStories
 
   return (
-    <section id="success" className="bg-secondary/50 py-16 md:py-20">
+    <section id="success" className="bg-background py-16 md:py-20">
       <div className="mx-auto max-w-4xl px-4">
         <FadeIn>
           <SectionHeading

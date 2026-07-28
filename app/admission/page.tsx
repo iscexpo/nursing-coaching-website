@@ -9,6 +9,7 @@ import { SectionHeading } from '@/components/section-heading'
 import { useSiteData } from '@/hooks/use-site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { FadeIn } from '@/components/ui/fade-in'
+import { SITE } from '@/lib/site-data'
 import {
   Loader2,
   CheckCircle2,
@@ -51,7 +52,8 @@ type AdmissionStep = 1 | 2 | 3 | 4
 function normalizePhone(raw: string): string {
   const digits = raw.replace(/\D/g, '')
   if (digits.startsWith('880') && digits.length === 13) return `+${digits}`
-  if (digits.startsWith('01') && digits.length === 11) return `+880${digits.slice(1)}`
+  if (digits.startsWith('01') && digits.length === 11)
+    return `+880${digits.slice(1)}`
   return raw.trim()
 }
 
@@ -76,10 +78,7 @@ const BOARDS = [
   'কারিগরি বোর্ড',
 ]
 
-const UNIVERSITY_NAMES = [
-  'জাতীয় বিশ্ববিদ্যালয়',
-  'UGC',
-]
+const UNIVERSITY_NAMES = ['জাতীয় বিশ্ববিদ্যালয়', 'UGC']
 
 const inputCls =
   'mt-1.5 block w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground transition-all focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20'
@@ -324,7 +323,7 @@ export default function AdmissionPage() {
               <SectionHeading
                 eyebrow="ভর্তি চলমান"
                 title="এখনই ভর্তি হোন"
-                description="ISC Expo - Icon Skill & Career Expo-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।"
+                description={`${SITE.nameBn}-এ ভর্তির জন্য এক সহজ অনলাইন ভর্তি উইজার্ড পূরণ করুন।`}
               />
             </FadeIn>
           </div>

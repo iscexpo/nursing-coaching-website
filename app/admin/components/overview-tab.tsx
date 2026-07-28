@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import {
   Users,
   BookOpen,
@@ -59,6 +60,8 @@ export function OverviewPanel({
   enrollments: Enrollment[]
   payments: Payment[]
 }) {
+  const t = useTranslations('admin.overview')
+  const tc = useTranslations('common')
   const activeCourses = courses.filter((c) => c.isActive).length
   const totalStudents = enrollments.filter((e) => e.status === 'active').length
   const pendingEnrollments = enrollments.filter(
@@ -73,30 +76,30 @@ export function OverviewPanel({
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="সক্রিয় শিক্ষার্থী"
+          label={t('activeStudents')}
           value={totalStudents}
-          sub="এনরোলড"
+          sub={t('enrolled')}
           icon={Users}
           color="brand"
         />
         <StatCard
-          label="সক্রিয় কোর্স"
+          label={t('activeCourses')}
           value={activeCourses}
-          sub={`মোট ${courses.length}টি`}
+          sub={`${t('totalCoursesCount')} ${courses.length}টি`}
           icon={BookOpen}
           color="green"
         />
         <StatCard
-          label="অপেক্ষমান"
+          label={t('pendingEnrollments')}
           value={pendingEnrollments}
-          sub="এনরোলমেন্ট"
+          sub={t('enrollmentLabel')}
           icon={Clock}
           color="gold"
         />
         <StatCard
-          label="অপেক্ষমান পেমেন্ট"
+          label={t('pendingPayments')}
           value={pendingPayments}
-          sub="যাচাই বাকি"
+          sub={t('paymentLabel')}
           icon={AlertTriangle}
           color="red"
         />
@@ -113,7 +116,7 @@ export function OverviewPanel({
               ৳{totalRevenue.toLocaleString()}
             </p>
             <p className="text-xs text-muted-foreground">
-              মোট আয় (যাচাইকৃত পেমেন্ট)
+              {t('totalRevenueLabel')} ({t('verifiedPayments')})
             </p>
           </div>
         </div>
@@ -123,7 +126,7 @@ export function OverviewPanel({
         {/* Recent Enrollments */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">
-            সর্বশেষ এনরোলমেন্ট
+            {t('recentEnrollments')}
           </h3>
           <div className="mt-4 space-y-3">
             {enrollments.slice(0, 5).map((e) => (
@@ -133,7 +136,7 @@ export function OverviewPanel({
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-foreground">
-                    {e.userName || 'শিক্ষার্থী'}
+                    {e.userName || t('student')}
                   </p>
                   <p className="truncate text-xs text-muted-foreground">
                     {e.courseTitle}
@@ -151,18 +154,18 @@ export function OverviewPanel({
                   }`}
                 >
                   {e.status === 'active'
-                    ? 'সক্রিয়'
+                    ? tc('active')
                     : e.status === 'pending'
-                      ? 'অপেক্ষমান'
+                      ? tc('pending')
                       : e.status === 'approved'
-                        ? 'অনুমোদিত'
+                        ? tc('approved')
                         : e.status}
                 </span>
               </div>
             ))}
             {enrollments.length === 0 && (
               <p className="py-4 text-center text-sm text-muted-foreground">
-                কোনো এনরোলমেন্ট নেই
+                {t('noEnrollments')}
               </p>
             )}
           </div>
@@ -171,7 +174,7 @@ export function OverviewPanel({
         {/* Pending Payments */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="font-heading text-base font-bold text-foreground">
-            অপেক্ষমান পেমেন্ট
+            {t('recentPayments')}
           </h3>
           <div className="mt-4 space-y-3">
             {payments
@@ -196,7 +199,7 @@ export function OverviewPanel({
                     </p>
                   </div>
                   <span className="ml-3 shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-xs font-semibold text-gold">
-                    অপেক্ষমান
+                    {tc('pending')}
                   </span>
                 </div>
               ))}
@@ -204,7 +207,7 @@ export function OverviewPanel({
               <div className="flex flex-col items-center py-6">
                 <CheckCircle2 className="size-8 text-green/50" />
                 <p className="mt-2 text-sm text-muted-foreground">
-                  কোনো অপেক্ষমান পেমেন্ট নেই
+                  {t('noPendingPayments')}
                 </p>
               </div>
             )}

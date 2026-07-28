@@ -37,7 +37,7 @@ function extractSmsExtras(cms: CmsContent | null | undefined): SmsExtras {
 function createDefaultSystemSettings(): SystemSettings {
   return {
     id: 'primary',
-    siteName: 'ISC Expo - Icon Skill & Career Expo',
+    siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'ISC Expo - Icon Skill & Career Expo',
     siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
     smsProvider: 'none',
     smsApiKey: '',
@@ -94,7 +94,7 @@ export async function getSystemSettings(): Promise<SystemSettings> {
       .insert(settings)
       .values({
         id: 'primary',
-        siteName: 'ISC Expo - Icon Skill & Career Expo',
+        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'ISC Expo - Icon Skill & Career Expo',
         siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
         smsProvider: 'none',
         smsApiKey: '',

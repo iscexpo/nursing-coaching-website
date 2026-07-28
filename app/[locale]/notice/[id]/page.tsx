@@ -44,12 +44,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!notice) {
     return {
-      title: 'নোটিশ পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo',
+      title: `নোটিশ পাওয়া যায়নি | ${SITE.name}`,
       robots: { index: false },
     }
   }
 
-  const title = `${notice.title} | ISC Expo - Icon Skill & Career Expo`
+  const title = `${notice.title} | ${SITE.name}`
   const description = (notice.content || '').slice(0, 160)
   return {
     title,

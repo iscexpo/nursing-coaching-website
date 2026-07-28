@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { BarChart3, TrendingUp, Users, Award } from 'lucide-react'
 import type { Exam, ExamSubmission } from './types'
 
@@ -10,6 +11,8 @@ interface ResultsPanelProps {
 }
 
 export function ResultsPanel({ exams, submissions }: ResultsPanelProps) {
+  const t = useTranslations('admin.results')
+  const tc = useTranslations('common')
   const [filterExam, setFilterExam] = useState<string>('all')
 
   const filtered = useMemo(
@@ -70,14 +73,14 @@ export function ResultsPanel({ exams, submissions }: ResultsPanelProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          পরীক্ষার ফলাফল বিশ্লেষণ
+          {t('title')}
         </h3>
         <select
           value={filterExam}
           onChange={(e) => setFilterExam(e.target.value)}
           className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         >
-          <option value="all">সকল পরীক্ষা</option>
+          <option value="all">{t('allExams')}</option>
           {exams.map((ex) => (
             <option key={ex.id} value={ex.id}>
               {ex.title}
@@ -91,30 +94,30 @@ export function ResultsPanel({ exams, submissions }: ResultsPanelProps) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               icon={BarChart3}
-              label="গড় স্কোর"
+              label={t('avgScore')}
               value={`${stats.avg.toFixed(1)}%`}
             />
             <StatCard
               icon={TrendingUp}
-              label="পাসের হার"
+              label={t('passRate')}
               value={`${stats.passRate.toFixed(1)}%`}
             />
             <StatCard
               icon={Award}
-              label="সর্বোচ্চ স্কোর"
+              label={t('highestScore')}
               value={`${stats.highest.toFixed(1)}%`}
             />
             <StatCard
               icon={Users}
-              label="অংশগ্রহণকারী"
-              value={`${stats.uniqueStudents} জন`}
+              label={t('participants')}
+              value={`${stats.uniqueStudents} ${t('participantCount')}`}
             />
           </div>
 
           {perExam.length > 0 && (
             <div className="space-y-3">
               <h4 className="font-heading font-semibold text-foreground">
-                বিষয়ভিত্তিক ফলাফল
+                {t('subjectWiseResults')}
               </h4>
               <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -122,19 +125,19 @@ export function ResultsPanel({ exams, submissions }: ResultsPanelProps) {
                     <thead>
                       <tr className="border-b border-border bg-secondary/30">
                         <th className="px-4 py-3 text-left font-semibold text-foreground">
-                          পরীক্ষা
+                          {t('examLabel')}
                         </th>
                         <th className="px-4 py-3 text-left font-semibold text-foreground">
-                          বিষয়
+                          {tc('subject')}
                         </th>
                         <th className="px-4 py-3 text-center font-semibold text-foreground">
-                          অংশগ্রহণ
+                          {t('participation')}
                         </th>
                         <th className="px-4 py-3 text-center font-semibold text-foreground">
-                          গড় স্কোর
+                          {t('avgScore')}
                         </th>
                         <th className="px-4 py-3 text-center font-semibold text-foreground">
-                          পাসের হার
+                          {t('passRate')}
                         </th>
                       </tr>
                     </thead>
@@ -178,7 +181,7 @@ export function ResultsPanel({ exams, submissions }: ResultsPanelProps) {
         <div className="rounded-2xl border border-border bg-card p-12 text-center">
           <BarChart3 className="mx-auto size-10 text-muted-foreground" />
           <p className="mt-3 text-sm text-muted-foreground">
-            এখনো কোনো ফলাফল নেই
+            {t('noResultsYet')}
           </p>
         </div>
       )}

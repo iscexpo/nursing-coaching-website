@@ -10,10 +10,11 @@ import { Breadcrumb } from '@/components/breadcrumb'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
+import { SITE } from '@/lib/site-data'
 
 export const metadata = {
-  title: 'নোটিশ | ISC Expo - Icon Skill & Career Expo',
-  description: 'ISC Expo - Icon Skill & Career Expo-এর সর্বশেষ নোটিশ ও আপডেট।',
+  title: `Notices | ${SITE.name}`,
+  description: `Latest notices, updates & important information from ${SITE.name}.`,
   alternates: { canonical: '/notice' },
 }
 
@@ -30,9 +31,9 @@ async function getNotices() {
   }
 }
 
-function formatDate(date: Date) {
+function formatDate(date: Date, locale: string) {
   const d = new Date(date)
-  return d.toLocaleDateString('bn-BD', {
+  return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'bn-BD', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -70,10 +71,10 @@ export default async function NoticePage({
             {allNotices.length === 0 ? (
               <div className="rounded-2xl border border-border bg-card p-12 text-center shadow-sm">
                 <h3 className="font-heading text-lg font-bold text-foreground">
-                  কোনো নোটিশ নেই
+                  {t('noNotices')}
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  শীঘ্রই নোটিশ প্রকাশিত হবে।
+                  {t('comingSoon')}
                 </p>
               </div>
             ) : (
@@ -98,11 +99,11 @@ export default async function NoticePage({
                       </span>
                       {n.isUrgent && (
                         <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
-                          জরুরি
+                          {t('urgent')}
                         </span>
                       )}
                       <span className="ml-auto text-xs text-muted-foreground">
-                        {formatDate(n.createdAt)}
+                        {formatDate(n.createdAt, locale)}
                       </span>
                     </div>
                     <h3 className="mt-3 font-heading text-base font-semibold text-foreground sm:text-lg">

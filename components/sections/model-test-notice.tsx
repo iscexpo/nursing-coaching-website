@@ -34,19 +34,19 @@ export async function ModelTestAndNotice() {
   }
 
   return (
-    <section id="notice" className="bg-secondary/50 py-16 md:py-20">
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 lg:grid-cols-2">
+    <section id="notice" className="bg-background py-16 md:py-20">
+      <div className="mx-auto grid max-w-7xl gap-4 px-4 lg:grid-cols-2">
         {/* Model Test */}
         <FadeIn direction="left">
-          <div className="flex h-full flex-col justify-between rounded-3xl bg-brand p-8 text-brand-foreground shadow-xl shadow-brand/10 sm:px-10 md:py-12">
+          <div className="flex h-full flex-col justify-between rounded-lg border border-border bg-muted/50 p-8 sm:px-10 md:py-12">
             <div>
-              <span className="flex size-12 items-center justify-center rounded-xl bg-brand-foreground/15 backdrop-blur-sm">
-                <FileText className="size-6" />
+              <span className="flex size-10 items-center justify-center rounded-md bg-foreground text-background">
+                <FileText className="size-5" />
               </span>
-              <h2 className="mt-5 font-heading text-2xl font-bold sm:text-3xl">
+              <h2 className="mt-5 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                 {t('modelTest.title')}
               </h2>
-              <p className="mt-3 max-w-md leading-relaxed text-brand-foreground/85">
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
                 {t('modelTest.description')}
               </p>
               <ul className="mt-5 flex flex-wrap gap-2 text-sm">
@@ -58,7 +58,7 @@ export async function ModelTestAndNotice() {
                 ].map((tagText) => (
                   <li
                     key={tagText}
-                    className="rounded-full bg-brand-foreground/10 px-3 py-1 backdrop-blur-sm"
+                    className="rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground"
                   >
                     {tagText}
                   </li>
@@ -68,7 +68,7 @@ export async function ModelTestAndNotice() {
             <Button
               render={<Link href="/exam" />}
               size="lg"
-              className="mt-8 h-12 w-fit bg-gold px-8 text-base font-semibold text-gold-foreground shadow-lg shadow-gold/25 transition-all hover:bg-gold/90 hover:shadow-xl hover:-translate-y-0.5"
+              className="mt-8 h-11 w-fit px-7"
             >
               {t('modelTest.startFree')}
               <ArrowRight className="size-4" />
@@ -78,17 +78,16 @@ export async function ModelTestAndNotice() {
 
         {/* Notice Board */}
         <FadeIn direction="right">
-          <div className="h-full rounded-3xl border border-border bg-card p-8 shadow-sm">
+          <div className="h-full rounded-lg border border-border p-8">
             <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-2 font-heading text-2xl font-bold text-foreground">
-                <Megaphone className="size-6 text-brand" />
+              <h2 className="flex items-center gap-2 text-xl font-bold text-foreground">
+                <Megaphone className="size-5 text-muted-foreground" />
                 {t('noticeBoard.title')}
               </h2>
               <Button
                 render={<Link href="/notice" />}
                 variant="ghost"
                 size="sm"
-                className="text-brand"
               >
                 View All
               </Button>
@@ -102,13 +101,13 @@ export async function ModelTestAndNotice() {
                 data.map((n) => (
                   <li
                     key={n.id}
-                    className="flex items-start gap-3 py-3.5 transition-colors hover:bg-secondary/50 rounded-lg px-2 -mx-2"
+                    className="flex items-start gap-3 py-3.5 transition-colors hover:bg-muted/50 rounded-md px-2 -mx-2"
                   >
                     <span
-                      className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
+                      className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md ${
                         n.isUrgent
                           ? 'bg-destructive/10 text-destructive'
-                          : 'bg-secondary text-brand'
+                          : 'bg-muted text-muted-foreground'
                       }`}
                     >
                       <Bell className="size-4" />
@@ -119,7 +118,7 @@ export async function ModelTestAndNotice() {
                           className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ${
                             n.isUrgent
                               ? 'bg-destructive/10 text-destructive'
-                              : 'bg-green/10 text-green'
+                              : 'bg-muted text-muted-foreground'
                           }`}
                         >
                           {n.tag}
