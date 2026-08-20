@@ -6,6 +6,7 @@ import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
 import { verifyPaymentSchema } from '@/lib/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { notifyPaymentUpdate } from '@/lib/notifications'
+import { calculatePaymentUpdate, validatePaymentAmount } from '@/lib/lms-logic'
 
 export async function GET(
   request: NextRequest,
@@ -74,6 +75,28 @@ export async function PUT(
       )
     }
 
+    const [enrollment] = await db
+      .select()
+      .from(enrollments)
+      .where(eq(enrollments.id, existing.enrollmentId))
+
+    if (status === 'verified') {
+      if (!enrollment) {
+        return NextResponse.json(
+          { error: 'Enrollment not found for payment' },
+          { status: 400 },
+        )
+      }
+
+      const paymentCheck = validatePaymentAmount(
+        existing.amount,
+        Math.max(0, enrollment.dueAmount),
+      )
+      if (!paymentCheck.ok) {
+        return NextResponse.json({ error: paymentCheck.error }, { status: 400 })
+      }
+    }
+
     const result = await db.transaction(async (tx) => {
       const [updated] = await tx
         .update(payments)
@@ -86,38 +109,39 @@ export async function PUT(
         .where(eq(payments.id, id))
         .returning()
 
-      if (status === 'verified') {
-        const [enrollment] = await tx
+      if (status === 'verified' && enrollment) {
+        const [invoice] = await tx
           .select()
-          .from(enrollments)
+          .from(invoices)
+          .where(eq(invoices.enrollmentId, existing.enrollmentId))
+
+        const totals = calculatePaymentUpdate(
+          enrollment.paidAmount,
+          enrollment.dueAmount,
+          invoice?.paidAmount ?? 0,
+          invoice?.dueAmount ?? enrollment.dueAmount,
+          existing.amount,
+        )
+
+        await tx
+          .update(enrollments)
+          .set({
+            paidAmount: totals.enrollmentPaid,
+            dueAmount: totals.enrollmentDue,
+            updatedAt: new Date(),
+          })
           .where(eq(enrollments.id, existing.enrollmentId))
-        if (enrollment) {
+
+        if (invoice) {
           await tx
-            .update(enrollments)
+            .update(invoices)
             .set({
-              paidAmount: enrollment.paidAmount + existing.amount,
-              dueAmount: enrollment.dueAmount - existing.amount,
+              paidAmount: totals.invoicePaid,
+              dueAmount: totals.invoiceDue,
+              status: totals.invoiceStatus as 'paid' | 'partial',
               updatedAt: new Date(),
             })
-            .where(eq(enrollments.id, existing.enrollmentId))
-
-          const [invoice] = await tx
-            .select()
-            .from(invoices)
-            .where(eq(invoices.enrollmentId, existing.enrollmentId))
-          if (invoice) {
-            const newPaidAmount = invoice.paidAmount + existing.amount
-            const newDueAmount = invoice.dueAmount - existing.amount
-            await tx
-              .update(invoices)
-              .set({
-                paidAmount: newPaidAmount,
-                dueAmount: newDueAmount,
-                status: newDueAmount <= 0 ? 'paid' : 'partial',
-                updatedAt: new Date(),
-              })
-              .where(eq(invoices.id, invoice.id))
-          }
+            .where(eq(invoices.id, invoice.id))
         }
       }
 

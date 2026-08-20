@@ -14,6 +14,6 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov'],
     },
-    include: ['**/tests/**/*.test.{ts,tsx,js}'],
+    include: ['tests/**/*.test.{ts,tsx,js}'],
   },
 })
