@@ -72,6 +72,7 @@ export const updateEnrollmentSchema = z.object({
       'active',
       'completed',
       'cancelled',
+      'suspended',
     ])
     .optional(),
   notes: z.string().max(1000).optional(),

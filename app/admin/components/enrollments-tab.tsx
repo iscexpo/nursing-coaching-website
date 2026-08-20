@@ -59,6 +59,7 @@ export function EnrollmentsPanel({
       { value: 'completed', label: t('statusOptions.completed') },
       { value: 'rejected', label: t('statusOptions.rejected') },
       { value: 'cancelled', label: t('statusOptions.cancelled') },
+      { value: 'suspended', label: t('statusOptions.suspended') },
     ],
     [t],
   )

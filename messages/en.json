@@ -586,7 +586,8 @@
         "active": "Active",
         "completed": "Completed",
         "rejected": "Rejected",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "suspended": "Suspended"
       },
       "enrollmentCreated": "Enrollment created",
       "enrollmentUpdated": "Enrollment updated",
