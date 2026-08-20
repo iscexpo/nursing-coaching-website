@@ -16,6 +16,8 @@
     "db:reset": "node --experimental-strip-types scripts/clean-db.ts && node --experimental-strip-types scripts/seed-demo-admin.ts",
     "db:migrate": "drizzle-kit push",
     "db:analyze": "node --experimental-strip-types scripts/analyze-db.ts",
+    "i18n:check": "node --experimental-strip-types scripts/check-i18n.ts",
+    "db:verify": "node --experimental-strip-types scripts/verify-migrations.ts",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",

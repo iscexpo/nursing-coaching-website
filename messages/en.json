@@ -968,7 +968,7 @@
         "subject": "Subject",
         "phone": "Phone",
         "status": "Status",
-        "actions": ""
+        "actions": "Actions"
       }
     },
     "notices": {
@@ -1003,7 +1003,7 @@
       "passRate": "Pass Rate",
       "highestScore": "Highest Score",
       "participants": "Participants",
-      "participantCount": "",
+      "participantCount": "participants",
       "subjectWiseResults": "Subject-wise Results",
       "participation": "Participation",
       "noResultsYet": "No results yet",
@@ -1429,7 +1429,7 @@
     },
     "overview": {
       "activeCourses": "Active Courses",
-      "courseCount": "",
+      "courseCount": "courses",
       "averageScore": "Average Score",
       "totalPayment": "Total Payment",
       "lifecycleEvents": "Lifecycle Events",
