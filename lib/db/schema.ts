@@ -194,6 +194,7 @@ export const enrollments = pgTable(
         | 'completed'
         | 'cancelled'
         | 'suspended'
+        | 'expired'
       >()
       .default('pending')
       .notNull(),

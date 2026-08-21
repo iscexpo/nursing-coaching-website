@@ -11,7 +11,7 @@ import { db } from '@/lib/db'
 import { enrollments, studentLifecycleEvents } from '@/lib/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { requirePermission, getSession } from '@/lib/core/permissions'
-import { getEnrollmentTransitionError } from '@/lib/core/lms-logic'
+import { getEnrollmentTransitionError, calculateExpiryDate } from '@/lib/core/lms-logic'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function POST(
@@ -30,10 +30,11 @@ export async function POST(
   const error = getEnrollmentTransitionError(existing.status, 'approved')
   if (error) return badRequest(error)
   const now = new Date()
+  const expiresAt = existing.expiresAt ?? calculateExpiryDate(now, 12)
   const result = await db.transaction(async (tx) => {
     const [updated] = await tx
       .update(enrollments)
-      .set({ status: 'approved', approvedAt: now, updatedAt: now })
+      .set({ status: 'approved', approvedAt: now, expiresAt, updatedAt: now })
       .where(
         and(eq(enrollments.id, id), eq(enrollments.status, existing.status)),
       )
