@@ -58,7 +58,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createCourseSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [course] = await db

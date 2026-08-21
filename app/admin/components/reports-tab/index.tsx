@@ -2,7 +2,16 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { Download, Loader2, BarChart3, Users, DollarSign, Calendar, TrendingUp, FileText } from 'lucide-react'
+import {
+  Download,
+  Loader2,
+  BarChart3,
+  Users,
+  DollarSign,
+  Calendar,
+  TrendingUp,
+  FileText,
+} from 'lucide-react'
 import type {
   Enrollment,
   Payment,
@@ -155,7 +164,10 @@ export function ReportsPanel({
     })
 
     Object.values(studentMap).forEach((stat) => {
-      stat.percentage = calculatePercentage(stat.present + stat.late, stat.total)
+      stat.percentage = calculatePercentage(
+        stat.present + stat.late,
+        stat.total,
+      )
     })
 
     return Object.values(studentMap).filter((s) => s.total > 0)
@@ -216,7 +228,10 @@ export function ReportsPanel({
         const enrollmentPayments = payments.filter(
           (p) => p.enrollmentId === e.id && p.status === 'verified',
         )
-        const paidAmount = enrollmentPayments.reduce((sum, p) => sum + p.amount, 0)
+        const paidAmount = enrollmentPayments.reduce(
+          (sum, p) => sum + p.amount,
+          0,
+        )
         const lastPayment = enrollmentPayments.sort(
           (a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime(),
         )[0]

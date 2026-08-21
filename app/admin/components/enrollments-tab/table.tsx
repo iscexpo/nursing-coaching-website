@@ -52,7 +52,9 @@ export function EnrollmentsTable({
                 <th className="px-4 py-3 text-center font-semibold text-foreground w-12">
                   <input
                     type="checkbox"
-                    checked={selectedIds.length === paged.length && paged.length > 0}
+                    checked={
+                      selectedIds.length === paged.length && paged.length > 0
+                    }
                     onChange={toggleSelectAll}
                     className="size-4 rounded border-border text-brand focus:ring-brand"
                   />

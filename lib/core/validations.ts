@@ -151,9 +151,7 @@ export const createScheduledNotificationSchema = z.object({
     .enum(['info', 'success', 'warning', 'payment', 'enrollment'])
     .default('info'),
   scheduledAt: z.coerce.date(),
-  targetRole: z
-    .enum(['super-admin', 'admin', 'teacher', 'student'])
-    .optional(),
+  targetRole: z.enum(['super-admin', 'admin', 'teacher', 'student']).optional(),
   targetCourseId: z.string().min(1).optional(),
 })
 

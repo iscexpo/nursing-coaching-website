@@ -1,5 +1,11 @@
 import { NextRequest } from 'next/server'
-import {notFound, ok, badRequest, serverError, validationError} from '@/lib/api/response'
+import {
+  notFound,
+  ok,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -20,8 +26,7 @@ export async function GET(
       .select()
       .from(teachers)
       .where(eq(teachers.id, id))
-    if (!teacher)
-      return notFound('Teacher not found')
+    if (!teacher) return notFound('Teacher not found')
 
     return ok(teacher)
   } catch {
@@ -41,7 +46,10 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateTeacherSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const d = parsed.data
@@ -66,8 +74,7 @@ export async function PUT(
       .where(eq(teachers.id, id))
       .returning()
 
-    if (!updated)
-      return notFound('Teacher not found')
+    if (!updated) return notFound('Teacher not found')
     return ok(updated)
   } catch {
     return serverError('Failed to update teacher')
@@ -87,8 +94,7 @@ export async function DELETE(
       .delete(teachers)
       .where(eq(teachers.id, id))
       .returning()
-    if (!deleted)
-      return notFound('Teacher not found')
+    if (!deleted) return notFound('Teacher not found')
 
     return ok({ success: true })
   } catch {

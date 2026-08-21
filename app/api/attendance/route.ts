@@ -4,8 +4,17 @@ import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
 import { eq, desc, and, gte, lte, count } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
-import { createAttendanceSchema, paginationSchema } from '@/lib/core/validations'
-import { ok, unauthorized, conflict, serverError, validationError } from '@/lib/api/response'
+import {
+  createAttendanceSchema,
+  paginationSchema,
+} from '@/lib/core/validations'
+import {
+  ok,
+  unauthorized,
+  conflict,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -52,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch attendance')
   }
 }
@@ -67,7 +76,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createAttendanceSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const { userId, date, status, time } = parsed.data
@@ -106,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     return ok(record, 201)
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to mark attendance')
   }
 }

@@ -6,7 +6,12 @@ import { eq, desc, count } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { createExamSchema, paginationSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { ok, unauthorized, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,7 +65,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch exams')
   }
 }
@@ -75,7 +80,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createExamSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [exam] = await db
@@ -103,7 +111,7 @@ export async function POST(request: NextRequest) {
 
     return ok(exam, 201)
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to create exam')
   }
 }

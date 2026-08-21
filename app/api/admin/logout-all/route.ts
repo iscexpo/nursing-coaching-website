@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, forbidden, ok, serverError} from '@/lib/api/response'
+import { unauthorized, forbidden, ok, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { session } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -16,8 +16,7 @@ export async function POST(request: NextRequest) {
     const session_ = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session_)
-      return unauthorized()
+    if (!session_) return unauthorized()
 
     const body = await request.json().catch(() => ({}))
     const { userId } = body as { userId?: string }

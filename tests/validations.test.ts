@@ -200,8 +200,8 @@ describe('createAttendanceSchema', () => {
   })
 
   it('rejects a missing user or date', () => {
-    expect(createAttendanceSchema.safeParse({ status: 'present' }).success).toBe(
-      false,
-    )
+    expect(
+      createAttendanceSchema.safeParse({ status: 'present' }).success,
+    ).toBe(false)
   })
 })

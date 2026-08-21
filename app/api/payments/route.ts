@@ -7,7 +7,15 @@ import { getSession, isAdmin } from '@/lib/core/permissions'
 import { createPaymentSchema, paginationSchema } from '@/lib/core/validations'
 import { rateLimit } from '@/lib/core/rate-limit'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { ok, unauthorized, forbidden, notFound, badRequest, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  forbidden,
+  notFound,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch payments')
   }
 }
@@ -62,7 +70,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createPaymentSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const { enrollmentId, amount, method, transactionId, senderNumber, notes } =
@@ -157,7 +168,7 @@ export async function POST(request: NextRequest) {
 
     return ok(result, 201)
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to create payment')
   }
 }

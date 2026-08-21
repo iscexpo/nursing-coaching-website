@@ -152,15 +152,30 @@ export function BarChart({
 }) {
   const t = useTranslations('admin.reports')
   if (data.length === 0) {
-    return <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    return (
+      <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    )
   }
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <RechartsBarChart data={data} margin={{ top: 8, right: 8, left: -16 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} vertical={false} />
-          <XAxis dataKey={xKey} tick={{ fontSize: 12, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 12, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={GRID_COLOR}
+            vertical={false}
+          />
+          <XAxis
+            dataKey={xKey}
+            tick={{ fontSize: 12, fill: TICK_COLOR }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            tick={{ fontSize: 12, fill: TICK_COLOR }}
+            axisLine={false}
+            tickLine={false}
+          />
           <Tooltip contentStyle={chartTooltipStyle} />
           <Bar dataKey={yKey} fill={BRAND_COLOR} radius={[6, 6, 0, 0]} />
         </RechartsBarChart>
@@ -172,18 +187,48 @@ export function BarChart({
 export function RevenueChart({ data }: { data: RevenueReport[] }) {
   const t = useTranslations('admin.reports')
   if (data.length === 0)
-    return <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    return (
+      <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    )
   return (
     <div>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <RechartsBarChart data={data} margin={{ top: 8, right: 8, left: -16 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} vertical={false} />
-            <XAxis dataKey="period" tick={{ fontSize: 12, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 12, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
+          <RechartsBarChart
+            data={data}
+            margin={{ top: 8, right: 8, left: -16 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke={GRID_COLOR}
+              vertical={false}
+            />
+            <XAxis
+              dataKey="period"
+              tick={{ fontSize: 12, fill: TICK_COLOR }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: TICK_COLOR }}
+              axisLine={false}
+              tickLine={false}
+            />
             <Tooltip contentStyle={chartTooltipStyle} />
-            <Bar dataKey="verified" name={t('dataTableHeaders.verified')} stackId="a" fill={GREEN_COLOR} radius={[0, 0, 0, 0]} />
-            <Bar dataKey="pending" name={t('dataTableHeaders.pending')} stackId="a" fill={GOLD_COLOR} radius={[6, 6, 0, 0]} />
+            <Bar
+              dataKey="verified"
+              name={t('dataTableHeaders.verified')}
+              stackId="a"
+              fill={GREEN_COLOR}
+              radius={[0, 0, 0, 0]}
+            />
+            <Bar
+              dataKey="pending"
+              name={t('dataTableHeaders.pending')}
+              stackId="a"
+              fill={GOLD_COLOR}
+              radius={[6, 6, 0, 0]}
+            />
           </RechartsBarChart>
         </ResponsiveContainer>
       </div>
@@ -204,7 +249,9 @@ export function RevenueChart({ data }: { data: RevenueReport[] }) {
 export function AttendanceChart({ data }: { data: AttendanceStats[] }) {
   const t = useTranslations('admin.reports')
   if (data.length === 0)
-    return <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    return (
+      <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    )
   const present = data.reduce((s, d) => s + d.present + d.late, 0)
   const late = data.reduce((s, d) => s + d.late, 0)
   const absent = data.reduce((s, d) => s + d.absent, 0)
@@ -239,7 +286,9 @@ export function AttendanceChart({ data }: { data: AttendanceStats[] }) {
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
-          <span className="text-3xl font-bold text-foreground">{percentage}%</span>
+          <span className="text-3xl font-bold text-foreground">
+            {percentage}%
+          </span>
           <span className="text-xs text-muted-foreground">
             {t('charts.attendanceOverview')}
           </span>
@@ -272,7 +321,9 @@ export function AttendanceChart({ data }: { data: AttendanceStats[] }) {
 export function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
   const t = useTranslations('admin.reports')
   if (data.length === 0)
-    return <p className="text-center text-muted-foreground py-8">{t('noCourses')}</p>
+    return (
+      <p className="text-center text-muted-foreground py-8">{t('noCourses')}</p>
+    )
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -280,11 +331,30 @@ export function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
           data={data.map((c) => ({ ...c, name: c.courseTitle }))}
           margin={{ top: 8, right: 8, left: -16 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 11, fill: TICK_COLOR }} axisLine={false} tickLine={false} interval={0} />
-          <YAxis tick={{ fontSize: 12, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={GRID_COLOR}
+            vertical={false}
+          />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 11, fill: TICK_COLOR }}
+            axisLine={false}
+            tickLine={false}
+            interval={0}
+          />
+          <YAxis
+            tick={{ fontSize: 12, fill: TICK_COLOR }}
+            axisLine={false}
+            tickLine={false}
+          />
           <Tooltip contentStyle={chartTooltipStyle} />
-          <Bar dataKey="totalEnrollments" name={t('stats.totalEnrollments')} fill={BRAND_COLOR} radius={[6, 6, 0, 0]} />
+          <Bar
+            dataKey="totalEnrollments"
+            name={t('stats.totalEnrollments')}
+            fill={BRAND_COLOR}
+            radius={[6, 6, 0, 0]}
+          />
         </RechartsBarChart>
       </ResponsiveContainer>
     </div>
@@ -294,7 +364,9 @@ export function CourseAnalyticsChart({ data }: { data: CourseAnalytics[] }) {
 export function PerformanceChart({ data }: { data: StudentPerformance[] }) {
   const t = useTranslations('admin.reports')
   if (data.length === 0)
-    return <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    return (
+      <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
+    )
   const sorted = [...data]
     .sort((a, b) => b.averageScore - a.averageScore)
     .slice(0, 10)
@@ -305,11 +377,34 @@ export function PerformanceChart({ data }: { data: StudentPerformance[] }) {
           data={sorted.map((d) => ({ ...d, name: d.studentName }))}
           margin={{ top: 8, right: 8, left: -16 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 11, fill: TICK_COLOR }} axisLine={false} tickLine={false} interval={0} />
-          <YAxis tick={{ fontSize: 12, fill: TICK_COLOR }} axisLine={false} tickLine={false} unit="%" />
-          <Tooltip contentStyle={chartTooltipStyle} formatter={(value) => [`${value}%`, t('averageScore')]} />
-          <Bar dataKey="averageScore" name={t('averageScore')} fill={BRAND_COLOR} radius={[6, 6, 0, 0]} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={GRID_COLOR}
+            vertical={false}
+          />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 11, fill: TICK_COLOR }}
+            axisLine={false}
+            tickLine={false}
+            interval={0}
+          />
+          <YAxis
+            tick={{ fontSize: 12, fill: TICK_COLOR }}
+            axisLine={false}
+            tickLine={false}
+            unit="%"
+          />
+          <Tooltip
+            contentStyle={chartTooltipStyle}
+            formatter={(value) => [`${value}%`, t('averageScore')]}
+          />
+          <Bar
+            dataKey="averageScore"
+            name={t('averageScore')}
+            fill={BRAND_COLOR}
+            radius={[6, 6, 0, 0]}
+          />
         </RechartsBarChart>
       </ResponsiveContainer>
     </div>

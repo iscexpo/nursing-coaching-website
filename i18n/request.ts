@@ -9,7 +9,9 @@ const messageLoaders = {
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requestedLocale = await requestLocale
-  const locale = isLocale(requestedLocale) ? requestedLocale : routing.defaultLocale
+  const locale = isLocale(requestedLocale)
+    ? requestedLocale
+    : routing.defaultLocale
   return {
     locale,
     messages: (await messageLoaders[locale]()).default,

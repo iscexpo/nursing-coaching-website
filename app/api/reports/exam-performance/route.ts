@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {ok, badRequest, serverError} from '@/lib/api/response'
+import { ok, badRequest, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { sql, desc, and, gte, lte, count, eq, avg } from 'drizzle-orm'

@@ -9,7 +9,13 @@ import { getSystemSettings, saveSystemSettings } from '@/lib/cms/settings'
 import { settingsSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { rateLimit } from '@/lib/core/rate-limit'
-import { ok, unauthorized, forbidden, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  forbidden,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 const MASK = '********'
 
@@ -79,7 +85,10 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const parsed = settingsSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     // Check if user is trying to update sensitive fields (require super-admin)

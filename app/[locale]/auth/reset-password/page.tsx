@@ -7,7 +7,13 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth/client'
 import { useSiteData } from '@/hooks/use-site-data'
-import { ArrowLeft, ArrowRight, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -96,9 +102,7 @@ export default function ResetPasswordPage() {
           <h1 className="font-heading text-2xl font-bold text-foreground">
             {t('successTitle')}
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {t('successDesc')}
-          </p>
+          <p className="text-sm text-muted-foreground">{t('successDesc')}</p>
           <Link
             href="/auth/sign-in"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground transition-all hover:bg-brand/90"
@@ -124,9 +128,7 @@ export default function ResetPasswordPage() {
           <h1 className="font-heading text-2xl font-bold text-foreground">
             {t('title')}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t('subtitle')}
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
 
         {error && (

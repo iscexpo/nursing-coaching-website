@@ -10,7 +10,12 @@ import {
   paginationSchema,
 } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { ok, unauthorized, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -37,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data: allNotices, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch notices')
   }
 }
@@ -52,7 +57,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createNoticeSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [notice] = await db
@@ -80,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     return ok(notice, 201)
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to create notice')
   }
 }

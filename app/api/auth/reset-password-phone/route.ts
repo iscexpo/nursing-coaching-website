@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {ok, notFound, badRequest, serverError} from '@/lib/api/response'
+import { ok, notFound, badRequest, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { otp, account, user } from '@/lib/db/schema'
 import { eq, and, gt } from 'drizzle-orm'

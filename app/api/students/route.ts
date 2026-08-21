@@ -7,7 +7,14 @@ import { createStudentSchema, paginationSchema } from '@/lib/core/validations'
 import { auth } from '@/lib/auth'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { rateLimit } from '@/lib/core/rate-limit'
-import { ok, unauthorized, badRequest, conflict, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  badRequest,
+  conflict,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -74,7 +81,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createStudentSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const { password, ...profileData } = parsed.data

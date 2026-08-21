@@ -6,8 +6,12 @@ function validate(fileTags: string[], journalEntries: JournalEntry[]) {
   const journalTags = journalEntries.map((e) => e.tag)
   const errors: string[] = []
   for (let index = 0; index < journalEntries.length; index += 1) {
-    if (journalEntries[index].idx !== index) errors.push(`journal index mismatch at ${journalEntries[index].tag}`)
-    if (journalTags[index] !== fileTags[index]) errors.push(`journal order mismatch at index ${index}: expected ${fileTags[index] ?? 'none'}, got ${journalTags[index]}`)
+    if (journalEntries[index].idx !== index)
+      errors.push(`journal index mismatch at ${journalEntries[index].tag}`)
+    if (journalTags[index] !== fileTags[index])
+      errors.push(
+        `journal order mismatch at index ${index}: expected ${fileTags[index] ?? 'none'}, got ${journalTags[index]}`,
+      )
   }
   return errors
 }
@@ -30,8 +34,10 @@ describe('verify-migrations order validation', () => {
     const errors = validate(fileTags, reordered)
     expect(errors).toEqual(
       expect.arrayContaining([
-        expect.stringContaining('journal order mismatch at index 1: expected 0001_add_users, got 0002_add_courses'),
-      ])
+        expect.stringContaining(
+          'journal order mismatch at index 1: expected 0001_add_users, got 0002_add_courses',
+        ),
+      ]),
     )
     // Should report mismatch at index 1 (and 2) but not idx mismatch since idx are sequential
     expect(errors.some((e) => e.includes('journal index mismatch'))).toBe(false)
@@ -44,6 +50,10 @@ describe('verify-migrations order validation', () => {
       { idx: 2, tag: '0002_add_courses' },
     ]
     const errors = validate(fileTags, badIdx)
-    expect(errors).toEqual(expect.arrayContaining([expect.stringContaining('journal index mismatch at 0001_add_users')]))
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('journal index mismatch at 0001_add_users'),
+      ]),
+    )
   })
 })

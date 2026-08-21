@@ -1,7 +1,25 @@
 'use client'
 
-import { Users, DollarSign, Calendar, TrendingUp, FileText, BarChart3, Clock, CheckCircle } from 'lucide-react'
-import { StatCard, ChartCard, DataTable, BarChart, RevenueChart, AttendanceChart, CourseAnalyticsChart, PerformanceChart } from './charts'
+import {
+  Users,
+  DollarSign,
+  Calendar,
+  TrendingUp,
+  FileText,
+  BarChart3,
+  Clock,
+  CheckCircle,
+} from 'lucide-react'
+import {
+  StatCard,
+  ChartCard,
+  DataTable,
+  BarChart,
+  RevenueChart,
+  AttendanceChart,
+  CourseAnalyticsChart,
+  PerformanceChart,
+} from './charts'
 import { useReportFormatters } from './format'
 import type { ReportType } from './types'
 import type {
@@ -239,7 +257,9 @@ export function ReportContent({
             />
             <StatCard
               label={t('stats.fullyPaid')}
-              value={feeCollectionReport.filter((f) => f.status === 'paid').length}
+              value={
+                feeCollectionReport.filter((f) => f.status === 'paid').length
+              }
               icon={CheckCircle}
               color="blue"
             />
@@ -288,8 +308,10 @@ export function ReportContent({
               value={
                 studentPerformance.length > 0
                   ? `${Math.round(
-                      studentPerformance.reduce((s, p) => s + p.averageScore, 0) /
-                        studentPerformance.length,
+                      studentPerformance.reduce(
+                        (s, p) => s + p.averageScore,
+                        0,
+                      ) / studentPerformance.length,
                     )}%`
                   : '0%'
               }
@@ -298,7 +320,10 @@ export function ReportContent({
             />
             <StatCard
               label={t('stats.examsTaken')}
-              value={studentPerformance.reduce((s, p) => s + p.examsAttempted, 0)}
+              value={studentPerformance.reduce(
+                (s, p) => s + p.examsAttempted,
+                0,
+              )}
               icon={FileText}
               color="blue"
             />

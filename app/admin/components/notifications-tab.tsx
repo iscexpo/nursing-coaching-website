@@ -421,7 +421,9 @@ export function NotificationsPanel({
                 className={inputClass}
               >
                 <option value="">{t('scheduleRoleAll')}</option>
-                <option value="super-admin">{t('scheduleRoleSuperAdmin')}</option>
+                <option value="super-admin">
+                  {t('scheduleRoleSuperAdmin')}
+                </option>
                 <option value="admin">{t('scheduleRoleAdmin')}</option>
                 <option value="teacher">{t('scheduleRoleTeacher')}</option>
                 <option value="student">{t('scheduleRoleStudent')}</option>

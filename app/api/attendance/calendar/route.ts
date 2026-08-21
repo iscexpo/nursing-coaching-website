@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, ok, badRequest, serverError} from '@/lib/api/response'
+import { unauthorized, ok, badRequest, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
 import { eq, and, gte, lte } from 'drizzle-orm'
@@ -8,8 +8,7 @@ import { getSession, isAdmin } from '@/lib/core/permissions'
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const month = searchParams.get('month') // 0-indexed (0 = January)

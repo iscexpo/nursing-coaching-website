@@ -1,5 +1,11 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, forbidden, ok, notFound, serverError} from '@/lib/api/response'
+import {
+  unauthorized,
+  forbidden,
+  ok,
+  notFound,
+  serverError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -12,15 +18,13 @@ export async function GET(
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [submission] = await db
       .select()
       .from(examSubmissions)
       .where(eq(examSubmissions.id, id))
-    if (!submission)
-      return notFound('Submission not found')
+    if (!submission) return notFound('Submission not found')
 
     const admin = isAdmin(session.user.role)
 

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
-import {ok, serverError, validationError} from '@/lib/api/response'
+import { ok, serverError, validationError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
 import { desc } from 'drizzle-orm'
@@ -18,7 +18,7 @@ export async function GET() {
       .orderBy(desc(teachers.createdAt))
     return ok({ data: rows })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch teachers')
   }
 }
@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createTeacherSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const d = parsed.data
@@ -51,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     return ok(teacher, 201)
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to create teacher')
   }
 }

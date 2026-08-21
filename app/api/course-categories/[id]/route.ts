@@ -1,5 +1,11 @@
 import { NextRequest } from 'next/server'
-import {ok, notFound, conflict, serverError, validationError} from '@/lib/api/response'
+import {
+  ok,
+  notFound,
+  conflict,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { courseCategories } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -18,7 +24,10 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateCourseCategorySchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [existing] = await db
@@ -26,8 +35,7 @@ export async function PUT(
       .from(courseCategories)
       .where(eq(courseCategories.id, id))
       .limit(1)
-    if (!existing)
-      return notFound('Course category not found')
+    if (!existing) return notFound('Course category not found')
 
     if (parsed.data.name && parsed.data.name !== existing.name) {
       const duplicate = await db
@@ -81,8 +89,7 @@ export async function DELETE(
       .from(courseCategories)
       .where(eq(courseCategories.id, id))
       .limit(1)
-    if (!existing)
-      return notFound('Course category not found')
+    if (!existing) return notFound('Course category not found')
 
     await db.delete(courseCategories).where(eq(courseCategories.id, id))
     return ok({ success: true })

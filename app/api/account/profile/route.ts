@@ -1,5 +1,11 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, notFound, ok, serverError, validationError} from '@/lib/api/response'
+import {
+  unauthorized,
+  notFound,
+  ok,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -15,19 +21,15 @@ function sanitizeProfile(profile: Record<string, unknown>) {
 export async function GET() {
   try {
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [profile] = await db
       .select()
       .from(user)
       .where(eq(user.id, session.user.id))
-    if (!profile)
-      return notFound('User not found')
+    if (!profile) return notFound('User not found')
 
-    return ok(
-      sanitizeProfile(profile as Record<string, unknown>),
-    )
+    return ok(sanitizeProfile(profile as Record<string, unknown>))
   } catch {
     return serverError('Failed to fetch profile')
   }
@@ -36,13 +38,15 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = updateProfileSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const data = { ...parsed.data }
@@ -69,11 +73,8 @@ export async function PUT(request: NextRequest) {
       .where(eq(user.id, session.user.id))
       .returning()
 
-    if (!updated)
-      return notFound('User not found')
-    return ok(
-      sanitizeProfile(updated as Record<string, unknown>),
-    )
+    if (!updated) return notFound('User not found')
+    return ok(sanitizeProfile(updated as Record<string, unknown>))
   } catch {
     return serverError('Failed to update profile')
   }

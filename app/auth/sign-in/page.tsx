@@ -302,11 +302,11 @@ export default function SignInPage() {
                     সাইন ইন <ArrowRight className="size-4" />
                   </>
                 )}
-               </button>
+              </button>
             </form>
           )}
 
-               {resolvedMode === 'email' && (
+          {resolvedMode === 'email' && (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div>
                 <label

@@ -193,9 +193,7 @@ export function AddEnrollmentForm({
                 )}
               </div>
               <div className="flex items-center justify-between text-sm mt-2 pt-2 border-t border-border">
-                <span className="text-muted-foreground">
-                  {t('payableFee')}
-                </span>
+                <span className="text-muted-foreground">{t('payableFee')}</span>
                 <span className="font-semibold text-green">
                   ৳{addTotalFee.toLocaleString()}
                 </span>
@@ -242,7 +240,9 @@ export function AddEnrollmentForm({
             <Plus className="size-4" />
           )}
           {addForm.selectedCourseIds.length > 1
-            ? t('createEnrollments', { count: addForm.selectedCourseIds.length })
+            ? t('createEnrollments', {
+                count: addForm.selectedCourseIds.length,
+              })
             : t('createEnrollment')}
         </button>
       </div>

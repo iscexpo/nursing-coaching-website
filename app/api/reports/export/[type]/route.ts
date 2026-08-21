@@ -81,9 +81,12 @@ export async function GET(
     const endDate = searchParams.get('endDate')
 
     const dateConditions = []
-    if (startDate) dateConditions.push(gte(enrollments.enrolledAt, new Date(startDate)))
-    if (endDate) dateConditions.push(lte(enrollments.enrolledAt, new Date(endDate)))
-    const dateWhere = dateConditions.length > 0 ? and(...dateConditions) : undefined
+    if (startDate)
+      dateConditions.push(gte(enrollments.enrolledAt, new Date(startDate)))
+    if (endDate)
+      dateConditions.push(lte(enrollments.enrolledAt, new Date(endDate)))
+    const dateWhere =
+      dateConditions.length > 0 ? and(...dateConditions) : undefined
 
     const doc = new jsPDF()
     doc.setFontSize(16)
@@ -114,8 +117,10 @@ export async function GET(
       case 'revenue': {
         headers = ['Month', 'Verified', 'Pending', 'Total']
         const paymentConditions = []
-        if (startDate) paymentConditions.push(gte(payments.paidAt, new Date(startDate)))
-        if (endDate) paymentConditions.push(lte(payments.paidAt, new Date(endDate)))
+        if (startDate)
+          paymentConditions.push(gte(payments.paidAt, new Date(startDate)))
+        if (endDate)
+          paymentConditions.push(lte(payments.paidAt, new Date(endDate)))
         const paymentWhere =
           paymentConditions.length > 0 ? and(...paymentConditions) : undefined
         const monthly = await db
@@ -153,9 +158,13 @@ export async function GET(
           })
           .from(attendance)
           .leftJoin(user, eq(attendance.userId, user.id))
-        const agg: Record<string, { name: string; p: number; l: number; a: number }> = {}
+        const agg: Record<
+          string,
+          { name: string; p: number; l: number; a: number }
+        > = {}
         for (const r of records) {
-          if (!agg[r.userId]) agg[r.userId] = { name: r.name ?? r.userId, p: 0, l: 0, a: 0 }
+          if (!agg[r.userId])
+            agg[r.userId] = { name: r.name ?? r.userId, p: 0, l: 0, a: 0 }
           if (r.status === 'present') agg[r.userId].p++
           else if (r.status === 'late') agg[r.userId].l++
           else agg[r.userId].a++
@@ -163,12 +172,26 @@ export async function GET(
         rows = Object.values(agg).map((s) => {
           const total = s.p + s.l + s.a
           const rate = total > 0 ? Math.round(((s.p + s.l) / total) * 100) : 0
-          return [s.name, String(s.p), String(s.l), String(s.a), String(total), `${rate}%`]
+          return [
+            s.name,
+            String(s.p),
+            String(s.l),
+            String(s.a),
+            String(total),
+            `${rate}%`,
+          ]
         })
         break
       }
       case 'course-analytics': {
-        headers = ['Course', 'Enrollments', 'Active', 'Completed', 'Revenue', 'Attendance %']
+        headers = [
+          'Course',
+          'Enrollments',
+          'Active',
+          'Completed',
+          'Revenue',
+          'Attendance %',
+        ]
         const courseRows = await db
           .select({
             id: courses.id,
@@ -196,15 +219,24 @@ export async function GET(
 
         for (const c of courseRows) {
           const ce = enrollmentRows.filter((e) => e.courseId === c.id)
-          const active = ce.filter((e) => e.status === 'active' || e.status === 'approved')
+          const active = ce.filter(
+            (e) => e.status === 'active' || e.status === 'approved',
+          )
           const completed = ce.filter((e) => e.status === 'completed')
           const revenue = paymentRows
-            .filter((p) => ce.some((e) => e.id === p.enrollmentId) && p.status === 'verified')
+            .filter(
+              (p) =>
+                ce.some((e) => e.id === p.enrollmentId) &&
+                p.status === 'verified',
+            )
             .reduce((s, p) => s + p.amount, 0)
           const activeUserIds = new Set(active.map((e) => e.userId))
           const ca = attendanceRows.filter((a) => activeUserIds.has(a.userId))
-          const present = ca.filter((a) => a.status === 'present' || a.status === 'late').length
-          const attendanceRate = ca.length > 0 ? Math.round((present / ca.length) * 100) : 0
+          const present = ca.filter(
+            (a) => a.status === 'present' || a.status === 'late',
+          ).length
+          const attendanceRate =
+            ca.length > 0 ? Math.round((present / ca.length) * 100) : 0
           rows.push([
             c.title,
             String(ce.length),
@@ -245,9 +277,17 @@ export async function GET(
 
         for (const e of feeRows) {
           const paid = paymentRows
-            .filter((p) => p.enrollmentId === e.enrollmentId && p.status === 'verified')
+            .filter(
+              (p) =>
+                p.enrollmentId === e.enrollmentId && p.status === 'verified',
+            )
             .reduce((s, p) => s + p.amount, 0)
-          const status = e.dueAmount <= 0 ? 'Paid' : e.dueAmount < e.totalFee ? 'Partial' : 'Unpaid'
+          const status =
+            e.dueAmount <= 0
+              ? 'Paid'
+              : e.dueAmount < e.totalFee
+                ? 'Partial'
+                : 'Unpaid'
           rows.push([
             e.userName ?? '—',
             e.courseTitle ?? '—',
@@ -276,7 +316,14 @@ export async function GET(
         > = {}
         for (const s of submissions) {
           const pct = s.total > 0 ? (s.score / s.total) * 100 : 0
-          if (!agg[s.userId]) agg[s.userId] = { name: s.name ?? s.userId, n: 0, avg: 0, high: 0, low: 100 }
+          if (!agg[s.userId])
+            agg[s.userId] = {
+              name: s.name ?? s.userId,
+              n: 0,
+              avg: 0,
+              high: 0,
+              low: 100,
+            }
           const a = agg[s.userId]
           a.n++
           a.avg = (a.avg * (a.n - 1) + pct) / a.n

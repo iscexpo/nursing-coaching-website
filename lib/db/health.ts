@@ -57,9 +57,7 @@ export async function checkDatabaseHealth(): Promise<DatabaseHealth> {
       ),
     )
 
-    result.missingTables = REQUIRED_TABLES.filter(
-      (t) => !presentTables.has(t),
-    )
+    result.missingTables = REQUIRED_TABLES.filter((t) => !presentTables.has(t))
 
     const columns = await db.execute<{ column_name: string }>(sql`
       SELECT column_name FROM information_schema.columns
@@ -79,8 +77,7 @@ export async function checkDatabaseHealth(): Promise<DatabaseHealth> {
       result.missingTables.length === 0 && result.missingColumns.length === 0
   } catch (error) {
     result.ok = false
-    result.error =
-      error instanceof Error ? error.message : String(error)
+    result.error = error instanceof Error ? error.message : String(error)
   }
   return result
 }

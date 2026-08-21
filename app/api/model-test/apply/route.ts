@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
-import {notFound, ok, serverError, validationError} from '@/lib/api/response'
+import { notFound, ok, serverError, validationError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { exams, modelTestApplicants } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -20,15 +20,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createModelTestApplicantSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors,)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const { name, phone, examId, preferredSubject, message } = parsed.data
 
     if (examId) {
       const [exam] = await db.select().from(exams).where(eq(exams.id, examId))
-      if (!exam)
-        return notFound('Exam not found')
+      if (!exam) return notFound('Exam not found')
     }
 
     const reference = `MT-${randomUUID().slice(0, 8).toUpperCase()}`
@@ -61,12 +63,15 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return ok({
+    return ok(
+      {
         success: true,
         message:
           'আপনার মডেল টেস্টে আবেদন গ্রহণ করা হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।',
         reference,
-      }, 201)
+      },
+      201,
+    )
   } catch {
     return serverError('Failed to submit model test application')
   }

@@ -2,12 +2,20 @@ import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { contactInquiries } from '@/lib/db/schema'
-import { createContactInquirySchema, paginationSchema } from '@/lib/core/validations'
+import {
+  createContactInquirySchema,
+  paginationSchema,
+} from '@/lib/core/validations'
 import { desc, count } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { rateLimit } from '@/lib/core/rate-limit'
-import { ok, unauthorized, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch inquiries')
   }
 }
@@ -55,7 +63,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createContactInquirySchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const { name, phone, message } = parsed.data
@@ -90,7 +101,7 @@ export async function POST(request: NextRequest) {
       201,
     )
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to submit inquiry')
   }
 }

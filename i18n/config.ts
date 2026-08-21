@@ -27,10 +27,12 @@ export function getLocaleConfig(locale: Locale) {
   return localeConfig[locale]
 }
 
-export const localeOptions = Object.entries(localeConfig).map(([value, config]) => ({
-  value: value as Locale,
-  ...config,
-}))
+export const localeOptions = Object.entries(localeConfig).map(
+  ([value, config]) => ({
+    value: value as Locale,
+    ...config,
+  }),
+)
 
 export const messageNamespaces = [
   'common',

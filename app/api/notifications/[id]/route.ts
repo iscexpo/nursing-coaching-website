@@ -1,5 +1,11 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, forbidden, ok, notFound, serverError} from '@/lib/api/response'
+import {
+  unauthorized,
+  forbidden,
+  ok,
+  notFound,
+  serverError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -12,15 +18,13 @@ export async function PATCH(
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [existing] = await db
       .select()
       .from(notifications)
       .where(eq(notifications.id, id))
-    if (!existing)
-      return notFound('Notification not found')
+    if (!existing) return notFound('Notification not found')
 
     if (existing.userId !== session.user.id) {
       return forbidden()
@@ -53,15 +57,13 @@ export async function DELETE(
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [existing] = await db
       .select()
       .from(notifications)
       .where(eq(notifications.id, id))
-    if (!existing)
-      return notFound('Notification not found')
+    if (!existing) return notFound('Notification not found')
 
     if (existing.userId !== session.user.id && !isAdmin(session.user.role)) {
       return forbidden()

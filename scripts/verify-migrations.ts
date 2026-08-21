@@ -13,33 +13,46 @@ async function main() {
   const sqlFiles = allFiles.filter((file) => file.endsWith('.sql'))
   const errors: string[] = []
   for (const file of sqlFiles) {
-    if (!/^\d{4}_.+\.sql$/.test(file)) errors.push(`invalid migration filename: ${file}`)
+    if (!/^\d{4}_.+\.sql$/.test(file))
+      errors.push(`invalid migration filename: ${file}`)
   }
   const files = sqlFiles.filter((file) => /^\d{4}_.+\.sql$/.test(file)).sort()
   const fileTags = files.map((file) => file.replace(/\.sql$/, ''))
   const journalTags = journal.entries.map((entry) => entry.tag)
 
-  if (new Set(fileTags).size !== fileTags.length) errors.push('duplicate migration filenames detected')
-  if (new Set(journalTags).size !== journalTags.length) errors.push('duplicate migration journal tags detected')
+  if (new Set(fileTags).size !== fileTags.length)
+    errors.push('duplicate migration filenames detected')
+  if (new Set(journalTags).size !== journalTags.length)
+    errors.push('duplicate migration journal tags detected')
 
   for (const tag of fileTags) {
-    if (!journalTags.includes(tag)) errors.push(`migration file missing from journal: ${tag}`)
+    if (!journalTags.includes(tag))
+      errors.push(`migration file missing from journal: ${tag}`)
   }
   for (const tag of journalTags) {
-    if (!fileTags.includes(tag)) errors.push(`journal entry missing migration file: ${tag}`)
+    if (!fileTags.includes(tag))
+      errors.push(`journal entry missing migration file: ${tag}`)
   }
   for (let index = 0; index < journal.entries.length; index += 1) {
-    if (journal.entries[index].idx !== index) errors.push(`journal index mismatch at ${journal.entries[index].tag}`)
-    if (journalTags[index] !== fileTags[index]) errors.push(`journal order mismatch at index ${index}: expected ${fileTags[index] ?? 'none'}, got ${journalTags[index]}`)
+    if (journal.entries[index].idx !== index)
+      errors.push(`journal index mismatch at ${journal.entries[index].tag}`)
+    if (journalTags[index] !== fileTags[index])
+      errors.push(
+        `journal order mismatch at index ${index}: expected ${fileTags[index] ?? 'none'}, got ${journalTags[index]}`,
+      )
   }
 
   if (errors.length) {
-    console.error(`migration verification failed with ${errors.length} issue(s):`)
+    console.error(
+      `migration verification failed with ${errors.length} issue(s):`,
+    )
     for (const error of errors) console.error(`- ${error}`)
     process.exit(1)
   }
 
-  console.log(`migration verification passed: ${files.length} SQL files and ${journal.entries.length} journal entries`)
+  console.log(
+    `migration verification passed: ${files.length} SQL files and ${journal.entries.length} journal entries`,
+  )
 }
 
 main().catch((error: unknown) => {

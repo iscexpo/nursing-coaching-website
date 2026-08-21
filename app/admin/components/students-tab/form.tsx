@@ -101,7 +101,9 @@ function EduFields({
           <input
             type="text"
             value={value.institution}
-            onChange={(e) => onChange({ ...value, institution: e.target.value })}
+            onChange={(e) =>
+              onChange({ ...value, institution: e.target.value })
+            }
             placeholder={t('formLabels.institutionPlaceholder')}
             className={inputCls}
           />
@@ -443,7 +445,9 @@ export function StudentForm({
               />
             </div>
             <div>
-              <label className={labelCls}>{t('formLabels.policeStation')}</label>
+              <label className={labelCls}>
+                {t('formLabels.policeStation')}
+              </label>
               <input
                 type="text"
                 value={form.policeStation}
@@ -496,7 +500,9 @@ export function StudentForm({
               />
             </div>
             <div>
-              <label className={labelCls}>{t('formLabels.guardianPhone')}</label>
+              <label className={labelCls}>
+                {t('formLabels.guardianPhone')}
+              </label>
               <input
                 type="text"
                 value={form.guardianPhone}
