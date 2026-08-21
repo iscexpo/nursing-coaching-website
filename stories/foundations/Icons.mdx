@@ -1,0 +1,130 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import {
+  Check,
+  X,
+  AlertCircle,
+  Clock,
+  BadgeCheck,
+  Search,
+  Trash2,
+  Edit,
+  Eye,
+  Calendar,
+  BarChart3,
+  Users,
+  CreditCard,
+  GraduationCap,
+  FileText,
+  Bell,
+  Settings,
+} from 'lucide-react'
+
+<Meta title="Foundations/Icons" />
+
+# Icons — lucide-react
+
+Configured via `components.json:20` (`iconLibrary: lucide`) and `package.json:40` (`lucide-react@^1.16.0`). Use `size-*` or `h-4 w-4` utilities; icons inherit `currentColor`.
+
+## Sizes
+
+- Default in `components/ui/button.tsx:7` — `[&_svg:not([class*='size-'])]:size-4`
+- Small — `size-3.5` e.g. `StatusBadge` icon `components/ui/status-badge.tsx:133`
+- Button `icon` variant — `size-9`
+
+<div className="flex gap-4 items-center flex-wrap p-4 rounded-xl border bg-card">
+  <Check className="size-3" /> <code>size-3</code>
+  <Check className="size-4" /> <code>size-4</code>
+  <Check className="size-5" /> <code>size-5</code>
+  <Check className="size-6" /> <code>size-6</code>
+  <Check className="size-8" /> <code>size-8</code>
+</div>
+
+## Common set
+
+<div className="grid gap-4 sm:grid-cols-4">
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Check className="size-6" />
+    <code>Check</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <X className="size-6" />
+    <code>X</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <AlertCircle className="size-6" />
+    <code>AlertCircle</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Clock className="size-6" />
+    <code>Clock</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Search className="size-6" />
+    <code>Search</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Trash2 className="size-6" />
+    <code>Trash2</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Edit className="size-6" />
+    <code>Edit</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Calendar className="size-6" />
+    <code>Calendar</code>
+  </div>
+</div>
+
+## Domain icons
+
+<div className="grid gap-4 sm:grid-cols-4 mt-6">
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Users className="size-6" />
+    <code>Users</code> students
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <CreditCard className="size-6" />
+    <code>CreditCard</code> payments
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <GraduationCap className="size-6" />
+    <code>GraduationCap</code> courses
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <FileText className="size-6" />
+    <code>FileText</code> invoices
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <BarChart3 className="size-6" />
+    <code>BarChart3</code> reports
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Bell className="size-6" />
+    <code>Bell</code> notifications
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <BadgeCheck className="size-6" />
+    <code>BadgeCheck</code> verified
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Settings className="size-6" />
+    <code>Settings</code> settings
+  </div>
+</div>
+
+## Usage guidance
+
+- **Consistency:** Use `StatusBadge` icons via `statusConfig` (`components/ui/status-badge.tsx:35`) — don't invent ad-hoc.
+- **Color:** Inherit `text-*`; for status use `bg-*/10 text-*` patterns (e.g. `bg-green/10 text-green` in `InvoiceStatusBadge`).
+- **Accessibility:** Add `aria-hidden="true"` for decorative icons; provide text label alongside (`components/ui/status-badge.tsx:133` uses label + icon).
+- **Performance:** `lucide-react` is tree-shaken; import individual icons: `import { Check } from 'lucide-react'`.
+
+```tsx
+import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
+;<span className="inline-flex items-center gap-1 rounded-full bg-green/10 text-green px-2 py-0.5 text-xs">
+  <CheckCircle2 className="size-3" /> Present
+</span>
+```
+
+See `components/ui/status-badge.tsx:148` for `AttendanceStatusBadge` icon mapping and `lib/payment/index.ts` for method colors.

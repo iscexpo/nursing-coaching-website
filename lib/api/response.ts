@@ -44,8 +44,7 @@ export const forbidden = (message = 'Forbidden') =>
 export const notFound = (message = 'Not found') =>
   fail(message, 404, 'NOT_FOUND')
 
-export const conflict = (message = 'Conflict') =>
-  fail(message, 409, 'CONFLICT')
+export const conflict = (message = 'Conflict') => fail(message, 409, 'CONFLICT')
 
 export const rateLimited = (message = 'Too many requests') =>
   fail(message, 429, 'RATE_LIMITED')

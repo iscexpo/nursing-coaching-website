@@ -6,6 +6,9 @@ import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import type { Exam, Question } from './types'
 import { EmptyState } from '@/components/ui/empty-state'
 import { FilterBar } from '@/components/ui/filter-bar'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 
 export function QuestionsPanel({ exams }: { exams: Exam[] }) {
   const t = useTranslations('admin.questions')
@@ -20,6 +23,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
     question: '',
     options: ['', '', '', ''] as [string, string, string, string],
     correctIndex: 0,
+    difficulty: 'medium' as 'easy' | 'medium' | 'hard',
+    points: 1,
+    explanation: '',
   })
 
   const fetchQuestions = useCallback(async (examId: string) => {
@@ -51,6 +57,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
       question: q.question,
       options: [...q.options] as [string, string, string, string],
       correctIndex: q.correctIndex,
+      difficulty: (q as unknown as { difficulty?: string }).difficulty as 'easy' | 'medium' | 'hard' || 'medium',
+      points: (q as unknown as { points?: number }).points || 1,
+      explanation: (q as unknown as { explanation?: string }).explanation || '',
     })
     setShowForm(true)
   }
@@ -72,6 +81,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
             question: form.question,
             options: form.options,
             correctIndex: form.correctIndex,
+            difficulty: form.difficulty,
+            points: form.points,
+            explanation: form.explanation || undefined,
           }),
         })
       } else {
@@ -83,10 +95,13 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
             question: form.question,
             options: form.options,
             correctIndex: form.correctIndex,
+            difficulty: form.difficulty,
+            points: form.points,
+            explanation: form.explanation || undefined,
           }),
         })
       }
-      setForm({ question: '', options: ['', '', '', ''], correctIndex: 0 })
+      setForm({ question: '', options: ['', '', '', ''], correctIndex: 0, difficulty: 'medium', points: 1, explanation: '' })
       setEditing(null)
       setShowForm(false)
       fetchQuestions(selectedExamId)
@@ -129,6 +144,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
               question: '',
               options: ['', '', '', ''],
               correctIndex: 0,
+              difficulty: 'medium',
+              points: 1,
+              explanation: '',
             })
           }}
           disabled={!selectedExamId}
@@ -188,38 +206,42 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
               <X className="size-5" />
             </button>
           </div>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('questionLabel')}
-              </label>
+          <div className="space-y-4">
+            <FormField id="q-question" label={t('questionLabel')} required>
               <textarea
+                id="q-question"
                 value={form.question}
                 onChange={(e) => setForm({ ...form, question: e.target.value })}
                 rows={2}
                 placeholder={t('questionPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-required="true"
               />
-            </div>
+            </FormField>
+            <Separator />
             <div className="grid gap-3 sm:grid-cols-2">
               {form.options.map((opt, i) => (
-                <div key={i}>
-                  <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <FormField
+                  key={i}
+                  id={`q-option-${i}`}
+                  label={`${t('answerLabel')} ${String.fromCharCode(65 + i)} ${i === form.correctIndex ? `(${t('correctLabel')})` : ''}`}
+                  required
+                >
+                  <div className="flex items-center gap-2 mb-1">
                     <input
                       type="radio"
                       name="correct"
                       checked={form.correctIndex === i}
                       onChange={() => setForm({ ...form, correctIndex: i })}
                       className="size-4"
+                      aria-label={`${t('correctLabel')} ${String.fromCharCode(65 + i)}`}
                     />
-                    {t('answerLabel')} {String.fromCharCode(65 + i)}{' '}
-                    {i === form.correctIndex && (
-                      <span className="text-green text-xs">
-                        ({t('correctLabel')})
-                      </span>
-                    )}
-                  </label>
-                  <input
+                    <span className="text-xs text-muted-foreground">
+                      {i === form.correctIndex ? t('correctLabel') : t('answerLabel')}
+                    </span>
+                  </div>
+                  <Input
+                    id={`q-option-${i}`}
                     type="text"
                     value={opt}
                     onChange={(e) => {
@@ -233,11 +255,45 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                       setForm({ ...form, options: newOpts })
                     }}
                     placeholder={`${t('answerLabel')} ${String.fromCharCode(65 + i)}`}
-                    className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                    aria-required="true"
                   />
-                </div>
+                </FormField>
               ))}
             </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <FormField id="q-difficulty" label="Difficulty">
+                <select
+                  id="q-difficulty"
+                  value={form.difficulty}
+                  onChange={(e) => setForm({ ...form, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                >
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </FormField>
+              <FormField id="q-points" label="Points">
+                <Input
+                  id="q-points"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={String(form.points)}
+                  onChange={(e) => setForm({ ...form, points: Number(e.target.value) || 1 })}
+                />
+              </FormField>
+              <FormField id="q-explanation" label="Explanation (shown after submit)">
+                <Input
+                  id="q-explanation"
+                  type="text"
+                  value={form.explanation}
+                  onChange={(e) => setForm({ ...form, explanation: e.target.value })}
+                  placeholder="Why this answer is correct"
+                />
+              </FormField>
+            </div>
+            <Separator />
             <button
               onClick={handleSave}
               disabled={saving}

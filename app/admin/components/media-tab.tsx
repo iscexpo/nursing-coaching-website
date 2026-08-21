@@ -137,7 +137,9 @@ export function MediaPanel({
               </label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as 'general' | 'gallery')}
+                onChange={(e) =>
+                  setCategory(e.target.value as 'general' | 'gallery')
+                }
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               >
                 <option value="general">{t('categoryGeneral')}</option>
@@ -226,7 +228,9 @@ export function MediaPanel({
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-brand/10 px-2 py-1 text-xs font-medium text-brand">
-                    {media.category === 'gallery' ? t('categoryGallery') : t('categoryGeneral')}
+                    {media.category === 'gallery'
+                      ? t('categoryGallery')
+                      : t('categoryGeneral')}
                   </span>
                   {media.altText && (
                     <span className="rounded-full bg-secondary px-2 py-1 text-xs text-foreground">

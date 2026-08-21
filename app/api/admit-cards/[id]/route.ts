@@ -1,5 +1,12 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, forbidden, ok, notFound, serverError, validationError} from '@/lib/api/response'
+import {
+  unauthorized,
+  forbidden,
+  ok,
+  notFound,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -13,15 +20,13 @@ export async function GET(
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [card] = await db
       .select()
       .from(admitCards)
       .where(eq(admitCards.id, id))
-    if (!card)
-      return notFound('Admit card not found')
+    if (!card) return notFound('Admit card not found')
 
     if (!isAdmin(session.user.role) && card.userId !== session.user.id) {
       return forbidden()
@@ -42,13 +47,15 @@ export async function PUT(
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = updateAdmitCardSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [updated] = await db
@@ -60,8 +67,7 @@ export async function PUT(
       .where(eq(admitCards.id, id))
       .returning()
 
-    if (!updated)
-      return notFound('Admit card not found')
+    if (!updated) return notFound('Admit card not found')
     return ok(updated)
   } catch {
     return serverError('Failed to update admit card')
@@ -77,15 +83,13 @@ export async function DELETE(
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [deleted] = await db
       .delete(admitCards)
       .where(eq(admitCards.id, id))
       .returning()
-    if (!deleted)
-      return notFound('Admit card not found')
+    if (!deleted) return notFound('Admit card not found')
 
     return ok({ success: true })
   } catch {

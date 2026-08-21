@@ -1630,6 +1630,53 @@
       "bringWarning": "You must bring your admit card and national ID card on exam day.",
       "download": "Download",
       "nursingCoaching": "Nursing Admission Coaching"
+    },
+    "curriculum": {
+      "categories": {
+        "isc": {
+          "name": "ISC",
+          "description": "HSC Science / ISC track — BNMC-aligned curriculum"
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "Regular Icon track — general nursing preparation"
+        }
+      },
+      "subjects": {
+        "Bangla": "Bangla",
+        "English": "English",
+        "Physics": "Physics",
+        "Chemistry": "Chemistry",
+        "Biology": "Biology",
+        "Higher Math": "Higher Math",
+        "ICT": "ICT",
+        "General Knowledge": "General Knowledge"
+      },
+      "courses": {
+        "hsc-science-2026": {
+          "title": "HSC Science Regular — 2026 Batch",
+          "shortDescription": "Physics/Chemistry/Biology/Math + Bangla/English/ICT — full HSC preparation",
+          "description": "Complete HSC Science curriculum with weekly model tests, lab classes, and BNMC bridging for ISC students."
+        },
+        "isc-second-timer-intensive": {
+          "title": "ISC Second Timer Intensive",
+          "shortDescription": "Focused repeater batch for HSC improvers — mock-heavy",
+          "description": "Intensive second-timer program with daily MCQ bank, full syllabus mocks, and individual mentoring."
+        },
+        "bnmc-bridge-isc": {
+          "title": "BNMC Admission — ISC Stream",
+          "shortDescription": "BNMC nursing admission preparation tailored for ISC science background",
+          "description": "BNMC-focused curriculum leveraging ISC science base: Biology, Chemistry, Physics + English/Bangla/GK with nursing-specific model tests."
+        }
+      },
+      "teachers": {
+        "Physics": "Physics",
+        "Chemistry": "Chemistry",
+        "Biology": "Biology",
+        "Higher Math": "Higher Math",
+        "English": "English",
+        "ICT": "ICT"
+      }
     }
   }
 }

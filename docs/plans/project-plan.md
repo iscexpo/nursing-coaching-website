@@ -21,18 +21,18 @@
 
 Everything below is a **hard prerequisite** for all other phases.
 
-| #    | Task                                                        | Files                                                 | Acceptance Criteria                                                         | Status |
-| ---- | ----------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------- | ------ |
-| 1.1  | Rebuild migration journal                                   | `lib/db/migrations/meta/_journal.json`                | All migration entries (0000–0017) present with correct file hashes          | 🟢 |
-| 1.2  | Run `drizzle-kit push` or seed endpoint to apply migrations | `api/admin/migrate`                                   | DB tables match `lib/db/schema.ts`                                          | 🟢 |
-| 1.3  | Verify email+password sign-in                               | `lib/auth/index.ts`, `app/api/auth/[...all]/route.ts` | POST returns 200, session cookie set                                        | 🟢 |
-| 1.4  | Verify middleware auth guard                                | `middleware.ts`                                       | Unauthenticated → `/auth/sign-in`; authenticated → `/admin` or `/dashboard` | 🟢 |
-| 1.5  | Verify phone+OTP flow                                       | `lib/auth/index.ts` (phone plugin), Supabase Edge Functions | OTP sent, verified, session created                                 | 🟢 |
-| 1.6  | Run existing unit tests (`pnpm test`)                       | `tests/*`                                             | All 11 test files (90 tests) pass                                          | 🟢 |
-| 1.7  | Run typecheck (`pnpm typecheck`)                            | —                                                     | Zero errors                                                                 | 🟢 |
-| 1.8  | Run lint (`pnpm lint`)                                      | —                                                     | Zero errors and warnings                                                     | 🟢 |
-| 1.9  | Add React error boundaries to admin tab panels              | `app/admin/components/*.tsx`                          | Each tab wrapped in `<ErrorBoundary>` with retry UI                         | 🟢 |
-| 1.10 | Seed demo admin user                                        | `scripts/seed-demo-admin.ts`                          | `admin@khulnasoft.com` can log in and see all 22 tabs                       | 🟢 |
+| #    | Task                                                        | Files                                                       | Acceptance Criteria                                                         | Status |
+| ---- | ----------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- | ------ |
+| 1.1  | Rebuild migration journal                                   | `lib/db/migrations/meta/_journal.json`                      | All migration entries (0000–0017) present with correct file hashes          | 🟢     |
+| 1.2  | Run `drizzle-kit push` or seed endpoint to apply migrations | `api/admin/migrate`                                         | DB tables match `lib/db/schema.ts`                                          | 🟢     |
+| 1.3  | Verify email+password sign-in                               | `lib/auth/index.ts`, `app/api/auth/[...all]/route.ts`       | POST returns 200, session cookie set                                        | 🟢     |
+| 1.4  | Verify middleware auth guard                                | `middleware.ts`                                             | Unauthenticated → `/auth/sign-in`; authenticated → `/admin` or `/dashboard` | 🟢     |
+| 1.5  | Verify phone+OTP flow                                       | `lib/auth/index.ts` (phone plugin), Supabase Edge Functions | OTP sent, verified, session created                                         | 🟢     |
+| 1.6  | Run existing unit tests (`pnpm test`)                       | `tests/*`                                                   | All 11 test files (90 tests) pass                                           | 🟢     |
+| 1.7  | Run typecheck (`pnpm typecheck`)                            | —                                                           | Zero errors                                                                 | 🟢     |
+| 1.8  | Run lint (`pnpm lint`)                                      | —                                                           | Zero errors and warnings                                                    | 🟢     |
+| 1.9  | Add React error boundaries to admin tab panels              | `app/admin/components/*.tsx`                                | Each tab wrapped in `<ErrorBoundary>` with retry UI                         | 🟢     |
+| 1.10 | Seed demo admin user                                        | `scripts/seed-demo-admin.ts`                                | `admin@khulnasoft.com` can log in and see all 22 tabs                       | 🟢     |
 
 ---
 
@@ -42,22 +42,22 @@ Everything below is a **hard prerequisite** for all other phases.
 
 | #    | Task                      | Target File                        | Details                                                                                         | Status |
 | ---- | ------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------- | ------ |
-| 2A.1 | `ConfirmDialog` component | `components/ui/confirm-dialog.tsx` | Modal with title, body, confirm/cancel buttons. Replace every `window.confirm()` in admin tabs. | 🟢 |
-| 2A.2 | `FormField` component     | `components/ui/form-field.tsx`     | Wraps label + input + error + help text. Used by every form in admin.                           | 🟢 |
-| 2A.3 | `Alert` component         | `components/ui/alert.tsx`          | Error/info/success banners for form-level errors.                                               | 🟢 |
-| 2A.4 | Enhanced `EmptyState`     | `components/ui/empty-state.tsx`    | Icon + heading + description + CTA button. Already exists — add icon prop.                      | 🟢 |
-| 2A.5 | `SkeletonTable`           | `components/ui/skeleton.tsx`       | Rows of shimmer lines matching DataTable layout.                                                | 🟢 |
+| 2A.1 | `ConfirmDialog` component | `components/ui/confirm-dialog.tsx` | Modal with title, body, confirm/cancel buttons. Replace every `window.confirm()` in admin tabs. | 🟢     |
+| 2A.2 | `FormField` component     | `components/ui/form-field.tsx`     | Wraps label + input + error + help text. Used by every form in admin.                           | 🟢     |
+| 2A.3 | `Alert` component         | `components/ui/alert.tsx`          | Error/info/success banners for form-level errors.                                               | 🟢     |
+| 2A.4 | Enhanced `EmptyState`     | `components/ui/empty-state.tsx`    | Icon + heading + description + CTA button. Already exists — add icon prop.                      | 🟢     |
+| 2A.5 | `SkeletonTable`           | `components/ui/skeleton.tsx`       | Rows of shimmer lines matching DataTable layout.                                                | 🟢     |
 
 ### 2B: Data Table Overhaul — 🟢 Complete
 
 | #    | Task                         | Target File                    | Details                                                                                        | Status |
 | ---- | ---------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------- | ------ |
-| 2B.1 | Column sorting               | `components/ui/data-table.tsx` | Click header to toggle asc/desc. Show sort icon.                                               | 🟢 |
-| 2B.2 | Column text filter           | `components/ui/data-table.tsx` | Per-column search input above the table.                                                       | 🟢 |
-| 2B.3 | Row selection + bulk actions | `components/ui/data-table.tsx` | Checkbox column, "Select All" header, bulk delete/approve/export toolbar.                      | 🟢 |
-| 2B.4 | Client-side pagination       | `components/ui/data-table.tsx` | Page size selector (10/25/50/100), prev/next/page number buttons.                              | 🟢 |
-| 2B.5 | CSV export button            | `components/ui/data-table.tsx` | Export currently filtered+sorted rows. Use existing `/api/*/export` endpoints where available. | 🟢 |
-| 2B.6 | Sticky header                | `components/ui/data-table.tsx` | `position: sticky; top: 0` on `<thead>`.                                                       | 🟢 |
+| 2B.1 | Column sorting               | `components/ui/data-table.tsx` | Click header to toggle asc/desc. Show sort icon.                                               | 🟢     |
+| 2B.2 | Column text filter           | `components/ui/data-table.tsx` | Per-column search input above the table.                                                       | 🟢     |
+| 2B.3 | Row selection + bulk actions | `components/ui/data-table.tsx` | Checkbox column, "Select All" header, bulk delete/approve/export toolbar.                      | 🟢     |
+| 2B.4 | Client-side pagination       | `components/ui/data-table.tsx` | Page size selector (10/25/50/100), prev/next/page number buttons.                              | 🟢     |
+| 2B.5 | CSV export button            | `components/ui/data-table.tsx` | Export currently filtered+sorted rows. Use existing `/api/*/export` endpoints where available. | 🟢     |
+| 2B.6 | Sticky header                | `components/ui/data-table.tsx` | `position: sticky; top: 0` on `<thead>`.                                                       | 🟢     |
 
 ### 2C: Admin Tab Upgrades — 🟡 Partial (see per-tab notes; most filters/actions done, some charts/PDF/calendar pending)
 
@@ -102,23 +102,23 @@ Everything below is a **hard prerequisite** for all other phases.
 
 | #    | Task                       | Files                                   | Details                                           | Status |
 | ---- | -------------------------- | --------------------------------------- | ------------------------------------------------- | ------ |
-| 3B.1 | Refund API endpoint        | `app/api/payments/[id]/refund/route.ts` | POST: process refund, update enrollment balance   | ⏳ |
-| 3B.2 | Payment receipt generation | `components/payment-receipt.tsx`        | HTML-to-print receipt with institution branding   | 🟢 |
-| 3B.3 | Overpayment detection      | `lib/validations.ts`                    | Reject payments exceeding due amount              | 🟢 |
-| 3B.4 | Installment tracking       | `app/api/invoices/route.ts`             | Support partial payments, track installment count | 🟢 |
+| 3B.1 | Refund API endpoint        | `app/api/payments/[id]/refund/route.ts` | POST: process refund, update enrollment balance   | ⏳     |
+| 3B.2 | Payment receipt generation | `components/payment-receipt.tsx`        | HTML-to-print receipt with institution branding   | 🟢     |
+| 3B.3 | Overpayment detection      | `lib/validations.ts`                    | Reject payments exceeding due amount              | 🟢     |
+| 3B.4 | Installment tracking       | `app/api/invoices/route.ts`             | Support partial payments, track installment count | 🟢     |
 
 ### 3C: Exam System — 🟢 Complete
 
 | #    | Task                                | Files                                           | Details                                                                                                           | Status |
 | ---- | ----------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------ |
-| 3C.1 | Add migration: exam enhancements    | `lib/db/migrations/`, `lib/db/schema.ts`        | `exam_type`, `start_time`, `end_time`, `allow_review`, `negative_marking`, `shuffle_questions`, `shuffle_options` | 🟢 |
-| 3C.2 | Question enhancements migration     | same                                            | `difficulty`, `points`, `explanation`                                                                             | 🟢 |
-| 3C.3 | Exam types enum                     | `lib/db/schema.ts`                              | `model_test`, `practice_quiz`, `final_exam`, `subject_test`                                                       | 🟢 |
-| 3C.4 | Question pool selection             | `app/api/exams/route.ts`                        | Random N questions from pool per subject                                                                          | 🟢 |
-| 3C.5 | Anti-cheating: tab-switch detection | `app/exam/[id]/page.tsx`                        | Track tab changes, log warnings                                                                                   | 🟢 |
-| 3C.6 | Anti-cheating: shuffle options      | `app/exam/[id]/page.tsx`                        | Randomize option order per question per student                                                                   | 🟢 |
-| 3C.7 | Exam analytics API                  | `app/api/exams/[id]/results/analytics/route.ts` | Class average, percentile, std deviation, grade distribution                                                      | 🟢 |
-| 3C.8 | Grade assignment                    | `lib/validations.ts`                            | A+/A/B+/B/C+/C/D/F based on score percentage                                                                      | 🟢 |
+| 3C.1 | Add migration: exam enhancements    | `lib/db/migrations/`, `lib/db/schema.ts`        | `exam_type`, `start_time`, `end_time`, `allow_review`, `negative_marking`, `shuffle_questions`, `shuffle_options` | 🟢     |
+| 3C.2 | Question enhancements migration     | same                                            | `difficulty`, `points`, `explanation`                                                                             | 🟢     |
+| 3C.3 | Exam types enum                     | `lib/db/schema.ts`                              | `model_test`, `practice_quiz`, `final_exam`, `subject_test`                                                       | 🟢     |
+| 3C.4 | Question pool selection             | `app/api/exams/route.ts`                        | Random N questions from pool per subject                                                                          | 🟢     |
+| 3C.5 | Anti-cheating: tab-switch detection | `app/exam/[id]/page.tsx`                        | Track tab changes, log warnings                                                                                   | 🟢     |
+| 3C.6 | Anti-cheating: shuffle options      | `app/exam/[id]/page.tsx`                        | Randomize option order per question per student                                                                   | 🟢     |
+| 3C.7 | Exam analytics API                  | `app/api/exams/[id]/results/analytics/route.ts` | Class average, percentile, std deviation, grade distribution                                                      | 🟢     |
+| 3C.8 | Grade assignment                    | `lib/validations.ts`                            | A+/A/B+/B/C+/C/D/F based on score percentage                                                                      | 🟢     |
 
 ### 3D: Attendance — 🟢 Complete
 
@@ -133,28 +133,28 @@ Everything below is a **hard prerequisite** for all other phases.
 
 | #    | Task                              | Files                                      | Details                                 | Status |
 | ---- | --------------------------------- | ------------------------------------------ | --------------------------------------- | ------ |
-| 3E.1 | Notification templates migration  | `lib/db/migrations/`, `lib/db/schema.ts`   | `notification_templates` table          | ⏳ |
-| 3E.2 | Scheduled notifications migration | same                                       | `scheduled_notifications` table         | ⏳ |
-| 3E.3 | Template CRUD API                 | `app/api/notifications/templates/route.ts` | GET/POST/PUT/DELETE                     | ⏳ |
-| 3E.4 | Scheduled notification processor  | Cron or API                                | Check `scheduled_at`, send when due     | ⏳ |
-| 3E.5 | SMS integration for notifications | `lib/sms/`, notification API               | Send SMS when template channel is `sms` | ⏳ |
+| 3E.1 | Notification templates migration  | `lib/db/migrations/`, `lib/db/schema.ts`   | `notification_templates` table          | ⏳     |
+| 3E.2 | Scheduled notifications migration | same                                       | `scheduled_notifications` table         | ⏳     |
+| 3E.3 | Template CRUD API                 | `app/api/notifications/templates/route.ts` | GET/POST/PUT/DELETE                     | ⏳     |
+| 3E.4 | Scheduled notification processor  | Cron or API                                | Check `scheduled_at`, send when due     | ⏳     |
+| 3E.5 | SMS integration for notifications | `lib/sms/`, notification API               | Send SMS when template channel is `sms` | ⏳     |
 
 ---
 
 ## Phase 4 — Reports & Analytics (Week 5) — 🟢 Complete (APIs, recharts, PDF done 2026-08-20)
 
-| #    | Task                        | Files                                       | Details                                             | Status |
-| ---- | --------------------------- | ------------------------------------------- | --------------------------------------------------- | ------ |
-| 4.1  | Install `recharts`          | `package.json`                              | Dynamic import to avoid SSR issues                  | 🟢 |
+| #    | Task                        | Files                                       | Details                                             | Status                                                                                |
+| ---- | --------------------------- | ------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 4.1  | Install `recharts`          | `package.json`                              | Dynamic import to avoid SSR issues                  | 🟢                                                                                    |
 | 4.2  | `ChartCard` component       | `components/ui/chart-card.tsx`              | Wraps recharts with title, loading, empty states    | 🟡 (reports-tab uses `ChartCard` from `charts.tsx`; `ui/chart-card.tsx` shell unused) |
-| 4.3  | `DateRangePicker` component | `components/ui/date-range-picker.tsx`       | Start/end date inputs with presets (7d/30d/90d)     | 🟢 |
-| 4.4  | Revenue report API          | `app/api/reports/revenue/route.ts`          | Daily revenue, pending amount, refund total         | 🟢 |
-| 4.5  | Enrollment report API       | `app/api/reports/enrollment/route.ts`       | New enrollments over time, course popularity        | 🟢 |
-| 4.6  | Attendance report API       | `app/api/reports/attendance/route.ts`       | Per-course, per-student, daily summary              | 🟢 |
-| 4.7  | Exam performance report API | `app/api/reports/exam-performance/route.ts` | Score distribution, rank, improvement               | 🟢 |
-| 4.8  | Student report card         | `app/api/reports/student/[id]/route.ts`     | Enrollment + attendance + exam scores + payments    | 🟢 |
-| 4.9  | PDF export                  | `app/api/reports/export/[type]/route.ts`    | Generate PDF using `@react-pdf/renderer` or `jspdf` | 🟢 (jspdf; 6 report types) |
-| 4.10 | Reports tab UI              | `app/admin/components/reports-tab/`         | Charts, date picker, export buttons per report type | 🟢 (recharts + PDF button added) |
+| 4.3  | `DateRangePicker` component | `components/ui/date-range-picker.tsx`       | Start/end date inputs with presets (7d/30d/90d)     | 🟢                                                                                    |
+| 4.4  | Revenue report API          | `app/api/reports/revenue/route.ts`          | Daily revenue, pending amount, refund total         | 🟢                                                                                    |
+| 4.5  | Enrollment report API       | `app/api/reports/enrollment/route.ts`       | New enrollments over time, course popularity        | 🟢                                                                                    |
+| 4.6  | Attendance report API       | `app/api/reports/attendance/route.ts`       | Per-course, per-student, daily summary              | 🟢                                                                                    |
+| 4.7  | Exam performance report API | `app/api/reports/exam-performance/route.ts` | Score distribution, rank, improvement               | 🟢                                                                                    |
+| 4.8  | Student report card         | `app/api/reports/student/[id]/route.ts`     | Enrollment + attendance + exam scores + payments    | 🟢                                                                                    |
+| 4.9  | PDF export                  | `app/api/reports/export/[type]/route.ts`    | Generate PDF using `@react-pdf/renderer` or `jspdf` | 🟢 (jspdf; 6 report types)                                                            |
+| 4.10 | Reports tab UI              | `app/admin/components/reports-tab/`         | Charts, date picker, export buttons per report type | 🟢 (recharts + PDF button added)                                                      |
 
 ---
 
@@ -162,34 +162,34 @@ Everything below is a **hard prerequisite** for all other phases.
 
 ### 5A: Security — 🟢 Complete
 
-| #    | Task                      | Files                                | Details                                                  | Status |
-| ---- | ------------------------- | ------------------------------------ | -------------------------------------------------------- | ------ |
-| 5A.1 | CSRF token middleware     | `lib/auth/csrf.ts` + middleware       | Generate/validate tokens for POST/PUT/DELETE             | 🟢 |
-| 5A.2 | Session hardening         | `lib/auth/index.ts`                   | Invalidate on password change, max 3 concurrent sessions | 🟢 |
-| 5A.3 | Session activity tracking | `lib/db/schema.ts` (migration 0017)   | `ip_address`, `user_agent` on session                    | 🟢 (last_active_at pending) |
-| 5A.4 | Force logout              | `app/api/admin/logout-all/route.ts`  | Delete all sessions for a user                           | 🟢 |
-| 5A.5 | Audit log for file ops    | `lib/audit/index.ts`                  | Log upload/delete with actor + file details              | 🟢 |
-| 5A.6 | Signed URLs for uploads   | `lib/media/storage.ts`                | Use Vercel Blob signed URLs with expiry                  | 🔴 |
+| #    | Task                      | Files                               | Details                                                  | Status                      |
+| ---- | ------------------------- | ----------------------------------- | -------------------------------------------------------- | --------------------------- |
+| 5A.1 | CSRF token middleware     | `lib/auth/csrf.ts` + middleware     | Generate/validate tokens for POST/PUT/DELETE             | 🟢                          |
+| 5A.2 | Session hardening         | `lib/auth/index.ts`                 | Invalidate on password change, max 3 concurrent sessions | 🟢                          |
+| 5A.3 | Session activity tracking | `lib/db/schema.ts` (migration 0017) | `ip_address`, `user_agent` on session                    | 🟢 (last_active_at pending) |
+| 5A.4 | Force logout              | `app/api/admin/logout-all/route.ts` | Delete all sessions for a user                           | 🟢                          |
+| 5A.5 | Audit log for file ops    | `lib/audit/index.ts`                | Log upload/delete with actor + file details              | 🟢                          |
+| 5A.6 | Signed URLs for uploads   | `lib/media/storage.ts`              | Use Vercel Blob signed URLs with expiry                  | 🔴                          |
 
 ### 5B: Testing — 🔴 Pending (audit + new tests in Phase C6)
 
 | #     | Task                           | Target                                   | Target Count                                 | Status |
 | ----- | ------------------------------ | ---------------------------------------- | -------------------------------------------- | ------ |
-| 5B.1  | Auth unit tests                | `tests/auth.test.ts`                     | Login, logout, session refresh, OTP verify   | 🔴 |
-| 5B.2  | RBAC unit tests                | `tests/permissions.test.ts`              | Every role × permission combination          | 🟢 |
-| 5B.3  | Enrollment unit tests          | `tests/enrollment.test.ts`               | Status transitions, validation, auto-expire  | 🔴 |
-| 5B.4  | Payment unit tests             | `tests/payment.test.ts`                  | All methods, verify, refund, overpayment     | 🔴 |
-| 5B.5  | Exam unit tests                | `tests/exam.test.ts`                     | Create, submit, score, analytics, grade calc | 🔴 |
-| 5B.6  | Attendance unit tests          | `tests/attendance.test.ts`               | Mark, batch, calendar, percentage calc       | 🔴 |
-| 5B.7  | Notification unit tests        | `tests/notification.test.ts`             | Create, template, scheduled, delivery        | 🔴 |
-| 5B.8  | Validation unit tests          | `tests/validations.test.ts`              | All Zod schemas (455+ lines)                 | 🔴 |
-| 5B.9  | E2E: full enrollment lifecycle | `e2e/tests/enrollment-lifecycle.test.ts` | Sign up → enroll → pay → approve → active    | 🔴 |
-| 5B.10 | E2E: exam flow                 | `e2e/tests/exam-flow.test.ts`            | Create exam → add questions → take → results | 🔴 |
-| 5B.11 | E2E: payment flow              | `e2e/tests/payment-flow.test.ts`         | Submit → verify → invoice update             | 🔴 |
-| 5B.12 | E2E: attendance flow           | `e2e/tests/attendance-flow.test.ts`      | Mark → report → calendar                     | 🔴 |
-| 5B.13 | E2E: admin CRUD (all tabs)     | `e2e/tests/admin-crud.test.ts`           | Happy path for each of 22 tabs               | 🔴 |
-| 5B.14 | E2E: error handling            | `e2e/tests/error-handling.test.ts`       | Invalid inputs, 401, 500, timeout            | 🔴 |
-| 5B.15 | E2E: accessibility             | `e2e/tests/accessibility.test.ts`        | axe-core on all major pages                  | 🔴 |
+| 5B.1  | Auth unit tests                | `tests/auth.test.ts`                     | Login, logout, session refresh, OTP verify   | 🔴     |
+| 5B.2  | RBAC unit tests                | `tests/permissions.test.ts`              | Every role × permission combination          | 🟢     |
+| 5B.3  | Enrollment unit tests          | `tests/enrollment.test.ts`               | Status transitions, validation, auto-expire  | 🔴     |
+| 5B.4  | Payment unit tests             | `tests/payment.test.ts`                  | All methods, verify, refund, overpayment     | 🔴     |
+| 5B.5  | Exam unit tests                | `tests/exam.test.ts`                     | Create, submit, score, analytics, grade calc | 🔴     |
+| 5B.6  | Attendance unit tests          | `tests/attendance.test.ts`               | Mark, batch, calendar, percentage calc       | 🔴     |
+| 5B.7  | Notification unit tests        | `tests/notification.test.ts`             | Create, template, scheduled, delivery        | 🔴     |
+| 5B.8  | Validation unit tests          | `tests/validations.test.ts`              | All Zod schemas (455+ lines)                 | 🔴     |
+| 5B.9  | E2E: full enrollment lifecycle | `e2e/tests/enrollment-lifecycle.test.ts` | Sign up → enroll → pay → approve → active    | 🔴     |
+| 5B.10 | E2E: exam flow                 | `e2e/tests/exam-flow.test.ts`            | Create exam → add questions → take → results | 🔴     |
+| 5B.11 | E2E: payment flow              | `e2e/tests/payment-flow.test.ts`         | Submit → verify → invoice update             | 🔴     |
+| 5B.12 | E2E: attendance flow           | `e2e/tests/attendance-flow.test.ts`      | Mark → report → calendar                     | 🔴     |
+| 5B.13 | E2E: admin CRUD (all tabs)     | `e2e/tests/admin-crud.test.ts`           | Happy path for each of 22 tabs               | 🔴     |
+| 5B.14 | E2E: error handling            | `e2e/tests/error-handling.test.ts`       | Invalid inputs, 401, 500, timeout            | 🔴     |
+| 5B.15 | E2E: accessibility             | `e2e/tests/accessibility.test.ts`        | axe-core on all major pages                  | 🔴     |
 
 ---
 
@@ -390,5 +390,5 @@ All other dependencies (shadcn/ui, drizzle, better-auth, zod, next-intl, etc.) a
 
 ---
 
-_Detailed design specifications: `docs/lms-admin-improvement-design.md`_
-_QA review report: `docs/qa-review-report.md`_
+_Detailed design specifications: `../lms-admin-improvement-design.md`_
+_QA review report: `../qa-review-report.md`_

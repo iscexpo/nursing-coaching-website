@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
-import {unauthorized, ok, serverError} from '@/lib/api/response'
+import { unauthorized, ok, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import {
   user,
@@ -24,8 +24,7 @@ export async function POST() {
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const now = new Date()
 
@@ -65,7 +64,8 @@ export async function POST() {
           .where(
             eq(
               user.role,
-              scheduled.targetRole as 'super-admin' | 'admin' | 'teacher' | 'student',
+              scheduled.targetRole as
+                'super-admin' | 'admin' | 'teacher' | 'student',
             ),
           )
         userIds = rows.map((r) => r.id)
@@ -83,7 +83,10 @@ export async function POST() {
           message: scheduled.message,
           type: scheduled.type,
         }))
-        const inserted = await db.insert(notifications).values(values).returning()
+        const inserted = await db
+          .insert(notifications)
+          .values(values)
+          .returning()
         delivered = inserted.length
       }
 

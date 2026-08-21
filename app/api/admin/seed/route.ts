@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, notFound, serverError, ok} from '@/lib/api/response'
+import { unauthorized, notFound, serverError, ok } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user, account } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -36,7 +36,9 @@ export async function POST(request: NextRequest) {
     const adminName = process.env.ADMIN_NAME || 'Admin'
 
     if (!adminEmail || !adminPassword) {
-      return serverError('ADMIN_EMAIL and ADMIN_PASSWORD env vars must be configured')
+      return serverError(
+        'ADMIN_EMAIL and ADMIN_PASSWORD env vars must be configured',
+      )
     }
 
     const existingUser = await db

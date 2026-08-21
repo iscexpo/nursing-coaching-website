@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {ok, conflict, serverError, validationError} from '@/lib/api/response'
+import { ok, conflict, serverError, validationError } from '@/lib/api/response'
 import { randomUUID } from 'node:crypto'
 import { db } from '@/lib/db'
 import { courseCategories } from '@/lib/db/schema'
@@ -28,7 +28,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createCourseCategorySchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const existing = await db

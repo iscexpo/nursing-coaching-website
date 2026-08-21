@@ -1,0 +1,14 @@
+# Conventional Commits template
+# <type>(<scope>): <subject>
+# type: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+# scope: api, db, auth, ui, i18n, e2e, ci, deps
+# subject: imperative, ≤72 chars, no period
+#
+# Body: explain why (wrap at 72)
+# Footer: Closes #123, BREAKING CHANGE:
+#
+# Example:
+# feat(api): add enrollment lifecycle transitions
+#
+# Enforces status transitions and audit logging.
+# Closes #42

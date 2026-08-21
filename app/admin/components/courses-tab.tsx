@@ -4,10 +4,15 @@ import { useState, useRef, useMemo } from 'react'
 import NextImage from 'next/image'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { translateCategory, useCurriculumTranslations } from '@/lib/i18n/curriculum'
 import type { Course } from './types'
 import { useToast } from '@/components/ui/toast'
 import { EmptyState } from '@/components/ui/empty-state'
 import { FilterBar } from '@/components/ui/filter-bar'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Alert } from '@/components/ui/alert'
 
 function resizeImage(
   file: File,
@@ -47,6 +52,7 @@ export function CoursesPanel({
   onRefresh: () => void
 }) {
   const t = useTranslations('admin.courses')
+  const tCurriculum = useCurriculumTranslations()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Course | null>(null)
   const [saving, setSaving] = useState(false)
@@ -259,8 +265,8 @@ export function CoursesPanel({
             onChange: (v) =>
               setCategoryFilter((v || 'all') as 'all' | 'icon' | 'isc'),
             options: [
-              { value: 'icon', label: 'Icon' },
-              { value: 'isc', label: 'ISC' },
+              { value: 'icon', label: translateCategory(tCurriculum, 'icon') },
+              { value: 'isc', label: translateCategory(tCurriculum, 'isc') },
             ],
           },
         ]}
@@ -286,44 +292,35 @@ export function CoursesPanel({
               <X className="size-5" />
             </button>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {formError && (
-              <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {formError}
-              </div>
+              <Alert variant="error" message={formError} dismissible={false} />
             )}
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.name')}
-                </label>
-                <input
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FormField id="course-title" label={t('formLabels.name')} required>
+                <Input
+                  id="course-title"
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder={t('formLabels.namePlaceholder')}
-                  className={inputCls}
+                  aria-required="true"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.code')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="course-code" label={t('formLabels.code')}>
+                <Input
+                  id="course-code"
                   type="text"
                   value={form.courseCode}
                   onChange={(e) =>
                     setForm({ ...form, courseCode: e.target.value })
                   }
                   placeholder={t('formLabels.codePlaceholder')}
-                  className={inputCls}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.category')}
-                </label>
+              </FormField>
+              <FormField id="course-category" label={t('formLabels.category')}>
                 <select
+                  id="course-category"
                   value={form.category}
                   onChange={(e) =>
                     setForm({
@@ -333,34 +330,31 @@ export function CoursesPanel({
                   }
                   className={inputCls}
                 >
-                  <option value="icon">Icon</option>
-                  <option value="isc">ISC</option>
+                  <option value="icon">{translateCategory(tCurriculum, 'icon')}</option>
+                  <option value="isc">{translateCategory(tCurriculum, 'isc')}</option>
                 </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.slug')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="course-slug" label={t('formLabels.slug')} required>
+                <Input
+                  id="course-slug"
                   type="text"
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
                   placeholder={t('formLabels.slugPlaceholder')}
-                  className={inputCls}
+                  aria-required="true"
                 />
-              </div>
+              </FormField>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('formLabels.image')}
-              </label>
-              <div className="mt-1 flex items-center gap-3">
+            <Separator />
+            <FormField id="course-image" label={t('formLabels.image')}>
+              <div className="flex items-center gap-3">
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                   className="hidden"
+                  id="course-image-file"
                 />
                 <button
                   type="button"
@@ -377,12 +371,13 @@ export function CoursesPanel({
                     ? t('formLabels.uploading')
                     : t('formLabels.uploadImage')}
                 </button>
-                <input
+                <Input
+                  id="course-image"
                   type="url"
                   value={form.image}
                   onChange={(e) => setForm({ ...form, image: e.target.value })}
                   placeholder={t('formLabels.imageOrUrl')}
-                  className={inputCls}
+                  className="flex-1"
                 />
               </div>
               {form.image && (
@@ -403,26 +398,28 @@ export function CoursesPanel({
                   </button>
                 </div>
               )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('formLabels.shortDescription')}
-              </label>
-              <input
+            </FormField>
+            <FormField
+              id="course-short-description"
+              label={t('formLabels.shortDescription')}
+            >
+              <Input
+                id="course-short-description"
                 type="text"
                 value={form.shortDescription}
                 onChange={(e) =>
                   setForm({ ...form, shortDescription: e.target.value })
                 }
                 placeholder={t('formLabels.shortDescriptionPlaceholder')}
-                className={inputCls}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('formLabels.description')}
-              </label>
+            </FormField>
+            <FormField
+              id="course-description"
+              label={t('formLabels.description')}
+              required
+            >
               <textarea
+                id="course-description"
                 value={form.description}
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
@@ -430,79 +427,69 @@ export function CoursesPanel({
                 rows={3}
                 placeholder={t('formLabels.descriptionPlaceholder')}
                 className={inputCls}
+                aria-required="true"
               />
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.duration')}
-                </label>
-                <input
+            </FormField>
+            <Separator />
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FormField id="course-duration" label={t('formLabels.duration')} required>
+                <Input
+                  id="course-duration"
                   type="text"
                   value={form.duration}
                   onChange={(e) =>
                     setForm({ ...form, duration: e.target.value })
                   }
                   placeholder={t('formLabels.durationPlaceholder')}
-                  className={inputCls}
+                  aria-required="true"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.fee')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="course-fee" label={t('formLabels.fee')} required>
+                <Input
+                  id="course-fee"
                   type="number"
-                  value={form.fee || ''}
+                  value={form.fee ? String(form.fee) : ''}
                   onChange={(e) =>
                     setForm({ ...form, fee: Number(e.target.value) })
                   }
-                  className={inputCls}
+                  aria-required="true"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.discountFee')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="course-discount-fee" label={t('formLabels.discountFee')}>
+                <Input
+                  id="course-discount-fee"
                   type="number"
-                  value={form.discountFee || ''}
+                  value={form.discountFee ? String(form.discountFee) : ''}
                   onChange={(e) =>
                     setForm({ ...form, discountFee: Number(e.target.value) })
                   }
-                  className={inputCls}
                 />
-              </div>
+              </FormField>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.maxStudents')}
-                </label>
-                <input
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField id="course-max-students" label={t('formLabels.maxStudents')}>
+                <Input
+                  id="course-max-students"
                   type="number"
-                  value={form.maxStudents || ''}
+                  value={form.maxStudents ? String(form.maxStudents) : ''}
                   onChange={(e) =>
                     setForm({ ...form, maxStudents: Number(e.target.value) })
                   }
-                  className={inputCls}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('formLabels.schedule')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="course-schedule" label={t('formLabels.schedule')}>
+                <Input
+                  id="course-schedule"
                   type="text"
                   value={form.schedule}
                   onChange={(e) =>
                     setForm({ ...form, schedule: e.target.value })
                   }
                   placeholder={t('formLabels.schedulePlaceholder')}
-                  className={inputCls}
                 />
-              </div>
+              </FormField>
             </div>
+            <Separator />
             <button
               onClick={handleSave}
               disabled={saving}
@@ -564,7 +551,7 @@ export function CoursesPanel({
                       <div className="flex items-center gap-2">
                         {c.title}
                         <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                          {c.category === 'isc' ? 'ISC' : 'Icon'}
+                          {translateCategory(tCurriculum, c.category)}
                         </span>
                       </div>
                     </td>

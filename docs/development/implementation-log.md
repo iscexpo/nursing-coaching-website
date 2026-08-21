@@ -10,23 +10,23 @@
 
 ### Phase A — Structural Refactor (no behavior change) ✅
 
-| Task | Result |
-| ---- | ------ |
-| A1. Fold `lib/` into feature dirs | 25 files moved into `lib/{auth,sms,media,cms,core,payment,notifications,audit}/`; imports rewritten across 142 files; `ARCHITECTURE.md` updated |
-| A2. Split `settings-tab` (1154 lines) | → `settings-tab/{index,sections,ui,types}.tsx` |
-| A3. Split `enrollments-tab` (1065 lines) | → `enrollments-tab/{index,AddForm,EditForm,table,types}.tsx` |
-| A4. Split `students-tab` (1009 lines) | → `students-tab/{index,form,reset-password,table,types}.tsx` |
-| A5. Split `reports-tab` (1052 lines) | → `reports-tab/{index,views,charts,format,types}.tsx` |
-| A6. Type `lib/auth` | `AuthInstance = ReturnType<typeof createAuth>`; removed `any` casts; nullable `role` in `Session` |
+| Task                                     | Result                                                                                                                                          |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| A1. Fold `lib/` into feature dirs        | 25 files moved into `lib/{auth,sms,media,cms,core,payment,notifications,audit}/`; imports rewritten across 142 files; `ARCHITECTURE.md` updated |
+| A2. Split `settings-tab` (1154 lines)    | → `settings-tab/{index,sections,ui,types}.tsx`                                                                                                  |
+| A3. Split `enrollments-tab` (1065 lines) | → `enrollments-tab/{index,AddForm,EditForm,table,types}.tsx`                                                                                    |
+| A4. Split `students-tab` (1009 lines)    | → `students-tab/{index,form,reset-password,table,types}.tsx`                                                                                    |
+| A5. Split `reports-tab` (1052 lines)     | → `reports-tab/{index,views,charts,format,types}.tsx`                                                                                           |
+| A6. Type `lib/auth`                      | `AuthInstance = ReturnType<typeof createAuth>`; removed `any` casts; nullable `role` in `Session`                                               |
 
 ### Phase B — Lint & Type Debt ✅
 
-| Task | Result |
-| ---- | ------ |
-| B1. Remove unused eslint-disables | Done during A6 rewrite |
-| B2. `next/image` for 13 `<img>` sites | 9 files converted (site header/footer, navigation, courses, media, settings, students, account tabs) |
-| B3. Fix hook deps | 4 warnings cleared (`settings-tab/index`, `admin/page`, `exam/[id]/page` via `timeLeftRef`, `story-carousel` via memoized `go`) |
-| B4. Wire negative marking | `app/api/exam-submissions/route.ts` now reads `exam.negativeMarking`; TODO removed; tests cover both flag values |
+| Task                                  | Result                                                                                                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| B1. Remove unused eslint-disables     | Done during A6 rewrite                                                                                                          |
+| B2. `next/image` for 13 `<img>` sites | 9 files converted (site header/footer, navigation, courses, media, settings, students, account tabs)                            |
+| B3. Fix hook deps                     | 4 warnings cleared (`settings-tab/index`, `admin/page`, `exam/[id]/page` via `timeLeftRef`, `story-carousel` via memoized `go`) |
+| B4. Wire negative marking             | `app/api/exam-submissions/route.ts` now reads `exam.negativeMarking`; TODO removed; tests cover both flag values                |
 
 ### Quality Gates (2026-08-20)
 
@@ -232,21 +232,21 @@ lib/
 
 ### C3 — Notifications Templates & Scheduling ✅
 
-| Deliverable | Files |
-| ----------- | ----- |
-| Validation schemas | `lib/core/validations.ts` (`createNotificationTemplateSchema`, `updateNotificationTemplateSchema`, `createScheduledNotificationSchema`) |
-| Templates CRUD API | `app/api/notifications/templates/route.ts`, `app/api/notifications/templates/[id]/route.ts` (admin-only, audited) |
+| Deliverable               | Files                                                                                                                                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Validation schemas        | `lib/core/validations.ts` (`createNotificationTemplateSchema`, `updateNotificationTemplateSchema`, `createScheduledNotificationSchema`)                                                                          |
+| Templates CRUD API        | `app/api/notifications/templates/route.ts`, `app/api/notifications/templates/[id]/route.ts` (admin-only, audited)                                                                                                |
 | Scheduled API + processor | `app/api/notifications/scheduled/route.ts`, `app/api/notifications/scheduled/process/route.ts` (delivers due items as in-app notifications; SMS channel via `sendSmsToRecipients` when template channel = `sms`) |
-| Admin UI | `notifications-tab.tsx` extended (template create/delete list, schedule form, "process due now") |
-| i18n | +30 keys (`en`/`bn`) under `admin.notifications` — 1424 keys total |
+| Admin UI                  | `notifications-tab.tsx` extended (template create/delete list, schedule form, "process due now")                                                                                                                 |
+| i18n                      | +30 keys (`en`/`bn`) under `admin.notifications` — 1424 keys total                                                                                                                                               |
 
 ### C5 — Recharts + PDF Export ✅
 
-| Deliverable | Files |
-| ----------- | ----- |
-| Charts | `pnpm add recharts`; `reports-tab/charts.tsx` converted (bar, stacked revenue, attendance donut, course analytics, top-10 performance) — same component props, no caller changes |
-| PDF export | `pnpm add jspdf`; `app/api/reports/export/[type]/route.ts` (6 report types, optional `startDate`/`endDate`, admin-only) |
-| UI button | "Export PDF" next to CSV in `reports-tab/index.tsx` |
+| Deliverable | Files                                                                                                                                                                            |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Charts      | `pnpm add recharts`; `reports-tab/charts.tsx` converted (bar, stacked revenue, attendance donut, course analytics, top-10 performance) — same component props, no caller changes |
+| PDF export  | `pnpm add jspdf`; `app/api/reports/export/[type]/route.ts` (6 report types, optional `startDate`/`endDate`, admin-only)                                                          |
+| UI button   | "Export PDF" next to CSV in `reports-tab/index.tsx`                                                                                                                              |
 
 ### Quality Gates (2026-08-20, after C3 + C5)
 
@@ -263,10 +263,10 @@ lib/
 
 ### D1 — Standardize API Envelope + Error Codes ✅
 
-| Deliverable | Files |
-| ----------- | ----- |
-| Response helper | `lib/api/response.ts` (`ok`, `fail`, `badRequest`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `serverError`, `validationError` + `ApiErrorCode` union) |
-| Authz helper | `lib/core/permissions.ts` — `authorize()` now returns `unauthorized()`/`forbidden()` with `code` |
+| Deliverable        | Files                                                                                                                                                                                                                                                                                         |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Response helper    | `lib/api/response.ts` (`ok`, `fail`, `badRequest`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `serverError`, `validationError` + `ApiErrorCode` union)                                                                                                                              |
+| Authz helper       | `lib/core/permissions.ts` — `authorize()` now returns `unauthorized()`/`forbidden()` with `code`                                                                                                                                                                                              |
 | Routes retrofitted | 14 routes: `students`, `enrollments`, `payments`, `courses`, `exams`, `attendance`, `settings`, `admissions`, `site-data`, `notifications`, `contact`, `model-test-applicants`, `notices`, `questions` — success shapes unchanged (clients use `d.data \|\| d`), errors now `{ error, code }` |
 
 ### D2 — Media Upload Content Sniffing ✅ (pre-existing)
@@ -275,25 +275,25 @@ Already enforced in `app/api/media/route.ts` via `lib/media/validation.ts`: `isA
 
 ### D3 — Startup DB Health Check Surfaced in UI ✅
 
-| Deliverable | Files |
-| ----------- | ----- |
+| Deliverable        | Files                                                                                                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Non-throwing probe | `lib/db/health.ts` — added `checkDatabaseHealth(): Promise<DatabaseHealth>` (`ok`, `missingTables`, `missingColumns`, `error`) alongside existing `assertDatabaseReady()` |
-| Health API | `app/api/health/route.ts` — `GET` admin-only, `Cache-Control: no-store` |
-| Admin banner | `app/admin/components/database-health-banner.tsx` — fetches `/api/health`, shows missing tables/columns, retry; wired into `app/admin/page.tsx` (`PanelLayout` children) |
-| i18n | +5 keys (`en`/`bn`) under `admin.common` — 1429 keys total |
+| Health API         | `app/api/health/route.ts` — `GET` admin-only, `Cache-Control: no-store`                                                                                                   |
+| Admin banner       | `app/admin/components/database-health-banner.tsx` — fetches `/api/health`, shows missing tables/columns, retry; wired into `app/admin/page.tsx` (`PanelLayout` children)  |
+| i18n               | +5 keys (`en`/`bn`) under `admin.common` — 1429 keys total                                                                                                                |
 
 ### D4 — Pagination on High-Volume Lists ✅
 
 Audited all `paginationSchema` GETs; fixed missing/wrong `total`:
 
-| Route | Fix |
-| ----- | --- |
-| `exams` | Added missing `total` (`count()` with `subject` filter) |
-| `admissions` | `data.length` → real `count()` with `status` filter |
-| `model-test-applicants` | `data.length` → real `count()` with `status` filter |
-| `contact` | Added missing `total` |
-| `notices` | Added missing `total` |
-| `questions` | Added missing `total` (scoped to `examId`) |
+| Route                   | Fix                                                     |
+| ----------------------- | ------------------------------------------------------- |
+| `exams`                 | Added missing `total` (`count()` with `subject` filter) |
+| `admissions`            | `data.length` → real `count()` with `status` filter     |
+| `model-test-applicants` | `data.length` → real `count()` with `status` filter     |
+| `contact`               | Added missing `total`                                   |
+| `notices`               | Added missing `total`                                   |
+| `questions`             | Added missing `total` (scoped to `examId`)              |
 
 ### Quality Gates (2026-08-21, after Phase D)
 

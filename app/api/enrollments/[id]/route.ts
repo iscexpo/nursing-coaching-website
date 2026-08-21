@@ -1,6 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
-import {unauthorized, forbidden, badRequest, ok, notFound, serverError, validationError} from '@/lib/api/response'
+import {
+  unauthorized,
+  forbidden,
+  badRequest,
+  ok,
+  notFound,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -21,15 +29,13 @@ export async function GET(
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [enrollment] = await db
       .select()
       .from(enrollments)
       .where(eq(enrollments.id, id))
-    if (!enrollment)
-      return notFound('Enrollment not found')
+    if (!enrollment) return notFound('Enrollment not found')
 
     if (!isAdmin(session.user.role) && enrollment.userId !== session.user.id) {
       return forbidden()
@@ -50,21 +56,22 @@ export async function PUT(
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = updateEnrollmentSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [existing] = await db
       .select()
       .from(enrollments)
       .where(eq(enrollments.id, id))
-    if (!existing)
-      return notFound('Enrollment not found')
+    if (!existing) return notFound('Enrollment not found')
 
     if (parsed.data.status && parsed.data.status !== existing.status) {
       const transitionError = getEnrollmentTransitionError(
@@ -163,8 +170,7 @@ export async function PUT(
       ),
     )
 
-    if (!updated)
-      return notFound('Enrollment not found')
+    if (!updated) return notFound('Enrollment not found')
     return ok(updated)
   } catch {
     return serverError('Failed to update enrollment')
@@ -180,15 +186,13 @@ export async function DELETE(
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [existing] = await db
       .select()
       .from(enrollments)
       .where(eq(enrollments.id, id))
-    if (!existing)
-      return notFound('Enrollment not found')
+    if (!existing) return notFound('Enrollment not found')
 
     if (existing.status === 'cancelled') {
       return badRequest('এনরোলমেন্ট ইতিমধ্যে বাতিল হয়েছে')

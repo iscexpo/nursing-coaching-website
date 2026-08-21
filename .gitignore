@@ -10,17 +10,73 @@ __v0_jsx-dev-runtime.ts
 .env
 .env*.local
 .env.vercel
+.env.development.local
 
-# Common ignores
-node_modules
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Next.js
 .next/
+out/
+build/
+dist/
 next-env.d.ts
-.DS_Store
 tsconfig.tsbuildinfo
-.vercel
-.env*
+.next/dev/types/**
 
-# Playwright
-/playwright-report/
-/test-results/
+# Turborepo / cache
+.turbo/
+.cache/
+.parcel-cache/
+
+# Testing / coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+
+# Build artifacts
+storybook-static/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*storybook.log
+debug-storybook.log
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE / Editor
+.idea/
+.vscode/*
+!.vscode/mcp.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Vercel
+.vercel/
+
+# Public uploads (gitignored, stored in Blob)
+public/media/
+
+# Secrets / local auth
 /e2e/auth.json

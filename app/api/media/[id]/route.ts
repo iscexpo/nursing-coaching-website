@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {ok, notFound, serverError} from '@/lib/api/response'
+import { ok, notFound, serverError } from '@/lib/api/response'
 import { deleteFromStorage } from '@/lib/media/storage'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'

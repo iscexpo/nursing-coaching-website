@@ -1,6 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
-import {unauthorized, notFound, badRequest, ok, conflict, serverError, validationError} from '@/lib/api/response'
+import {
+  unauthorized,
+  notFound,
+  badRequest,
+  ok,
+  conflict,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
@@ -11,8 +19,7 @@ import { calculateExamScore, calculateGrade } from '@/lib/core/lms-logic'
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -42,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch submissions')
   }
 }
@@ -50,22 +57,22 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = submitExamSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const { examId, answers, timeTaken } = parsed.data
 
     const [exam] = await db.select().from(exams).where(eq(exams.id, examId))
-    if (!exam)
-      return notFound('Exam not found')
-    if (!exam.isActive)
-      return badRequest('Exam is not active')
+    if (!exam) return notFound('Exam not found')
+    if (!exam.isActive) return badRequest('Exam is not active')
 
     // Prevent multiple attempts for the same exam by the same user.
     const existing = await db
@@ -123,9 +130,11 @@ export async function POST(request: NextRequest) {
           wrong: scoring.wrong,
           skipped: scoring.skipped,
         },
-      }, 201)
+      },
+      201,
+    )
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to submit exam')
   }
 }

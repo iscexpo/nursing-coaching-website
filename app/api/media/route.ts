@@ -1,5 +1,10 @@
 import { NextRequest } from 'next/server'
-import {ok, badRequest, serverError, validationError} from '@/lib/api/response'
+import {
+  ok,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { randomUUID } from 'node:crypto'
 import { join, extname } from 'path'
 import { z } from 'zod/v3'
@@ -57,11 +62,16 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file')
     const altText = formData.get('altText')?.toString() || ''
     const description = formData.get('description')?.toString() || ''
-    const category = (formData.get('category')?.toString() as 'general' | 'gallery') || 'general'
+    const category =
+      (formData.get('category')?.toString() as 'general' | 'gallery') ||
+      'general'
 
     const parsed = metadataSchema.safeParse({ altText, description, category })
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     if (!(file instanceof File)) {
@@ -69,7 +79,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (!isAllowedMime(file.type)) {
-      return badRequest('Unsupported file type. Only PNG, JPG, WEBP, GIF or PDF are allowed.',)
+      return badRequest(
+        'Unsupported file type. Only PNG, JPG, WEBP, GIF or PDF are allowed.',
+      )
     }
 
     if (file.size > MAX_UPLOAD_SIZE) {
@@ -83,7 +95,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (!matchesSignature(buffer, file.type)) {
-      return badRequest('File content does not match the declared type. Upload rejected.',)
+      return badRequest(
+        'File content does not match the declared type. Upload rejected.',
+      )
     }
 
     // Validate image dimensions for logos (if altText indicates it's a logo)
@@ -94,7 +108,9 @@ export async function POST(request: NextRequest) {
       const dimensions = validateImageDimensions(buffer, file.type)
       const sizeCheck = isValidLogoSize(dimensions)
       if (!sizeCheck.valid) {
-        return badRequest(sizeCheck.error || 'Invalid image dimensions for logo')
+        return badRequest(
+          sizeCheck.error || 'Invalid image dimensions for logo',
+        )
       }
     }
 
@@ -111,9 +127,11 @@ export async function POST(request: NextRequest) {
       )
     } catch (blobError) {
       console.error('Storage upload failed:', blobError)
-      return serverError(blobError instanceof Error
-              ? blobError.message
-              : 'Failed to store media file',)
+      return serverError(
+        blobError instanceof Error
+          ? blobError.message
+          : 'Failed to store media file',
+      )
     }
 
     const [media] = await db
@@ -135,8 +153,8 @@ export async function POST(request: NextRequest) {
     return ok(media, 201)
   } catch (error) {
     console.error('Media upload failed:', error)
-    return serverError(error instanceof Error
-            ? error.message
-            : 'Failed to upload media file',)
+    return serverError(
+      error instanceof Error ? error.message : 'Failed to upload media file',
+    )
   }
 }

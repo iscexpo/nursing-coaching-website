@@ -1,5 +1,10 @@
 import { NextRequest } from 'next/server'
-import {ok, badRequest, serverError, validationError} from '@/lib/api/response'
+import {
+  ok,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { z } from 'zod/v3'
 import { requireAdmin } from '@/lib/core/permissions'
 import { extractPhoneNumbersFromSheet } from '@/lib/sms/sheet'
@@ -30,7 +35,10 @@ export async function POST(request: NextRequest) {
 
     const parsed = marketingSchema.safeParse({ title, content })
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     if (!(file instanceof File)) {

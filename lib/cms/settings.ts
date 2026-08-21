@@ -90,6 +90,8 @@ export async function getSystemSettings(): Promise<SystemSettings> {
   // Invalid environment variables...") for every static route. Bypass DB entirely
   // during build and when DB env is missing.
   const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build'
+  const isTest =
+    process.env.NODE_ENV === 'test' || process.env.VITEST === 'true'
   const hasDbUrl = !!(
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL ||
@@ -97,7 +99,7 @@ export async function getSystemSettings(): Promise<SystemSettings> {
     process.env.POSTGRES_URL_NON_POOLING
   )
   const hasSecret = !!process.env.BETTER_AUTH_SECRET
-  if (isBuildPhase || !hasDbUrl || !hasSecret) {
+  if (!isTest && (isBuildPhase || !hasDbUrl || !hasSecret)) {
     return createDefaultSystemSettings()
   }
 

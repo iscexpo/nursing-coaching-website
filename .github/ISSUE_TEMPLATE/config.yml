@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: ./SECURITY.md
+    about: Please do not file public issues for security vulnerabilities
+  - name: Discussions / Questions
+    url: https://github.com/neopilotai/iscexpo/discussions
+    about: Ask the community

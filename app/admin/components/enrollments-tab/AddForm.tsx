@@ -4,6 +4,10 @@ import { useTranslations } from 'next-intl'
 import { Plus, Loader2, X } from 'lucide-react'
 import type { Course, Student } from '../types'
 import { inputCls, labelCls } from './types'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Alert } from '@/components/ui/alert'
 import type { AddFormState } from './types'
 
 export function AddEnrollmentForm({
@@ -56,19 +60,16 @@ export function AddEnrollmentForm({
           <X className="size-5" />
         </button>
       </div>
-      <div className="space-y-3">
-        {addError && (
-          <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {addError}
-          </div>
-        )}
+      <div className="space-y-4">
+        {addError && <Alert variant="error" message={addError} dismissible={false} />}
 
-        <div>
-          <label className={labelCls}>{t('studentLabel')} *</label>
+        <FormField id="enroll-student" label={t('studentLabel')} required>
           <select
+            id="enroll-student"
             value={addForm.userId}
             onChange={(e) => setAddForm({ ...addForm, userId: e.target.value })}
             className={inputCls}
+            aria-required="true"
           >
             <option value="">{t('studentLabel')} নির্বাচন করুন</option>
             {students.map((s) => (
@@ -78,7 +79,7 @@ export function AddEnrollmentForm({
               </option>
             ))}
           </select>
-        </div>
+        </FormField>
 
         <div>
           <div className="flex items-center justify-between">
@@ -173,9 +174,15 @@ export function AddEnrollmentForm({
                     .toLocaleString()}
                 </span>
               </div>
-              <div>
-                <label className={labelCls}>{t('discountLabel')}</label>
-                <input
+              <FormField
+                id="enroll-discount"
+                label={t('discountLabel')}
+                error={
+                  addDiscountNum > addMaxDiscount ? t('discountExceedsFee') : undefined
+                }
+              >
+                <Input
+                  id="enroll-discount"
                   type="number"
                   min="0"
                   max={addMaxDiscount}
@@ -184,18 +191,11 @@ export function AddEnrollmentForm({
                     setAddForm({ ...addForm, discount: e.target.value })
                   }
                   placeholder="০"
-                  className={inputCls}
+                  aria-invalid={addDiscountNum > addMaxDiscount}
                 />
-                {addDiscountNum > addMaxDiscount && (
-                  <p className="mt-1 text-xs text-destructive">
-                    {t('discountExceedsFee')}
-                  </p>
-                )}
-              </div>
+              </FormField>
               <div className="flex items-center justify-between text-sm mt-2 pt-2 border-t border-border">
-                <span className="text-muted-foreground">
-                  {t('payableFee')}
-                </span>
+                <span className="text-muted-foreground">{t('payableFee')}</span>
                 <span className="font-semibold text-green">
                   ৳{addTotalFee.toLocaleString()}
                 </span>
@@ -212,20 +212,22 @@ export function AddEnrollmentForm({
           </div>
         )}
 
-        <div>
-          <label className={labelCls}>নোট</label>
-          <input
+        <FormField
+          id="enroll-notes"
+          label="নোট"
+          helpText={`${addForm.notes.length}/1000`}
+        >
+          <Input
+            id="enroll-notes"
             type="text"
             value={addForm.notes}
             onChange={(e) => setAddForm({ ...addForm, notes: e.target.value })}
             placeholder={t('notesPlaceholder')}
             maxLength={1000}
-            className={inputCls}
           />
-          <p className="mt-1 text-xs text-muted-foreground">
-            {addForm.notes.length}/1000
-          </p>
-        </div>
+        </FormField>
+
+        <Separator />
 
         <button
           onClick={handleAdd}
@@ -242,7 +244,9 @@ export function AddEnrollmentForm({
             <Plus className="size-4" />
           )}
           {addForm.selectedCourseIds.length > 1
-            ? t('createEnrollments', { count: addForm.selectedCourseIds.length })
+            ? t('createEnrollments', {
+                count: addForm.selectedCourseIds.length,
+              })
             : t('createEnrollment')}
         </button>
       </div>

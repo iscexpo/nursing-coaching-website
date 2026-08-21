@@ -245,7 +245,9 @@ export function SmsConfigSection({
             <input
               type="password"
               value={form.smsPassword}
-              onChange={(e) => setForm({ ...form, smsPassword: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, smsPassword: e.target.value })
+              }
               placeholder="Shiram API password (not login password)"
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
@@ -289,9 +291,7 @@ export function PaymentGatewaySection({
       <Field label={t('gatewayLabel')}>
         <select
           value={form.paymentGateway}
-          onChange={(e) =>
-            setForm({ ...form, paymentGateway: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, paymentGateway: e.target.value })}
           className={selectClass}
         >
           <option value="none">{t('gatewayOff')}</option>
@@ -314,9 +314,7 @@ export function PaymentGatewaySection({
       <Field label={t('webhookSecretLabel')}>
         <TextInput
           value={form.paymentGatewayWebhookSecret}
-          onChange={(v) =>
-            setForm({ ...form, paymentGatewayWebhookSecret: v })
-          }
+          onChange={(v) => setForm({ ...form, paymentGatewayWebhookSecret: v })}
         />
       </Field>
     </div>

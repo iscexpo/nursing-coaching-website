@@ -1,5 +1,10 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, badRequest, ok, validationError} from '@/lib/api/response'
+import {
+  unauthorized,
+  badRequest,
+  ok,
+  validationError,
+} from '@/lib/api/response'
 import { getSession } from '@/lib/core/permissions'
 import { auth } from '@/lib/auth'
 import { z } from 'zod/v3'
@@ -20,13 +25,15 @@ export async function PUT(request: NextRequest) {
 
   try {
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = changePasswordSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const { currentPassword, newPassword } = parsed.data

@@ -1,5 +1,11 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, notFound, ok, serverError, validationError} from '@/lib/api/response'
+import {
+  unauthorized,
+  notFound,
+  ok,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -13,12 +19,10 @@ export async function GET(
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const [course] = await db.select().from(courses).where(eq(courses.id, id))
-    if (!course)
-      return notFound('Course not found')
+    if (!course) return notFound('Course not found')
 
     return ok(course)
   } catch (error) {
@@ -39,7 +43,10 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateCourseSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [updated] = await db
@@ -51,8 +58,7 @@ export async function PUT(
       .where(eq(courses.id, id))
       .returning()
 
-    if (!updated)
-      return notFound('Course not found')
+    if (!updated) return notFound('Course not found')
     return ok(updated)
   } catch (error) {
     console.error('Failed to update course:', error)
@@ -62,7 +68,9 @@ export async function PUT(
         {
           error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে',
           details: { slug: ['Slug already exists'] },
-        }, 409)
+        },
+        409,
+      )
     }
     return serverError('Failed to update course')
   }
@@ -81,8 +89,7 @@ export async function DELETE(
       .delete(courses)
       .where(eq(courses.id, id))
       .returning()
-    if (!deleted)
-      return notFound('Course not found')
+    if (!deleted) return notFound('Course not found')
 
     return ok({ success: true })
   } catch (error) {

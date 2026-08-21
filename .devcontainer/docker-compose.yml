@@ -1,0 +1,8 @@
+services:
+  app:
+    command: sleep infinity
+    volumes:
+      - ..:/app:cached
+      - /app/node_modules
+      - /app/.next
+    # Keep same build, but override for devcontainer attach

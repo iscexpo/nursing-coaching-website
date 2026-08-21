@@ -1,7 +1,41 @@
 'use client'
 
-import { Users, DollarSign, Calendar, TrendingUp, FileText, BarChart3, Clock, CheckCircle } from 'lucide-react'
-import { StatCard, ChartCard, DataTable, BarChart, RevenueChart, AttendanceChart, CourseAnalyticsChart, PerformanceChart } from './charts'
+import dynamic from 'next/dynamic'
+import {
+  Users,
+  DollarSign,
+  Calendar,
+  TrendingUp,
+  FileText,
+  BarChart3,
+  Clock,
+  CheckCircle,
+} from 'lucide-react'
+import { StatCard, ChartCard, DataTable } from './charts'
+
+const BarChart = dynamic(() => import('./charts').then((m) => m.BarChart), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+})
+const RevenueChart = dynamic(() => import('./charts').then((m) => m.RevenueChart), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+})
+const AttendanceChart = dynamic(() => import('./charts').then((m) => m.AttendanceChart), {
+  ssr: false,
+  loading: () => <div className="h-40 animate-pulse rounded-2xl bg-secondary/50" />,
+})
+const CourseAnalyticsChart = dynamic(
+  () => import('./charts').then((m) => m.CourseAnalyticsChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+  },
+)
+const PerformanceChart = dynamic(() => import('./charts').then((m) => m.PerformanceChart), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+})
 import { useReportFormatters } from './format'
 import type { ReportType } from './types'
 import type {
@@ -239,7 +273,9 @@ export function ReportContent({
             />
             <StatCard
               label={t('stats.fullyPaid')}
-              value={feeCollectionReport.filter((f) => f.status === 'paid').length}
+              value={
+                feeCollectionReport.filter((f) => f.status === 'paid').length
+              }
               icon={CheckCircle}
               color="blue"
             />
@@ -288,8 +324,10 @@ export function ReportContent({
               value={
                 studentPerformance.length > 0
                   ? `${Math.round(
-                      studentPerformance.reduce((s, p) => s + p.averageScore, 0) /
-                        studentPerformance.length,
+                      studentPerformance.reduce(
+                        (s, p) => s + p.averageScore,
+                        0,
+                      ) / studentPerformance.length,
                     )}%`
                   : '0%'
               }
@@ -298,7 +336,10 @@ export function ReportContent({
             />
             <StatCard
               label={t('stats.examsTaken')}
-              value={studentPerformance.reduce((s, p) => s + p.examsAttempted, 0)}
+              value={studentPerformance.reduce(
+                (s, p) => s + p.examsAttempted,
+                0,
+              )}
               icon={FileText}
               color="blue"
             />

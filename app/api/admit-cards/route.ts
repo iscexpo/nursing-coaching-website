@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
-import {unauthorized, ok, serverError, validationError} from '@/lib/api/response'
+import {
+  unauthorized,
+  ok,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
@@ -10,8 +15,7 @@ import { createAdmitCardSchema, paginationSchema } from '@/lib/core/validations'
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -41,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch admit cards')
   }
 }
@@ -51,13 +55,15 @@ export async function POST(request: NextRequest) {
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = createAdmitCardSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [card] = await db
@@ -70,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     return ok(card, 201)
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to create admit card')
   }
 }

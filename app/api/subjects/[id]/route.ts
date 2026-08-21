@@ -1,5 +1,11 @@
 import { NextRequest } from 'next/server'
-import {notFound, ok, conflict, serverError, validationError} from '@/lib/api/response'
+import {
+  notFound,
+  ok,
+  conflict,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { subjects } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -18,7 +24,10 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateSubjectSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [existing] = await db
@@ -26,8 +35,7 @@ export async function PUT(
       .from(subjects)
       .where(eq(subjects.id, id))
       .limit(1)
-    if (!existing)
-      return notFound('Subject not found')
+    if (!existing) return notFound('Subject not found')
 
     if (parsed.data.name && parsed.data.name !== existing.name) {
       const duplicate = await db
@@ -68,8 +76,7 @@ export async function DELETE(
       .from(subjects)
       .where(eq(subjects.id, id))
       .limit(1)
-    if (!existing)
-      return notFound('Subject not found')
+    if (!existing) return notFound('Subject not found')
 
     await db.delete(subjects).where(eq(subjects.id, id))
     return ok({ success: true })

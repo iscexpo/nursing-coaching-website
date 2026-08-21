@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { getPaymentValidationErrors } from '../lib/payment'
-import { calculatePaymentUpdate, validatePaymentAmount } from '../lib/core/lms-logic'
+import {
+  calculatePaymentUpdate,
+  validatePaymentAmount,
+} from '../lib/core/lms-logic'
 
 describe('getPaymentValidationErrors', () => {
   it('accepts a valid cash payment without transaction details', () => {

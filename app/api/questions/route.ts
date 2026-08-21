@@ -5,7 +5,13 @@ import { questions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
 import { createQuestionSchema, paginationSchema } from '@/lib/core/validations'
-import { ok, unauthorized, badRequest, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data: sanitized, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch questions')
   }
 }
@@ -65,7 +71,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createQuestionSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const [question] = await db
@@ -78,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     return ok(question, 201)
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to create question')
   }
 }

@@ -4,6 +4,10 @@ import { useTranslations } from 'next-intl'
 import { Pencil, Loader2, X } from 'lucide-react'
 import type { Enrollment } from '../types'
 import { inputCls, labelCls } from './types'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Alert } from '@/components/ui/alert'
 import type { EditState } from './types'
 
 export function EditEnrollmentForm({
@@ -46,16 +50,12 @@ export function EditEnrollmentForm({
           <X className="size-5" />
         </button>
       </div>
-      <div className="space-y-3">
-        {editError && (
-          <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {editError}
-          </div>
-        )}
+      <div className="space-y-4">
+        {editError && <Alert variant="error" message={editError} dismissible={false} />}
         <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className={labelCls}>অবস্থা</label>
+          <FormField id="edit-status" label="অবস্থা">
             <select
+              id="edit-status"
               value={editForm.status}
               onChange={(e) =>
                 setEditForm({ ...editForm, status: e.target.value })
@@ -68,10 +68,14 @@ export function EditEnrollmentForm({
                 </option>
               ))}
             </select>
-          </div>
-          <div>
-            <label className={labelCls}>নোট</label>
-            <input
+          </FormField>
+          <FormField
+            id="edit-notes"
+            label="নোট"
+            helpText={`${editForm.notes.length}/1000`}
+          >
+            <Input
+              id="edit-notes"
               type="text"
               value={editForm.notes}
               onChange={(e) =>
@@ -79,45 +83,45 @@ export function EditEnrollmentForm({
               }
               placeholder="নোট"
               maxLength={1000}
-              className={inputCls}
             />
-            <p className="mt-1 text-xs text-muted-foreground">
-              {editForm.notes.length}/1000
-            </p>
-          </div>
+          </FormField>
         </div>
+        <Separator />
         <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className={labelCls}>শুরুর তারিখ</label>
-            <input
+          <FormField id="edit-startDate" label="শুরুর তারিখ">
+            <Input
+              id="edit-startDate"
               type="date"
               value={editForm.startDate}
               onChange={(e) =>
                 setEditForm({ ...editForm, startDate: e.target.value })
               }
-              className={inputCls}
             />
-          </div>
-          <div>
-            <label className={labelCls}>শেষের তারিখ</label>
-            <input
+          </FormField>
+          <FormField
+            id="edit-endDate"
+            label="শেষের তারিখ"
+            error={
+              editForm.startDate && editForm.endDate && editForm.endDate < editForm.startDate
+                ? 'শেষের তারিখ শুরুর তারিখের পরে হতে হবে'
+                : undefined
+            }
+          >
+            <Input
+              id="edit-endDate"
               type="date"
               value={editForm.endDate}
               min={editForm.startDate || undefined}
               onChange={(e) =>
                 setEditForm({ ...editForm, endDate: e.target.value })
               }
-              className={inputCls}
+              aria-invalid={
+                !!(editForm.startDate && editForm.endDate && editForm.endDate < editForm.startDate)
+              }
             />
-            {editForm.startDate &&
-              editForm.endDate &&
-              editForm.endDate < editForm.startDate && (
-                <p className="mt-1 text-xs text-destructive">
-                  শেষের তারিখ শুরুর তারিখের পরে হতে হবে
-                </p>
-              )}
-          </div>
+          </FormField>
         </div>
+        <Separator />
         <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
           <p className="text-sm font-semibold text-foreground">
             {t('feeAndDiscount')}
@@ -131,9 +135,9 @@ export function EditEnrollmentForm({
                 ৳{editCourseFee.toLocaleString()}
               </div>
             </div>
-            <div>
-              <label className={labelCls}>{t('discountLabel')}</label>
-              <input
+            <FormField id="edit-discount" label={t('discountLabel')}>
+              <Input
+                id="edit-discount"
                 type="number"
                 min="0"
                 max={editCourseFee}
@@ -142,9 +146,8 @@ export function EditEnrollmentForm({
                   setEditForm({ ...editForm, discount: e.target.value })
                 }
                 placeholder="০"
-                className={inputCls}
               />
-            </div>
+            </FormField>
             <div>
               <label className="block text-xs font-medium text-muted-foreground">
                 {t('payableFee')}

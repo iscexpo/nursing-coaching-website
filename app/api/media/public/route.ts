@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import {ok, serverError} from '@/lib/api/response'
+import { ok, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'

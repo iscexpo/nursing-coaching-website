@@ -9,9 +9,18 @@ import {
 } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
 import { getSession, isAdmin, requireAdmin } from '@/lib/core/permissions'
-import { createEnrollmentSchema, paginationSchema } from '@/lib/core/validations'
+import {
+  createEnrollmentSchema,
+  paginationSchema,
+} from '@/lib/core/validations'
 import { rateLimit } from '@/lib/core/rate-limit'
-import { ok, unauthorized, badRequest, serverError, validationError } from '@/lib/api/response'
+import {
+  ok,
+  unauthorized,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -87,7 +96,7 @@ export async function GET(request: NextRequest) {
 
     return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
+    console.error('Error:', error)
     return serverError('Failed to fetch enrollments')
   }
 }
@@ -107,7 +116,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createEnrollmentSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const admin = isAdmin(session.user.role)

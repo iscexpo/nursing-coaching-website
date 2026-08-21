@@ -15,7 +15,8 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 
-type Step = 'select-method' | 'verify-phone' | 'new-password' | 'email-sent' | 'done'
+type Step =
+  'select-method' | 'verify-phone' | 'new-password' | 'email-sent' | 'done'
 type Method = 'phone' | 'email'
 
 export default function ForgotPasswordPage() {

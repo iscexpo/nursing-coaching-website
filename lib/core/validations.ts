@@ -73,6 +73,7 @@ export const updateEnrollmentSchema = z.object({
       'completed',
       'cancelled',
       'suspended',
+      'expired',
     ])
     .optional(),
   notes: z.string().max(1000).optional(),
@@ -151,9 +152,7 @@ export const createScheduledNotificationSchema = z.object({
     .enum(['info', 'success', 'warning', 'payment', 'enrollment'])
     .default('info'),
   scheduledAt: z.coerce.date(),
-  targetRole: z
-    .enum(['super-admin', 'admin', 'teacher', 'student'])
-    .optional(),
+  targetRole: z.enum(['super-admin', 'admin', 'teacher', 'student']).optional(),
   targetCourseId: z.string().min(1).optional(),
 })
 
@@ -219,6 +218,15 @@ export const createExamSchema = z.object({
   duration: z.number().int().min(1).max(120).optional(),
   difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
   isActive: z.boolean().optional(),
+  examType: z
+    .enum(['model_test', 'practice_quiz', 'final_exam', 'subject_test'])
+    .optional(),
+  startTime: z.coerce.date().optional(),
+  endTime: z.coerce.date().optional(),
+  allowReview: z.boolean().optional(),
+  negativeMarking: z.boolean().optional(),
+  shuffleQuestions: z.boolean().optional(),
+  shuffleOptions: z.boolean().optional(),
 })
 
 export const updateExamSchema = createExamSchema.partial()
@@ -228,6 +236,9 @@ export const createQuestionSchema = z.object({
   question: z.string().min(1).max(2000),
   options: z.array(z.string().min(1).max(500)).length(4),
   correctIndex: z.number().int().min(0).max(3),
+  difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
+  points: z.number().int().min(1).max(10).optional(),
+  explanation: z.string().max(2000).optional(),
 })
 
 export const submitExamSchema = z.object({

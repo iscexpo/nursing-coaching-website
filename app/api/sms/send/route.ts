@@ -1,5 +1,10 @@
 import { NextRequest } from 'next/server'
-import {badRequest, serverError, ok, validationError} from '@/lib/api/response'
+import {
+  badRequest,
+  serverError,
+  ok,
+  validationError,
+} from '@/lib/api/response'
 import { z } from 'zod/v3'
 import { requireAdmin } from '@/lib/core/permissions'
 import { sendSmsToRecipients, normalizePhoneNumbers } from '@/lib/sms'
@@ -25,7 +30,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = sendSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const phones = normalizePhoneNumbers([parsed.data.phone])

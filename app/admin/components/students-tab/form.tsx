@@ -5,8 +5,12 @@ import NextImage from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Loader2, Save, X, Upload } from 'lucide-react'
 import type { Student } from '../types'
-import { inputCls, labelCls } from './types'
+import { inputCls } from './types'
 import type { EducationField, FormState } from './types'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Alert } from '@/components/ui/alert'
 
 function resizeImage(
   file: File,
@@ -79,37 +83,29 @@ function EduFields({
   }
 
   return (
-    <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
+    <div className="rounded-lg border border-border bg-secondary/30 p-3 space-y-3">
       <p className="text-sm font-semibold text-foreground">{label}</p>
-      <div className="grid gap-2 sm:grid-cols-3">
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground">
-            {t('formLabels.result')}
-          </label>
-          <input
+      <Separator />
+      <div className="grid gap-3 sm:grid-cols-3">
+        <FormField label={t('formLabels.result')}>
+          <Input
             type="text"
             value={value.result}
             onChange={(e) => onChange({ ...value, result: e.target.value })}
             placeholder={t('formLabels.resultPlaceholder')}
-            className={inputCls}
           />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground">
-            {t('formLabels.institution')}
-          </label>
-          <input
+        </FormField>
+        <FormField label={t('formLabels.institution')}>
+          <Input
             type="text"
             value={value.institution}
-            onChange={(e) => onChange({ ...value, institution: e.target.value })}
+            onChange={(e) =>
+              onChange({ ...value, institution: e.target.value })
+            }
             placeholder={t('formLabels.institutionPlaceholder')}
-            className={inputCls}
           />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground">
-            {t('formLabels.year')}
-          </label>
+        </FormField>
+        <FormField label={t('formLabels.year')}>
           <select
             value={value.year}
             onChange={(e) => onChange({ ...value, year: e.target.value })}
@@ -122,39 +118,28 @@ function EduFields({
               </option>
             ))}
           </select>
-        </div>
+        </FormField>
       </div>
-      <div className="grid gap-2 sm:grid-cols-3">
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground">
-            {t('formLabels.roll')}
-          </label>
-          <input
+      <div className="grid gap-3 sm:grid-cols-3">
+        <FormField label={t('formLabels.roll')}>
+          <Input
             type="text"
             value={value.roll}
             onChange={(e) => onChange({ ...value, roll: e.target.value })}
             placeholder={t('formLabels.rollPlaceholder')}
-            className={inputCls}
           />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground">
-            {t('formLabels.registration')}
-          </label>
-          <input
+        </FormField>
+        <FormField label={t('formLabels.registration')}>
+          <Input
             type="text"
             value={value.registrationNo}
             onChange={(e) =>
               onChange({ ...value, registrationNo: e.target.value })
             }
             placeholder={t('formLabels.registrationPlaceholder')}
-            className={inputCls}
           />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground">
-            {t('formLabels.board')}
-          </label>
+        </FormField>
+        <FormField label={t('formLabels.board')}>
           <select
             value={value.board}
             onChange={(e) => onChange({ ...value, board: e.target.value })}
@@ -166,7 +151,7 @@ function EduFields({
               </option>
             ))}
           </select>
-        </div>
+        </FormField>
       </div>
       <div className="flex items-center gap-3">
         <div>
@@ -261,12 +246,12 @@ function StudentPhotoUpload({
         )}
         {uploading ? t('formLabels.uploading') : t('formLabels.uploadPhoto')}
       </button>
-      <input
+      <Input
         type="url"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={t('formLabels.pasteUrl')}
-        className={inputCls}
+        className="flex-1"
       />
       {value && (
         <div className="flex items-center gap-2 shrink-0">
@@ -323,11 +308,7 @@ export function StudentForm({
         </button>
       </div>
       <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-        {formError && (
-          <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {formError}
-          </div>
-        )}
+        {formError && <Alert variant="error" message={formError} dismissible={false} />}
 
         {/* Personal info */}
         <div>
@@ -335,86 +316,89 @@ export function StudentForm({
             {t('personalInfo')}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className={labelCls}>{t('formLabels.name')}</label>
-              <input
+            <FormField id="student-name" label={t('formLabels.name')} required>
+              <Input
+                id="student-name"
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder={t('formLabels.namePlaceholder')}
-                className={inputCls}
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className={labelCls}>{t('formLabels.email')}</label>
-              <input
+            </FormField>
+            <FormField id="student-email" label={t('formLabels.email')} required>
+              <Input
+                id="student-email"
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="example@email.com"
-                className={inputCls}
+                aria-required="true"
               />
-            </div>
+            </FormField>
           </div>
           {!editing && (
-            <div className="mt-3">
-              <label className={labelCls}>{t('formLabels.password')}</label>
-              <input
+            <FormField
+              id="student-password"
+              label={t('formLabels.password')}
+              required
+              className="mt-3"
+            >
+              <Input
+                id="student-password"
                 type="password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder={t('formLabels.passwordPlaceholder')}
-                className={inputCls}
+                aria-required="true"
               />
-            </div>
+            </FormField>
           )}
           <div className="grid gap-3 sm:grid-cols-3 mt-3">
-            <div>
-              <label className={labelCls}>{t('formLabels.phone')}</label>
-              <input
+            <FormField id="student-phone" label={t('formLabels.phone')}>
+              <Input
+                id="student-phone"
                 type="text"
                 value={form.phoneNumber}
                 onChange={(e) =>
                   setForm({ ...form, phoneNumber: e.target.value })
                 }
                 placeholder={t('formLabels.phonePlaceholder')}
-                className={inputCls}
               />
-            </div>
-            <div>
-              <label className={labelCls}>{t('formLabels.studentId')}</label>
-              <input
+            </FormField>
+            <FormField id="student-studentId" label={t('formLabels.studentId')}>
+              <Input
+                id="student-studentId"
                 type="text"
                 value={form.studentId}
                 onChange={(e) =>
                   setForm({ ...form, studentId: e.target.value })
                 }
                 placeholder={t('formLabels.studentIdPlaceholder')}
-                className={inputCls}
               />
-            </div>
-            <div>
-              <label className={labelCls}>{t('formLabels.dateOfBirth')}</label>
-              <input
+            </FormField>
+            <FormField id="student-dob" label={t('formLabels.dateOfBirth')}>
+              <Input
+                id="student-dob"
                 type="date"
                 value={form.dateOfBirth}
                 onChange={(e) =>
                   setForm({ ...form, dateOfBirth: e.target.value })
                 }
-                className={inputCls}
               />
-            </div>
+            </FormField>
           </div>
-          <div className="mt-3">
-            <label className={labelCls}>{t('formLabels.image')}</label>
-            <div className="flex items-center gap-3 mt-1">
+          <FormField id="student-image" label={t('formLabels.image')} className="mt-3">
+            <div className="flex items-center gap-3">
               <StudentPhotoUpload
                 value={form.image}
                 onChange={(url) => setForm({ ...form, image: url })}
               />
             </div>
-          </div>
+          </FormField>
         </div>
+
+        <Separator />
 
         {/* Address */}
         <div>
@@ -422,60 +406,61 @@ export function StudentForm({
             {t('formLabels.addressSection')}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className={labelCls}>{t('formLabels.village')}</label>
-              <input
+            <FormField id="student-village" label={t('formLabels.village')}>
+              <Input
+                id="student-village"
                 type="text"
                 value={form.village}
                 onChange={(e) => setForm({ ...form, village: e.target.value })}
                 placeholder={t('formLabels.villagePlaceholder')}
-                className={inputCls}
               />
-            </div>
-            <div>
-              <label className={labelCls}>{t('formLabels.post')}</label>
-              <input
+            </FormField>
+            <FormField id="student-post" label={t('formLabels.post')}>
+              <Input
+                id="student-post"
                 type="text"
                 value={form.post}
                 onChange={(e) => setForm({ ...form, post: e.target.value })}
                 placeholder={t('formLabels.postPlaceholder')}
-                className={inputCls}
               />
-            </div>
-            <div>
-              <label className={labelCls}>{t('formLabels.policeStation')}</label>
-              <input
+            </FormField>
+            <FormField id="student-policeStation" label={t('formLabels.policeStation')}>
+              <Input
+                id="student-policeStation"
                 type="text"
                 value={form.policeStation}
                 onChange={(e) =>
                   setForm({ ...form, policeStation: e.target.value })
                 }
                 placeholder={t('formLabels.policeStationPlaceholder')}
-                className={inputCls}
               />
-            </div>
-            <div>
-              <label className={labelCls}>{t('formLabels.district')}</label>
-              <input
+            </FormField>
+            <FormField id="student-district" label={t('formLabels.district')}>
+              <Input
+                id="student-district"
                 type="text"
                 value={form.district}
                 onChange={(e) => setForm({ ...form, district: e.target.value })}
                 placeholder={t('formLabels.districtPlaceholder')}
-                className={inputCls}
               />
-            </div>
+            </FormField>
           </div>
-          <div className="mt-3">
-            <label className={labelCls}>{t('formLabels.fullAddress')}</label>
-            <input
+          <FormField
+            id="student-address"
+            label={t('formLabels.fullAddress')}
+            className="mt-3"
+          >
+            <Input
+              id="student-address"
               type="text"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
               placeholder={t('formLabels.fullAddressPlaceholder')}
-              className={inputCls}
             />
-          </div>
+          </FormField>
         </div>
+
+        <Separator />
 
         {/* Guardian */}
         <div>
@@ -483,30 +468,28 @@ export function StudentForm({
             {t('formLabels.guardianSection')}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className={labelCls}>{t('formLabels.guardianName')}</label>
-              <input
+            <FormField id="student-guardianName" label={t('formLabels.guardianName')}>
+              <Input
+                id="student-guardianName"
                 type="text"
                 value={form.guardianName}
                 onChange={(e) =>
                   setForm({ ...form, guardianName: e.target.value })
                 }
                 placeholder={t('formLabels.guardianNamePlaceholder')}
-                className={inputCls}
               />
-            </div>
-            <div>
-              <label className={labelCls}>{t('formLabels.guardianPhone')}</label>
-              <input
+            </FormField>
+            <FormField id="student-guardianPhone" label={t('formLabels.guardianPhone')}>
+              <Input
+                id="student-guardianPhone"
                 type="text"
                 value={form.guardianPhone}
                 onChange={(e) =>
                   setForm({ ...form, guardianPhone: e.target.value })
                 }
                 placeholder={t('formLabels.phonePlaceholder')}
-                className={inputCls}
               />
-            </div>
+            </FormField>
           </div>
         </div>
 
@@ -531,6 +514,8 @@ export function StudentForm({
             onChange={(v) => setForm({ ...form, honors: v })}
           />
         </div>
+
+        <Separator />
 
         <button
           onClick={handleSave}

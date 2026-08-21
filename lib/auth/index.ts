@@ -113,9 +113,7 @@ function createAuth() {
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async ({ user, url }) => {
-        console.log(
-          `[Reset Password] Reset link for ${user.email}: ${url}`,
-        )
+        console.log(`[Reset Password] Reset link for ${user.email}: ${url}`)
       },
     },
     plugins: [

@@ -1,7 +1,21 @@
 import { NextRequest } from 'next/server'
-import {unauthorized, forbidden, notFound, ok, serverError} from '@/lib/api/response'
+import {
+  unauthorized,
+  forbidden,
+  notFound,
+  ok,
+  serverError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
-import { user, enrollments, courses, payments, attendance, examSubmissions, exams } from '@/lib/db/schema'
+import {
+  user,
+  enrollments,
+  courses,
+  payments,
+  attendance,
+  examSubmissions,
+  exams,
+} from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
 import { calculateGrade } from '@/lib/core/lms-logic'
@@ -18,16 +32,14 @@ export async function GET(
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session)
-      return unauthorized()
+    if (!session) return unauthorized()
 
     if (!isAdmin(session.user.role) && session.user.id !== id) {
       return forbidden()
     }
 
     const [student] = await db.select().from(user).where(eq(user.id, id))
-    if (!student)
-      return notFound('Student not found')
+    if (!student) return notFound('Student not found')
 
     const studentEnrollments = await db
       .select({
@@ -67,7 +79,8 @@ export async function GET(
       },
       { present: 0, late: 0, absent: 0, total: 0 } as Record<string, number>,
     )
-    const presentCount = (attendanceSummary.present || 0) + (attendanceSummary.late || 0)
+    const presentCount =
+      (attendanceSummary.present || 0) + (attendanceSummary.late || 0)
     const attendancePercentage =
       attendanceSummary.total > 0
         ? Math.round((presentCount / attendanceSummary.total) * 100)
