@@ -1,13 +1,18 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import { Plus, Loader2, Calendar, LayoutGrid, List } from 'lucide-react'
-import { CalendarView } from '@/components/ui/calendar-view'
 import { FormField } from '@/components/ui/form-field'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import type { Enrollment, AttendanceRecord } from './types'
+
+const CalendarView = dynamic(
+  () => import('@/components/ui/calendar-view').then((m) => m.CalendarView),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" /> },
+)
 
 export function AttendancePanel({
   enrollments,

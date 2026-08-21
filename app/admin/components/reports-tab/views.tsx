@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import {
   Users,
   DollarSign,
@@ -10,16 +11,31 @@ import {
   Clock,
   CheckCircle,
 } from 'lucide-react'
-import {
-  StatCard,
-  ChartCard,
-  DataTable,
-  BarChart,
-  RevenueChart,
-  AttendanceChart,
-  CourseAnalyticsChart,
-  PerformanceChart,
-} from './charts'
+import { StatCard, ChartCard, DataTable } from './charts'
+
+const BarChart = dynamic(() => import('./charts').then((m) => m.BarChart), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+})
+const RevenueChart = dynamic(() => import('./charts').then((m) => m.RevenueChart), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+})
+const AttendanceChart = dynamic(() => import('./charts').then((m) => m.AttendanceChart), {
+  ssr: false,
+  loading: () => <div className="h-40 animate-pulse rounded-2xl bg-secondary/50" />,
+})
+const CourseAnalyticsChart = dynamic(
+  () => import('./charts').then((m) => m.CourseAnalyticsChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+  },
+)
+const PerformanceChart = dynamic(() => import('./charts').then((m) => m.PerformanceChart), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />,
+})
 import { useReportFormatters } from './format'
 import type { ReportType } from './types'
 import type {
