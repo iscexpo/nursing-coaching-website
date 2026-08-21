@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -13,11 +14,11 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [course] = await db.select().from(courses).where(eq(courses.id, id))
     if (!course)
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      return notFound('Course not found')
 
     return NextResponse.json(course)
   } catch (error) {
@@ -57,7 +58,7 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      return notFound('Course not found')
     return NextResponse.json(updated)
   } catch (error) {
     console.error('Failed to update course:', error)
@@ -92,7 +93,7 @@ export async function DELETE(
       .where(eq(courses.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      return notFound('Course not found')
 
     return NextResponse.json({ success: true })
   } catch (error) {

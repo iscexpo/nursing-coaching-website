@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
@@ -9,7 +10,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   if (!authz.ok) return authz.response
   const { id } = await params
   const [exam] = await db.select().from(exams).where(eq(exams.id, id))
-  if (!exam) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+  if (!exam) return notFound('Exam not found')
   const [questionStats] = await db.select({ count: sql<number>`count(*)` }).from(questions).where(eq(questions.examId, id))
   const [metrics] = await db
     .select({

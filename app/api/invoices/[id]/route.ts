@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, forbidden, notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -13,17 +14,17 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [invoice] = await db
       .select()
       .from(invoices)
       .where(eq(invoices.id, id))
     if (!invoice)
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      return notFound('Invoice not found')
 
     if (!isAdmin(session.user.role) && invoice.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
     return NextResponse.json(invoice)
@@ -45,7 +46,7 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = createInvoiceSchema.partial().safeParse(body)
@@ -66,7 +67,7 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      return notFound('Invoice not found')
     return NextResponse.json(updated)
   } catch {
     return NextResponse.json(
@@ -86,14 +87,14 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [deleted] = await db
       .delete(invoices)
       .where(eq(invoices.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      return notFound('Invoice not found')
 
     return NextResponse.json({ success: true })
   } catch {

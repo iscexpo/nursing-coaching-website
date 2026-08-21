@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { badRequest, serverError } from '@/lib/api/response'
 import { z } from 'zod/v3'
 import { requireAdmin } from '@/lib/core/permissions'
 import { sendSmsToRecipients, normalizePhoneNumbers } from '@/lib/sms'
@@ -32,12 +33,12 @@ export async function POST(request: NextRequest) {
 
     const phones = normalizePhoneNumbers([parsed.data.phone])
     if (phones.length === 0) {
-      return NextResponse.json({ error: 'অবৈধ ফোন নম্বর' }, { status: 400 })
+      return badRequest('অবৈধ ফোন নম্বর')
     }
 
     const result = await sendSmsToRecipients(phones, parsed.data.message)
     return NextResponse.json(result)
   } catch {
-    return NextResponse.json({ error: 'SMS পাঠানো যায়নি' }, { status: 500 })
+    return serverError('SMS পাঠানো যায়নি')
   }
 }

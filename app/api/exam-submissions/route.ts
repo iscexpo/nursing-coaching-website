@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, notFound, badRequest } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = submitExamSchema.safeParse(body)
@@ -68,9 +69,9 @@ export async function POST(request: NextRequest) {
 
     const [exam] = await db.select().from(exams).where(eq(exams.id, examId))
     if (!exam)
-      return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+      return notFound('Exam not found')
     if (!exam.isActive)
-      return NextResponse.json({ error: 'Exam is not active' }, { status: 400 })
+      return badRequest('Exam is not active')
 
     // Prevent multiple attempts for the same exam by the same user.
     const existing = await db

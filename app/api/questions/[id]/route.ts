@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -13,14 +14,14 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [question] = await db
       .select()
       .from(questions)
       .where(eq(questions.id, id))
     if (!question)
-      return NextResponse.json({ error: 'Question not found' }, { status: 404 })
+      return notFound('Question not found')
 
     if (!isAdmin(session.user.role)) {
       const { correctIndex, ...rest } = question
@@ -46,7 +47,7 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = createQuestionSchema.partial().safeParse(body)
@@ -63,7 +64,7 @@ export async function PUT(
       .where(eq(questions.id, id))
       .returning()
     if (!updated)
-      return NextResponse.json({ error: 'Question not found' }, { status: 404 })
+      return notFound('Question not found')
 
     return NextResponse.json(updated)
   } catch {
@@ -84,14 +85,14 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [deleted] = await db
       .delete(questions)
       .where(eq(questions.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Question not found' }, { status: 404 })
+      return notFound('Question not found')
 
     return NextResponse.json({ success: true })
   } catch {

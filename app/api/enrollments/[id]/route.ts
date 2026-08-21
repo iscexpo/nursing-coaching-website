@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, forbidden, badRequest } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -21,7 +22,7 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [enrollment] = await db
       .select()
@@ -34,7 +35,7 @@ export async function GET(
       )
 
     if (!isAdmin(session.user.role) && enrollment.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
     return NextResponse.json(enrollment)
@@ -56,7 +57,7 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateEnrollmentSchema.safeParse(body)
@@ -83,7 +84,7 @@ export async function PUT(
         parsed.data.status,
       )
       if (transitionError) {
-        return NextResponse.json({ error: transitionError }, { status: 400 })
+        return badRequest(transitionError)
       }
     }
 
@@ -198,7 +199,7 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [existing] = await db
       .select()

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { exams, modelTestApplicants } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (examId) {
       const [exam] = await db.select().from(exams).where(eq(exams.id, examId))
       if (!exam)
-        return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+        return notFound('Exam not found')
     }
 
     const reference = `MT-${randomUUID().slice(0, 8).toUpperCase()}`

@@ -5,7 +5,7 @@ import { csrfMiddleware, ensureCsrfCookie } from './lib/auth/csrf'
 
 const handleI18nRouting = createMiddleware(routing)
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // CSRF check for state-changing API requests

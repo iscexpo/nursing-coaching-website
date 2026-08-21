@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, forbidden } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -12,7 +13,7 @@ export async function PATCH(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [existing] = await db
       .select()
@@ -25,7 +26,7 @@ export async function PATCH(
       )
 
     if (existing.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
     const body = await request.json()
@@ -59,7 +60,7 @@ export async function DELETE(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [existing] = await db
       .select()
@@ -72,7 +73,7 @@ export async function DELETE(
       )
 
     if (existing.userId !== session.user.id && !isAdmin(session.user.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
     await db.delete(notifications).where(eq(notifications.id, id))

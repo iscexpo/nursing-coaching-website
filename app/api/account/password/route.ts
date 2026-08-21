@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, badRequest } from '@/lib/api/response'
 import { getSession } from '@/lib/core/permissions'
 import { auth } from '@/lib/auth'
 import { z } from 'zod/v3'
@@ -20,7 +21,7 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = changePasswordSchema.safeParse(body)
@@ -46,6 +47,6 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to update password'
-    return NextResponse.json({ error: message }, { status: 400 })
+    return badRequest(message)
   }
 }

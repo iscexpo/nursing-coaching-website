@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { contactInquiries } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -15,14 +16,14 @@ export async function GET(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [inquiry] = await db
       .select()
       .from(contactInquiries)
       .where(eq(contactInquiries.id, id))
     if (!inquiry)
-      return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+      return notFound('Inquiry not found')
 
     return NextResponse.json(inquiry)
   } catch {
@@ -43,7 +44,7 @@ export async function PATCH(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateContactInquirySchema.safeParse(body)
@@ -66,7 +67,7 @@ export async function PATCH(
       .where(eq(contactInquiries.id, id))
       .returning()
     if (!updated)
-      return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+      return notFound('Inquiry not found')
 
     return NextResponse.json(updated)
   } catch {
@@ -87,14 +88,14 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [deleted] = await db
       .delete(contactInquiries)
       .where(eq(contactInquiries.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+      return notFound('Inquiry not found')
 
     return NextResponse.json({ success: true })
   } catch {

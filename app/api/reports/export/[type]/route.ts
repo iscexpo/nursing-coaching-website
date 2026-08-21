@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { serverError } from '@/lib/api/response'
+import { badRequest } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import {
   enrollments,
@@ -71,7 +73,7 @@ export async function GET(
 
     const { type } = await params
     if (!REPORT_TYPES.includes(type as ReportType)) {
-      return NextResponse.json({ error: 'Invalid report type' }, { status: 400 })
+      return badRequest('Invalid report type')
     }
 
     const { searchParams } = new URL(request.url)
@@ -305,9 +307,6 @@ export async function GET(
     })
   } catch (error) {
     console.error('PDF export failed:', error)
-    return NextResponse.json(
-      { error: 'Failed to export report' },
-      { status: 500 },
-    )
+    return serverError('Failed to export report')
   }
 }

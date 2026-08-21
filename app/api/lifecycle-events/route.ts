@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { studentLifecycleEvents } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const events = await db
       .select({

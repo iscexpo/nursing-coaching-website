@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { ok, notFound, validationError } from '@/lib/api/response'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { exams, questions } from '@/lib/db/schema'
@@ -13,10 +14,10 @@ export async function POST(request: NextRequest) {
   const authz = await requirePermission('question.manage')
   if (!authz.ok) return authz.response
   const parsed = importSchema.safeParse(await request.json().catch(() => null))
-  if (!parsed.success) return NextResponse.json({ error: 'Invalid import payload', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+  if (!parsed.success) return validationError('Invalid import payload', parsed.error.flatten().fieldErrors)
   const [exam] = await db.select({ id: exams.id }).from(exams).where(eq(exams.id, parsed.data.examId))
-  if (!exam) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+  if (!exam) return notFound('Exam not found')
   const rows = parsed.data.questions.map((item) => ({ id: randomUUID(), examId: parsed.data.examId, ...item }))
   const inserted = await db.insert(questions).values(rows).returning({ id: questions.id })
-  return NextResponse.json({ imported: inserted.length, ids: inserted.map((item) => item.id) }, { status: 201 })
+  return ok({ imported: inserted.length, ids: inserted.map((item) => item.id) }, 201)
 }

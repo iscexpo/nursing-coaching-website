@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized } from '@/lib/api/response'
 import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { getSystemSettings, saveSystemSettings } from '@/lib/cms/settings'
 import { settingsSchema } from '@/lib/core/validations'
@@ -48,7 +49,7 @@ export async function PUT(request: NextRequest) {
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = settingsSchema.safeParse(body)

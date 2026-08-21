@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { courses, contactInquiries, admissions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       .from(courses)
       .where(eq(courses.slug, courseSlug))
     if (!course)
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      return notFound('Course not found')
     if (!course.isActive)
       return NextResponse.json(
         { error: 'Course is not active' },

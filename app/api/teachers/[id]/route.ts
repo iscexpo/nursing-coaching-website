@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -20,7 +21,7 @@ export async function GET(
       .from(teachers)
       .where(eq(teachers.id, id))
     if (!teacher)
-      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+      return notFound('Teacher not found')
 
     return NextResponse.json(teacher)
   } catch {
@@ -75,7 +76,7 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+      return notFound('Teacher not found')
     return NextResponse.json(updated)
   } catch {
     return NextResponse.json(
@@ -99,7 +100,7 @@ export async function DELETE(
       .where(eq(teachers.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+      return notFound('Teacher not found')
 
     return NextResponse.json({ success: true })
   } catch {

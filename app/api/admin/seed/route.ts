@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, notFound, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user, account } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
 
   try {
     if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      return notFound()
     }
 
     const authHeader = request.headers.get('authorization')
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (authHeader !== `Bearer ${seedKey}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const adminEmail = process.env.ADMIN_EMAIL
@@ -107,6 +108,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to seed admin'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return serverError(message)
   }
 }

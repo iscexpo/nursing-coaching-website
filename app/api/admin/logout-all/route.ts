@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, forbidden } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { session } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session_)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json().catch(() => ({}))
     const { userId } = body as { userId?: string }
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     // If targeting a specific user, non-super-admins can only target themselves
     if (userId && session_.user.role !== 'super-admin') {
       if (userId !== session_.user.id) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        return forbidden()
       }
     }
 

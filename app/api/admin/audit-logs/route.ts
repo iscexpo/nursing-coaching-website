@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { auditLogs } from '@/lib/db/schema'
 import { desc, eq, and, count } from 'drizzle-orm'
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({

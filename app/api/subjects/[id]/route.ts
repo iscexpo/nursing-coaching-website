@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { subjects } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -29,7 +30,7 @@ export async function PUT(
       .where(eq(subjects.id, id))
       .limit(1)
     if (!existing)
-      return NextResponse.json({ error: 'Subject not found' }, { status: 404 })
+      return notFound('Subject not found')
 
     if (parsed.data.name && parsed.data.name !== existing.name) {
       const duplicate = await db
@@ -77,7 +78,7 @@ export async function DELETE(
       .where(eq(subjects.id, id))
       .limit(1)
     if (!existing)
-      return NextResponse.json({ error: 'Subject not found' }, { status: 404 })
+      return notFound('Subject not found')
 
     await db.delete(subjects).where(eq(subjects.id, id))
     return NextResponse.json({ success: true })

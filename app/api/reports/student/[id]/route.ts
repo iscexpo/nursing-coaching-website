@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, forbidden, notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user, enrollments, courses, payments, attendance, examSubmissions, exams } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
@@ -18,15 +19,15 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     if (!isAdmin(session.user.role) && session.user.id !== id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
     const [student] = await db.select().from(user).where(eq(user.id, id))
     if (!student)
-      return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+      return notFound('Student not found')
 
     const studentEnrollments = await db
       .select({

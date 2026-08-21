@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { unauthorized } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
@@ -8,7 +9,7 @@ export async function POST() {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     await db
       .update(notifications)

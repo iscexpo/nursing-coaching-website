@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -14,11 +15,11 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [notice] = await db.select().from(notices).where(eq(notices.id, id))
     if (!notice)
-      return NextResponse.json({ error: 'Notice not found' }, { status: 404 })
+      return notFound('Notice not found')
 
     return NextResponse.json(notice)
   } catch {
@@ -39,7 +40,7 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateNoticeSchema.safeParse(body)
@@ -60,7 +61,7 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'Notice not found' }, { status: 404 })
+      return notFound('Notice not found')
 
     void writeAudit(
       buildAuditEntry(
@@ -96,14 +97,14 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [deleted] = await db
       .delete(notices)
       .where(eq(notices.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Notice not found' }, { status: 404 })
+      return notFound('Notice not found')
 
     void writeAudit(
       buildAuditEntry(

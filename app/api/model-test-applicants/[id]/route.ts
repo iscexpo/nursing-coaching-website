@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { modelTestApplicants } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -16,7 +17,7 @@ export async function GET(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [applicant] = await db
       .select()
@@ -47,7 +48,7 @@ export async function PATCH(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateModelTestApplicantSchema.safeParse(body)
@@ -116,7 +117,7 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [existing] = await db
       .select()

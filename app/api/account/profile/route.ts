@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unauthorized, notFound } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -15,14 +16,14 @@ export async function GET() {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [profile] = await db
       .select()
       .from(user)
       .where(eq(user.id, session.user.id))
     if (!profile)
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return notFound('User not found')
 
     return NextResponse.json(
       sanitizeProfile(profile as Record<string, unknown>),
@@ -39,7 +40,7 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateProfileSchema.safeParse(body)
@@ -75,7 +76,7 @@ export async function PUT(request: NextRequest) {
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return notFound('User not found')
     return NextResponse.json(
       sanitizeProfile(updated as Record<string, unknown>),
     )
