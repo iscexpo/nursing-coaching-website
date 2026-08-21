@@ -1,0 +1,32 @@
+{
+  "name": "iscexpo",
+  "dockerComposeFile": ["../docker/docker-compose.yml", "docker-compose.yml"],
+  "service": "app",
+  "workspaceFolder": "/app",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [3000, 5432, 6379],
+  "portsAttributes": {
+    "3000": { "label": "Next.js", "onAutoForward": "notify" },
+    "5432": { "label": "Postgres" }
+  },
+  "postCreateCommand": "pnpm approve-builds --all && pnpm install --no-frozen-lockfile",
+  "postStartCommand": "pnpm db:verify || true",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-playwright.playwright",
+        "ms-vscode.vscode-typescript-next"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  },
+  "remoteUser": "node",
+  "updateRemoteUserUID": true
+}

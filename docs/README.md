@@ -16,6 +16,7 @@ Central index for ISC Expo project documentation. All design, planning, and impl
 | **Components Guide**               | [`docs/guides/components.md`](./guides/components.md)                                | UI primitives (`components/ui/*`) props + usage         |
 | **Design System — Storybook Plan** | [`docs/plans/design-system-storybook.md`](./plans/design-system-storybook.md)        | Storybook 10 bootstrap + foundations + stories          |
 | **ISC Curriculum Seed Plan**       | [`docs/plans/isc-curriculum-seed.md`](./plans/isc-curriculum-seed.md)                | ISC categories/subjects/courses/teachers seed design    |
+| **Docker Structure Plan**          | [`docs/plans/docker-structure.md`](./plans/docker-structure.md)                       | `docker/{compose,e2e,api/Dockerfile}` + `.devcontainer` |
 | **LMS Admin Improvement Design**   | [`lms-admin-improvement-design.md`](./lms-admin-improvement-design.md)               | Detailed admin design spec (referenced by project plan) |
 | **QA Review Report**               | [`qa-review-report.md`](./qa-review-report.md)                                       | QA audit findings                                       |
 | **Structure Analysis Plan**        | [`structure-analysis-improvement-plan.md`](./structure-analysis-improvement-plan.md) | Repo structure audit (A–D phases)                       |

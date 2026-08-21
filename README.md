@@ -106,19 +106,42 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ### Docker
 
-This repository includes a `Dockerfile` and `docker-compose.yml` for local development.
+Standard layout: `docker/` + `.devcontainer/` (see [`docs/plans/docker-structure.md`](./docs/plans/docker-structure.md)).
+
+**Dev (hot reload, `docker/docker-compose.yml`):**
 
 ```bash
+docker compose -f docker/docker-compose.yml up --build
+# or via root symlink (backward compat):
 docker compose up --build
 ```
 
-Then open `http://localhost:3000`.
+Then open `http://localhost:3000`. Logs: `docker compose -f docker/docker-compose.yml logs -f`.
 
-Stop containers with:
+Stop:
 
 ```bash
-docker compose down
+docker compose -f docker/docker-compose.yml down -v
 ```
+
+**E2E (isolated `postgres` + `app` + `playwright`, `docker/docker-compose.e2e.yml`):**
+
+```bash
+docker compose -f docker/docker-compose.e2e.yml up --build --exit-code-from playwright
+# artifacts: playwright-report/, test-results/
+```
+
+**Prod build (`docker/api/Dockerfile` `runner`, standalone):**
+
+```bash
+docker build -f docker/api/Dockerfile --target runner -t iscexpo:prod .
+docker run -p 3000:3000 --env-file .env iscexpo:prod
+# healthcheck: wget http://127.0.0.1:3000/api/health
+```
+
+**Dev Container:** VS Code → “Reopen in Container” (`.devcontainer/devcontainer.json`: Node 24 + pnpm 10.34.3 + Postgres, `forwardPorts: [3000,5432]`).
+
+Root `Dockerfile` / `docker-compose.yml` are symlinks to `docker/` for backward compat and will be removed after 1 release.
 
 ### Installation Guide
 
