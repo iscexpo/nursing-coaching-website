@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Save, X, GripVertical, Loader2 } from 'lucide-react'
+import { translateSubject, useCurriculumTranslations } from '@/lib/i18n/curriculum'
 
 interface Subject {
   id: string
@@ -20,6 +21,7 @@ interface SubjectsPanelProps {
 export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
   const t = useTranslations('admin.subjects')
   const tc = useTranslations('common')
+  const tCurriculum = useCurriculumTranslations()
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
@@ -191,7 +193,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                     <div className="flex items-center gap-2">
                       <GripVertical className="size-4 text-muted-foreground" />
                       <span className="font-medium text-foreground">
-                        {s.name}
+                        {translateSubject(tCurriculum, s.name)}
                       </span>
                     </div>
                   </td>

@@ -4,6 +4,7 @@ import { useState, useRef, useMemo } from 'react'
 import NextImage from 'next/image'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { translateCategory, useCurriculumTranslations } from '@/lib/i18n/curriculum'
 import type { Course } from './types'
 import { useToast } from '@/components/ui/toast'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -47,6 +48,7 @@ export function CoursesPanel({
   onRefresh: () => void
 }) {
   const t = useTranslations('admin.courses')
+  const tCurriculum = useCurriculumTranslations()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Course | null>(null)
   const [saving, setSaving] = useState(false)
@@ -259,8 +261,8 @@ export function CoursesPanel({
             onChange: (v) =>
               setCategoryFilter((v || 'all') as 'all' | 'icon' | 'isc'),
             options: [
-              { value: 'icon', label: 'Icon' },
-              { value: 'isc', label: 'ISC' },
+              { value: 'icon', label: translateCategory(tCurriculum, 'icon') },
+              { value: 'isc', label: translateCategory(tCurriculum, 'isc') },
             ],
           },
         ]}
@@ -333,8 +335,8 @@ export function CoursesPanel({
                   }
                   className={inputCls}
                 >
-                  <option value="icon">Icon</option>
-                  <option value="isc">ISC</option>
+                  <option value="icon">{translateCategory(tCurriculum, 'icon')}</option>
+                  <option value="isc">{translateCategory(tCurriculum, 'isc')}</option>
                 </select>
               </div>
               <div>
@@ -564,7 +566,7 @@ export function CoursesPanel({
                       <div className="flex items-center gap-2">
                         {c.title}
                         <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                          {c.category === 'isc' ? 'ISC' : 'Icon'}
+                          {translateCategory(tCurriculum, c.category)}
                         </span>
                       </div>
                     </td>

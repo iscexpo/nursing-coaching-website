@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { translateSubject, useCurriculumTranslations } from '@/lib/i18n/curriculum'
 import type { Teacher } from './types'
 import { useToast } from '@/components/ui/toast'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -15,6 +16,7 @@ export function TeachersPanel({
   onRefresh: () => void
 }) {
   const t = useTranslations('admin.teachers')
+  const tCurriculum = useCurriculumTranslations()
   const { success, error, confirm } = useToast()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Teacher | null>(null)
@@ -308,7 +310,7 @@ export function TeachersPanel({
                       {teacher.designation || '—'}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {teacher.subject || '—'}
+                      {teacher.subject ? translateSubject(tCurriculum, teacher.subject) : '—'}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {teacher.phone || '—'}
