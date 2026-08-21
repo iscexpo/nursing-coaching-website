@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden, notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, notFound, ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user, enrollments, courses, payments, attendance, examSubmissions, exams } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
@@ -98,7 +98,7 @@ export async function GET(
       createdAt: s.createdAt,
     }))
 
-    return NextResponse.json({
+    return ok({
       student: {
         id: student.id,
         name: student.name,
@@ -136,9 +136,6 @@ export async function GET(
       examPerformance,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to generate student report' },
-      { status: 500 },
-    )
+    return serverError('Failed to generate student report')
   }
 }

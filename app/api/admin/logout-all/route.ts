@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { session } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -31,10 +31,7 @@ export async function POST(request: NextRequest) {
 
     // If no userId and not super-admin, reject
     if (!userId && session_.user.role !== 'super-admin') {
-      return NextResponse.json(
-        { error: 'Only super-admins can logout all users' },
-        { status: 403 },
-      )
+      return forbidden('Only super-admins can logout all users')
     }
 
     let deletedCount: number
@@ -67,7 +64,7 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json({
+    return ok({
       success: true,
       deletedCount,
       message: userId
@@ -75,9 +72,6 @@ export async function POST(request: NextRequest) {
         : `${deletedCount}টি সকল সেশন মুছে ফেলা হয়েছে`,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to force logout' },
-      { status: 500 },
-    )
+    return serverError('Failed to force logout')
   }
 }

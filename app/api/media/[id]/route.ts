@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, notFound, serverError} from '@/lib/api/response'
 import { deleteFromStorage } from '@/lib/media/storage'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
@@ -21,10 +22,7 @@ export async function DELETE(
       .where(eq(mediaFiles.id, id))
       .limit(1)
     if (existing.length === 0) {
-      return NextResponse.json(
-        { error: 'Media file not found' },
-        { status: 404 },
-      )
+      return notFound('Media file not found')
     }
 
     const mediaUrl = existing[0].url
@@ -47,11 +45,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete media file' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete media file')
   }
 }

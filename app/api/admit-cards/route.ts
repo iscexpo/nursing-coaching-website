@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
@@ -39,13 +39,10 @@ export async function GET(request: NextRequest) {
       .from(admitCards)
       .where(where)
 
-    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
+    return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch admit cards' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch admit cards')
   }
 }
 
@@ -60,10 +57,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createAdmitCardSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [card] = await db
@@ -74,12 +68,9 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(card, { status: 201 })
+    return ok(card, 201)
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to create admit card' },
-      { status: 500 },
-    )
+    return serverError('Failed to create admit card')
   }
 }

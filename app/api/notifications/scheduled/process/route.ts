@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import {
   user,
@@ -114,11 +114,8 @@ export async function POST() {
       results.push({ id: scheduled.id, delivered, sms })
     }
 
-    return NextResponse.json({ processed: results.length, results })
+    return ok({ processed: results.length, results })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to process scheduled notifications' },
-      { status: 500 },
-    )
+    return serverError('Failed to process scheduled notifications')
   }
 }

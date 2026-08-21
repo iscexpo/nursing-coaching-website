@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { scheduledNotifications } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
@@ -22,12 +22,9 @@ export async function GET() {
       .from(scheduledNotifications)
       .orderBy(desc(scheduledNotifications.scheduledAt))
 
-    return NextResponse.json({ data })
+    return ok({ data })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch scheduled notifications' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch scheduled notifications')
   }
 }
 
@@ -42,10 +39,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createScheduledNotificationSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [scheduled] = await db
@@ -71,11 +65,8 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(scheduled, { status: 201 })
+    return ok(scheduled, 201)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to schedule notification' },
-      { status: 500 },
-    )
+    return serverError('Failed to schedule notification')
   }
 }

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -25,14 +25,11 @@ export async function GET() {
     if (!profile)
       return notFound('User not found')
 
-    return NextResponse.json(
+    return ok(
       sanitizeProfile(profile as Record<string, unknown>),
     )
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch profile' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch profile')
   }
 }
 
@@ -45,10 +42,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const parsed = updateProfileSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const data = { ...parsed.data }
@@ -77,13 +71,10 @@ export async function PUT(request: NextRequest) {
 
     if (!updated)
       return notFound('User not found')
-    return NextResponse.json(
+    return ok(
       sanitizeProfile(updated as Record<string, unknown>),
     )
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update profile' },
-      { status: 500 },
-    )
+    return serverError('Failed to update profile')
   }
 }

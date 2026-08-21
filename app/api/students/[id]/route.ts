@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden, notFound, serverError } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, notFound, serverError, ok, badRequest, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user, account } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -35,12 +35,9 @@ export async function GET(
     if (!found)
       return notFound('Student not found')
 
-    return NextResponse.json(found)
+    return ok(found)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch student' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch student')
   }
 }
 
@@ -59,10 +56,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateStudentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db.select().from(user).where(eq(user.id, id))
@@ -72,10 +66,7 @@ export async function PUT(
     const { role, password, ...safeData } = parsed.data
 
     if (role && !isSuperAdmin(session.user.role)) {
-      return NextResponse.json(
-        { error: 'শুধুমাত্র সুপার-অ্যাডমিন ভূমিকা পরিবর্তন করতে পারেন' },
-        { status: 403 },
-      )
+      return forbidden('শুধুমাত্র সুপার-অ্যাডমিন ভূমিকা পরিবর্তন করতে পারেন')
     }
 
     if (password) {
@@ -113,7 +104,7 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to update student'
@@ -134,10 +125,7 @@ export async function DELETE(
       return unauthorized()
 
     if (id === session.user.id) {
-      return NextResponse.json(
-        { error: 'নিজের অ্যাকাউন্ট মুছে ফেলা যাবে না' },
-        { status: 400 },
-      )
+      return badRequest('নিজের অ্যাকাউন্ট মুছে ফেলা যাবে না')
     }
 
     const [existing] = await db.select().from(user).where(eq(user.id, id))
@@ -161,7 +149,7 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to delete student'

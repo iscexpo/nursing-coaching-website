@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, ok, serverError} from '@/lib/api/response'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { sql } from 'drizzle-orm'
@@ -78,11 +78,8 @@ export async function POST(request: NextRequest) {
       results.push({ file: fileName, statements: statements.length, errors })
     }
 
-    return NextResponse.json({ success: true, migrations: results })
+    return ok({ success: true, migrations: results })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Migration failed', details: String(error) },
-      { status: 500 },
-    )
+    return serverError(String(error) || 'Migration failed')
   }
 }

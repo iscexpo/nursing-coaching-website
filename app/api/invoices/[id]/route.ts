@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden, notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, notFound, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -27,12 +27,9 @@ export async function GET(
       return forbidden()
     }
 
-    return NextResponse.json(invoice)
+    return ok(invoice)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch invoice' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch invoice')
   }
 }
 
@@ -51,10 +48,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = createInvoiceSchema.partial().safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -68,12 +62,9 @@ export async function PUT(
 
     if (!updated)
       return notFound('Invoice not found')
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update invoice' },
-      { status: 500 },
-    )
+    return serverError('Failed to update invoice')
   }
 }
 
@@ -96,11 +87,8 @@ export async function DELETE(
     if (!deleted)
       return notFound('Invoice not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete invoice' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete invoice')
   }
 }

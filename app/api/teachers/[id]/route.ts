@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {notFound, ok, badRequest, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -23,12 +23,9 @@ export async function GET(
     if (!teacher)
       return notFound('Teacher not found')
 
-    return NextResponse.json(teacher)
+    return ok(teacher)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch teacher' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch teacher')
   }
 }
 
@@ -44,10 +41,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateTeacherSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const d = parsed.data
@@ -63,10 +57,7 @@ export async function PUT(
     set.updatedAt = new Date()
 
     if (Object.keys(set).length <= 1) {
-      return NextResponse.json(
-        { error: 'No fields to update' },
-        { status: 400 },
-      )
+      return badRequest('No fields to update')
     }
 
     const [updated] = await db
@@ -77,12 +68,9 @@ export async function PUT(
 
     if (!updated)
       return notFound('Teacher not found')
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update teacher' },
-      { status: 500 },
-    )
+    return serverError('Failed to update teacher')
   }
 }
 
@@ -102,11 +90,8 @@ export async function DELETE(
     if (!deleted)
       return notFound('Teacher not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete teacher' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete teacher')
   }
 }

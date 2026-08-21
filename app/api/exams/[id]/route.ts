@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound, serverError } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, serverError, ok, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { exams, questions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
@@ -41,7 +41,7 @@ export async function GET(
     if (!exam)
       return notFound('Exam not found')
 
-    return NextResponse.json(exam)
+    return ok(exam)
   } catch {
     return serverError('Failed to fetch exam')
   }
@@ -62,10 +62,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateExamSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -95,12 +92,9 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update exam' },
-      { status: 500 },
-    )
+    return serverError('Failed to update exam')
   }
 }
 
@@ -135,11 +129,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete exam' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete exam')
   }
 }

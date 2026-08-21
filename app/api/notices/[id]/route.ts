@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -21,12 +21,9 @@ export async function GET(
     if (!notice)
       return notFound('Notice not found')
 
-    return NextResponse.json(notice)
+    return ok(notice)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch notice' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch notice')
   }
 }
 
@@ -45,10 +42,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateNoticeSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -78,12 +72,9 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update notice' },
-      { status: 500 },
-    )
+    return serverError('Failed to update notice')
   }
 }
 
@@ -121,11 +112,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete notice' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete notice')
   }
 }

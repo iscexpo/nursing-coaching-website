@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, badRequest } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, badRequest, ok, validationError} from '@/lib/api/response'
 import { getSession } from '@/lib/core/permissions'
 import { auth } from '@/lib/auth'
 import { z } from 'zod/v3'
@@ -26,10 +26,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const parsed = changePasswordSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { currentPassword, newPassword } = parsed.data
@@ -43,7 +40,7 @@ export async function PUT(request: NextRequest) {
       headers: await import('next/headers').then((m) => m.headers()),
     })
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to update password'

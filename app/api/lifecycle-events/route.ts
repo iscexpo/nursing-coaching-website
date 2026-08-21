@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { studentLifecycleEvents } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
@@ -25,11 +25,8 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(studentLifecycleEvents.createdAt))
       .limit(20)
 
-    return NextResponse.json({ data: events })
+    return ok({ data: events })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch lifecycle events' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch lifecycle events')
   }
 }

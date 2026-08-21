@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
@@ -57,13 +57,10 @@ export async function GET(request: NextRequest) {
       .from(invoices)
       .where(where)
 
-    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
+    return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch invoices' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch invoices')
   }
 }
 
@@ -78,10 +75,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createInvoiceSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { userId, enrollmentId, amount, dueDate, description } = parsed.data
@@ -102,12 +96,9 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(invoice, { status: 201 })
+    return ok(invoice, 201)
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to create invoice' },
-      { status: 500 },
-    )
+    return serverError('Failed to create invoice')
   }
 }

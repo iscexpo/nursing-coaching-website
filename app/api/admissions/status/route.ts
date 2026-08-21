@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, notFound, badRequest, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { admissions, courses } from '@/lib/db/schema'
 import { and, eq } from 'drizzle-orm'
@@ -18,10 +19,7 @@ export async function GET(request: NextRequest) {
     const phone = searchParams.get('phone')?.trim()
 
     if (!reference || !phone) {
-      return NextResponse.json(
-        { error: 'Reference and phone are required.' },
-        { status: 400 },
-      )
+      return badRequest('Reference and phone are required.')
     }
 
     const [application] = await db
@@ -45,17 +43,11 @@ export async function GET(request: NextRequest) {
       .limit(1)
 
     if (!application) {
-      return NextResponse.json(
-        { error: 'Application not found.' },
-        { status: 404 },
-      )
+      return notFound('Application not found.')
     }
 
-    return NextResponse.json({ data: application })
+    return ok({ data: application })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch application status' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch application status')
   }
 }

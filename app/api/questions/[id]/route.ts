@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -25,15 +25,12 @@ export async function GET(
 
     if (!isAdmin(session.user.role)) {
       const { correctIndex, ...rest } = question
-      return NextResponse.json(rest)
+      return ok(rest)
     }
 
-    return NextResponse.json(question)
+    return ok(question)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch question' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch question')
   }
 }
 
@@ -52,10 +49,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = createQuestionSchema.partial().safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -66,12 +60,9 @@ export async function PUT(
     if (!updated)
       return notFound('Question not found')
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update question' },
-      { status: 500 },
-    )
+    return serverError('Failed to update question')
   }
 }
 
@@ -94,11 +85,8 @@ export async function DELETE(
     if (!deleted)
       return notFound('Question not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete question' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete question')
   }
 }

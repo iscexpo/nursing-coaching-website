@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notificationTemplates } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -26,10 +26,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateNotificationTemplateSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db
@@ -37,10 +34,7 @@ export async function PUT(
       .from(notificationTemplates)
       .where(eq(notificationTemplates.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Template not found' },
-        { status: 404 },
-      )
+      return notFound('Template not found')
 
     const [updated] = await db
       .update(notificationTemplates)
@@ -63,12 +57,9 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update template' },
-      { status: 500 },
-    )
+    return serverError('Failed to update template')
   }
 }
 
@@ -103,11 +94,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete template' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete template')
   }
 }

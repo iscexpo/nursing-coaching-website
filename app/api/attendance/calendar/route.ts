@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, badRequest, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
 import { eq, and, gte, lte } from 'drizzle-orm'
@@ -17,10 +17,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId')
 
     if (!month || !year) {
-      return NextResponse.json(
-        { error: 'month and year are required' },
-        { status: 400 },
-      )
+      return badRequest('month and year are required')
     }
 
     const startDate = new Date(Number(year), Number(month), 1)
@@ -67,11 +64,8 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    return NextResponse.json({ records, byDate })
+    return ok({ records, byDate })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch calendar attendance' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch calendar attendance')
   }
 }

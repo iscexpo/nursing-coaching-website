@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound, serverError } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, serverError, ok, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { auditLogs, exams, questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -27,10 +27,7 @@ export async function POST(
     const body = await request.json().catch(() => ({}))
     const parsed = cloneExamSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const ipAddress = request.headers.get('x-forwarded-for') ?? undefined
@@ -94,7 +91,7 @@ export async function POST(
 
     if (!txResult) return notFound('Exam not found')
 
-    return NextResponse.json({ ...txResult.cloned, questionCount: txResult.questionCount }, { status: 201 })
+    return ok({ ...txResult.cloned, questionCount: txResult.questionCount }, 201)
   } catch {
     return serverError('Failed to clone exam')
   }

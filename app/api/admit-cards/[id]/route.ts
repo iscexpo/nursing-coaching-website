@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -21,21 +21,15 @@ export async function GET(
       .from(admitCards)
       .where(eq(admitCards.id, id))
     if (!card)
-      return NextResponse.json(
-        { error: 'Admit card not found' },
-        { status: 404 },
-      )
+      return notFound('Admit card not found')
 
     if (!isAdmin(session.user.role) && card.userId !== session.user.id) {
       return forbidden()
     }
 
-    return NextResponse.json(card)
+    return ok(card)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch admit card' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch admit card')
   }
 }
 
@@ -54,10 +48,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateAdmitCardSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -70,16 +61,10 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json(
-        { error: 'Admit card not found' },
-        { status: 404 },
-      )
-    return NextResponse.json(updated)
+      return notFound('Admit card not found')
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update admit card' },
-      { status: 500 },
-    )
+    return serverError('Failed to update admit card')
   }
 }
 
@@ -100,16 +85,10 @@ export async function DELETE(
       .where(eq(admitCards.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json(
-        { error: 'Admit card not found' },
-        { status: 404 },
-      )
+      return notFound('Admit card not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete admit card' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete admit card')
   }
 }

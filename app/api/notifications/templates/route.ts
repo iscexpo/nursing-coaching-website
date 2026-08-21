@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notificationTemplates } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
@@ -25,12 +25,9 @@ export async function GET() {
       .from(notificationTemplates)
       .orderBy(desc(notificationTemplates.createdAt))
 
-    return NextResponse.json({ data })
+    return ok({ data })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch templates' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch templates')
   }
 }
 
@@ -45,10 +42,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createNotificationTemplateSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [template] = await db
@@ -71,11 +65,8 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(template, { status: 201 })
+    return ok(template, 201)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to create template' },
-      { status: 500 },
-    )
+    return serverError('Failed to create template')
   }
 }

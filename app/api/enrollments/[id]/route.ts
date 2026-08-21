@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden, badRequest } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, badRequest, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -29,21 +29,15 @@ export async function GET(
       .from(enrollments)
       .where(eq(enrollments.id, id))
     if (!enrollment)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
+      return notFound('Enrollment not found')
 
     if (!isAdmin(session.user.role) && enrollment.userId !== session.user.id) {
       return forbidden()
     }
 
-    return NextResponse.json(enrollment)
+    return ok(enrollment)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch enrollment' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch enrollment')
   }
 }
 
@@ -62,10 +56,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateEnrollmentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db
@@ -73,10 +64,7 @@ export async function PUT(
       .from(enrollments)
       .where(eq(enrollments.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
+      return notFound('Enrollment not found')
 
     if (parsed.data.status && parsed.data.status !== existing.status) {
       const transitionError = getEnrollmentTransitionError(
@@ -176,16 +164,10 @@ export async function PUT(
     )
 
     if (!updated)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
-    return NextResponse.json(updated)
+      return notFound('Enrollment not found')
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update enrollment' },
-      { status: 500 },
-    )
+    return serverError('Failed to update enrollment')
   }
 }
 
@@ -206,16 +188,10 @@ export async function DELETE(
       .from(enrollments)
       .where(eq(enrollments.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
+      return notFound('Enrollment not found')
 
     if (existing.status === 'cancelled') {
-      return NextResponse.json(
-        { error: 'এনরোলমেন্ট ইতিমধ্যে বাতিল হয়েছে' },
-        { status: 400 },
-      )
+      return badRequest('এনরোলমেন্ট ইতিমধ্যে বাতিল হয়েছে')
     }
 
     const previousStatus = existing.status
@@ -267,11 +243,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to cancel enrollment' },
-      { status: 500 },
-    )
+    return serverError('Failed to cancel enrollment')
   }
 }

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import {ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
@@ -54,9 +54,6 @@ export async function GET() {
       },
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to export students' },
-      { status: 500 },
-    )
+    return serverError('Failed to export students')
   }
 }

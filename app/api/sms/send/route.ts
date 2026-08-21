@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { badRequest, serverError } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {badRequest, serverError, ok, validationError} from '@/lib/api/response'
 import { z } from 'zod/v3'
 import { requireAdmin } from '@/lib/core/permissions'
 import { sendSmsToRecipients, normalizePhoneNumbers } from '@/lib/sms'
@@ -25,10 +25,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = sendSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const phones = normalizePhoneNumbers([parsed.data.phone])
@@ -37,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await sendSmsToRecipients(phones, parsed.data.message)
-    return NextResponse.json(result)
+    return ok(result)
   } catch {
     return serverError('SMS পাঠানো যায়নি')
   }

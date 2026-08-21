@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import {unauthorized, ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
@@ -25,11 +24,8 @@ export async function POST() {
         ),
       )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to mark all as read' },
-      { status: 500 },
-    )
+    return serverError('Failed to mark all as read')
   }
 }

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, ok, notFound, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -20,10 +20,7 @@ export async function GET(
       .from(examSubmissions)
       .where(eq(examSubmissions.id, id))
     if (!submission)
-      return NextResponse.json(
-        { error: 'Submission not found' },
-        { status: 404 },
-      )
+      return notFound('Submission not found')
 
     const admin = isAdmin(session.user.role)
 
@@ -49,14 +46,11 @@ export async function GET(
       return base
     })
 
-    return NextResponse.json({
+    return ok({
       ...submission,
       questions: questionsForResponse,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch submission' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch submission')
   }
 }

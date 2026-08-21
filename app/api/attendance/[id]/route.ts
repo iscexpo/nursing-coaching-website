@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -21,10 +21,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateAttendanceSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -37,16 +34,10 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json(
-        { error: 'Attendance record not found' },
-        { status: 404 },
-      )
-    return NextResponse.json(updated)
+      return notFound('Attendance record not found')
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update attendance' },
-      { status: 500 },
-    )
+    return serverError('Failed to update attendance')
   }
 }
 
@@ -67,16 +58,10 @@ export async function DELETE(
       .where(eq(attendance.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json(
-        { error: 'Attendance record not found' },
-        { status: 404 },
-      )
+      return notFound('Attendance record not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete attendance' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete attendance')
   }
 }

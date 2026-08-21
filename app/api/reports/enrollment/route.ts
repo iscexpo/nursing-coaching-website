@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { enrollments, courses } from '@/lib/db/schema'
 import { requireAdmin } from '@/lib/core/permissions'
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
       .groupBy(sql`to_char(${enrollments.enrolledAt}, 'YYYY-MM-DD')`)
       .orderBy(sql`to_char(${enrollments.enrolledAt}, 'YYYY-MM-DD')`)
 
-    return NextResponse.json({
+    return ok({
       summary: {
         totalEnrollments: summaryRow?.totalEnrollments ?? 0,
         activeEnrollments: summaryRow?.activeEnrollments ?? 0,
@@ -88,9 +89,6 @@ export async function GET(request: NextRequest) {
       byDate,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch enrollment report' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch enrollment report')
   }
 }

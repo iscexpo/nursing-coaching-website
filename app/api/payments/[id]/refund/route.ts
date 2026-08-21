@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, ok, badRequest, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -29,10 +29,7 @@ export async function POST(
     const body = await request.json().catch(() => ({}))
     const parsed = refundPaymentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [payment] = await db
@@ -43,18 +40,12 @@ export async function POST(
       return notFound('Payment not found')
 
     if (payment.status !== 'verified') {
-      return NextResponse.json(
-        { error: 'Only verified payments can be refunded' },
-        { status: 400 },
-      )
+      return badRequest('Only verified payments can be refunded')
     }
 
     const refundAmount = parsed.data.amount ?? payment.amount
     if (refundAmount > payment.amount) {
-      return NextResponse.json(
-        { error: 'Refund amount cannot exceed the payment amount' },
-        { status: 400 },
-      )
+      return badRequest('Refund amount cannot exceed the payment amount')
     }
 
     const [enrollment] = await db
@@ -137,11 +128,8 @@ export async function POST(
       ),
     )
 
-    return NextResponse.json({ ...result, refundAmount })
+    return ok({ ...result, refundAmount })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to refund payment' },
-      { status: 500 },
-    )
+    return serverError('Failed to refund payment')
   }
 }

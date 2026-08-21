@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { auditLogs } from '@/lib/db/schema'
 import { desc, eq, and, count } from 'drizzle-orm'
@@ -51,16 +51,13 @@ export async function GET(request: NextRequest) {
       .from(auditLogs)
       .where(where)
 
-    return NextResponse.json({
+    return ok({
       data,
       page,
       limit,
       total: totalRow?.count ?? 0,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch audit logs' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch audit logs')
   }
 }

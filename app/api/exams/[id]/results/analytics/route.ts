@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { notFound } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {notFound, ok} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
@@ -32,5 +32,5 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   if (Number(metrics?.bucket40_59 ?? 0) > 0) distribution['40-59'] = Number(metrics.bucket40_59)
   if (Number(metrics?.bucket60_79 ?? 0) > 0) distribution['60-79'] = Number(metrics.bucket60_79)
   if (Number(metrics?.bucket80_100 ?? 0) > 0) distribution['80-100'] = Number(metrics.bucket80_100)
-  return NextResponse.json({ exam: { id: exam.id, title: exam.title, subject: exam.subject }, questionCount: Number(questionStats?.count ?? 0), submissionCount: total, averagePercentage: Math.round(average * 100) / 100, passRate: Math.round(passRate * 100) / 100, distribution })
+  return ok({ exam: { id: exam.id, title: exam.title, subject: exam.subject }, questionCount: Number(questionStats?.count ?? 0), submissionCount: total, averagePercentage: Math.round(average * 100) / 100, passRate: Math.round(passRate * 100) / 100, distribution })
 }

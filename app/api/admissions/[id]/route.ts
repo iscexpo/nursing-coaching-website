@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { admissions, user } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
@@ -112,17 +112,11 @@ export async function GET(
       .from(admissions)
       .where(eq(admissions.id, id))
     if (!admission)
-      return NextResponse.json(
-        { error: 'Admission not found' },
-        { status: 404 },
-      )
+      return notFound('Admission not found')
 
-    return NextResponse.json(admission)
+    return ok(admission)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch admission' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch admission')
   }
 }
 
@@ -141,10 +135,7 @@ export async function PATCH(
     const body = await request.json()
     const parsed = updateAdmissionSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db
@@ -152,10 +143,7 @@ export async function PATCH(
       .from(admissions)
       .where(eq(admissions.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Admission not found' },
-        { status: 404 },
-      )
+      return notFound('Admission not found')
 
     const [updated] = await db
       .update(admissions)
@@ -163,10 +151,7 @@ export async function PATCH(
       .where(eq(admissions.id, id))
       .returning()
     if (!updated)
-      return NextResponse.json(
-        { error: 'Admission not found' },
-        { status: 404 },
-      )
+      return notFound('Admission not found')
 
     let createdStudentId: string | null = null
     if (parsed.data.status === 'approved' && existing.status !== 'approved') {
@@ -193,15 +178,12 @@ export async function PATCH(
       ),
     )
 
-    return NextResponse.json({
+    return ok({
       ...updated,
       createdStudentId,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update admission' },
-      { status: 500 },
-    )
+    return serverError('Failed to update admission')
   }
 }
 
@@ -222,10 +204,7 @@ export async function DELETE(
       .from(admissions)
       .where(eq(admissions.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Admission not found' },
-        { status: 404 },
-      )
+      return notFound('Admission not found')
 
     await db.delete(admissions).where(eq(admissions.id, id))
 
@@ -244,11 +223,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete admission' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete admission')
   }
 }

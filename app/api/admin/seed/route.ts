@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, notFound, serverError } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, serverError, ok} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user, account } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -23,10 +23,7 @@ export async function POST(request: NextRequest) {
     const seedKey = process.env.ADMIN_SEED_KEY
 
     if (!seedKey) {
-      return NextResponse.json(
-        { error: 'ADMIN_SEED_KEY env var not configured' },
-        { status: 500 },
-      )
+      return serverError('ADMIN_SEED_KEY env var not configured')
     }
 
     if (authHeader !== `Bearer ${seedKey}`) {
@@ -39,10 +36,7 @@ export async function POST(request: NextRequest) {
     const adminName = process.env.ADMIN_NAME || 'Admin'
 
     if (!adminEmail || !adminPassword) {
-      return NextResponse.json(
-        { error: 'ADMIN_EMAIL and ADMIN_PASSWORD env vars must be configured' },
-        { status: 500 },
-      )
+      return serverError('ADMIN_EMAIL and ADMIN_PASSWORD env vars must be configured')
     }
 
     const existingUser = await db
@@ -76,7 +70,7 @@ export async function POST(request: NextRequest) {
           })
           .where(eq(user.email, adminEmail))
       }
-      return NextResponse.json({
+      return ok({
         success: true,
         message: 'Admin user exists, ensured properly configured',
         userId: u.id,
@@ -100,7 +94,7 @@ export async function POST(request: NextRequest) {
       })
       .where(eq(user.email, adminEmail))
 
-    return NextResponse.json({
+    return ok({
       success: true,
       message: 'Admin user created',
       userId: result.user.id,

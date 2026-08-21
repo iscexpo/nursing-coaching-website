@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { modelTestApplicants } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -24,17 +24,11 @@ export async function GET(
       .from(modelTestApplicants)
       .where(eq(modelTestApplicants.id, id))
     if (!applicant)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
-    return NextResponse.json(applicant)
+    return ok(applicant)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch applicant' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch applicant')
   }
 }
 
@@ -53,13 +47,7 @@ export async function PATCH(
     const body = await request.json()
     const parsed = updateModelTestApplicantSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        {
-          error: 'Invalid input',
-          details: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors,)
     }
 
     const [existing] = await db
@@ -67,10 +55,7 @@ export async function PATCH(
       .from(modelTestApplicants)
       .where(eq(modelTestApplicants.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
     const [updated] = await db
       .update(modelTestApplicants)
@@ -78,10 +63,7 @@ export async function PATCH(
       .where(eq(modelTestApplicants.id, id))
       .returning()
     if (!updated)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
     void writeAudit(
       buildAuditEntry(
@@ -98,12 +80,9 @@ export async function PATCH(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update applicant' },
-      { status: 500 },
-    )
+    return serverError('Failed to update applicant')
   }
 }
 
@@ -124,10 +103,7 @@ export async function DELETE(
       .from(modelTestApplicants)
       .where(eq(modelTestApplicants.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
     await db.delete(modelTestApplicants).where(eq(modelTestApplicants.id, id))
 
@@ -146,11 +122,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete applicant' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete applicant')
   }
 }

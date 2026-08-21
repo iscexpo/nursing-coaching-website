@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError, validationError} from '@/lib/api/response'
 import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { getSystemSettings, saveSystemSettings } from '@/lib/cms/settings'
 import { settingsSchema } from '@/lib/core/validations'
@@ -34,12 +34,9 @@ export async function GET() {
     const safe = sanitizeSettings(
       settings as unknown as Record<string, unknown>,
     )
-    return NextResponse.json({ cmsContent: safe.cmsContent })
+    return ok({ cmsContent: safe.cmsContent })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to load content' },
-      { status: 500 },
-    )
+    return serverError('Failed to load content')
   }
 }
 
@@ -54,23 +51,17 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const parsed = settingsSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const settings = await getSystemSettings()
-    return NextResponse.json(
+    return ok(
       await saveSystemSettings({
         ...settings,
         cmsContent: mergeCmsContent(parsed.data.cmsContent || undefined),
       }),
     )
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update content' },
-      { status: 500 },
-    )
+    return serverError('Failed to update content')
   }
 }

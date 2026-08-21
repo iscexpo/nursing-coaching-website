@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { payments, enrollments, user, courses } from '@/lib/db/schema'
 import { requireAdmin } from '@/lib/core/permissions'
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(payments.createdAt))
       .limit(10)
 
-    return NextResponse.json({
+    return ok({
       summary: {
         totalRevenue,
         verifiedRevenue,
@@ -105,9 +106,6 @@ export async function GET(request: NextRequest) {
       recentPayments,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch revenue report' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch revenue report')
   }
 }

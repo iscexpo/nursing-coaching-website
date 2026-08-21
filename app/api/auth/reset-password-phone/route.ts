@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, notFound, badRequest, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { otp, account, user } from '@/lib/db/schema'
 import { eq, and, gt } from 'drizzle-orm'
@@ -17,17 +18,11 @@ export async function POST(request: NextRequest) {
     const { phoneNumber, code, newPassword } = await request.json()
 
     if (!phoneNumber || !code || !newPassword) {
-      return NextResponse.json(
-        { error: 'Phone number, OTP code, and new password are required' },
-        { status: 400 },
-      )
+      return badRequest('Phone number, OTP code, and new password are required')
     }
 
     if (newPassword.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
-        { status: 400 },
-      )
+      return badRequest('Password must be at least 6 characters')
     }
 
     const validOtp = await db
@@ -43,10 +38,7 @@ export async function POST(request: NextRequest) {
       .limit(1)
 
     if (validOtp.length === 0) {
-      return NextResponse.json(
-        { error: 'Invalid or expired OTP code' },
-        { status: 400 },
-      )
+      return badRequest('Invalid or expired OTP code')
     }
 
     const existingUser = await db
@@ -56,10 +48,7 @@ export async function POST(request: NextRequest) {
       .limit(1)
 
     if (existingUser.length === 0) {
-      return NextResponse.json(
-        { error: 'No account found with this phone number' },
-        { status: 404 },
-      )
+      return notFound('No account found with this phone number')
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10)
@@ -76,11 +65,8 @@ export async function POST(request: NextRequest) {
 
     await db.delete(otp).where(eq(otp.phoneNumber, phoneNumber))
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to reset password' },
-      { status: 500 },
-    )
+    return serverError('Failed to reset password')
   }
 }

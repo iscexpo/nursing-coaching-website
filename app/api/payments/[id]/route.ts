@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { unauthorized, forbidden, notFound, badRequest, conflict } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, notFound, badRequest, conflict, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
 import { and, eq } from 'drizzle-orm'
@@ -30,12 +30,9 @@ export async function GET(
       return forbidden()
     }
 
-    return NextResponse.json(payment)
+    return ok(payment)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch payment' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch payment')
   }
 }
 
@@ -54,10 +51,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = verifyPaymentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { status } = parsed.data
@@ -168,16 +162,13 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(result)
+    return ok(result)
   } catch (e: unknown) {
     const err = e as Error & { status?: number }
     if (err.status === 404) return notFound(err.message)
     if (err.status === 400) return badRequest(err.message)
     if (err.status === 409) return conflict(err.message)
-    return NextResponse.json(
-      { error: 'Failed to update payment' },
-      { status: 500 },
-    )
+    return serverError('Failed to update payment')
   }
 }
 
@@ -201,10 +192,7 @@ export async function DELETE(
       return notFound('Payment not found')
 
     if (existing.status !== 'pending') {
-      return NextResponse.json(
-        { error: 'Can only delete pending payments' },
-        { status: 400 },
-      )
+      return badRequest('Can only delete pending payments')
     }
 
     await db.delete(payments).where(eq(payments.id, id))
@@ -224,11 +212,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete payment' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete payment')
   }
 }
