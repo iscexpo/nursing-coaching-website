@@ -42,27 +42,75 @@ Configured via `components.json:20` (`iconLibrary: lucide`) and `package.json:40
 ## Common set
 
 <div className="grid gap-4 sm:grid-cols-4">
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Check className="size-6" /><code>Check</code></div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><X className="size-6" /><code>X</code></div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><AlertCircle className="size-6" /><code>AlertCircle</code></div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Clock className="size-6" /><code>Clock</code></div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Search className="size-6" /><code>Search</code></div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Trash2 className="size-6" /><code>Trash2</code></div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Edit className="size-6" /><code>Edit</code></div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Calendar className="size-6" /><code>Calendar</code></div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Check className="size-6" />
+    <code>Check</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <X className="size-6" />
+    <code>X</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <AlertCircle className="size-6" />
+    <code>AlertCircle</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Clock className="size-6" />
+    <code>Clock</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Search className="size-6" />
+    <code>Search</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Trash2 className="size-6" />
+    <code>Trash2</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Edit className="size-6" />
+    <code>Edit</code>
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Calendar className="size-6" />
+    <code>Calendar</code>
+  </div>
 </div>
 
 ## Domain icons
 
 <div className="grid gap-4 sm:grid-cols-4 mt-6">
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Users className="size-6" /><code>Users</code> students</div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><CreditCard className="size-6" /><code>CreditCard</code> payments</div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><GraduationCap className="size-6" /><code>GraduationCap</code> courses</div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><FileText className="size-6" /><code>FileText</code> invoices</div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><BarChart3 className="size-6" /><code>BarChart3</code> reports</div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Bell className="size-6" /><code>Bell</code> notifications</div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><BadgeCheck className="size-6" /><code>BadgeCheck</code> verified</div>
-  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4"><Settings className="size-6" /><code>Settings</code> settings</div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Users className="size-6" />
+    <code>Users</code> students
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <CreditCard className="size-6" />
+    <code>CreditCard</code> payments
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <GraduationCap className="size-6" />
+    <code>GraduationCap</code> courses
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <FileText className="size-6" />
+    <code>FileText</code> invoices
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <BarChart3 className="size-6" />
+    <code>BarChart3</code> reports
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Bell className="size-6" />
+    <code>Bell</code> notifications
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <BadgeCheck className="size-6" />
+    <code>BadgeCheck</code> verified
+  </div>
+  <div className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4">
+    <Settings className="size-6" />
+    <code>Settings</code> settings
+  </div>
 </div>
 
 ## Usage guidance
@@ -74,10 +122,9 @@ Configured via `components.json:20` (`iconLibrary: lucide`) and `package.json:40
 
 ```tsx
 import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
-<span className="inline-flex items-center gap-1 rounded-full bg-green/10 text-green px-2 py-0.5 text-xs">
+;<span className="inline-flex items-center gap-1 rounded-full bg-green/10 text-green px-2 py-0.5 text-xs">
   <CheckCircle2 className="size-3" /> Present
 </span>
 ```
 
 See `components/ui/status-badge.tsx:148` for `AttendanceStatusBadge` icon mapping and `lib/payment/index.ts` for method colors.
-

@@ -1,6 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ChartCard } from './chart-card'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from 'recharts'
 
 const sample = [
   { name: 'Jan', revenue: 4000 },
@@ -39,7 +49,13 @@ export const Default: Story = {
             <XAxis dataKey="name" stroke="var(--muted-foreground)" />
             <YAxis stroke="var(--muted-foreground)" />
             <Tooltip />
-            <Line type="monotone" dataKey="revenue" stroke="var(--primary)" strokeWidth={2} dot={false} />
+            <Line
+              type="monotone"
+              dataKey="revenue"
+              stroke="var(--primary)"
+              strokeWidth={2}
+              dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -58,7 +74,11 @@ export const WithBar: Story = {
             <XAxis dataKey="name" stroke="var(--muted-foreground)" />
             <YAxis stroke="var(--muted-foreground)" />
             <Tooltip />
-            <Bar dataKey="revenue" fill="var(--primary)" radius={[6, 6, 0, 0]} />
+            <Bar
+              dataKey="revenue"
+              fill="var(--primary)"
+              radius={[6, 6, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

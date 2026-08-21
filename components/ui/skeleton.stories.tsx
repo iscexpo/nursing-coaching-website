@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { Skeleton, StatCardSkeleton, TableSkeleton, CardSkeleton, DashboardSkeleton } from './skeleton'
+import {
+  Skeleton,
+  StatCardSkeleton,
+  TableSkeleton,
+  CardSkeleton,
+  DashboardSkeleton,
+} from './skeleton'
 
 const meta: Meta<typeof Skeleton> = {
   title: 'Design System/Skeleton',
@@ -70,11 +76,15 @@ export const All: Story = {
   render: () => (
     <div className="space-y-8">
       <section>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Inline</p>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Inline
+        </p>
         <Skeleton className="h-8 w-32" />
       </section>
       <section>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Table (5 rows)</p>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Table (5 rows)
+        </p>
         <TableSkeleton rows={5} />
       </section>
       <section className="grid gap-4 sm:grid-cols-2">

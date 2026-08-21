@@ -57,15 +57,13 @@ export async function POST(
       )
       .returning()
     if (!updated) return null
-    await tx
-      .insert(studentLifecycleEvents)
-      .values({
-        id: randomUUID(),
-        studentId: existing.userId,
-        enrollmentId: id,
-        eventType: 'enrollment.suspended',
-        details: { reason: normalizedReason, previousStatus: existing.status },
-      })
+    await tx.insert(studentLifecycleEvents).values({
+      id: randomUUID(),
+      studentId: existing.userId,
+      enrollmentId: id,
+      eventType: 'enrollment.suspended',
+      details: { reason: normalizedReason, previousStatus: existing.status },
+    })
     return updated
   })
   if (!result) return conflict('Conflict: enrollment status changed')

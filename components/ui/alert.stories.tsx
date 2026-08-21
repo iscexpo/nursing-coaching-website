@@ -80,9 +80,21 @@ export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-col gap-4 max-w-xl">
       <Alert variant="error" title="Error" message="Something went wrong." />
-      <Alert variant="warning" title="Warning" message="Please check your inputs." />
-      <Alert variant="success" title="Success" message="Enrollment created successfully." />
-      <Alert variant="info" title="Info" message="Your session will expire in 5 minutes." />
+      <Alert
+        variant="warning"
+        title="Warning"
+        message="Please check your inputs."
+      />
+      <Alert
+        variant="success"
+        title="Success"
+        message="Enrollment created successfully."
+      />
+      <Alert
+        variant="info"
+        title="Info"
+        message="Your session will expire in 5 minutes."
+      />
     </div>
   ),
 }

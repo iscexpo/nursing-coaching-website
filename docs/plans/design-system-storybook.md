@@ -21,15 +21,15 @@ The plan covers setup, taxonomy, theming, i18n, MDX foundations docs, interactio
 
 ### 2.1 Inventory (evidence-backed)
 
-| Layer | Location | Count / Notes |
-|-------|----------|---------------|
-| **Primitive UI** | `components/ui/*` (glob) | 19 files: `button.tsx:1`, `alert.tsx:1`, `form-field.tsx`, `confirm-dialog.tsx`, `status-badge.tsx`, `stat-card.tsx`, `skeleton.tsx:1`, `data-table.tsx`, `filter-bar.tsx`, `bulk-actions.tsx`, `calendar-view.tsx`, `date-range-picker.tsx`, `chart-card.tsx`, `panel-layout.tsx`, `empty-state.tsx`, `fade-in.tsx`, `lightbox.tsx`, `info-row.tsx`, `toast.tsx` |
-| **Layout / site** | `components/*` | `site-header.tsx`, `site-footer.tsx`, `section-heading.tsx`, `breadcrumb.tsx`, `navigation/*`, `sections/*` (8 sections: `hero.tsx`, `courses.tsx`, etc.), `theme-*`, `floating-whatsapp.tsx` |
-| **Domain print** | `components/payment-receipt.tsx`, `app/admin/components/student-profile-modal.tsx` | Printable + modal |
-| **Tokens** | `app/globals.css:64` | `:root` / `.dark` CSS variables (`--primary`, `--radius`, `--brand`, `--chart-*`, `--sidebar-*`), `@theme inline` mappings, `tw-animate-css`, `shadcn/tailwind.css`; Tailwind v4 via `@import 'tailwindcss'` (`postcss.config.mjs:1`) |
-| **Design spec** | `docs/design/reference.md:1`, `docs/design/delivery-checklist.md`, `docs/design/improvements.md` | Glassmorphism, soft shadows, radii (`rounded-2xl`), animations (`float`/`blob`/`fade-in-up`), color usage (`#2563EB` vs token `#0070F3`), dark-mode strategy |
-| **Component docs** | `docs/guides/components.md:1` | Manual markdown catalog; source of truth for props but no live examples |
-| **Config** | `components.json:1` (`style: base-nova`, `tailwind.css: app/globals.css`), `tsconfig.json:21` (`@/*`), `next.config.mjs:1` (next-intl plugin) |  |
+| Layer              | Location                                                                                                                                      | Count / Notes                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primitive UI**   | `components/ui/*` (glob)                                                                                                                      | 19 files: `button.tsx:1`, `alert.tsx:1`, `form-field.tsx`, `confirm-dialog.tsx`, `status-badge.tsx`, `stat-card.tsx`, `skeleton.tsx:1`, `data-table.tsx`, `filter-bar.tsx`, `bulk-actions.tsx`, `calendar-view.tsx`, `date-range-picker.tsx`, `chart-card.tsx`, `panel-layout.tsx`, `empty-state.tsx`, `fade-in.tsx`, `lightbox.tsx`, `info-row.tsx`, `toast.tsx` |
+| **Layout / site**  | `components/*`                                                                                                                                | `site-header.tsx`, `site-footer.tsx`, `section-heading.tsx`, `breadcrumb.tsx`, `navigation/*`, `sections/*` (8 sections: `hero.tsx`, `courses.tsx`, etc.), `theme-*`, `floating-whatsapp.tsx`                                                                                                                                                                     |
+| **Domain print**   | `components/payment-receipt.tsx`, `app/admin/components/student-profile-modal.tsx`                                                            | Printable + modal                                                                                                                                                                                                                                                                                                                                                 |
+| **Tokens**         | `app/globals.css:64`                                                                                                                          | `:root` / `.dark` CSS variables (`--primary`, `--radius`, `--brand`, `--chart-*`, `--sidebar-*`), `@theme inline` mappings, `tw-animate-css`, `shadcn/tailwind.css`; Tailwind v4 via `@import 'tailwindcss'` (`postcss.config.mjs:1`)                                                                                                                             |
+| **Design spec**    | `docs/design/reference.md:1`, `docs/design/delivery-checklist.md`, `docs/design/improvements.md`                                              | Glassmorphism, soft shadows, radii (`rounded-2xl`), animations (`float`/`blob`/`fade-in-up`), color usage (`#2563EB` vs token `#0070F3`), dark-mode strategy                                                                                                                                                                                                      |
+| **Component docs** | `docs/guides/components.md:1`                                                                                                                 | Manual markdown catalog; source of truth for props but no live examples                                                                                                                                                                                                                                                                                           |
+| **Config**         | `components.json:1` (`style: base-nova`, `tailwind.css: app/globals.css`), `tsconfig.json:21` (`@/*`), `next.config.mjs:1` (next-intl plugin) |                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### 2.2 Gaps (why Storybook)
 
@@ -68,16 +68,16 @@ The plan covers setup, taxonomy, theming, i18n, MDX foundations docs, interactio
 
 ## 4. Decisions & Rationale
 
-| Decision | Choice | Rationale | Alternatives considered |
-|----------|--------|-----------|-------------------------|
-| **Storybook version** | `storybook@^9.1` with `@storybook/nextjs` framework | Official support for Next.js 16 / RSC; built-in `next` mocking; Vite-based builder fast on Node 24 | v8 LTS — older, no 9 addons; `vite` standalone — lose Next.js specifics |
-| **Builder** | `@storybook/nextjs` (webpack via Next) | Honors `next.config.mjs:1`, `tsconfig.json:21` aliases, `postcss.config.mjs:1` Tailwind v4 — no extra config | `vite` builder — needs manual alias/postcss duplication |
-| **Styling** | Import `app/globals.css:1` globally via `.storybook/preview.ts` | Guarantees tokens + `tw-animate-css` match app; Tailwind v4 `@import 'tailwindcss'` works via `@tailwindcss/postcss` | CSS modules per story — drifts |
-| **Addon set (v1)** | `essentials` (docs/controls/actions/viewport/backgrounds), `a11y`, `interactions`, `theming`, `viewport` | Minimal but covers docs, a11y, play functions | `pseudo-states`, `design-tokens` addon — defer |
-| **Story location** | Co-located `components/ui/<name>.stories.tsx` + `stories/foundations/*.mdx` | Discoverability; `glob` search matches component; foundations separate | Central `stories/` for all — extra drift |
-| **Testing** | `@storybook/test` (play functions) + keep `vitest` for unit; optional `test-runner` | Play functions test interactions (e.g., `ConfirmDialog` open/close); reuses `jsdom` | Full `playwright` inside SB — heavy |
-| **i18n** | Lightweight decorator providing `NextIntlClientProvider` with `messages/en.json` | Avoids real `next-intl/plugin`; stub `useTranslations` | Full `next-intl` routing — complex |
-| **Deployment** | `storybook-static/` to Vercel (`vercel --prod` separate project) or GitHub Pages | Zero infra; aligns with Vite `docs/` preview pattern | Chromatic host only — vendor lock |
+| Decision              | Choice                                                                                                   | Rationale                                                                                                            | Alternatives considered                                                 |
+| --------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Storybook version** | `storybook@^9.1` with `@storybook/nextjs` framework                                                      | Official support for Next.js 16 / RSC; built-in `next` mocking; Vite-based builder fast on Node 24                   | v8 LTS — older, no 9 addons; `vite` standalone — lose Next.js specifics |
+| **Builder**           | `@storybook/nextjs` (webpack via Next)                                                                   | Honors `next.config.mjs:1`, `tsconfig.json:21` aliases, `postcss.config.mjs:1` Tailwind v4 — no extra config         | `vite` builder — needs manual alias/postcss duplication                 |
+| **Styling**           | Import `app/globals.css:1` globally via `.storybook/preview.ts`                                          | Guarantees tokens + `tw-animate-css` match app; Tailwind v4 `@import 'tailwindcss'` works via `@tailwindcss/postcss` | CSS modules per story — drifts                                          |
+| **Addon set (v1)**    | `essentials` (docs/controls/actions/viewport/backgrounds), `a11y`, `interactions`, `theming`, `viewport` | Minimal but covers docs, a11y, play functions                                                                        | `pseudo-states`, `design-tokens` addon — defer                          |
+| **Story location**    | Co-located `components/ui/<name>.stories.tsx` + `stories/foundations/*.mdx`                              | Discoverability; `glob` search matches component; foundations separate                                               | Central `stories/` for all — extra drift                                |
+| **Testing**           | `@storybook/test` (play functions) + keep `vitest` for unit; optional `test-runner`                      | Play functions test interactions (e.g., `ConfirmDialog` open/close); reuses `jsdom`                                  | Full `playwright` inside SB — heavy                                     |
+| **i18n**              | Lightweight decorator providing `NextIntlClientProvider` with `messages/en.json`                         | Avoids real `next-intl/plugin`; stub `useTranslations`                                                               | Full `next-intl` routing — complex                                      |
+| **Deployment**        | `storybook-static/` to Vercel (`vercel --prod` separate project) or GitHub Pages                         | Zero infra; aligns with Vite `docs/` preview pattern                                                                 | Chromatic host only — vendor lock                                       |
 
 ---
 
@@ -138,71 +138,71 @@ export const AllVariants: Story = { render: () => /* grid of variants */ }
 
 ### Phase 0 — Preparation (0.5 day)
 
-| Task | Details | Acceptance |
-|------|---------|------------|
-| 0.1 Audit freeze | Confirm 19 `ui` files list via `glob`; capture `docs/design/reference.md` token values | Checklist in PR desc |
-| 0.2 Branch & deps | `git checkout -b feat/storybook`; pin `storybook@^9.1.8` | `pnpm install` clean |
-| 0.3 RFC review | Share this plan in PR/Notion | 1 approver |
+| Task              | Details                                                                                | Acceptance           |
+| ----------------- | -------------------------------------------------------------------------------------- | -------------------- |
+| 0.1 Audit freeze  | Confirm 19 `ui` files list via `glob`; capture `docs/design/reference.md` token values | Checklist in PR desc |
+| 0.2 Branch & deps | `git checkout -b feat/storybook`; pin `storybook@^9.1.8`                               | `pnpm install` clean |
+| 0.3 RFC review    | Share this plan in PR/Notion                                                           | 1 approver           |
 
 ### Phase 1 — Bootstrap & Theming (1–2 days)
 
-| # | Task | File(s) | Details |
-|---|------|---------|---------|
-| 1.1 | Init SB | `.storybook/main.ts`, `.storybook/preview.ts`, `.storybook/theme.ts` | `npx storybook@latest init --type nextjs` (skip install if manual). Configure `framework: '@storybook/nextjs'`, `addons: [a11y, docs, controls, viewport, backgrounds, interactions]`, `staticDirs: ['../public']`, `features: { experimentalRSC: true }`. |
-| 1.2 | Tailwind v4 wiring | `.storybook/preview.ts` | `import '../app/globals.css'`; verify `@tailwindcss/postcss` (`postcss.config.mjs:1`) is picked up. Add `tags: ['autodocs']` globally. |
-| 1.3 | Alias & TS | `.storybook/main.ts` | Ensure `tsconfig.json:21` `@/*` respected (SB does via Next plugin). Verify `next-env.d.ts` not broken. |
-| 1.4 | Theme decorator | `.storybook/preview.ts`, `.storybook/manager.ts` | Toolbar `theme` (light/dark); sync to `html.classList.toggle('dark')`. Use `app/globals.css:118` `.dark` vars. Backgrounds addon matches `--background`. |
-| 1.5 | Preview parameters | `.storybook/preview.ts` | `controls.matchers: { color: /(background|color)$/i, date: /Date$/i }`, `a11y: { config: { rules: [{ id: 'color-contrast', enabled: true }] } }`, `viewport` with `640/768/1024`, `layout: 'centered'` default. |
-| 1.6 | i18n stub | `.storybook/preview.ts`, `stories/decorators.tsx` | Provide `NextIntlClientProvider` + messages from `messages/en.json` & `bn.json`; toolbar locale. Stub `i18n/request.ts`. |
-| 1.7 | Scripts | `package.json:5` | Add `storybook: "storybook dev -p 6006"`, `storybook:build: "storybook build"`, `storybook:test: "test-storybook"` (optional). |
-| 1.8 | Ignores | `.gitignore`, `eslint.config.mjs:8` | Add `storybook-static/`; extend `globalIgnores` for it. |
+| #   | Task               | File(s)                                                              | Details                                                                                                                                                                                                                                                    |
+| --- | ------------------ | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1 | Init SB            | `.storybook/main.ts`, `.storybook/preview.ts`, `.storybook/theme.ts` | `npx storybook@latest init --type nextjs` (skip install if manual). Configure `framework: '@storybook/nextjs'`, `addons: [a11y, docs, controls, viewport, backgrounds, interactions]`, `staticDirs: ['../public']`, `features: { experimentalRSC: true }`. |
+| 1.2 | Tailwind v4 wiring | `.storybook/preview.ts`                                              | `import '../app/globals.css'`; verify `@tailwindcss/postcss` (`postcss.config.mjs:1`) is picked up. Add `tags: ['autodocs']` globally.                                                                                                                     |
+| 1.3 | Alias & TS         | `.storybook/main.ts`                                                 | Ensure `tsconfig.json:21` `@/*` respected (SB does via Next plugin). Verify `next-env.d.ts` not broken.                                                                                                                                                    |
+| 1.4 | Theme decorator    | `.storybook/preview.ts`, `.storybook/manager.ts`                     | Toolbar `theme` (light/dark); sync to `html.classList.toggle('dark')`. Use `app/globals.css:118` `.dark` vars. Backgrounds addon matches `--background`.                                                                                                   |
+| 1.5 | Preview parameters | `.storybook/preview.ts`                                              | `controls.matchers: { color: /(background                                                                                                                                                                                                                  | color)$/i, date: /Date$/i }`, `a11y: { config: { rules: [{ id: 'color-contrast', enabled: true }] } }`, `viewport`with`640/768/1024`, `layout: 'centered'` default. |
+| 1.6 | i18n stub          | `.storybook/preview.ts`, `stories/decorators.tsx`                    | Provide `NextIntlClientProvider` + messages from `messages/en.json` & `bn.json`; toolbar locale. Stub `i18n/request.ts`.                                                                                                                                   |
+| 1.7 | Scripts            | `package.json:5`                                                     | Add `storybook: "storybook dev -p 6006"`, `storybook:build: "storybook build"`, `storybook:test: "test-storybook"` (optional).                                                                                                                             |
+| 1.8 | Ignores            | `.gitignore`, `eslint.config.mjs:8`                                  | Add `storybook-static/`; extend `globalIgnores` for it.                                                                                                                                                                                                    |
 
 **Exit criteria:** `pnpm storybook` boots at 6006; `pnpm storybook:build` produces `storybook-static/`; light/dark toggles tokens; `pnpm lint` + `pnpm typecheck` green.
 
 ### Phase 2 — Foundations MDX (1 day)
 
-| # | Page | Source | Content |
-|---|------|--------|---------|
-| 2.1 | `Introduction.mdx` | `README.md:1`, `ARCHITECTURE.md:1` | Why Storybook, stack, `components.json:5` style `base-nova` |
-| 2.2 | `Colors.mdx` | `app/globals.css:64` | Swatches for `--primary/#0070F3`, `--background`, `--chart-*`, `--sidebar-*`; light/dark table |
-| 2.3 | `Typography.mdx` | `app/globals.css:7`, `docs/design/reference.md:211` | `Hind Siliguri` + `Inter`, scale H1 `text-5xl` → meta `text-xs`, weights 400–900 |
-| 2.4 | `SpacingRadii.mdx` | `app/globals.css:55`, `docs/design/reference.md:192` | `--radius: 0.5rem` → `sm/md/lg/xl/2xl/3xl/4xl`, `rounded-*` demo |
-| 2.5 | `ShadowsGlass.mdx` | `docs/design/reference.md:4` | Glass `bg-white/40 + backdrop-blur-xl`, soft shadows `shadow-lg hover:shadow-2xl` |
-| 2.6 | `Animations.mdx` | `app/globals.css:171` | `fade-in-up`, `blob` 7s, `float` 6s, `shimmer`, reduced-motion MQ |
-| 2.7 | `Icons.mdx` | `package.json:40` `lucide-react` | Icon grid with search, sizing guidance |
+| #   | Page               | Source                                               | Content                                                                                        |
+| --- | ------------------ | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 2.1 | `Introduction.mdx` | `README.md:1`, `ARCHITECTURE.md:1`                   | Why Storybook, stack, `components.json:5` style `base-nova`                                    |
+| 2.2 | `Colors.mdx`       | `app/globals.css:64`                                 | Swatches for `--primary/#0070F3`, `--background`, `--chart-*`, `--sidebar-*`; light/dark table |
+| 2.3 | `Typography.mdx`   | `app/globals.css:7`, `docs/design/reference.md:211`  | `Hind Siliguri` + `Inter`, scale H1 `text-5xl` → meta `text-xs`, weights 400–900               |
+| 2.4 | `SpacingRadii.mdx` | `app/globals.css:55`, `docs/design/reference.md:192` | `--radius: 0.5rem` → `sm/md/lg/xl/2xl/3xl/4xl`, `rounded-*` demo                               |
+| 2.5 | `ShadowsGlass.mdx` | `docs/design/reference.md:4`                         | Glass `bg-white/40 + backdrop-blur-xl`, soft shadows `shadow-lg hover:shadow-2xl`              |
+| 2.6 | `Animations.mdx`   | `app/globals.css:171`                                | `fade-in-up`, `blob` 7s, `float` 6s, `shimmer`, reduced-motion MQ                              |
+| 2.7 | `Icons.mdx`        | `package.json:40` `lucide-react`                     | Icon grid with search, sizing guidance                                                         |
 
 ### Phase 3 — Component Stories (3–4 days, prioritized)
 
 **Tier 1 — Primitives (do first):**
 
-| Component | Stories | Key controls / play |
-|-----------|---------|---------------------|
-| `button.tsx:1` (`cva` variants) | `Default`, `Outline`, `Ghost`, `Destructive`, `Link`, `AllSizes`, `WithIcon`, `Disabled`, `AsChild` | `variant`, `size`, `disabled`; play: click + `actions` |
-| `alert.tsx:1` | `Error/Warning/Success/Info`, `WithTitle`, `Dismissible`, `NonDismissible` | `variant`, `title`, `dismissible`; play: dismiss |
-| `form-field.tsx` | `Default`, `WithError`, `WithHelpText`, `Required` | `label`, `error`, `required` |
-| `status-badge.tsx` | `AllStatuses`, `Sizes`, `WithoutIcon` | `status`, `size`, `showIcon`; matrix of `pending/approved/...` |
-| `skeleton.tsx:1` | `Skeleton`, `StatCardSkeleton`, `TableSkeleton`, `CardSkeleton`, `DashboardSkeleton` | `rows` prop |
+| Component                       | Stories                                                                                             | Key controls / play                                            |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `button.tsx:1` (`cva` variants) | `Default`, `Outline`, `Ghost`, `Destructive`, `Link`, `AllSizes`, `WithIcon`, `Disabled`, `AsChild` | `variant`, `size`, `disabled`; play: click + `actions`         |
+| `alert.tsx:1`                   | `Error/Warning/Success/Info`, `WithTitle`, `Dismissible`, `NonDismissible`                          | `variant`, `title`, `dismissible`; play: dismiss               |
+| `form-field.tsx`                | `Default`, `WithError`, `WithHelpText`, `Required`                                                  | `label`, `error`, `required`                                   |
+| `status-badge.tsx`              | `AllStatuses`, `Sizes`, `WithoutIcon`                                                               | `status`, `size`, `showIcon`; matrix of `pending/approved/...` |
+| `skeleton.tsx:1`                | `Skeleton`, `StatCardSkeleton`, `TableSkeleton`, `CardSkeleton`, `DashboardSkeleton`                | `rows` prop                                                    |
 
 **Tier 2 — Interactive:**
 
-| Component | Stories |
-|-----------|---------|
-| `confirm-dialog.tsx` | `Default`, `Destructive`, `Loading`, `LongDescription`; play: open → confirm/cancel |
-| `data-table.tsx` | `Default`, `Sortable`, `Selectable`, `Paginated`, `StickyHeader`, `Empty`; mock 20 rows; controls `sortColumn/sortDir` |
-| `filter-bar.tsx` | `WithSearch`, `WithSelect`, `MultipleFilters`, `EmptyState` |
-| `bulk-actions.tsx` | `SingleAction`, `MultipleActions`, `SelectAll` |
-| `empty-state.tsx` | `Default`, `WithAction`, `NoIcon` |
-| `panel-layout.tsx` | `Default`, `WithHeader`, `Responsive` |
+| Component            | Stories                                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `confirm-dialog.tsx` | `Default`, `Destructive`, `Loading`, `LongDescription`; play: open → confirm/cancel                                    |
+| `data-table.tsx`     | `Default`, `Sortable`, `Selectable`, `Paginated`, `StickyHeader`, `Empty`; mock 20 rows; controls `sortColumn/sortDir` |
+| `filter-bar.tsx`     | `WithSearch`, `WithSelect`, `MultipleFilters`, `EmptyState`                                                            |
+| `bulk-actions.tsx`   | `SingleAction`, `MultipleActions`, `SelectAll`                                                                         |
+| `empty-state.tsx`    | `Default`, `WithAction`, `NoIcon`                                                                                      |
+| `panel-layout.tsx`   | `Default`, `WithHeader`, `Responsive`                                                                                  |
 
 **Tier 3 — Advanced / admin:**
 
-| Component | Stories |
-|-----------|---------|
-| `calendar-view.tsx` | `Default`, `WithData`, `Loading`; mock `attendanceData` |
-| `date-range-picker.tsx` | `Default`, `WithPresets`, `Controlled` |
-| `chart-card.tsx` | `Default`, `Loading`, `Empty`, `WithError`, `WithRecharts` (wrap small `recharts` line) |
-| `stat-card.tsx` | `Default`, `WithTrend`, `Grid` |
-| `info-row.tsx`, `lightbox.tsx`, `fade-in.tsx` | Simple demonstrations |
+| Component                                     | Stories                                                                                 |
+| --------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `calendar-view.tsx`                           | `Default`, `WithData`, `Loading`; mock `attendanceData`                                 |
+| `date-range-picker.tsx`                       | `Default`, `WithPresets`, `Controlled`                                                  |
+| `chart-card.tsx`                              | `Default`, `Loading`, `Empty`, `WithError`, `WithRecharts` (wrap small `recharts` line) |
+| `stat-card.tsx`                               | `Default`, `WithTrend`, `Grid`                                                          |
+| `info-row.tsx`, `lightbox.tsx`, `fade-in.tsx` | Simple demonstrations                                                                   |
 
 **Tier 4 — Composed / site (optional v1 stretch):**
 
@@ -216,13 +216,13 @@ export const AllVariants: Story = { render: () => /* grid of variants */ }
 
 ### Phase 4 — Quality & CI (1 day)
 
-| # | Task | Details |
-|---|------|---------|
-| 4.1 | A11y gating | Enable `a11y` panel; `pnpm test-storybook` (test-runner) or `vitest` addon; fail on violations |
-| 4.2 | Lint/type | Verify `eslint.config.mjs` ignores `storybook-static`; `pnpm typecheck` includes `.storybook/*.ts` + `*.stories.tsx` |
-| 4.3 | Build proof | `pnpm storybook:build` in CI (` .github/workflows/ci.yml` parallel job) — artifact `storybook-static` |
-| 4.4 | Deploy preview | Vercel project `iscexpo-storybook` or GitHub Pages; `pnpm dlx chromatic` optional manual run |
-| 4.5 | Docs index | Update `README.md:174` Project Structure + add `## Design System (Storybook)` section with `pnpm storybook` URL |
+| #   | Task           | Details                                                                                                              |
+| --- | -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 4.1 | A11y gating    | Enable `a11y` panel; `pnpm test-storybook` (test-runner) or `vitest` addon; fail on violations                       |
+| 4.2 | Lint/type      | Verify `eslint.config.mjs` ignores `storybook-static`; `pnpm typecheck` includes `.storybook/*.ts` + `*.stories.tsx` |
+| 4.3 | Build proof    | `pnpm storybook:build` in CI (` .github/workflows/ci.yml` parallel job) — artifact `storybook-static`                |
+| 4.4 | Deploy preview | Vercel project `iscexpo-storybook` or GitHub Pages; `pnpm dlx chromatic` optional manual run                         |
+| 4.5 | Docs index     | Update `README.md:174` Project Structure + add `## Design System (Storybook)` section with `pnpm storybook` URL      |
 
 ### Phase 5 — Optional Enhancements (future, not blocking)
 
@@ -271,25 +271,25 @@ globalIgnores(['.next/**','node_modules/**','coverage/**','playwright-report/**'
 
 ## 9. Mocking Strategy
 
-| Need | Approach |
-|------|----------|
-| `next/navigation` `useRouter`, `usePathname`, `Link` | SB 9 `parameters.nextjs.navigation` mock; provide no-op router |
-| `next-intl` `useTranslations` | Wrapper decorator with `NextIntlClientProvider`; fallback identity function |
-| `next/image` | SB's Nextjs framework auto-mocks to `<img>`; allow `unoptimized: true` (`next.config.mjs:7`) |
-| `window`, `localStorage` (theme, toast) | `jsdom` in preview; no extra mock |
-| API / DB | Never imported in stories; use static prop data |
+| Need                                                 | Approach                                                                                     |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `next/navigation` `useRouter`, `usePathname`, `Link` | SB 9 `parameters.nextjs.navigation` mock; provide no-op router                               |
+| `next-intl` `useTranslations`                        | Wrapper decorator with `NextIntlClientProvider`; fallback identity function                  |
+| `next/image`                                         | SB's Nextjs framework auto-mocks to `<img>`; allow `unoptimized: true` (`next.config.mjs:7`) |
+| `window`, `localStorage` (theme, toast)              | `jsdom` in preview; no extra mock                                                            |
+| API / DB                                             | Never imported in stories; use static prop data                                              |
 
 ---
 
 ## 10. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
+| Risk                                                              | Impact                  | Mitigation                                                                                                                                     |
+| ----------------------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tailwind v4 `@import 'tailwindcss'` not processed by SB's PostCSS | Medium — styles missing | Confirm `@tailwindcss/postcss` used; import `globals.css` before any story; fallback: add `postcss` config to `.storybook/main.ts` `viteFinal` |
-| RSC / `server` components fail in SB | High | Only story client components (`'use client'` like `alert.tsx:1`, `button.tsx:1`); wrap server parts as static MDX examples |
-| `Base UI` `ButtonPrimitive` proxy disrupts controls | Low | Declare `render`, `nativeButton` in `argTypes` as `control: false` |
-| Build time + bundle size (recharts, lucide) | Medium | Dynamic import in `chart-card` story; `lucide-react` tree-shakes; SB isolates |
-| 19 stories * 4 variants = 80 stories maintenance | Medium | Autodocs generate prop tables; `AllVariants` grid reduces duplication |
+| RSC / `server` components fail in SB                              | High                    | Only story client components (`'use client'` like `alert.tsx:1`, `button.tsx:1`); wrap server parts as static MDX examples                     |
+| `Base UI` `ButtonPrimitive` proxy disrupts controls               | Low                     | Declare `render`, `nativeButton` in `argTypes` as `control: false`                                                                             |
+| Build time + bundle size (recharts, lucide)                       | Medium                  | Dynamic import in `chart-card` story; `lucide-react` tree-shakes; SB isolates                                                                  |
+| 19 stories * 4 variants = 80 stories maintenance                  | Medium                  | Autodocs generate prop tables; `AllVariants` grid reduces duplication                                                                          |
 
 ---
 
@@ -308,14 +308,14 @@ globalIgnores(['.next/**','node_modules/**','coverage/**','playwright-report/**'
 
 ## 12. Timeline Estimate
 
-| Phase | Duration | Cumulative |
-|-------|----------|------------|
-| 0 Prep | 0.5 d | 0.5 d |
-| 1 Bootstrap | 1.5 d | 2 d |
-| 2 Foundations | 1 d | 3 d |
-| 3 Component stories | 3.5 d | 6.5 d |
-| 4 Quality & CI | 1 d | 7.5 d |
-| **Total v1** | **~7–8 days** (1 dev) |  |
+| Phase               | Duration              | Cumulative |
+| ------------------- | --------------------- | ---------- |
+| 0 Prep              | 0.5 d                 | 0.5 d      |
+| 1 Bootstrap         | 1.5 d                 | 2 d        |
+| 2 Foundations       | 1 d                   | 3 d        |
+| 3 Component stories | 3.5 d                 | 6.5 d      |
+| 4 Quality & CI      | 1 d                   | 7.5 d      |
+| **Total v1**        | **~7–8 days** (1 dev) |            |
 
 Buffer +1d for Tailwind v4 / Next.js 16 troubleshooting. Optional Phase 5 adds ~2d later.
 
@@ -336,4 +336,4 @@ Buffer +1d for Tailwind v4 / Next.js 16 troubleshooting. Optional Phase 5 adds ~
 
 ---
 
-*Next step: approve this plan, then create branch `feat/storybook` and execute Phase 1.1 bootstrap.*
+_Next step: approve this plan, then create branch `feat/storybook` and execute Phase 1.1 bootstrap._

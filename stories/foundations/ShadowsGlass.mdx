@@ -22,9 +22,15 @@ className="rounded-2xl border border-white/20 dark:border-white/10
 Uses in codebase: hero floating cards, `components/sections/why-us.tsx`, `courses.tsx`, counters.
 
 <div className="grid gap-6 sm:grid-cols-3 p-8 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-800 dark:to-slate-900">
-  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">Glass card</div>
-  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">Glass card</div>
-  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">Glass card</div>
+  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">
+    Glass card
+  </div>
+  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">
+    Glass card
+  </div>
+  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">
+    Glass card
+  </div>
 </div>
 
 Tokens:
@@ -43,10 +49,18 @@ Guidance from `DESIGN_REFERENCE.md:22`:
 - Never pure black — use colored shadows
 
 <div className="flex gap-6 flex-wrap p-8">
-  <div className="h-24 w-36 rounded-2xl bg-card border shadow-lg flex items-center justify-center text-sm">shadow-lg</div>
-  <div className="h-24 w-36 rounded-2xl bg-card border shadow-xl flex items-center justify-center text-sm">shadow-xl</div>
-  <div className="h-24 w-36 rounded-2xl bg-card border shadow-2xl shadow-blue-500/10 flex items-center justify-center text-sm">hover:color</div>
-  <div className="h-24 w-36 rounded-xl bg-blue-600 text-white shadow-lg hover:shadow-xl hover:shadow-blue-500/30 flex items-center justify-center text-sm font-semibold transition-shadow">CTA button</div>
+  <div className="h-24 w-36 rounded-2xl bg-card border shadow-lg flex items-center justify-center text-sm">
+    shadow-lg
+  </div>
+  <div className="h-24 w-36 rounded-2xl bg-card border shadow-xl flex items-center justify-center text-sm">
+    shadow-xl
+  </div>
+  <div className="h-24 w-36 rounded-2xl bg-card border shadow-2xl shadow-blue-500/10 flex items-center justify-center text-sm">
+    hover:color
+  </div>
+  <div className="h-24 w-36 rounded-xl bg-blue-600 text-white shadow-lg hover:shadow-xl hover:shadow-blue-500/30 flex items-center justify-center text-sm font-semibold transition-shadow">
+    CTA button
+  </div>
 </div>
 
 Button example (`components/ui/button.tsx:11` secondary vs destructive uses `bg-primary/90` etc., not shadow directly) — use shadows at card/section level.
@@ -57,10 +71,12 @@ From `DESIGN_REFERENCE.md:98`:
 
 ```tsx
 // Primary CTA
-className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/30"
+className =
+  'bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/30'
 
 // Secondary
-className="border-2 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50/40"
+className =
+  'border-2 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50/40'
 ```
 
 ## Card example combining glass + shadow

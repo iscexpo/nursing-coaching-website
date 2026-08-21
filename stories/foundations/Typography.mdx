@@ -8,50 +8,75 @@ Source: `app/globals.css:7` (`@theme inline` — `--font-sans/heading/display`),
 
 ## Font families
 
-| Token | Variable | Stack |
-|-------|----------|-------|
-| sans | `--font-sans` | `var(--font-hind), 'Hind Siliguri', ui-sans-serif, system-ui` |
+| Token   | Variable         | Stack                                                                |
+| ------- | ---------------- | -------------------------------------------------------------------- |
+| sans    | `--font-sans`    | `var(--font-hind), 'Hind Siliguri', ui-sans-serif, system-ui`        |
 | heading | `--font-heading` | `var(--font-inter), var(--font-hind), 'Inter', 'Hind Siliguri', ...` |
-| display | `--font-display` | `var(--font-inter), var(--font-hind), 'Inter', ...` |
+| display | `--font-display` | `var(--font-inter), var(--font-hind), 'Inter', ...`                  |
 
 `app/globals.css:293` applies `font-family: var(--font-hind)` globally; `body` uses `bg-background text-foreground`.
 
 ## Scale
 
 <Typeset
-  fontSizes={['0.75rem', '0.875rem', '1rem', '1.125rem', '1.875rem', '3rem', '3.75rem']}
+  fontSizes={[
+    '0.75rem',
+    '0.875rem',
+    '1rem',
+    '1.125rem',
+    '1.875rem',
+    '3rem',
+    '3.75rem',
+  ]}
   fontWeight={400}
   sampleText="ISC Expo — Icon Skill & Career Expo"
 />
 
-| Role | Class | Size |
-|------|-------|------|
-| H1 Hero | `text-5xl md:text-6xl lg:text-7xl` | 48–72px |
-| H2 Section | `text-3xl md:text-4xl` | 30–36px |
-| H3 Card | `text-lg font-bold` | 18px 600 |
-| Body | `text-base` / `text-sm` | 16 / 14px |
-| Meta / badge | `text-xs` | 12px |
+| Role         | Class                              | Size      |
+| ------------ | ---------------------------------- | --------- |
+| H1 Hero      | `text-5xl md:text-6xl lg:text-7xl` | 48–72px   |
+| H2 Section   | `text-3xl md:text-4xl`             | 30–36px   |
+| H3 Card      | `text-lg font-bold`                | 18px 600  |
+| Body         | `text-base` / `text-sm`            | 16 / 14px |
+| Meta / badge | `text-xs`                          | 12px      |
 
 Per `DESIGN_REFERENCE.md:211`.
 
 <div className="space-y-4">
-  <h1 className="text-5xl font-black" style={{ fontFamily: 'var(--font-heading)'}}>Hero — text-5xl font-black</h1>
-  <h2 className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)'}}>Section — text-3xl font-semibold</h2>
+  <h1
+    className="text-5xl font-black"
+    style={{ fontFamily: 'var(--font-heading)' }}
+  >
+    Hero — text-5xl font-black
+  </h1>
+  <h2
+    className="text-3xl font-semibold"
+    style={{ fontFamily: 'var(--font-heading)' }}
+  >
+    Section — text-3xl font-semibold
+  </h2>
   <h3 className="text-lg font-bold">Card — text-lg font-bold</h3>
-  <p className="text-base max-w-prose">Base — The quick brown fox. Body copy at <code>text-base</code> with <code>text-muted-foreground</code> for secondary.</p>
-  <p className="text-sm text-muted-foreground">Small — secondary description at text-sm muted.</p>
-  <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Meta — text-xs badges</span>
+  <p className="text-base max-w-prose">
+    Base — The quick brown fox. Body copy at <code>text-base</code> with{' '}
+    <code>text-muted-foreground</code> for secondary.
+  </p>
+  <p className="text-sm text-muted-foreground">
+    Small — secondary description at text-sm muted.
+  </p>
+  <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    Meta — text-xs badges
+  </span>
 </div>
 
 ## Weights
 
-| Weight | Value | Use |
-|--------|-------|-----|
-| Regular | 400 | body |
-| Medium | 500 | nav |
-| Semibold | 600 | headings |
-| Bold | 700 | card titles |
-| Black | 900 | hero title |
+| Weight   | Value | Use         |
+| -------- | ----- | ----------- |
+| Regular  | 400   | body        |
+| Medium   | 500   | nav         |
+| Semibold | 600   | headings    |
+| Bold     | 700   | card titles |
+| Black    | 900   | hero title  |
 
 ## Line height / tracking
 
@@ -64,4 +89,3 @@ Shadcn default — rely on Tailwind prose. For Bangla (`messages/bn.json`), `Hin
 <p className="text-sm text-muted-foreground">From BNMC admission to job prep</p>
 <span className="text-xs font-semibold rounded-full bg-primary/10 text-primary px-2 py-0.5">New</span>
 ```
-

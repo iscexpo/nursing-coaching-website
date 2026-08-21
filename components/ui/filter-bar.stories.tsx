@@ -10,7 +10,8 @@ const meta: Meta<typeof FilterBar> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Search + filter controls from `components/ui/filter-bar.tsx:27`. Used in admin lists with `onClearFilters`.',
+        component:
+          'Search + filter controls from `components/ui/filter-bar.tsx:27`. Used in admin lists with `onClearFilters`.',
       },
     },
   },
@@ -84,7 +85,13 @@ export const MultipleFilters: Story = {
               { value: 'isc', label: 'ISC' },
             ],
           },
-          { name: 'date', label: 'Date', type: 'date', value: date, onChange: setDate },
+          {
+            name: 'date',
+            label: 'Date',
+            type: 'date',
+            value: date,
+            onChange: setDate,
+          },
         ]}
         onClearFilters={() => {
           setSearch('')

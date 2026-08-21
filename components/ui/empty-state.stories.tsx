@@ -10,7 +10,8 @@ const meta: Meta<typeof EmptyState> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Icon + heading + description + CTA from `components/ui/empty-state.tsx:4`. Used when lists are empty.',
+        component:
+          'Icon + heading + description + CTA from `components/ui/empty-state.tsx:4`. Used when lists are empty.',
       },
     },
   },
@@ -51,8 +52,18 @@ export const AllIcons: Story = {
   render: () => (
     <div className="grid gap-6 sm:grid-cols-3">
       <EmptyState icon={Inbox} title="Inbox empty" description="No messages." />
-      <EmptyState icon={Search} title="Search empty" description="No matches." />
-      <EmptyState icon={FileX} title="No file" description="Upload a file." actionLabel="Upload" onAction={() => {}} />
+      <EmptyState
+        icon={Search}
+        title="Search empty"
+        description="No matches."
+      />
+      <EmptyState
+        icon={FileX}
+        title="No file"
+        description="Upload a file."
+        actionLabel="Upload"
+        onAction={() => {}}
+      />
     </div>
   ),
 }

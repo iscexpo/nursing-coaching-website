@@ -87,7 +87,11 @@ export const FormExample: Story = {
       <FormField label="Full name" required>
         <InputStub placeholder="Ahmed Hassan" />
       </FormField>
-      <FormField label="Email" helpText="We'll never share your email." required>
+      <FormField
+        label="Email"
+        helpText="We'll never share your email."
+        required
+      >
         <InputStub type="email" placeholder="ahmed@example.com" />
       </FormField>
       <FormField label="Phone" error="Invalid phone format">

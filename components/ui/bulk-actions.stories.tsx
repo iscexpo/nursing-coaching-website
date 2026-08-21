@@ -11,7 +11,8 @@ const meta: Meta<typeof BulkActions> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Bulk toolbar from `components/ui/bulk-actions.tsx:52`. Hidden when `selectedCount===0`.',
+        component:
+          'Bulk toolbar from `components/ui/bulk-actions.tsx:52`. Hidden when `selectedCount===0`.',
       },
     },
   },
@@ -26,8 +27,19 @@ export const WithSelection: Story = {
     selectedIds: ['1', '2', '3'],
     totalCount: 10,
     actions: [
-      { id: 'approve', label: 'Approve', icon: CheckCircle, onClick: async () => {} },
-      { id: 'reject', label: 'Reject', icon: XCircle, variant: 'destructive', onClick: async () => {} },
+      {
+        id: 'approve',
+        label: 'Approve',
+        icon: CheckCircle,
+        onClick: async () => {},
+      },
+      {
+        id: 'reject',
+        label: 'Reject',
+        icon: XCircle,
+        variant: 'destructive',
+        onClick: async () => {},
+      },
     ],
   },
 }
@@ -37,7 +49,14 @@ export const SingleAction: Story = {
     selectedCount: 2,
     selectedIds: ['1', '2'],
     totalCount: 10,
-    actions: [{ id: 'export', label: 'Export', icon: Download, onClick: async () => {} }],
+    actions: [
+      {
+        id: 'export',
+        label: 'Export',
+        icon: Download,
+        onClick: async () => {},
+      },
+    ],
   },
 }
 
@@ -47,10 +66,32 @@ export const ManyActions: Story = {
     selectedIds: ['1', '2', '3', '4', '5'],
     totalCount: 5,
     actions: [
-      { id: 'approve', label: 'Approve', icon: CheckCircle, onClick: async () => {} },
-      { id: 'reject', label: 'Reject', icon: XCircle, variant: 'destructive', onClick: async () => {} },
-      { id: 'export', label: 'Export', icon: Download, onClick: async () => {} },
-      { id: 'delete', label: 'Delete', icon: Trash2, variant: 'destructive', onClick: async () => {} },
+      {
+        id: 'approve',
+        label: 'Approve',
+        icon: CheckCircle,
+        onClick: async () => {},
+      },
+      {
+        id: 'reject',
+        label: 'Reject',
+        icon: XCircle,
+        variant: 'destructive',
+        onClick: async () => {},
+      },
+      {
+        id: 'export',
+        label: 'Export',
+        icon: Download,
+        onClick: async () => {},
+      },
+      {
+        id: 'delete',
+        label: 'Delete',
+        icon: Trash2,
+        variant: 'destructive',
+        onClick: async () => {},
+      },
     ],
   },
 }
@@ -60,10 +101,21 @@ export const HiddenWhenEmpty: Story = {
     selectedCount: 0,
     selectedIds: [],
     totalCount: 10,
-    actions: [{ id: 'approve', label: 'Approve', icon: CheckCircle, onClick: async () => {} }],
+    actions: [
+      {
+        id: 'approve',
+        label: 'Approve',
+        icon: CheckCircle,
+        onClick: async () => {},
+      },
+    ],
   },
   parameters: {
-    docs: { description: { story: 'Returns null when selectedCount===0 — viewport shows nothing.' } },
+    docs: {
+      description: {
+        story: 'Returns null when selectedCount===0 — viewport shows nothing.',
+      },
+    },
   },
 }
 
@@ -84,7 +136,9 @@ export const Interactive: Story = {
             onClick: () => setSelected([]),
           },
         ]}
-        onSelectAll={(all) => setSelected(all ? ['a', 'b', 'c', 'd', 'e', 'f'] : [])}
+        onSelectAll={(all) =>
+          setSelected(all ? ['a', 'b', 'c', 'd', 'e', 'f'] : [])
+        }
         onClearSelection={() => setSelected([])}
       />
     )

@@ -15,10 +15,30 @@ import { StatusBadge } from './status-badge'
 type Row = { id: string; name: string; email: string; status: string }
 
 const SAMPLE: Row[] = [
-  { id: 'STU-001', name: 'Ahmed Hassan', email: 'ahmed@example.com', status: 'active' },
-  { id: 'STU-002', name: 'Fatima Khan', email: 'fatima@example.com', status: 'pending' },
-  { id: 'STU-003', name: 'Rahman Ali', email: 'rahman@example.com', status: 'inactive' },
-  { id: 'STU-004', name: 'Sadia Islam', email: 'sadia@example.com', status: 'active' },
+  {
+    id: 'STU-001',
+    name: 'Ahmed Hassan',
+    email: 'ahmed@example.com',
+    status: 'active',
+  },
+  {
+    id: 'STU-002',
+    name: 'Fatima Khan',
+    email: 'fatima@example.com',
+    status: 'pending',
+  },
+  {
+    id: 'STU-003',
+    name: 'Rahman Ali',
+    email: 'rahman@example.com',
+    status: 'inactive',
+  },
+  {
+    id: 'STU-004',
+    name: 'Sadia Islam',
+    email: 'sadia@example.com',
+    status: 'active',
+  },
 ]
 
 function TableDemo({
@@ -57,7 +77,10 @@ function TableDemo({
 
   return (
     <div className="w-[720px] max-w-[95vw] space-y-3">
-      <DataTable header={<span className="text-sm font-semibold">Students</span>} onExport={() => alert('export')}>
+      <DataTable
+        header={<span className="text-sm font-semibold">Students</span>}
+        onExport={() => alert('export')}
+      >
         <DataTableHead sticky={sticky}>
           {selectable && (
             <DataTableCheckbox
@@ -88,7 +111,13 @@ function TableDemo({
               {selectable && (
                 <DataTableCheckbox
                   checked={selected.includes(row.id)}
-                  onChange={(c) => setSelected((prev) => (c ? [...prev, row.id] : prev.filter((id) => id !== row.id)))}
+                  onChange={(c) =>
+                    setSelected((prev) =>
+                      c
+                        ? [...prev, row.id]
+                        : prev.filter((id) => id !== row.id),
+                    )
+                  }
                 />
               )}
               <DataTableTd>{row.name}</DataTableTd>
@@ -111,7 +140,9 @@ function TableDemo({
         />
       )}
       {selectable && selected.length > 0 && (
-        <p className="text-xs text-muted-foreground">{selected.length} selected: {selected.join(', ')}</p>
+        <p className="text-xs text-muted-foreground">
+          {selected.length} selected: {selected.join(', ')}
+        </p>
       )}
     </div>
   )
@@ -169,7 +200,10 @@ export const Empty: Story = {
         </DataTableHead>
         <DataTableBody>
           <tr>
-            <DataTableTd className="text-center text-muted-foreground" align="center">
+            <DataTableTd
+              className="text-center text-muted-foreground"
+              align="center"
+            >
               No students found
             </DataTableTd>
           </tr>

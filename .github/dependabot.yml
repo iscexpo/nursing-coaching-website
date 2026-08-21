@@ -1,11 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
       day: monday
-      time: "03:00"
+      time: '03:00'
       timezone: Asia/Dhaka
     open-pull-requests-limit: 10
     labels:
@@ -16,11 +16,11 @@ updates:
       include: scope
     groups:
       dev-dependencies:
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
+        patterns: ['*']
+        update-types: ['minor', 'patch']
 
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
     labels:

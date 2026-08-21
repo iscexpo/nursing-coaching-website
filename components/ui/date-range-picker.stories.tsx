@@ -10,7 +10,8 @@ const meta: Meta<typeof DateRangePicker> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Date range selector with presets (7d/30d/90d) from `components/ui/date-range-picker.tsx:23`.',
+        component:
+          'Date range selector with presets (7d/30d/90d) from `components/ui/date-range-picker.tsx:23`.',
       },
     },
   },

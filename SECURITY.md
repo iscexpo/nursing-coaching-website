@@ -3,7 +3,7 @@
 ## Supported versions
 
 | Version | Supported |
-|---------|-----------|
+| ------- | --------- |
 | `main`  | ✅        |
 
 ## Reporting a Vulnerability

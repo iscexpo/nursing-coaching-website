@@ -96,11 +96,17 @@ export const UnknownStatusFallback: Story = {
 export const EnrollmentVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">
-      {['pending', 'approved', 'rejected', 'active', 'completed', 'expired', 'suspended'].map(
-        (s) => (
-          <EnrollmentStatusBadge key={s} status={s} />
-        ),
-      )}
+      {[
+        'pending',
+        'approved',
+        'rejected',
+        'active',
+        'completed',
+        'expired',
+        'suspended',
+      ].map((s) => (
+        <EnrollmentStatusBadge key={s} status={s} />
+      ))}
     </div>
   ),
 }
@@ -136,7 +142,8 @@ export const Attendance: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Uses `useTranslations(common)` — toggle locale toolbar BN/EN to see labels.',
+        story:
+          'Uses `useTranslations(common)` — toggle locale toolbar BN/EN to see labels.',
       },
     },
   },

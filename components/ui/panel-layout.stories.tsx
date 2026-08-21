@@ -1,13 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { PanelLayout } from './panel-layout'
-import { LayoutDashboard, GraduationCap, Users, CreditCard, Settings } from 'lucide-react'
+import {
+  LayoutDashboard,
+  GraduationCap,
+  Users,
+  CreditCard,
+  Settings,
+} from 'lucide-react'
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'courses', label: 'Courses', icon: GraduationCap, group: 'Academics' },
   { id: 'students', label: 'Students', icon: Users, group: 'Students' },
   { id: 'payments', label: 'Payments', icon: CreditCard, group: 'Finance' },
-  { id: 'settings', label: 'Settings', icon: Settings, group: 'System', badge: 3 },
+  {
+    id: 'settings',
+    label: 'Settings',
+    icon: Settings,
+    group: 'System',
+    badge: 3,
+  },
 ]
 
 const meta: Meta<typeof PanelLayout> = {
@@ -55,7 +67,11 @@ export const WithGroups: Story = {
     activeTab: 'students',
     onTabChange: () => {},
     onSignOut: () => {},
-    children: <div className="rounded-2xl border bg-card p-6 text-sm">Students tab content</div>,
+    children: (
+      <div className="rounded-2xl border bg-card p-6 text-sm">
+        Students tab content
+      </div>
+    ),
   },
 }
 
@@ -73,6 +89,8 @@ export const LongTabs: Story = {
     activeTab: 'courses',
     onTabChange: () => {},
     onSignOut: () => {},
-    children: <div className="p-4 text-sm">Scroll the sidebar to see groups.</div>,
+    children: (
+      <div className="p-4 text-sm">Scroll the sidebar to see groups.</div>
+    ),
   },
 }

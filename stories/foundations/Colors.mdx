@@ -32,6 +32,7 @@ Design tokens from `app/globals.css:64` (`:root`) and `app/globals.css:118` (`.d
 </ColorPalette>
 
 Usage:
+
 ```css
 bg-primary text-primary-foreground
 bg-brand text-brand-foreground
@@ -60,34 +61,106 @@ Note: `DESIGN_REFERENCE.md:60` documents legacy `#2563EB` (Blue-600). Canonical 
 ## Surfaces
 
 <ColorPalette>
-  <ColorItem title="background" subtitle="--background" colors={{ light: '#fafafa', dark: '#000000' }} />
-  <ColorItem title="foreground" subtitle="--foreground" colors={{ light: '#171717', dark: '#ededed' }} />
-  <ColorItem title="card" subtitle="--card" colors={{ light: '#ffffff', dark: '#0a0a0a' }} />
-  <ColorItem title="popover" subtitle="--popover" colors={{ light: '#ffffff', dark: '#0a0a0a' }} />
-  <ColorItem title="muted" subtitle="--muted" colors={{ light: '#f5f5f5', dark: '#111111' }} />
-  <ColorItem title="secondary" subtitle="--secondary" colors={{ light: '#f5f5f5', dark: '#111111' }} />
-  <ColorItem title="accent" subtitle="--accent" colors={{ light: '#f5f5f5', dark: '#111111' }} />
-  <ColorItem title="border" subtitle="--border" colors={{ light: '#eaeaea', dark: '#333333' }} />
-  <ColorItem title="input" subtitle="--input" colors={{ light: '#eaeaea', dark: '#333333' }} />
+  <ColorItem
+    title="background"
+    subtitle="--background"
+    colors={{ light: '#fafafa', dark: '#000000' }}
+  />
+  <ColorItem
+    title="foreground"
+    subtitle="--foreground"
+    colors={{ light: '#171717', dark: '#ededed' }}
+  />
+  <ColorItem
+    title="card"
+    subtitle="--card"
+    colors={{ light: '#ffffff', dark: '#0a0a0a' }}
+  />
+  <ColorItem
+    title="popover"
+    subtitle="--popover"
+    colors={{ light: '#ffffff', dark: '#0a0a0a' }}
+  />
+  <ColorItem
+    title="muted"
+    subtitle="--muted"
+    colors={{ light: '#f5f5f5', dark: '#111111' }}
+  />
+  <ColorItem
+    title="secondary"
+    subtitle="--secondary"
+    colors={{ light: '#f5f5f5', dark: '#111111' }}
+  />
+  <ColorItem
+    title="accent"
+    subtitle="--accent"
+    colors={{ light: '#f5f5f5', dark: '#111111' }}
+  />
+  <ColorItem
+    title="border"
+    subtitle="--border"
+    colors={{ light: '#eaeaea', dark: '#333333' }}
+  />
+  <ColorItem
+    title="input"
+    subtitle="--input"
+    colors={{ light: '#eaeaea', dark: '#333333' }}
+  />
 </ColorPalette>
 
 ## Sidebar
 
 <ColorPalette>
-  <ColorItem title="sidebar" subtitle="--sidebar" colors={{ light: '#fafafa', dark: '#0a0a0a' }} />
-  <ColorItem title="sidebar-primary" subtitle="--sidebar-primary" colors={{ light: '#0070F3', dark: '#ffffff' }} />
-  <ColorItem title="sidebar-accent" subtitle="--sidebar-accent" colors={{ light: '#f5f5f5', dark: '#111111' }} />
-  <ColorItem title="sidebar-border" subtitle="--sidebar-border" colors={{ light: '#eaeaea', dark: '#333333' }} />
+  <ColorItem
+    title="sidebar"
+    subtitle="--sidebar"
+    colors={{ light: '#fafafa', dark: '#0a0a0a' }}
+  />
+  <ColorItem
+    title="sidebar-primary"
+    subtitle="--sidebar-primary"
+    colors={{ light: '#0070F3', dark: '#ffffff' }}
+  />
+  <ColorItem
+    title="sidebar-accent"
+    subtitle="--sidebar-accent"
+    colors={{ light: '#f5f5f5', dark: '#111111' }}
+  />
+  <ColorItem
+    title="sidebar-border"
+    subtitle="--sidebar-border"
+    colors={{ light: '#eaeaea', dark: '#333333' }}
+  />
 </ColorPalette>
 
 ## Chart
 
 <ColorPalette>
-  <ColorItem title="chart-1" subtitle="--chart-1" colors={{ light: '#0070F3', dark: '#3291ff' }} />
-  <ColorItem title="chart-2" subtitle="--chart-2" colors={{ light: '#50e3c2', dark: '#50e3c2' }} />
-  <ColorItem title="chart-3" subtitle="--chart-3" colors={{ light: '#f5a623', dark: '#f5a623' }} />
-  <ColorItem title="chart-4" subtitle="--chart-4" colors={{ light: '#7928ca', dark: '#7928ca' }} />
-  <ColorItem title="chart-5" subtitle="--chart-5" colors={{ light: '#ff0080', dark: '#ff0080' }} />
+  <ColorItem
+    title="chart-1"
+    subtitle="--chart-1"
+    colors={{ light: '#0070F3', dark: '#3291ff' }}
+  />
+  <ColorItem
+    title="chart-2"
+    subtitle="--chart-2"
+    colors={{ light: '#50e3c2', dark: '#50e3c2' }}
+  />
+  <ColorItem
+    title="chart-3"
+    subtitle="--chart-3"
+    colors={{ light: '#f5a623', dark: '#f5a623' }}
+  />
+  <ColorItem
+    title="chart-4"
+    subtitle="--chart-4"
+    colors={{ light: '#7928ca', dark: '#7928ca' }}
+  />
+  <ColorItem
+    title="chart-5"
+    subtitle="--chart-5"
+    colors={{ light: '#ff0080', dark: '#ff0080' }}
+  />
 </ColorPalette>
 
 ## Glassmorphism overlay (light)
@@ -99,13 +172,20 @@ bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:bo
 ```
 
 <div className="flex gap-4 flex-wrap">
-  <div className="h-20 w-36 rounded-xl border border-white/20 bg-white/40 backdrop-blur-xl flex items-center justify-center text-sm">light glass</div>
-  <div className="h-20 w-36 rounded-xl border border-white/10 bg-slate-900/40 backdrop-blur-xl flex items-center justify-center text-sm text-white">dark glass</div>
-  <div className="h-20 w-36 rounded-xl bg-primary flex items-center justify-center text-sm text-primary-foreground">primary</div>
-  <div className="h-20 w-36 rounded-xl bg-destructive/10 flex items-center justify-center text-sm text-destructive">destructive/10</div>
+  <div className="h-20 w-36 rounded-xl border border-white/20 bg-white/40 backdrop-blur-xl flex items-center justify-center text-sm">
+    light glass
+  </div>
+  <div className="h-20 w-36 rounded-xl border border-white/10 bg-slate-900/40 backdrop-blur-xl flex items-center justify-center text-sm text-white">
+    dark glass
+  </div>
+  <div className="h-20 w-36 rounded-xl bg-primary flex items-center justify-center text-sm text-primary-foreground">
+    primary
+  </div>
+  <div className="h-20 w-36 rounded-xl bg-destructive/10 flex items-center justify-center text-sm text-destructive">
+    destructive/10
+  </div>
 </div>
 
 ## Opacity helpers
 
 Use `text-muted-foreground`, `bg-muted`, `border-border` for surfaces; `bg-primary/90` for hover per `components/ui/button.tsx:11`.
-
