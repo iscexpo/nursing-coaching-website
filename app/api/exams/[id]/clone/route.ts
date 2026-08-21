@@ -33,7 +33,8 @@ export async function POST(
     }
 
     const ipAddress = request.headers.get('x-forwarded-for') ?? undefined
-    const txResult = await db.transaction(async (tx) => {
+    const txResult = await db.transaction(
+      async (tx) => {
       const [source] = await tx.select().from(exams).where(eq(exams.id, id))
       if (!source) return null
 
@@ -86,7 +87,9 @@ export async function POST(
       })
 
       return { cloned: created, questionCount: sourceQuestions.length }
-    })
+      },
+      { isolationLevel: 'repeatable read' },
+    )
 
     if (!txResult) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
 
