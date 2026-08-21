@@ -6,6 +6,9 @@ import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import type { Exam, Question } from './types'
 import { EmptyState } from '@/components/ui/empty-state'
 import { FilterBar } from '@/components/ui/filter-bar'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 
 export function QuestionsPanel({ exams }: { exams: Exam[] }) {
   const t = useTranslations('admin.questions')
@@ -188,38 +191,42 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
               <X className="size-5" />
             </button>
           </div>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('questionLabel')}
-              </label>
+          <div className="space-y-4">
+            <FormField id="q-question" label={t('questionLabel')} required>
               <textarea
+                id="q-question"
                 value={form.question}
                 onChange={(e) => setForm({ ...form, question: e.target.value })}
                 rows={2}
                 placeholder={t('questionPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-required="true"
               />
-            </div>
+            </FormField>
+            <Separator />
             <div className="grid gap-3 sm:grid-cols-2">
               {form.options.map((opt, i) => (
-                <div key={i}>
-                  <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <FormField
+                  key={i}
+                  id={`q-option-${i}`}
+                  label={`${t('answerLabel')} ${String.fromCharCode(65 + i)} ${i === form.correctIndex ? `(${t('correctLabel')})` : ''}`}
+                  required
+                >
+                  <div className="flex items-center gap-2 mb-1">
                     <input
                       type="radio"
                       name="correct"
                       checked={form.correctIndex === i}
                       onChange={() => setForm({ ...form, correctIndex: i })}
                       className="size-4"
+                      aria-label={`${t('correctLabel')} ${String.fromCharCode(65 + i)}`}
                     />
-                    {t('answerLabel')} {String.fromCharCode(65 + i)}{' '}
-                    {i === form.correctIndex && (
-                      <span className="text-green text-xs">
-                        ({t('correctLabel')})
-                      </span>
-                    )}
-                  </label>
-                  <input
+                    <span className="text-xs text-muted-foreground">
+                      {i === form.correctIndex ? t('correctLabel') : t('answerLabel')}
+                    </span>
+                  </div>
+                  <Input
+                    id={`q-option-${i}`}
                     type="text"
                     value={opt}
                     onChange={(e) => {
@@ -233,11 +240,12 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                       setForm({ ...form, options: newOpts })
                     }}
                     placeholder={`${t('answerLabel')} ${String.fromCharCode(65 + i)}`}
-                    className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                    aria-required="true"
                   />
-                </div>
+                </FormField>
               ))}
             </div>
+            <Separator />
             <button
               onClick={handleSave}
               disabled={saving}

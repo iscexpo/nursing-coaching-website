@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Save, X, GripVertical, Loader2 } from 'lucide-react'
 import { translateSubject, useCurriculumTranslations } from '@/lib/i18n/curriculum'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
 
 interface Subject {
   id: string
@@ -133,16 +135,14 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
             </button>
           </div>
           <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-foreground">
-                {t('nameLabel')}
-              </label>
-              <input
+            <FormField id="subject-name" label={t('nameLabel')} required className="flex-1">
+              <Input
+                id="subject-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('namePlaceholder')}
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-required="true"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
@@ -150,7 +150,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                   }
                 }}
               />
-            </div>
+            </FormField>
             <button
               onClick={editing ? handleSaveEdit : handleCreate}
               disabled={saving || !name.trim()}

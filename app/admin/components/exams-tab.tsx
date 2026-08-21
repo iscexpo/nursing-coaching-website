@@ -7,6 +7,9 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { FilterBar } from '@/components/ui/filter-bar'
 import { ExamStatusBadge } from '@/components/ui/status-badge'
 import { useToast } from '@/components/ui/toast'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import type { Exam, ExamSubmission } from './types'
 
 export function ExamsPanel({
@@ -130,27 +133,23 @@ export function ExamsPanel({
                 <X className="size-5" />
               </button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-foreground">
-                    {t('formLabels.name')}
-                  </label>
-                  <input
+                <FormField id="exam-name" label={t('formLabels.name')} required>
+                  <Input
+                    id="exam-name"
                     type="text"
                     value={examForm.title}
                     onChange={(e) =>
                       setExamForm({ ...examForm, title: e.target.value })
                     }
                     placeholder={t('formLabels.namePlaceholder')}
-                    className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                    aria-required="true"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground">
-                    {t('formLabels.subject')}
-                  </label>
+                </FormField>
+                <FormField id="exam-subject" label={t('formLabels.subject')}>
                   <select
+                    id="exam-subject"
                     value={examForm.subject}
                     onChange={(e) =>
                       setExamForm({ ...examForm, subject: e.target.value })
@@ -163,28 +162,24 @@ export function ExamsPanel({
                       </option>
                     ))}
                   </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground">
-                    {t('formLabels.duration')}
-                  </label>
-                  <input
+                </FormField>
+                <FormField id="exam-duration" label={t('formLabels.duration')} required>
+                  <Input
+                    id="exam-duration"
                     type="number"
-                    value={examForm.duration}
+                    value={String(examForm.duration)}
                     onChange={(e) =>
                       setExamForm({
                         ...examForm,
                         duration: Number(e.target.value),
                       })
                     }
-                    className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                    aria-required="true"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground">
-                    {t('formLabels.difficulty')}
-                  </label>
+                </FormField>
+                <FormField id="exam-difficulty" label={t('formLabels.difficulty')}>
                   <select
+                    id="exam-difficulty"
                     value={examForm.difficulty}
                     onChange={(e) =>
                       setExamForm({
@@ -199,8 +194,9 @@ export function ExamsPanel({
                     <option value="medium">{t('difficultyMedium')}</option>
                     <option value="hard">{t('difficultyHard')}</option>
                   </select>
-                </div>
+                </FormField>
               </div>
+              <Separator />
               <button
                 onClick={handleCreateExam}
                 disabled={saving}

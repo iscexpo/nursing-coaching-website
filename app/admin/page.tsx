@@ -533,112 +533,160 @@ export default function AdminPage() {
         />
       )}
       <Suspense fallback={<TabSkeleton />}>
-        <ErrorBoundary>
-          {tab === 'courses' && (
+        {tab === 'courses' && (
+          <ErrorBoundary>
             <CoursesPanel courses={courses} onRefresh={fetchData} />
-          )}
-          {tab === 'enrollments' && (
+          </ErrorBoundary>
+        )}
+        {tab === 'enrollments' && (
+          <ErrorBoundary>
             <EnrollmentsPanel
               enrollments={enrollments}
               courses={courses}
               students={students}
               onRefresh={fetchData}
             />
-          )}
-          {tab === 'payments' && (
+          </ErrorBoundary>
+        )}
+        {tab === 'payments' && (
+          <ErrorBoundary>
             <PaymentsPanel
               payments={payments}
               enrollments={enrollments}
               students={students}
               onRefresh={fetchData}
             />
-          )}
-          {tab === 'invoices' && (
+          </ErrorBoundary>
+        )}
+        {tab === 'invoices' && (
+          <ErrorBoundary>
             <InvoicesPanel
               invoices={invoices}
               enrollments={enrollments}
               onRefresh={fetchData}
             />
-          )}
-          {tab === 'notices' && (
+          </ErrorBoundary>
+        )}
+        {tab === 'notices' && (
+          <ErrorBoundary>
             <NoticesPanel notices={notices} onRefresh={fetchData} />
-          )}
-        </ErrorBoundary>
-        {tab === 'sms' && <SmsPanel />}
+          </ErrorBoundary>
+        )}
+        {tab === 'sms' && (
+          <ErrorBoundary>
+            <SmsPanel />
+          </ErrorBoundary>
+        )}
         {tab === 'media' && (
-          <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />
+          <ErrorBoundary>
+            <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />
+          </ErrorBoundary>
         )}
         {tab === 'exams' && (
-          <ExamsPanel
-            exams={exams}
-            submissions={examSubmissions}
-            onRefresh={fetchData}
-          />
+          <ErrorBoundary>
+            <ExamsPanel
+              exams={exams}
+              submissions={examSubmissions}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
         )}
-        {tab === 'questions' && <QuestionsPanel exams={exams} />}
+        {tab === 'questions' && (
+          <ErrorBoundary>
+            <QuestionsPanel exams={exams} />
+          </ErrorBoundary>
+        )}
         {tab === 'subjects' && (
-          <SubjectsPanel subjects={subjectsList} onRefresh={fetchData} />
+          <ErrorBoundary>
+            <SubjectsPanel subjects={subjectsList} onRefresh={fetchData} />
+          </ErrorBoundary>
         )}
         {tab === 'course-categories' && (
-          <CourseCategoriesPanel
-            categories={courseCategories}
-            onRefresh={fetchData}
-          />
+          <ErrorBoundary>
+            <CourseCategoriesPanel
+              categories={courseCategories}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
         )}
         {tab === 'results' && (
-          <ResultsPanel exams={exams} submissions={examSubmissions} />
+          <ErrorBoundary>
+            <ResultsPanel exams={exams} submissions={examSubmissions} />
+          </ErrorBoundary>
         )}
         {tab === 'students' && (
-          <StudentsPanel students={students} onRefresh={fetchData} />
+          <ErrorBoundary>
+            <StudentsPanel students={students} onRefresh={fetchData} />
+          </ErrorBoundary>
         )}
         {tab === 'teachers' && (
-          <TeachersPanel teachers={teachers} onRefresh={fetchData} />
+          <ErrorBoundary>
+            <TeachersPanel teachers={teachers} onRefresh={fetchData} />
+          </ErrorBoundary>
         )}
         {tab === 'attendance' && (
-          <AttendancePanel
-            enrollments={enrollments}
-            attendance={attendance}
-            onRefresh={fetchData}
-          />
+          <ErrorBoundary>
+            <AttendancePanel
+              enrollments={enrollments}
+              attendance={attendance}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
         )}
         {tab === 'admit-cards' && (
-          <AdmitCardsPanel
-            enrollments={enrollments}
-            exams={exams}
-            admitCards={admitCards}
-            onRefresh={fetchData}
-          />
+          <ErrorBoundary>
+            <AdmitCardsPanel
+              enrollments={enrollments}
+              exams={exams}
+              admitCards={admitCards}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
         )}
         {tab === 'contacts' && (
-          <ContactsPanel contacts={contacts} onRefresh={fetchData} />
+          <ErrorBoundary>
+            <ContactsPanel contacts={contacts} onRefresh={fetchData} />
+          </ErrorBoundary>
         )}
         {tab === 'admissions' && (
-          <AdmissionsPanel admissions={admissions} onRefresh={fetchData} />
+          <ErrorBoundary>
+            <AdmissionsPanel admissions={admissions} onRefresh={fetchData} />
+          </ErrorBoundary>
         )}
         {tab === 'model-test' && (
-          <ModelTestApplicantsPanel
-            applicants={modelTestApplicants}
-            onRefresh={fetchData}
-          />
+          <ErrorBoundary>
+            <ModelTestApplicantsPanel
+              applicants={modelTestApplicants}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
         )}
         {tab === 'notifications' && (
-          <NotificationsPanel
-            notifications={notifications}
-            onRefresh={fetchData}
-          />
+          <ErrorBoundary>
+            <NotificationsPanel
+              notifications={notifications}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
         )}
         {tab === 'reports' && (
-          <ReportsPanel
-            enrollments={enrollments}
-            payments={payments}
-            courses={courses}
-            students={students}
-            attendance={attendance}
-            examSubmissions={examSubmissions}
-            exams={exams}
-          />
+          <ErrorBoundary>
+            <ReportsPanel
+              enrollments={enrollments}
+              payments={payments}
+              courses={courses}
+              students={students}
+              attendance={attendance}
+              examSubmissions={examSubmissions}
+              exams={exams}
+            />
+          </ErrorBoundary>
         )}
-        {tab === 'settings' && <SettingsPanel onRefresh={fetchData} />}
+        {tab === 'settings' && (
+          <ErrorBoundary>
+            <SettingsPanel onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
       </Suspense>
     </PanelLayout>
   )

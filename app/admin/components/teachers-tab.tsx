@@ -7,6 +7,10 @@ import { translateSubject, useCurriculumTranslations } from '@/lib/i18n/curricul
 import type { Teacher } from './types'
 import { useToast } from '@/components/ui/toast'
 import { EmptyState } from '@/components/ui/empty-state'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Alert } from '@/components/ui/alert'
 
 export function TeachersPanel({
   teachers,
@@ -156,102 +160,81 @@ export function TeachersPanel({
               <X className="size-5" />
             </button>
           </div>
-          <div className="space-y-3">
-            {formError && (
-              <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {formError}
-              </div>
-            )}
+          <div className="space-y-4">
+            {formError && <Alert variant="error" message={formError} dismissible={false} />}
             <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('nameLabel')}
-                </label>
-                <input
+              <FormField id="teacher-name" label={t('nameLabel')} required>
+                <Input
+                  id="teacher-name"
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder={t('namePlaceholder')}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                  aria-required="true"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('designationLabel')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="teacher-designation" label={t('designationLabel')}>
+                <Input
+                  id="teacher-designation"
                   type="text"
                   value={form.designation}
                   onChange={(e) =>
                     setForm({ ...form, designation: e.target.value })
                   }
                   placeholder={t('designationPlaceholder')}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('subjectLabel')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="teacher-subject" label={t('subjectLabel')}>
+                <Input
+                  id="teacher-subject"
                   type="text"
                   value={form.subject}
                   onChange={(e) =>
                     setForm({ ...form, subject: e.target.value })
                   }
                   placeholder={t('subjectPlaceholder')}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('phoneLabel')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="teacher-phone" label={t('phoneLabel')}>
+                <Input
+                  id="teacher-phone"
                   type="text"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   placeholder={t('phonePlaceholder')}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('emailLabel')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="teacher-email" label={t('emailLabel')}>
+                <Input
+                  id="teacher-email"
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder={t('emailPlaceholder')}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('imageLabel')}
-                </label>
-                <input
+              </FormField>
+              <FormField id="teacher-image" label={t('imageLabel')}>
+                <Input
+                  id="teacher-image"
                   type="text"
                   value={form.image}
                   onChange={(e) => setForm({ ...form, image: e.target.value })}
                   placeholder={t('imagePlaceholder')}
-                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
-              </div>
+              </FormField>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('bioLabel')}
-              </label>
+            <Separator />
+            <FormField id="teacher-bio" label={t('bioLabel')}>
               <textarea
+                id="teacher-bio"
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 rows={3}
                 placeholder={t('bioPlaceholder')}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
-            </div>
+            </FormField>
+            <Separator />
             <button
               onClick={handleSave}
               disabled={saving}

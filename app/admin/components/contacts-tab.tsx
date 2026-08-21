@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Phone, Mail, CheckCircle2, Trash2, Loader2 } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
 import type { ContactInquiry } from './types'
 
 export function ContactsPanel({
@@ -108,11 +109,7 @@ export function ContactsPanel({
             </div>
           </div>
         ))}
-        {contacts.length === 0 && (
-          <p className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center text-sm text-muted-foreground">
-            {t('noContacts')}
-          </p>
-        )}
+        {contacts.length === 0 && <EmptyState title={t('noContacts')} />}
       </div>
     </div>
   )

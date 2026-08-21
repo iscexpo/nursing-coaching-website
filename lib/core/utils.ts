@@ -1,6 +1,3 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+// Re-export canonical helper — single source is @/lib/utils (required by shadcn)
+// Keeps backwards compatibility for existing imports from '@/lib/core/utils'
+export { cn } from '@/lib/utils'
