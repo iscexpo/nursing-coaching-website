@@ -23,6 +23,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
     question: '',
     options: ['', '', '', ''] as [string, string, string, string],
     correctIndex: 0,
+    difficulty: 'medium' as 'easy' | 'medium' | 'hard',
+    points: 1,
+    explanation: '',
   })
 
   const fetchQuestions = useCallback(async (examId: string) => {
@@ -54,6 +57,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
       question: q.question,
       options: [...q.options] as [string, string, string, string],
       correctIndex: q.correctIndex,
+      difficulty: (q as unknown as { difficulty?: string }).difficulty as 'easy' | 'medium' | 'hard' || 'medium',
+      points: (q as unknown as { points?: number }).points || 1,
+      explanation: (q as unknown as { explanation?: string }).explanation || '',
     })
     setShowForm(true)
   }
@@ -75,6 +81,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
             question: form.question,
             options: form.options,
             correctIndex: form.correctIndex,
+            difficulty: form.difficulty,
+            points: form.points,
+            explanation: form.explanation || undefined,
           }),
         })
       } else {
@@ -86,10 +95,13 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
             question: form.question,
             options: form.options,
             correctIndex: form.correctIndex,
+            difficulty: form.difficulty,
+            points: form.points,
+            explanation: form.explanation || undefined,
           }),
         })
       }
-      setForm({ question: '', options: ['', '', '', ''], correctIndex: 0 })
+      setForm({ question: '', options: ['', '', '', ''], correctIndex: 0, difficulty: 'medium', points: 1, explanation: '' })
       setEditing(null)
       setShowForm(false)
       fetchQuestions(selectedExamId)
@@ -132,6 +144,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
               question: '',
               options: ['', '', '', ''],
               correctIndex: 0,
+              difficulty: 'medium',
+              points: 1,
+              explanation: '',
             })
           }}
           disabled={!selectedExamId}
@@ -244,6 +259,39 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                   />
                 </FormField>
               ))}
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <FormField id="q-difficulty" label="Difficulty">
+                <select
+                  id="q-difficulty"
+                  value={form.difficulty}
+                  onChange={(e) => setForm({ ...form, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}
+                  className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                >
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </FormField>
+              <FormField id="q-points" label="Points">
+                <Input
+                  id="q-points"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={String(form.points)}
+                  onChange={(e) => setForm({ ...form, points: Number(e.target.value) || 1 })}
+                />
+              </FormField>
+              <FormField id="q-explanation" label="Explanation (shown after submit)">
+                <Input
+                  id="q-explanation"
+                  type="text"
+                  value={form.explanation}
+                  onChange={(e) => setForm({ ...form, explanation: e.target.value })}
+                  placeholder="Why this answer is correct"
+                />
+              </FormField>
             </div>
             <Separator />
             <button
