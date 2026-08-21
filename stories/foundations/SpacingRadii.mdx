@@ -1,0 +1,81 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Foundations/Spacing & Radii" />
+
+# Spacing & Radii
+
+Source: `app/globals.css:55` (`--radius`) and `DESIGN_REFERENCE.md:36`/`192`.
+
+## Radius scale
+
+`--radius: 0.5rem` (`app/globals.css:66`). Derived via `@theme inline`:
+
+| Token | Calc | px | Usage |
+|-------|------|----|-------|
+| `radius-sm` | `*0.6` | 4.8px | inputs small |
+| `radius-md` | `*0.8` | 6.4px | buttons |
+| `radius-lg` | `*1.0` | 8px | `rounded-lg` |
+| `radius-xl` | `*1.4` | 11.2px | `rounded-xl` |
+| `radius-2xl` | `*1.8` | 14.4px | `rounded-2xl` main cards |
+| `radius-3xl` | `*2.2` | 17.6px | large sections |
+| `radius-4xl` | `*2.6` | 20.8px | hero |
+
+Per `DESIGN_REFERENCE.md:38`: small `rounded-xl` (12px), primary `rounded-2xl` (16px aesthetic, maps to `radius-2xl` token).
+
+<div className="flex gap-4 flex-wrap">
+  <div className="h-20 w-20 rounded-sm border bg-card flex items-center justify-center text-xs">sm</div>
+  <div className="h-20 w-20 rounded-md border bg-card flex items-center justify-center text-xs">md</div>
+  <div className="h-20 w-20 rounded-lg border bg-card flex items-center justify-center text-xs">lg</div>
+  <div className="h-20 w-20 rounded-xl border bg-card flex items-center justify-center text-xs">xl</div>
+  <div className="h-20 w-20 rounded-2xl border bg-card flex items-center justify-center text-xs">2xl</div>
+  <div className="h-20 w-20 rounded-3xl border bg-card flex items-center justify-center text-xs">3xl</div>
+  <div className="h-20 w-20 rounded-4xl border bg-card flex items-center justify-center text-xs">4xl</div>
+</div>
+
+## Spacing scale
+
+Tailwind default + `DESIGN_REFERENCE.md:192`:
+
+| Name | px | Class |
+|------|----|-------|
+| xs | 2px | `p-0.5` |
+| sm | 4px | `gap-1` |
+| md | 8px | `gap-2` |
+| lg | 16px | `gap-4` / `p-4` |
+| xl | 24px | `gap-6` |
+| 2xl | 32px | `gap-8` |
+| 3xl | 48px | `py-12` |
+| 4xl | 64px | `py-16` |
+
+Section padding: `px-4 py-12` mobile → `md:px-6 md:py-16` → `lg:px-8 lg:py-20`.
+
+## Grid
+
+```tsx
+className="grid gap-4 sm:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+```
+
+Responsive demo:
+
+<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <div className="h-20 rounded-xl border bg-card flex items-center justify-center text-sm">1</div>
+  <div className="h-20 rounded-xl border bg-card flex items-center justify-center text-sm">2</div>
+  <div className="h-20 rounded-xl border bg-card flex items-center justify-center text-sm">3</div>
+</div>
+
+## Component examples
+
+```tsx
+// Card — uses 2xl + border + shadow
+className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+
+// Button — uses md/lg
+className="rounded-md h-9 px-4" // default
+className="rounded-xl h-10 px-5" // large
+
+// Sections — uses 3xl for outer padding
+className="rounded-2xl px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-20"
+```
+
+Refer `components/ui/button.tsx:6` (`rounded-md`) vs `components/ui/confirm-dialog.tsx:64` (`rounded-2xl`) for contrasting scale usage.
+

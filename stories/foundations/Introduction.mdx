@@ -1,0 +1,43 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Foundations/Introduction" />
+
+# ISC Expo — Design System
+
+> **Stack:** Next.js 16 / Tailwind CSS v4 / shadcn `base-nova` / Base UI 1.5.0 / TypeScript 5.9
+> **Tokens source:** `app/globals.css:64` · Spec: `DESIGN_REFERENCE.md:1` · Catalog: `COMPONENTS_GUIDE.md:1`
+
+This Storybook is the **isolated workbench** for the ISC Expo LMS design system. It documents reusable `components/ui/*` primitives and their tokens without requiring a database or auth session.
+
+## How to use
+
+- Browse **Foundations** for tokens (color, typography, spacing, shadows, animation).
+- Browse **Design System/** for component stories (Button, Alert, DataTable…).
+- Use the toolbar to toggle **Light / Dark** (syncs `.dark` from `app/globals.css:118`) and **EN / BN** locale (via `NextIntlClientProvider`, messages from `messages/*.json`).
+- Enable **a11y** panel to see axe violations; use **Viewport** addon for responsive checks.
+
+## Project conventions
+
+- **Style:** `base-nova` (`components.json:3` `style`), `neutral` base, `cssVariables: true`, Tailwind import at `app/globals.css:1`.
+- **Alias:** `@/*` → `./*` (`tsconfig.json:21`).
+- **Shadcn config:** `components.json:1` — `css: app/globals.css`, `iconLibrary: lucide`.
+- **Tokens:** CSS variables in `:root` (`app/globals.css:64`) and `.dark` (`app/globals.css:118`), mapped via `@theme inline` (`app/globals.css:7`).
+- **Animations:** `fade-in-up`, `blob` 7s, `float` 6s, `shimmer` (`app/globals.css:171`).
+
+## Quick start
+
+```bash
+pnpm storybook        # dev on :6006
+pnpm storybook:build  # static output to storybook-static/
+```
+
+## Status
+
+| Layer | Location | Count |
+|-------|----------|-------|
+| Primitive UI | `components/ui/*` | 19 files |
+| Layout / Sections | `components/*` + `sections/*` | ~20 |
+| Foundations MDX | `stories/foundations/*.mdx` | 7 pages |
+
+See `docs/design-system-storybook-plan.md` for full implementation plan.
+

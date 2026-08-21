@@ -25,3 +25,6 @@ tsconfig.tsbuildinfo
 /test-results/
 /e2e/auth.json
 coverage/
+
+*storybook.log
+storybook-static
