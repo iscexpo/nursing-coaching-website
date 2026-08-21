@@ -46,4 +46,7 @@ export const messageNamespaces = [
   'errors',
   'notifications',
   'reports',
+  'curriculum',
 ] as const
+
+export const curriculumNamespaces = ['curriculum'] as const
