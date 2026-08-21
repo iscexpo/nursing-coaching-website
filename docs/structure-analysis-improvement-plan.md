@@ -144,7 +144,7 @@ Now `grep -rn "\bany\b" lib app components` shows zero non-comment hits. `lib/au
 
 ### S-7 — No shared API response envelope (Medium, from QA review) — ✅ resolved 2026-08-21
 
-Was ad-hoc `{ok, data, error}` shapes with inconsistent codes. Added `lib/api/response.ts` (`ok`, `fail`, `badRequest`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `serverError`, `validationError` + `ApiErrorCode` union). Retrofitted 14 routes (students/enrollments/payments/courses/exams/attendance/settings/admissions/site-data/notifications + contact/model-test-applicants/notices/questions) plus `lib/core/permissions.ts` `authorize()`. Success payload shapes kept byte-identical for clients; errors now include `code`.
+Was ad-hoc `{ok, data, error}` shapes with inconsistent codes. Added `lib/api/response.ts` (`ok`, `fail`, `badRequest`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `serverError`, `validationError` + `ApiErrorCode` union). Retrofitted 61+ routes (full `app/api` error envelope; `lib/core/permissions.ts` `authorize()` now returns `unauthorized()`/`forbidden()`). Success payloads kept byte-identical except `site-data`/`health` which retain `NextResponse.json` for custom `Cache-Control` headers; `reports/export` uses `new NextResponse` for PDF. Errors now include `code`.
 
 ### S-8 — Known out-of-scope QA items still open (Medium) — ✅ resolved 2026-08-21
 
@@ -194,7 +194,7 @@ Phase-1 QA (auth, migration drift) was resolved. Remaining items closed in Phase
 
 | # | Task | Notes | Status |
 | -- | ---- | ----- | ------ |
-| D1 | Standardize API envelope + error codes | added `lib/api/response.ts` (`ok`/`fail` + typed `ApiErrorCode`); retrofitted 14 routes + `lib/core/permissions.ts` (authz); errors now carry `code`; success shapes unchanged for clients | ✅ |
+| D1 | Standardize API envelope + error codes | added `lib/api/response.ts` (`ok`/`fail` + typed `ApiErrorCode`); retrofitted 61 routes (full error envelope) + `lib/core/permissions.ts` (authz); `site-data`/`health` retain `NextResponse` for headers; `reports/export` retains `new Response` for PDF | ✅ |
 | D2 | Media upload content sniffing | already enforced in `app/api/media/route.ts` + `lib/media/validation.ts` (MIME allowlist, extension match, magic-byte `matchesSignature`, logo dimension check) — verified, no change needed | ✅ (pre-existing) |
 | D3 | Startup DB health check surfaced in UI | added non-throwing `checkDatabaseHealth()` in `lib/db/health.ts`; added `app/api/health` (admin-only, `Cache-Control: no-store`); added `DatabaseHealthBanner` (fetches `/api/health`, shows missing tables/columns, retry) and wired into `app/admin/page.tsx` with i18n keys | ✅ |
 | D4 | Pagination on high-volume lists | audited all `paginationSchema` GETs; fixed `exams` (missing `total`), `admissions` + `model-test-applicants` (`data.length` → real `count()`), `contact`/`notices`/`questions` (added missing `total` + `count()` query) | ✅ |
