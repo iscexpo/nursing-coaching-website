@@ -1,0 +1,12 @@
+# CODEOWNERS — requires GitHub branch protection "Require review from CODEOWNERS"
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @neopilotai
+
+# Critical areas
+/lib/db/          @neopilotai
+/lib/auth/        @neopilotai
+/app/api/         @neopilotai
+/proxy.ts         @neopilotai
+drizzle.config.ts @neopilotai

@@ -1,0 +1,41 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Source
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.js text diff=javascript
+*.jsx text
+*.mjs text
+*.cjs text
+*.json text
+*.md text diff=markdown
+*.mdx text diff=markdown
+*.yml text
+*.yaml text
+*.css text
+*.scss text
+*.sql text
+
+# Images / binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.svg text
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.pdf binary
+
+# Archives
+*.zip binary
+*.tar binary
+
+# GitHub
+.github/** linguist-vendored
+
+# Lockfile - keep diff readable but not merged automatically
+pnpm-lock.yaml text merge=binary
