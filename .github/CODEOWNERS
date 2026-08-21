@@ -10,3 +10,7 @@
 /app/api/         @neopilotai
 /proxy.ts         @neopilotai
 drizzle.config.ts @neopilotai
+
+# Docs
+/docs/            @neopilotai
+ARCHITECTURE.md   @neopilotai

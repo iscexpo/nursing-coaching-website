@@ -27,13 +27,13 @@ The plan covers setup, taxonomy, theming, i18n, MDX foundations docs, interactio
 | **Layout / site** | `components/*` | `site-header.tsx`, `site-footer.tsx`, `section-heading.tsx`, `breadcrumb.tsx`, `navigation/*`, `sections/*` (8 sections: `hero.tsx`, `courses.tsx`, etc.), `theme-*`, `floating-whatsapp.tsx` |
 | **Domain print** | `components/payment-receipt.tsx`, `app/admin/components/student-profile-modal.tsx` | Printable + modal |
 | **Tokens** | `app/globals.css:64` | `:root` / `.dark` CSS variables (`--primary`, `--radius`, `--brand`, `--chart-*`, `--sidebar-*`), `@theme inline` mappings, `tw-animate-css`, `shadcn/tailwind.css`; Tailwind v4 via `@import 'tailwindcss'` (`postcss.config.mjs:1`) |
-| **Design spec** | `DESIGN_REFERENCE.md:1`, `DESIGN_DELIVERY_CHECKLIST.md`, `DESIGN_IMPROVEMENTS.md` | Glassmorphism, soft shadows, radii (`rounded-2xl`), animations (`float`/`blob`/`fade-in-up`), color usage (`#2563EB` vs token `#0070F3`), dark-mode strategy |
-| **Component docs** | `COMPONENTS_GUIDE.md:1` | Manual markdown catalog; source of truth for props but no live examples |
+| **Design spec** | `docs/design/reference.md:1`, `docs/design/delivery-checklist.md`, `docs/design/improvements.md` | Glassmorphism, soft shadows, radii (`rounded-2xl`), animations (`float`/`blob`/`fade-in-up`), color usage (`#2563EB` vs token `#0070F3`), dark-mode strategy |
+| **Component docs** | `docs/guides/components.md:1` | Manual markdown catalog; source of truth for props but no live examples |
 | **Config** | `components.json:1` (`style: base-nova`, `tailwind.css: app/globals.css`), `tsconfig.json:21` (`@/*`), `next.config.mjs:1` (next-intl plugin) |  |
 
 ### 2.2 Gaps (why Storybook)
 
-- `COMPONENTS_GUIDE.md` is not interactive; props drift from actual code (`alert.tsx:7` variant vs guide) without type checking.
+- `docs/guides/components.md` is not interactive; props drift from actual code (`alert.tsx:7` variant vs guide) without type checking.
 - Dark mode, responsive, and a11y states cannot be inspected without running `pnpm dev` + DB + auth.
 - `DataTable` (`components/ui/data-table.tsx`) has 6 sub-components and sticky/sort/pagination — currently untestable in isolation.
 - No visual regression or interaction tests; reuse across admin (`app/admin/components/*`) and public `sections/*` is ad-hoc.
@@ -51,7 +51,7 @@ The plan covers setup, taxonomy, theming, i18n, MDX foundations docs, interactio
 ### Goals
 
 1. **Single source of docs** — every `components/ui` file has a co-located `*.stories.tsx` (CSF3) + Autodocs.
-2. **Token visibility** — MDX pages render colors, spacing, radii, typography, shadows, animations from `app/globals.css:64` and `DESIGN_REFERENCE.md:1`.
+2. **Token visibility** — MDX pages render colors, spacing, radii, typography, shadows, animations from `app/globals.css:64` and `docs/design/reference.md:1`.
 3. **Theme + i18n fidelity** — stories render in `light`/`dark` and `en`/`bn` with `next-intl` stub.
 4. **A11y by default** — `a11y` addon + `axe-core` (already in `package.json:55` `@axe-core/playwright`) gates PRs.
 5. **Zero runtime coupling** — DB, auth, `next/navigation` mocked; stories work offline.
@@ -62,7 +62,7 @@ The plan covers setup, taxonomy, theming, i18n, MDX foundations docs, interactio
 - Full app pages as stories (only primitives + composed layout examples).
 - Chromatic / Percy mandatory — optional phase 4.
 - Design-token JSON export / Style Dictionary (future phase).
-- Replacing `COMPONENTS_GUIDE.md` — it becomes generated from stories later, not deleted now.
+- Replacing `docs/guides/components.md` — it becomes generated from stories later, not deleted now.
 
 ---
 
@@ -101,9 +101,9 @@ stories/
   foundations/
     Introduction.mdx
     Colors.mdx                  # swatches from app/globals.css:64
-    Typography.mdx              # --font-sans/heading/display + hierarchy DESIGN_REFERENCE.md:211
+    Typography.mdx              # --font-sans/heading/display + hierarchy docs/design/reference.md:211
     SpacingRadii.mdx
-    ShadowsGlass.mdx            # DESIGN_REFERENCE.md:4
+    ShadowsGlass.mdx            # docs/design/reference.md:4
     Animations.mdx              # @keyframes blob/float/shimmer
     Icons.mdx                   # lucide-react
 ```
@@ -140,7 +140,7 @@ export const AllVariants: Story = { render: () => /* grid of variants */ }
 
 | Task | Details | Acceptance |
 |------|---------|------------|
-| 0.1 Audit freeze | Confirm 19 `ui` files list via `glob`; capture `DESIGN_REFERENCE.md` token values | Checklist in PR desc |
+| 0.1 Audit freeze | Confirm 19 `ui` files list via `glob`; capture `docs/design/reference.md` token values | Checklist in PR desc |
 | 0.2 Branch & deps | `git checkout -b feat/storybook`; pin `storybook@^9.1.8` | `pnpm install` clean |
 | 0.3 RFC review | Share this plan in PR/Notion | 1 approver |
 
@@ -165,9 +165,9 @@ export const AllVariants: Story = { render: () => /* grid of variants */ }
 |---|------|--------|---------|
 | 2.1 | `Introduction.mdx` | `README.md:1`, `ARCHITECTURE.md:1` | Why Storybook, stack, `components.json:5` style `base-nova` |
 | 2.2 | `Colors.mdx` | `app/globals.css:64` | Swatches for `--primary/#0070F3`, `--background`, `--chart-*`, `--sidebar-*`; light/dark table |
-| 2.3 | `Typography.mdx` | `app/globals.css:7`, `DESIGN_REFERENCE.md:211` | `Hind Siliguri` + `Inter`, scale H1 `text-5xl` → meta `text-xs`, weights 400–900 |
-| 2.4 | `SpacingRadii.mdx` | `app/globals.css:55`, `DESIGN_REFERENCE.md:192` | `--radius: 0.5rem` → `sm/md/lg/xl/2xl/3xl/4xl`, `rounded-*` demo |
-| 2.5 | `ShadowsGlass.mdx` | `DESIGN_REFERENCE.md:4` | Glass `bg-white/40 + backdrop-blur-xl`, soft shadows `shadow-lg hover:shadow-2xl` |
+| 2.3 | `Typography.mdx` | `app/globals.css:7`, `docs/design/reference.md:211` | `Hind Siliguri` + `Inter`, scale H1 `text-5xl` → meta `text-xs`, weights 400–900 |
+| 2.4 | `SpacingRadii.mdx` | `app/globals.css:55`, `docs/design/reference.md:192` | `--radius: 0.5rem` → `sm/md/lg/xl/2xl/3xl/4xl`, `rounded-*` demo |
+| 2.5 | `ShadowsGlass.mdx` | `docs/design/reference.md:4` | Glass `bg-white/40 + backdrop-blur-xl`, soft shadows `shadow-lg hover:shadow-2xl` |
 | 2.6 | `Animations.mdx` | `app/globals.css:171` | `fade-in-up`, `blob` 7s, `float` 6s, `shimmer`, reduced-motion MQ |
 | 2.7 | `Icons.mdx` | `package.json:40` `lucide-react` | Icon grid with search, sizing guidance |
 
@@ -229,7 +229,7 @@ export const AllVariants: Story = { render: () => /* grid of variants */ }
 - `@storybook/addon-designs` linking Figma
 - `@chromatic-com/storybook` visual regression on PRs
 - Token JSON via `style-dictionary` from `app/globals.css:64`
-- MDX `COMPONENTS_GUIDE.md` auto-generated deprecation notice
+- MDX `docs/guides/components.md` auto-generated deprecation notice
 
 ---
 
@@ -297,12 +297,12 @@ globalIgnores(['.next/**','node_modules/**','coverage/**','playwright-report/**'
 
 - [ ] `pnpm storybook` launches on `http://localhost:6006` without DB/env.
 - [ ] `pnpm storybook:build` succeeds; `storybook-static/index.html` contains branded title.
-- [ ] ≥7 foundation MDX pages render with correct tokens (visual compare to `DESIGN_REFERENCE.md`).
+- [ ] ≥7 foundation MDX pages render with correct tokens (visual compare to `docs/design/reference.md`).
 - [ ] Tier-1 + Tier-2 stories (≥12 components) have `autodocs` + controls + a11y pass.
 - [ ] Light/dark toolbar toggles `app/globals.css:64` vs `:118` vars visibly.
 - [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test -- --run` still green; `eslint.config.mjs` updated.
 - [ ] CI runs `storybook:build` (separate job, cached `node_modules`).
-- [ ] `README.md` + `docs/` updated; `COMPONENTS_GUIDE.md` cross-links to Storybook.
+- [ ] `README.md` + `docs/` updated; `docs/guides/components.md` cross-links to Storybook.
 
 ---
 
@@ -325,14 +325,14 @@ Buffer +1d for Tailwind v4 / Next.js 16 troubleshooting. Optional Phase 5 adds ~
 
 1. Host choice: separate Vercel project vs GitHub Pages vs Chromatic-only — decision before Phase 4.4.
 2. Should `components/sections/*` be documented in SB or remain app-only? Proposal: one `Sections/Hero` example, rest deferred.
-3. Brand token source of truth: keep `DESIGN_REFERENCE.md:60` (`#2563EB`) vs `app/globals.css:77` (`#0070F3`) — unify before Colors MDX.
-4. Accessibility target: WCAG 2.1 AA baseline (4.5:1) per `DESIGN_REFERENCE.md:229` — enforce in a11y addon?
+3. Brand token source of truth: keep `docs/design/reference.md:60` (`#2563EB`) vs `app/globals.css:77` (`#0070F3`) — unify before Colors MDX.
+4. Accessibility target: WCAG 2.1 AA baseline (4.5:1) per `docs/design/reference.md:229` — enforce in a11y addon?
 
 ---
 
 ## 14. References
 
-- `package.json:27` deps, `components.json:1`, `app/globals.css:1`, `DESIGN_REFERENCE.md:1`, `COMPONENTS_GUIDE.md:1`, `ARCHITECTURE.md:1`, `PROJECT_PLAN.md:1`, `tsconfig.json:1`, `next.config.mjs:1`, `postcss.config.mjs:1`, `vitest.config.ts:1`, `eslint.config.mjs:1`, `components/ui/button.tsx:1`, `components/ui/alert.tsx:1`, `components/ui/skeleton.tsx:1`.
+- `package.json:27` deps, `components.json:1`, `app/globals.css:1`, `docs/design/reference.md:1`, `docs/guides/components.md:1`, `ARCHITECTURE.md:1`, `docs/plans/project-plan.md:1`, `tsconfig.json:1`, `next.config.mjs:1`, `postcss.config.mjs:1`, `vitest.config.ts:1`, `eslint.config.mjs:1`, `components/ui/button.tsx:1`, `components/ui/alert.tsx:1`, `components/ui/skeleton.tsx:1`.
 
 ---
 

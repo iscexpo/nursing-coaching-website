@@ -71,6 +71,19 @@
 - **Validation:** Zod v4
 - **Deployment:** Vercel
 
+## Documentation
+
+| Guide | Path |
+|-------|------|
+| Architecture | [`ARCHITECTURE.md`](./ARCHITECTURE.md) |
+| Components | [`docs/guides/components.md`](./docs/guides/components.md) |
+| Design System | [`docs/design/reference.md`](./docs/design/reference.md) |
+| Project Plan | [`docs/plans/project-plan.md`](./docs/plans/project-plan.md) |
+| Implementation Log | [`docs/development/implementation-log.md`](./docs/development/implementation-log.md) |
+| Full index | [`docs/README.md`](./docs/README.md) |
+
+Storybook (Design System): `pnpm storybook` → http://localhost:6006 · `pnpm storybook:build`
+
 ## Getting Started
 
 ```bash

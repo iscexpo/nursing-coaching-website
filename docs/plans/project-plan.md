@@ -390,5 +390,5 @@ All other dependencies (shadcn/ui, drizzle, better-auth, zod, next-intl, etc.) a
 
 ---
 
-_Detailed design specifications: `docs/lms-admin-improvement-design.md`_
-_QA review report: `docs/qa-review-report.md`_
+_Detailed design specifications: `../lms-admin-improvement-design.md`_
+_QA review report: `../qa-review-report.md`_

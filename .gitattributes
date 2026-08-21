@@ -36,6 +36,11 @@
 
 # GitHub
 .github/** linguist-vendored
+docs/** linguist-documentation
+ARCHITECTURE.md linguist-documentation
+CHANGELOG.md linguist-documentation
+CONTRIBUTING.md linguist-documentation
+SECURITY.md linguist-documentation
 
 # Lockfile - keep diff readable but not merged automatically
 pnpm-lock.yaml text merge=binary
