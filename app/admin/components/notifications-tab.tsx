@@ -13,6 +13,9 @@ import {
   Trash2,
   Play,
 } from 'lucide-react'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import type {
   NotificationRecord,
   NotificationTemplate,
@@ -202,31 +205,29 @@ export function NotificationsPanel({
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('titleLabel')}
-              </label>
-              <input
+          <div className="space-y-4">
+            <FormField id="notif-title" label={t('titleLabel')} required>
+              <Input
+                id="notif-title"
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder={t('titlePlaceholder')}
-                className={inputClass}
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('bodyLabel')}
-              </label>
+            </FormField>
+            <FormField id="notif-body" label={t('bodyLabel')} required>
               <textarea
+                id="notif-body"
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 rows={3}
                 placeholder={t('messagePlaceholder')}
                 className={inputClass}
+                aria-required="true"
               />
-            </div>
+            </FormField>
+            <Separator />
             <button
               onClick={handleSend}
               disabled={sending}
@@ -252,50 +253,42 @@ export function NotificationsPanel({
 
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('templateNameLabel')}
-              </label>
-              <input
+            <FormField id="tmpl-name" label={t('templateNameLabel')} required>
+              <Input
+                id="tmpl-name"
                 type="text"
                 value={templateForm.name}
                 onChange={(e) =>
                   setTemplateForm({ ...templateForm, name: e.target.value })
                 }
-                className={inputClass}
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('templateSubjectLabel')}
-              </label>
-              <input
+            </FormField>
+            <FormField id="tmpl-subject" label={t('templateSubjectLabel')}>
+              <Input
+                id="tmpl-subject"
                 type="text"
                 value={templateForm.subject}
                 onChange={(e) =>
                   setTemplateForm({ ...templateForm, subject: e.target.value })
                 }
-                className={inputClass}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('templateBodyLabel')}
-              </label>
+            </FormField>
+            <FormField id="tmpl-body" label={t('templateBodyLabel')} required>
               <textarea
+                id="tmpl-body"
                 value={templateForm.body}
                 onChange={(e) =>
                   setTemplateForm({ ...templateForm, body: e.target.value })
                 }
                 rows={2}
                 className={inputClass}
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('templateChannelLabel')}
-              </label>
+            </FormField>
+            <FormField id="tmpl-channel" label={t('templateChannelLabel')}>
               <select
+                id="tmpl-channel"
                 value={templateForm.channel}
                 onChange={(e) =>
                   setTemplateForm({
@@ -308,8 +301,9 @@ export function NotificationsPanel({
                 <option value="in_app">{t('templateChannelInApp')}</option>
                 <option value="sms">{t('templateChannelSms')}</option>
               </select>
-            </div>
+            </FormField>
           </div>
+          <Separator className="my-4" />
           <button
             onClick={handleCreateTemplate}
             disabled={templateBusy}
@@ -393,24 +387,20 @@ export function NotificationsPanel({
 
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('scheduleTitleLabel')}
-              </label>
-              <input
+            <FormField id="sched-title" label={t('scheduleTitleLabel')} required>
+              <Input
+                id="sched-title"
                 type="text"
                 value={scheduleForm.title}
                 onChange={(e) =>
                   setScheduleForm({ ...scheduleForm, title: e.target.value })
                 }
-                className={inputClass}
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('scheduleRoleLabel')}
-              </label>
+            </FormField>
+            <FormField id="sched-role" label={t('scheduleRoleLabel')}>
               <select
+                id="sched-role"
                 value={scheduleForm.targetRole}
                 onChange={(e) =>
                   setScheduleForm({
@@ -428,12 +418,10 @@ export function NotificationsPanel({
                 <option value="teacher">{t('scheduleRoleTeacher')}</option>
                 <option value="student">{t('scheduleRoleStudent')}</option>
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('scheduleDateLabel')}
-              </label>
-              <input
+            </FormField>
+            <FormField id="sched-date" label={t('scheduleDateLabel')} required>
+              <Input
+                id="sched-date"
                 type="datetime-local"
                 value={scheduleForm.scheduledAt}
                 onChange={(e) =>
@@ -442,14 +430,12 @@ export function NotificationsPanel({
                     scheduledAt: e.target.value,
                   })
                 }
-                className={inputClass}
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('scheduleMessageLabel')}
-              </label>
+            </FormField>
+            <FormField id="sched-message" label={t('scheduleMessageLabel')} required>
               <textarea
+                id="sched-message"
                 value={scheduleForm.message}
                 onChange={(e) =>
                   setScheduleForm({
@@ -459,9 +445,11 @@ export function NotificationsPanel({
                 }
                 rows={2}
                 className={inputClass}
+                aria-required="true"
               />
-            </div>
+            </FormField>
           </div>
+          <Separator className="my-4" />
           <button
             onClick={handleSchedule}
             disabled={scheduleBusy}
