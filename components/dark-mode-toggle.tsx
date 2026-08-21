@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Moon, Sun } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 export function DarkModeToggle({ className }: { className?: string }) {
   const [dark, setDark] = useState(false)

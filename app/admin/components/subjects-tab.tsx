@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Save, X, GripVertical, Loader2 } from 'lucide-react'
+import { translateSubject, useCurriculumTranslations } from '@/lib/i18n/curriculum'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
 
 interface Subject {
   id: string
@@ -20,6 +23,7 @@ interface SubjectsPanelProps {
 export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
   const t = useTranslations('admin.subjects')
   const tc = useTranslations('common')
+  const tCurriculum = useCurriculumTranslations()
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
@@ -131,16 +135,14 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
             </button>
           </div>
           <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-foreground">
-                {t('nameLabel')}
-              </label>
-              <input
+            <FormField id="subject-name" label={t('nameLabel')} required className="flex-1">
+              <Input
+                id="subject-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('namePlaceholder')}
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-required="true"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
@@ -148,7 +150,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                   }
                 }}
               />
-            </div>
+            </FormField>
             <button
               onClick={editing ? handleSaveEdit : handleCreate}
               disabled={saving || !name.trim()}
@@ -191,7 +193,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                     <div className="flex items-center gap-2">
                       <GripVertical className="size-4 text-muted-foreground" />
                       <span className="font-medium text-foreground">
-                        {s.name}
+                        {translateSubject(tCurriculum, s.name)}
                       </span>
                     </div>
                   </td>

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { ok, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { attendance, user } from '@/lib/db/schema'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { sql, desc, and, gte, lte, count, eq } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
       )
       .limit(20)
 
-    return NextResponse.json({
+    return ok({
       summary: {
         totalDays,
         presentCount,
@@ -93,9 +94,6 @@ export async function GET(request: NextRequest) {
       topStudents,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch attendance report' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch attendance report')
   }
 }

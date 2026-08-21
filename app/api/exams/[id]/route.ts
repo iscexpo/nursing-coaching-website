@@ -1,9 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {
+  unauthorized,
+  notFound,
+  serverError,
+  ok,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { exams, questions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { updateExamSchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { updateExamSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(
@@ -37,12 +44,11 @@ export async function GET(
         exams.createdAt,
       )
 
-    if (!exam)
-      return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+    if (!exam) return notFound('Exam not found')
 
-    return NextResponse.json(exam)
+    return ok(exam)
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch exam' }, { status: 500 })
+    return serverError('Failed to fetch exam')
   }
 }
 
@@ -55,15 +61,14 @@ export async function PUT(
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = updateExamSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
@@ -76,8 +81,7 @@ export async function PUT(
       .where(eq(exams.id, id))
       .returning()
 
-    if (!updated)
-      return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+    if (!updated) return notFound('Exam not found')
 
     void writeAudit(
       buildAuditEntry(
@@ -94,12 +98,9 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update exam' },
-      { status: 500 },
-    )
+    return serverError('Failed to update exam')
   }
 }
 
@@ -112,12 +113,10 @@ export async function DELETE(
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const [deleted] = await db.delete(exams).where(eq(exams.id, id)).returning()
-    if (!deleted)
-      return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+    if (!deleted) return notFound('Exam not found')
 
     void writeAudit(
       buildAuditEntry(
@@ -134,11 +133,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete exam' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete exam')
   }
 }

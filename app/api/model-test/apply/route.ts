@@ -1,11 +1,12 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { notFound, ok, serverError, validationError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { exams, modelTestApplicants } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { createModelTestApplicantSchema } from '@/lib/validations'
+import { createModelTestApplicantSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 export async function POST(request: NextRequest) {
   const limiter = await rateLimit(request, {
@@ -19,12 +20,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createModelTestApplicantSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        {
-          error: 'Invalid input',
-          details: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
@@ -32,8 +30,7 @@ export async function POST(request: NextRequest) {
 
     if (examId) {
       const [exam] = await db.select().from(exams).where(eq(exams.id, examId))
-      if (!exam)
-        return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+      if (!exam) return notFound('Exam not found')
     }
 
     const reference = `MT-${randomUUID().slice(0, 8).toUpperCase()}`
@@ -66,19 +63,16 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(
+    return ok(
       {
         success: true,
         message:
           'আপনার মডেল টেস্টে আবেদন গ্রহণ করা হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।',
         reference,
       },
-      { status: 201 },
+      201,
     )
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to submit model test application' },
-      { status: 500 },
-    )
+    return serverError('Failed to submit model test application')
   }
 }

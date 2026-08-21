@@ -184,6 +184,7 @@ export function EnrollmentStatusBadge({
     completed: 'completed',
     expired: 'warning',
     suspended: 'failed',
+    cancelled: 'failed',
   }
 
   return <StatusBadge status={statusMap[status] || 'pending'} {...props} />

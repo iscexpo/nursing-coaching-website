@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { ok, serverError } from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
@@ -19,11 +20,8 @@ export async function GET(request: NextRequest) {
       .where(eq(mediaFiles.category, category as 'general' | 'gallery'))
       .orderBy(desc(mediaFiles.createdAt))
 
-    return NextResponse.json({ data: rows })
+    return ok({ data: rows })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch media files' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch media files')
   }
 }

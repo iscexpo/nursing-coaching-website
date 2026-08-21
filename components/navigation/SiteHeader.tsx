@@ -5,6 +5,7 @@ import { DarkModeToggle } from '@/components/dark-mode-toggle'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSiteData } from '@/hooks/use-site-data'
 
 import { DesktopNav } from '@/components/navigation/DesktopNav'
@@ -20,10 +21,11 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2.5">
         <Link href="/" className="flex items-center gap-2.5">
-          <img
+          <Image
             src={site.logo || '/logo.png'}
             alt={site.nameBn}
             width={200}
+            height={80}
             className="h-auto object-contain"
           />
         </Link>

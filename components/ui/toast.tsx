@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { useTranslations } from 'next-intl'
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 import { ConfirmDialog } from './confirm-dialog'
 
 type ToastVariant = 'success' | 'error' | 'info'

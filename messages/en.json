@@ -542,6 +542,11 @@
     },
     "common": {
       "addNew": "Add New",
+      "dbHealthWarning": "Database schema is out of sync",
+      "dbMissingTable": "Missing table:",
+      "dbMissingColumn": "Missing column:",
+      "dbHealthCheckFailed": "Could not reach the database health endpoint",
+      "dbHealthUnknown": "Unknown database issue — run the health check to inspect",
       "selectAll": "Select All",
       "selected": "selected",
       "bulkUpdate": "Bulk Update",
@@ -586,7 +591,8 @@
         "active": "Active",
         "completed": "Completed",
         "rejected": "Rejected",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "suspended": "Suspended"
       },
       "enrollmentCreated": "Enrollment created",
       "enrollmentUpdated": "Enrollment updated",
@@ -967,7 +973,7 @@
         "subject": "Subject",
         "phone": "Phone",
         "status": "Status",
-        "actions": ""
+        "actions": "Actions"
       }
     },
     "notices": {
@@ -1002,7 +1008,7 @@
       "passRate": "Pass Rate",
       "highestScore": "Highest Score",
       "participants": "Participants",
-      "participantCount": "",
+      "participantCount": "participants",
       "subjectWiseResults": "Subject-wise Results",
       "participation": "Participation",
       "noResultsYet": "No results yet",
@@ -1062,7 +1068,37 @@
       "titlePlaceholder": "Notification title",
       "messagePlaceholder": "Notification description",
       "notificationCreated": "Notification created",
-      "notificationSent": "Notification sent"
+      "notificationSent": "Notification sent",
+      "templatesTitle": "Notification Templates",
+      "templateNameLabel": "Template name",
+      "templateSubjectLabel": "Subject",
+      "templateBodyLabel": "Body",
+      "templateChannelLabel": "Channel",
+      "templateChannelInApp": "In-app",
+      "templateChannelSms": "SMS",
+      "templateActiveLabel": "Active",
+      "createTemplateBtn": "Create template",
+      "templateCreated": "Template created",
+      "templatesEmpty": "No templates yet",
+      "deleteTemplate": "Delete",
+      "scheduledTitle": "Scheduled Notifications",
+      "scheduleTitleLabel": "Title",
+      "scheduleMessageLabel": "Message",
+      "scheduleDateLabel": "Schedule date & time",
+      "scheduleRoleLabel": "Target role",
+      "scheduleRoleAll": "All users",
+      "scheduleRoleSuperAdmin": "Super admins",
+      "scheduleRoleAdmin": "Admins",
+      "scheduleRoleTeacher": "Teachers",
+      "scheduleRoleStudent": "Students",
+      "scheduleBtn": "Schedule",
+      "scheduledCreated": "Scheduled",
+      "scheduledEmpty": "No scheduled notifications",
+      "processNow": "Process due now",
+      "processedCount": "Processed {count} due notification(s)",
+      "scheduledStatus": "Status",
+      "scheduledAt": "Scheduled at",
+      "sentAt": "Sent at"
     },
     "settings": {
       "siteName": "Site Name",
@@ -1428,7 +1464,7 @@
     },
     "overview": {
       "activeCourses": "Active Courses",
-      "courseCount": "",
+      "courseCount": "courses",
       "averageScore": "Average Score",
       "totalPayment": "Total Payment",
       "lifecycleEvents": "Lifecycle Events",
@@ -1594,6 +1630,53 @@
       "bringWarning": "You must bring your admit card and national ID card on exam day.",
       "download": "Download",
       "nursingCoaching": "Nursing Admission Coaching"
+    },
+    "curriculum": {
+      "categories": {
+        "isc": {
+          "name": "ISC",
+          "description": "HSC Science / ISC track — BNMC-aligned curriculum"
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "Regular Icon track — general nursing preparation"
+        }
+      },
+      "subjects": {
+        "Bangla": "Bangla",
+        "English": "English",
+        "Physics": "Physics",
+        "Chemistry": "Chemistry",
+        "Biology": "Biology",
+        "Higher Math": "Higher Math",
+        "ICT": "ICT",
+        "General Knowledge": "General Knowledge"
+      },
+      "courses": {
+        "hsc-science-2026": {
+          "title": "HSC Science Regular — 2026 Batch",
+          "shortDescription": "Physics/Chemistry/Biology/Math + Bangla/English/ICT — full HSC preparation",
+          "description": "Complete HSC Science curriculum with weekly model tests, lab classes, and BNMC bridging for ISC students."
+        },
+        "isc-second-timer-intensive": {
+          "title": "ISC Second Timer Intensive",
+          "shortDescription": "Focused repeater batch for HSC improvers — mock-heavy",
+          "description": "Intensive second-timer program with daily MCQ bank, full syllabus mocks, and individual mentoring."
+        },
+        "bnmc-bridge-isc": {
+          "title": "BNMC Admission — ISC Stream",
+          "shortDescription": "BNMC nursing admission preparation tailored for ISC science background",
+          "description": "BNMC-focused curriculum leveraging ISC science base: Biology, Chemistry, Physics + English/Bangla/GK with nursing-specific model tests."
+        }
+      },
+      "teachers": {
+        "Physics": "Physics",
+        "Chemistry": "Chemistry",
+        "Biology": "Biology",
+        "Higher Math": "Higher Math",
+        "English": "English",
+        "ICT": "ICT"
+      }
     }
   }
 }

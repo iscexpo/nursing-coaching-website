@@ -5,7 +5,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { Breadcrumb } from '@/components/breadcrumb'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))

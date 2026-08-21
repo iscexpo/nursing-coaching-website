@@ -1,16 +1,22 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { notifications } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { getSession, isAdmin } from '@/lib/permissions'
-import { createNotificationSchema } from '@/lib/validations'
+import { getSession, isAdmin } from '@/lib/core/permissions'
+import { createNotificationSchema } from '@/lib/core/validations'
+import {
+  ok,
+  unauthorized,
+  forbidden,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET() {
   try {
     const session = await getSession()
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const data = await db
       .select()
@@ -18,38 +24,31 @@ export async function GET() {
       .where(eq(notifications.userId, session.user.id))
       .orderBy(desc(notifications.createdAt))
 
-    return NextResponse.json(data)
+    return ok(data)
   } catch (error) {
-    console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch notifications' },
-      { status: 500 },
-    )
+    console.error('Error:', error)
+    return serverError('Failed to fetch notifications')
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = createNotificationSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
     const { title, message, type, link, targetUserId } = parsed.data
 
     if (!isAdmin(session.user.role)) {
-      return NextResponse.json(
-        { error: 'Only admins can create notifications' },
-        { status: 403 },
-      )
+      return forbidden('Only admins can create notifications')
     }
 
     const userId = targetUserId || session.user.id
@@ -66,12 +65,9 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(notification, { status: 201 })
+    return ok(notification, 201)
   } catch (error) {
-    console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to create notification' },
-      { status: 500 },
-    )
+    console.error('Error:', error)
+    return serverError('Failed to create notification')
   }
 }

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getSession, isAdmin } from '@/lib/permissions'
+import { getSession, isAdmin } from '@/lib/core/permissions'
 
 export default async function AdminLayout({
   children,

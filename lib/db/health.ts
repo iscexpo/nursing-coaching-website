@@ -27,6 +27,61 @@ const REQUIRED_USER_COLUMNS = [
   'honors',
 ]
 
+export type DatabaseHealth = {
+  ok: boolean
+  missingTables: string[]
+  missingColumns: string[]
+  error: string | null
+}
+
+/**
+ * Non-throwing health probe. Returns a structured result that can be surfaced
+ * in the admin UI (see the database-health banner) without crashing the
+ * request that triggered it.
+ */
+export async function checkDatabaseHealth(): Promise<DatabaseHealth> {
+  const result: DatabaseHealth = {
+    ok: true,
+    missingTables: [],
+    missingColumns: [],
+    error: null,
+  }
+  try {
+    const tables = await db.execute<{ table_name: string }>(sql`
+      SELECT table_name FROM information_schema.tables
+      WHERE table_schema = 'public'
+    `)
+    const presentTables = new Set(
+      (Array.isArray(tables) ? tables : [tables]).flatMap((row) =>
+        Object.values(row).map(String),
+      ),
+    )
+
+    result.missingTables = REQUIRED_TABLES.filter((t) => !presentTables.has(t))
+
+    const columns = await db.execute<{ column_name: string }>(sql`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'user'
+    `)
+    const presentColumns = new Set(
+      (Array.isArray(columns) ? columns : [columns]).flatMap((row) =>
+        Object.values(row).map(String),
+      ),
+    )
+
+    result.missingColumns = REQUIRED_USER_COLUMNS.filter(
+      (c) => !presentColumns.has(c),
+    )
+
+    result.ok =
+      result.missingTables.length === 0 && result.missingColumns.length === 0
+  } catch (error) {
+    result.ok = false
+    result.error = error instanceof Error ? error.message : String(error)
+  }
+  return result
+}
+
 /**
  * Fail-fast health check executed at server startup. Throws if the live database
  * schema is missing tables or columns the application expects. This catches

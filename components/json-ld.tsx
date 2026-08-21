@@ -1,4 +1,4 @@
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 
 export function JsonLd({
   data,

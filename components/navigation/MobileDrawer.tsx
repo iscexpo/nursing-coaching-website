@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { cn } from '@/lib/utils'
-import { NAV_LINKS } from '@/lib/site-data'
+import { cn } from '@/lib/core/utils'
+import { NAV_LINKS } from '@/lib/cms/site-data'
 
 import { useMobileMenu } from '@/hooks/useMobileMenu'
 
 export function MobileDrawer() {
-  const t = useTranslations('common')
+  const tRaw = useTranslations('common')
+  const t = tRaw as unknown as (key: string) => string
   const { open, setOpen, panelRef } = useMobileMenu()
 
   return (
@@ -38,7 +39,7 @@ export function MobileDrawer() {
             onClick={() => setOpen(false)}
             className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
           >
-            {t(link.labelKey as any)}
+            {t(link.labelKey)}
           </Link>
         ))}
         <div className="mt-4 border-t border-border pt-4">

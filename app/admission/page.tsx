@@ -9,7 +9,7 @@ import { SectionHeading } from '@/components/section-heading'
 import { useSiteData } from '@/hooks/use-site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { FadeIn } from '@/components/ui/fade-in'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 import {
   Loader2,
   CheckCircle2,

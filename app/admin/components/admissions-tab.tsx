@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Phone, Trash2, Loader2, FileText } from 'lucide-react'
 import type { Admission, AdmissionStatus } from './types'
 import { useToast } from '@/components/ui/toast'
+import { EmptyState } from '@/components/ui/empty-state'
 
 const STATUS_OPTIONS: AdmissionStatus[] = [
   'pending',
@@ -186,11 +187,7 @@ export function AdmissionsPanel({
           </div>
         ))}
 
-        {admissions.length === 0 && (
-          <p className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center text-sm text-muted-foreground">
-            {t('noApplicants')}
-          </p>
-        )}
+        {admissions.length === 0 && <EmptyState title={t('noApplicants')} />}
       </div>
     </div>
   )

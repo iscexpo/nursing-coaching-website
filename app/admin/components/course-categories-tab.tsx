@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 
 interface CourseCategory {
   id: string
@@ -172,42 +175,37 @@ export function CourseCategoriesPanel({
             </button>
           </div>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('nameLabel')}
-              </label>
-              <input
+            <FormField id="cc-name" label={t('nameLabel')} required>
+              <Input
+                id="cc-name"
                 type="text"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder={t('namePlaceholder')}
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('slugLabel')}
-              </label>
-              <input
+            </FormField>
+            <FormField id="cc-slug" label={t('slugLabel')} required>
+              <Input
+                id="cc-slug"
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 placeholder={t('slugPlaceholder')}
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-required="true"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('descriptionLabel')}
-              </label>
+            </FormField>
+            <FormField id="cc-description" label={t('descriptionLabel')}>
               <textarea
+                id="cc-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t('descriptionPlaceholder')}
                 rows={3}
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
-            </div>
+            </FormField>
+            <Separator />
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => {

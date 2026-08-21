@@ -1,0 +1,88 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Foundations/Shadows & Glass" />
+
+# Shadows & Glass
+
+Spec: `DESIGN_REFERENCE.md:4` (Glassmorphism) and `DESIGN_REFERENCE.md:22` (Soft Shadows).
+
+## Glassmorphism
+
+Template from `DESIGN_REFERENCE.md:84`:
+
+```tsx
+className="rounded-2xl border border-white/20 dark:border-white/10
+           bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl
+           transition-all duration-300
+           hover:border-white/40 dark:hover:border-white/20
+           hover:bg-white/60 dark:hover:bg-slate-900/60
+           hover:shadow-xl hover:shadow-blue-500/10"
+```
+
+Uses in codebase: hero floating cards, `components/sections/why-us.tsx`, `courses.tsx`, counters.
+
+<div className="grid gap-6 sm:grid-cols-3 p-8 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-800 dark:to-slate-900">
+  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">
+    Glass card
+  </div>
+  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">
+    Glass card
+  </div>
+  <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 hover:bg-white/60 transition-all">
+    Glass card
+  </div>
+</div>
+
+Tokens:
+
+- Light: `rgba(255,255,255,0.4)` bg, `rgba(255,255,255,0.2)` border
+- Dark: `bg-slate-900/40`, `border-white/10`, more opaque `bg-slate-900/50` for readability (`DESIGN_REFERENCE.md:182`)
+
+Fallback without `backdrop-blur`: solid `border + opacity` for Safari &lt;15.1.
+
+## Soft shadows
+
+Guidance from `DESIGN_REFERENCE.md:22`:
+
+- Hover: `shadow-xl hover:shadow-2xl`
+- Colored: `hover:shadow-blue-500/10` or `hover:shadow-blue-500/30` (primary CTA)
+- Never pure black — use colored shadows
+
+<div className="flex gap-6 flex-wrap p-8">
+  <div className="h-24 w-36 rounded-2xl bg-card border shadow-lg flex items-center justify-center text-sm">
+    shadow-lg
+  </div>
+  <div className="h-24 w-36 rounded-2xl bg-card border shadow-xl flex items-center justify-center text-sm">
+    shadow-xl
+  </div>
+  <div className="h-24 w-36 rounded-2xl bg-card border shadow-2xl shadow-blue-500/10 flex items-center justify-center text-sm">
+    hover:color
+  </div>
+  <div className="h-24 w-36 rounded-xl bg-blue-600 text-white shadow-lg hover:shadow-xl hover:shadow-blue-500/30 flex items-center justify-center text-sm font-semibold transition-shadow">
+    CTA button
+  </div>
+</div>
+
+Button example (`components/ui/button.tsx:11` secondary vs destructive uses `bg-primary/90` etc., not shadow directly) — use shadows at card/section level.
+
+## Button shadow recipe
+
+From `DESIGN_REFERENCE.md:98`:
+
+```tsx
+// Primary CTA
+className =
+  'bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/30'
+
+// Secondary
+className =
+  'border-2 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50/40'
+```
+
+## Card example combining glass + shadow
+
+```tsx
+<div className="rounded-2xl border border-border bg-card shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300">
+  {/* ... */}
+</div>
+```

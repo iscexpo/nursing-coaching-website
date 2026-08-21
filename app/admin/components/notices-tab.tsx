@@ -5,6 +5,9 @@ import { Plus, Trash2, Pencil, Save, X, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/empty-state'
 import { StatusBadge } from '@/components/ui/status-badge'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import type { Notice } from './types'
 
 export function NoticesPanel({
@@ -110,13 +113,11 @@ export function NoticesPanel({
               <X className="size-5" />
             </button>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-foreground">
-                  {t('tagLabel')}
-                </label>
+              <FormField id="notice-tag" label={t('tagLabel')}>
                 <select
+                  id="notice-tag"
                   value={form.tag}
                   onChange={(e) => setForm({ ...form, tag: e.target.value })}
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
@@ -127,8 +128,8 @@ export function NoticesPanel({
                   <option>{t('tags.deadline')}</option>
                   <option>{t('tags.general')}</option>
                 </select>
-              </div>
-              <div className="flex items-end gap-4">
+              </FormField>
+              <div className="flex items-end">
                 <label className="flex items-center gap-2 text-sm text-foreground">
                   <input
                     type="checkbox"
@@ -142,18 +143,17 @@ export function NoticesPanel({
                 </label>
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                {t('noticeLabel')}
-              </label>
-              <input
+            <FormField id="notice-title" label={t('noticeLabel')} required>
+              <Input
+                id="notice-title"
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder={t('noticePlaceholder')}
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-required="true"
               />
-            </div>
+            </FormField>
+            <Separator />
             <button
               onClick={handleSave}
               disabled={saving}

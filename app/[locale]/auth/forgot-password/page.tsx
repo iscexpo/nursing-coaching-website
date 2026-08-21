@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/client'
 import { useSiteData } from '@/hooks/use-site-data'
 import {
   Phone,
@@ -15,7 +15,8 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 
-type Step = 'select-method' | 'verify-phone' | 'new-password' | 'email-sent' | 'done'
+type Step =
+  'select-method' | 'verify-phone' | 'new-password' | 'email-sent' | 'done'
 type Method = 'phone' | 'email'
 
 export default function ForgotPasswordPage() {

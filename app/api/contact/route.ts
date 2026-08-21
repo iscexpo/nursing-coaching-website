@@ -1,20 +1,28 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { contactInquiries } from '@/lib/db/schema'
-import { createContactInquirySchema, paginationSchema } from '@/lib/validations'
-import { desc } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import {
+  createContactInquirySchema,
+  paginationSchema,
+} from '@/lib/core/validations'
+import { desc, count } from 'drizzle-orm'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
+import {
+  ok,
+  unauthorized,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -32,13 +40,14 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset((page - 1) * limit)
 
-    return NextResponse.json({ data, page, limit })
+    const [totalRow] = await db
+      .select({ count: count() })
+      .from(contactInquiries)
+
+    return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch inquiries' },
-      { status: 500 },
-    )
+    console.error('Error:', error)
+    return serverError('Failed to fetch inquiries')
   }
 }
 
@@ -54,9 +63,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createContactInquirySchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
@@ -83,19 +92,16 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(
+    return ok(
       {
         success: true,
         message:
           'আপনার বার্তা পাঠানো হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।',
       },
-      { status: 201 },
+      201,
     )
   } catch (error) {
-    console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to submit inquiry' },
-      { status: 500 },
-    )
+    console.error('Error:', error)
+    return serverError('Failed to submit inquiry')
   }
 }

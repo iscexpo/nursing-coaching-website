@@ -1,20 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {
+  ok,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { randomUUID } from 'node:crypto'
 import { join, extname } from 'path'
 import { z } from 'zod/v3'
-import { uploadToStorage } from '@/lib/storage'
+import { uploadToStorage } from '@/lib/media/storage'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { rateLimit } from '@/lib/rate-limit'
+import { requireAdmin } from '@/lib/core/permissions'
+import { rateLimit } from '@/lib/core/rate-limit'
 import {
   hasAllowedExtension,
   isAllowedMime,
   matchesSignature,
   validateImageDimensions,
   isValidLogoSize,
-} from '@/lib/media-validation'
+} from '@/lib/media/validation'
 
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
 
@@ -33,13 +39,10 @@ export async function GET() {
       .select()
       .from(mediaFiles)
       .orderBy(desc(mediaFiles.createdAt))
-    return NextResponse.json({ data: rows })
+    return ok({ data: rows })
   } catch (error) {
     console.error('Failed to fetch media files:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch media files' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch media files')
   }
 }
 
@@ -59,56 +62,41 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file')
     const altText = formData.get('altText')?.toString() || ''
     const description = formData.get('description')?.toString() || ''
-    const category = (formData.get('category')?.toString() as 'general' | 'gallery') || 'general'
+    const category =
+      (formData.get('category')?.toString() as 'general' | 'gallery') ||
+      'general'
 
     const parsed = metadataSchema.safeParse({ altText, description, category })
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
     if (!(file instanceof File)) {
-      return NextResponse.json(
-        { error: 'File upload is required' },
-        { status: 400 },
-      )
+      return badRequest('File upload is required')
     }
 
     if (!isAllowedMime(file.type)) {
-      return NextResponse.json(
-        {
-          error:
-            'Unsupported file type. Only PNG, JPG, WEBP, GIF or PDF are allowed.',
-        },
-        { status: 400 },
+      return badRequest(
+        'Unsupported file type. Only PNG, JPG, WEBP, GIF or PDF are allowed.',
       )
     }
 
     if (file.size > MAX_UPLOAD_SIZE) {
-      return NextResponse.json(
-        { error: 'File is too large. Maximum upload size is 5MB.' },
-        { status: 400 },
-      )
+      return badRequest('File is too large. Maximum upload size is 5MB.')
     }
 
     const buffer = Buffer.from(await file.arrayBuffer())
 
     if (!hasAllowedExtension(file.name, file.type)) {
-      return NextResponse.json(
-        { error: 'File extension does not match the declared type.' },
-        { status: 400 },
-      )
+      return badRequest('File extension does not match the declared type.')
     }
 
     if (!matchesSignature(buffer, file.type)) {
-      return NextResponse.json(
-        {
-          error:
-            'File content does not match the declared type. Upload rejected.',
-        },
-        { status: 400 },
+      return badRequest(
+        'File content does not match the declared type. Upload rejected.',
       )
     }
 
@@ -120,9 +108,8 @@ export async function POST(request: NextRequest) {
       const dimensions = validateImageDimensions(buffer, file.type)
       const sizeCheck = isValidLogoSize(dimensions)
       if (!sizeCheck.valid) {
-        return NextResponse.json(
-          { error: sizeCheck.error || 'Invalid image dimensions for logo' },
-          { status: 400 },
+        return badRequest(
+          sizeCheck.error || 'Invalid image dimensions for logo',
         )
       }
     }
@@ -140,14 +127,10 @@ export async function POST(request: NextRequest) {
       )
     } catch (blobError) {
       console.error('Storage upload failed:', blobError)
-      return NextResponse.json(
-        {
-          error:
-            blobError instanceof Error
-              ? blobError.message
-              : 'Failed to store media file',
-        },
-        { status: 500 },
+      return serverError(
+        blobError instanceof Error
+          ? blobError.message
+          : 'Failed to store media file',
       )
     }
 
@@ -167,17 +150,11 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(media, { status: 201 })
+    return ok(media, 201)
   } catch (error) {
     console.error('Media upload failed:', error)
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Failed to upload media file',
-      },
-      { status: 500 },
+    return serverError(
+      error instanceof Error ? error.message : 'Failed to upload media file',
     )
   }
 }

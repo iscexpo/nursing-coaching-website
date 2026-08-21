@@ -6,10 +6,13 @@ import { Check, Loader2, Plus, XCircle } from 'lucide-react'
 import { PaymentStatusBadge, MethodBadge } from '@/components/ui/status-badge'
 import { FilterBar } from '@/components/ui/filter-bar'
 import { Alert } from '@/components/ui/alert'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import {
   getPaymentValidationErrors,
   type PaymentFormValues,
-} from '@/lib/payment-utils'
+} from '@/lib/payment'
 import type { Enrollment, Payment, Student } from './types'
 
 export function PaymentsPanel({
@@ -293,14 +296,17 @@ export function PaymentsPanel({
             </div>
 
             <form onSubmit={handleCreatePayment} className="space-y-4">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">
-                  {t('formLabels.studentEnrollment')}
-                </label>
+              <FormField
+                id="payment-enrollment"
+                label={t('formLabels.studentEnrollment')}
+                required
+              >
                 <select
+                  id="payment-enrollment"
                   value={selectedEnrollmentId}
                   onChange={(e) => setSelectedEnrollmentId(e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                  aria-required="true"
                 >
                   {payableEnrollments.length === 0 && (
                     <option value="">{t('formLabels.noDues')}</option>
@@ -324,16 +330,21 @@ export function PaymentsPanel({
                     {selectedEnrollment.dueAmount.toLocaleString()}
                   </p>
                 )}
-              </div>
+              </FormField>
+
+              <Separator />
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">
-                    {t('formLabels.amount')}
-                  </label>
-                  <input
+                <FormField
+                  id="payment-amount"
+                  label={t('formLabels.amount')}
+                  required
+                  error={formErrors.amount}
+                >
+                  <Input
+                    id="payment-amount"
                     type="number"
-                    value={form.amount}
+                    value={form.amount === '' ? '' : String(form.amount)}
                     onChange={(e) =>
                       setForm((current) => ({
                         ...current,
@@ -341,20 +352,17 @@ export function PaymentsPanel({
                           e.target.value === '' ? '' : Number(e.target.value),
                       }))
                     }
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                     placeholder={t('formLabels.amountPlaceholder')}
+                    aria-required="true"
+                    aria-invalid={!!formErrors.amount}
                   />
-                  {formErrors.amount && (
-                    <p className="mt-1 text-xs text-destructive">
-                      {formErrors.amount}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">
-                    {t('formLabels.paymentMethod')}
-                  </label>
+                </FormField>
+                <FormField
+                  id="payment-method"
+                  label={t('formLabels.paymentMethod')}
+                >
                   <select
+                    id="payment-method"
                     value={form.method}
                     onChange={(e) =>
                       setForm((current) => ({
@@ -369,15 +377,17 @@ export function PaymentsPanel({
                     <option value="cash">{t('cash')}</option>
                     <option value="bank">{t('bank')}</option>
                   </select>
-                </div>
+                </FormField>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">
-                    {t('formLabels.transactionId')}
-                  </label>
-                  <input
+                <FormField
+                  id="payment-transactionId"
+                  label={t('formLabels.transactionId')}
+                  error={formErrors.transactionId}
+                >
+                  <Input
+                    id="payment-transactionId"
                     type="text"
                     value={form.transactionId}
                     onChange={(e) =>
@@ -386,20 +396,17 @@ export function PaymentsPanel({
                         transactionId: e.target.value,
                       }))
                     }
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                     placeholder={t('formLabels.transactionIdPlaceholder')}
+                    aria-invalid={!!formErrors.transactionId}
                   />
-                  {formErrors.transactionId && (
-                    <p className="mt-1 text-xs text-destructive">
-                      {formErrors.transactionId}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">
-                    {t('formLabels.senderNumber')}
-                  </label>
-                  <input
+                </FormField>
+                <FormField
+                  id="payment-senderNumber"
+                  label={t('formLabels.senderNumber')}
+                  error={formErrors.senderNumber}
+                >
+                  <Input
+                    id="payment-senderNumber"
                     type="tel"
                     value={form.senderNumber}
                     onChange={(e) =>
@@ -408,22 +415,15 @@ export function PaymentsPanel({
                         senderNumber: e.target.value,
                       }))
                     }
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                     placeholder={t('formLabels.senderPlaceholder')}
+                    aria-invalid={!!formErrors.senderNumber}
                   />
-                  {formErrors.senderNumber && (
-                    <p className="mt-1 text-xs text-destructive">
-                      {formErrors.senderNumber}
-                    </p>
-                  )}
-                </div>
+                </FormField>
               </div>
 
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">
-                  {t('formLabels.notes')}
-                </label>
+              <FormField id="payment-notes" label={t('formLabels.notes')}>
                 <textarea
+                  id="payment-notes"
                   value={form.notes}
                   onChange={(e) =>
                     setForm((current) => ({
@@ -435,7 +435,9 @@ export function PaymentsPanel({
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                   placeholder={t('formLabels.notesPlaceholder')}
                 />
-              </div>
+              </FormField>
+
+              <Separator />
 
               <div className="flex gap-3">
                 <button

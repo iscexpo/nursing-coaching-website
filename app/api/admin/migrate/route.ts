@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { unauthorized, notFound, ok, serverError } from '@/lib/api/response'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 const MIGRATION_FILES = [
   '0000_curly_trish_tilby.sql',
@@ -33,17 +34,17 @@ export async function POST(request: NextRequest) {
 
   try {
     if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      return notFound()
     }
 
     const seedKey = process.env.ADMIN_SEED_KEY
     if (!seedKey) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      return notFound()
     }
 
     const authHeader = request.headers.get('authorization')
     if (authHeader !== `Bearer ${seedKey}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const migrationsDir = join(process.cwd(), 'lib', 'db', 'migrations')
@@ -77,11 +78,8 @@ export async function POST(request: NextRequest) {
       results.push({ file: fileName, statements: statements.length, errors })
     }
 
-    return NextResponse.json({ success: true, migrations: results })
+    return ok({ success: true, migrations: results })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Migration failed', details: String(error) },
-      { status: 500 },
-    )
+    return serverError(String(error) || 'Migration failed')
   }
 }

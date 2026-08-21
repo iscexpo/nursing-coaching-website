@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { createCourseSchema, paginationSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { createCourseSchema, paginationSchema } from '@/lib/core/validations'
+import { ok, conflict, serverError, validationError } from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
       .from(courses)
       .where(where)
 
-    return NextResponse.json({
+    return ok({
       data: allCourses,
       page,
       limit,
@@ -45,10 +46,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Failed to fetch courses:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch courses' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch courses')
   }
 }
 
@@ -60,9 +58,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createCourseSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
@@ -74,22 +72,13 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(course, { status: 201 })
+    return ok(course, 201)
   } catch (error) {
     console.error('Failed to create course:', error)
     const code = (error as { code?: string })?.code
     if (code === '23505') {
-      return NextResponse.json(
-        {
-          error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে',
-          details: { slug: ['Slug already exists'] },
-        },
-        { status: 409 },
-      )
+      return conflict('এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে')
     }
-    return NextResponse.json(
-      { error: 'Failed to create course' },
-      { status: 500 },
-    )
+    return serverError('Failed to create course')
   }
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/client'
 import { useSiteData } from '@/hooks/use-site-data'
 import {
   GraduationCap,
@@ -302,11 +302,11 @@ export default function SignInPage() {
                     সাইন ইন <ArrowRight className="size-4" />
                   </>
                 )}
-               </button>
+              </button>
             </form>
           )}
 
-               {resolvedMode === 'email' && (
+          {resolvedMode === 'email' && (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div>
                 <label

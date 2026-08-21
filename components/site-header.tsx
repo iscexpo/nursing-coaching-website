@@ -4,17 +4,19 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Menu, X } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { DarkModeToggle } from '@/components/dark-mode-toggle'
 import { LanguageSwitcher } from '@/components/language-switcher'
-import { NAV_LINKS } from '@/lib/site-data'
+import { NAV_LINKS } from '@/lib/cms/site-data'
 import { useSiteData } from '@/hooks/use-site-data'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const site = useSiteData()
-  const t = useTranslations('common')
+  const tRaw = useTranslations('common')
+  const t = tRaw as unknown as (key: string) => string
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -58,10 +60,11 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-white/20 dark:border-white/10 bg-background/70 dark:bg-background/40 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:py-4">
         <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-          <img
+          <Image
             src={site.logo || '/logo.png'}
             alt={site.nameBn}
             width={200}
+            height={80}
             className="h-auto w-28 md:w-32 object-contain"
           />
         </Link>
@@ -76,7 +79,7 @@ export function SiteHeader() {
               href={link.href}
               className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5"
             >
-              {t(link.labelKey as any)}
+              {t(link.labelKey)}
             </Link>
           ))}
         </nav>
@@ -135,7 +138,7 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
             >
-              {t(link.labelKey as any)}
+              {t(link.labelKey)}
             </Link>
           ))}
           <div className="mt-4 border-t border-border pt-4">

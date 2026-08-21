@@ -1,14 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import {
   getSession,
   requireAdmin,
   requireSuperAdmin,
   isSuperAdmin,
-} from '@/lib/permissions'
-import { getSystemSettings, saveSystemSettings } from '@/lib/settings'
-import { settingsSchema } from '@/lib/validations'
+} from '@/lib/core/permissions'
+import { getSystemSettings, saveSystemSettings } from '@/lib/cms/settings'
+import { settingsSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
+import {
+  ok,
+  unauthorized,
+  forbidden,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 const MASK = '********'
 
@@ -21,10 +28,10 @@ export async function GET() {
 
     // Only super-admins can view raw secrets; mask them for regular admins.
     if (isSuperAdmin(auth.session.user.role)) {
-      return NextResponse.json(settings)
+      return ok(settings)
     }
 
-    return NextResponse.json({
+    return ok({
       ...settings,
       smsApiKey: settings.smsApiKey ? MASK : '',
       smsPassword: settings.smsPassword ? MASK : '',
@@ -35,10 +42,7 @@ export async function GET() {
         : '',
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to load settings' },
-      { status: 500 },
-    )
+    return serverError('Failed to load settings')
   }
 }
 
@@ -76,15 +80,14 @@ export async function PUT(request: NextRequest) {
     const session = await getSession()
     const auth = await requireAdmin()
     if (!auth.ok) return auth.response
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = settingsSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
@@ -105,9 +108,8 @@ export async function PUT(request: NextRequest) {
     )
 
     if (hasSensitiveUpdate && !isSuperAdmin(session.user.role)) {
-      return NextResponse.json(
-        { error: 'Forbidden: Sensitive settings require super-admin access' },
-        { status: 403 },
+      return forbidden(
+        'Forbidden: Sensitive settings require super-admin access',
       )
     }
 
@@ -127,11 +129,8 @@ export async function PUT(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update settings' },
-      { status: 500 },
-    )
+    return serverError('Failed to update settings')
   }
 }

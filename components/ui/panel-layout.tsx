@@ -36,9 +36,7 @@ export function PanelLayout({
   children: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
-    new Set(),
-  )
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   const t = useTranslations('common')
   const tGroups = useTranslations('admin.groups')
 

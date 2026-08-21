@@ -6,7 +6,7 @@ import {
   hasPermission,
   getSessionPermissions,
   type Permission,
-} from '@/lib/permissions'
+} from '@/lib/core/permissions'
 
 describe('isAdmin', () => {
   it('returns true for admin', () => {

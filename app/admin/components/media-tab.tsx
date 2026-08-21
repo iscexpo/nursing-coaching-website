@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import NextImage from 'next/image'
 import { Plus, Trash2, Loader2, Image, FileText } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import type { MediaFile } from './types'
@@ -136,7 +137,9 @@ export function MediaPanel({
               </label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as 'general' | 'gallery')}
+                onChange={(e) =>
+                  setCategory(e.target.value as 'general' | 'gallery')
+                }
                 className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               >
                 <option value="general">{t('categoryGeneral')}</option>
@@ -201,12 +204,13 @@ export function MediaPanel({
               key={media.id}
               className="rounded-2xl border border-border bg-background p-4 shadow-sm"
             >
-              <div className="mb-3 h-40 overflow-hidden rounded-xl bg-muted">
+              <div className="relative mb-3 h-40 overflow-hidden rounded-xl bg-muted">
                 {media.contentType.startsWith('image/') ? (
-                  <img
+                  <NextImage
                     src={media.url}
                     alt={media.altText || media.originalFilename}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-muted-foreground">
@@ -224,7 +228,9 @@ export function MediaPanel({
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-brand/10 px-2 py-1 text-xs font-medium text-brand">
-                    {media.category === 'gallery' ? t('categoryGallery') : t('categoryGeneral')}
+                    {media.category === 'gallery'
+                      ? t('categoryGallery')
+                      : t('categoryGeneral')}
                   </span>
                   {media.altText && (
                     <span className="rounded-full bg-secondary px-2 py-1 text-xs text-foreground">

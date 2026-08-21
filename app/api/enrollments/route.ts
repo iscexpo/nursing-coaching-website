@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import {
   enrollments,
@@ -8,15 +8,24 @@ import {
   studentLifecycleEvents,
 } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
-import { getSession, isAdmin, requireAdmin } from '@/lib/permissions'
-import { createEnrollmentSchema, paginationSchema } from '@/lib/validations'
-import { rateLimit } from '@/lib/rate-limit'
+import { getSession, isAdmin, requireAdmin } from '@/lib/core/permissions'
+import {
+  createEnrollmentSchema,
+  paginationSchema,
+} from '@/lib/core/validations'
+import { rateLimit } from '@/lib/core/rate-limit'
+import {
+  ok,
+  unauthorized,
+  badRequest,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -85,13 +94,10 @@ export async function GET(request: NextRequest) {
       .from(enrollments)
       .where(countWhere)
 
-    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
+    return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
-    console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch enrollments' },
-      { status: 500 },
-    )
+    console.error('Error:', error)
+    return serverError('Failed to fetch enrollments')
   }
 }
 
@@ -105,15 +111,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const session = await getSession()
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = createEnrollmentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
       )
     }
 
@@ -230,23 +235,14 @@ export async function POST(request: NextRequest) {
     })
 
     if (enrolled.length === 0 && errors.length > 0) {
-      return NextResponse.json(
-        { error: 'কোনো এনরোলমেন্ট তৈরি হয়নি', details: errors },
-        { status: 400 },
-      )
+      return validationError('কোনো এনরোলমেন্ট তৈরি হয়নি', errors)
     }
 
-    return NextResponse.json(
-      { enrolled, errors, count: enrolled.length },
-      { status: 201 },
-    )
+    return ok({ enrolled, errors, count: enrolled.length }, 201)
   } catch (e) {
     if (e instanceof Error && e.message === 'COURSE_FULL') {
-      return NextResponse.json({ error: 'Course is full' }, { status: 400 })
+      return badRequest('Course is full')
     }
-    return NextResponse.json(
-      { error: 'Failed to create enrollment' },
-      { status: 500 },
-    )
+    return serverError('Failed to create enrollment')
   }
 }
