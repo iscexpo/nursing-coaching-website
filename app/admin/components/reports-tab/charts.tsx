@@ -150,8 +150,8 @@ export function BarChart({
   xKey: string
   yKey: string
 }) {
+  const t = useTranslations('admin.reports')
   if (data.length === 0) {
-    const t = useTranslations('admin.reports')
     return <p className="text-center text-muted-foreground py-8">{t('noData')}</p>
   }
   return (

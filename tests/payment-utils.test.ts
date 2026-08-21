@@ -47,6 +47,8 @@ describe('getPaymentValidationErrors', () => {
   })
 
   it('rejects an amount above the server-authoritative due amount', () => {
+    expect(validatePaymentAmount(0, 1000).ok).toBe(false)
+    expect(validatePaymentAmount(-1, 1000).ok).toBe(false)
     expect(validatePaymentAmount(1001, 1000).ok).toBe(false)
     expect(validatePaymentAmount(1000, 1000).ok).toBe(true)
   })

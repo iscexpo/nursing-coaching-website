@@ -53,6 +53,13 @@ describe('domain validation contracts', () => {
         correctIndex: 0,
       }).success,
     ).toBe(false)
+    expect(
+      createQuestionSchema.safeParse({
+        ...base,
+        options: ['1', '2', '3', '4'],
+        correctIndex: 4,
+      }).success,
+    ).toBe(false)
   })
 
   it('accepts bounded exam answers', () => {

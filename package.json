@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "db:seed": "node --experimental-strip-types scripts/seed-demo-admin.ts",
     "db:clean": "node --experimental-strip-types scripts/clean-db.ts",
     "db:reset": "node --experimental-strip-types scripts/clean-db.ts && node --experimental-strip-types scripts/seed-demo-admin.ts",
@@ -73,5 +73,8 @@
   },
   "overrides": {
     "hono": "4.12.25"
+  },
+  "engines": {
+    "node": ">=24.0.0"
   }
 }

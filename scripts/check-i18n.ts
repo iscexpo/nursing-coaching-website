@@ -46,6 +46,7 @@ async function main() {
     for (const [key, english] of reference) {
       const translated = catalog.get(key)
       if (!translated || !translated.trim()) errors.push(`${locale}: blank ${key}`)
+      if (translated && translated.includes('\uFFFD')) errors.push(`${locale}: corrupted replacement character ${key}`)
       if (translated && JSON.stringify(placeholders(english)) !== JSON.stringify(placeholders(translated))) {
         errors.push(`${locale}: interpolation mismatch ${key}`)
       }

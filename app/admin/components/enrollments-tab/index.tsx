@@ -189,11 +189,20 @@ export function EnrollmentsPanel({
     try {
       if (bulkAction === 'status') {
         for (const id of selectedIds) {
-          const res = await fetch(`/api/enrollments/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: bulkStatus }),
-          })
+          let res: Response
+          if (bulkStatus === 'suspended') {
+            res = await fetch(`/api/enrollments/${id}/suspend`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reason: null }),
+            })
+          } else {
+            res = await fetch(`/api/enrollments/${id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: bulkStatus }),
+            })
+          }
           if (res.ok) successCount++
           else failCount++
         }
@@ -309,19 +318,28 @@ export function EnrollmentsPanel({
     setEditSaving(true)
     setEditError('')
     try {
-      const body: Record<string, unknown> = {
-        status: editForm.status,
-        notes: editForm.notes.trim() || undefined,
-        discount: editDiscountNum,
-        totalFee: editTotalFee,
+      let res: Response
+      if (editForm.status === 'suspended') {
+        res = await fetch(`/api/enrollments/${editing.id}/suspend`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: editForm.notes.trim() || null }),
+        })
+      } else {
+        const body: Record<string, unknown> = {
+          status: editForm.status,
+          notes: editForm.notes.trim() || undefined,
+          discount: editDiscountNum,
+          totalFee: editTotalFee,
+        }
+        if (editForm.startDate) body.startDate = editForm.startDate
+        if (editForm.endDate) body.endDate = editForm.endDate
+        res = await fetch(`/api/enrollments/${editing.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
       }
-      if (editForm.startDate) body.startDate = editForm.startDate
-      if (editForm.endDate) body.endDate = editForm.endDate
-      const res = await fetch(`/api/enrollments/${editing.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
       if (res.ok) {
         setEditing(null)
         onRefresh()

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
 import { verifyPaymentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
@@ -61,43 +61,35 @@ export async function PUT(
 
     const { status } = parsed.data
 
-    const [existing] = await db
-      .select()
-      .from(payments)
-      .where(eq(payments.id, id))
-    if (!existing)
-      return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
-
-    if (existing.status !== 'pending') {
-      return NextResponse.json(
-        { error: 'Payment has already been processed' },
-        { status: 400 },
-      )
-    }
-
-    const [enrollment] = await db
-      .select()
-      .from(enrollments)
-      .where(eq(enrollments.id, existing.enrollmentId))
-
-    if (status === 'verified') {
-      if (!enrollment) {
-        return NextResponse.json(
-          { error: 'Enrollment not found for payment' },
-          { status: 400 },
-        )
-      }
-
-      const paymentCheck = validatePaymentAmount(
-        existing.amount,
-        Math.max(0, enrollment.dueAmount),
-      )
-      if (!paymentCheck.ok) {
-        return NextResponse.json({ error: paymentCheck.error }, { status: 400 })
-      }
-    }
-
     const result = await db.transaction(async (tx) => {
+      const [existing] = await tx.select().from(payments).where(eq(payments.id, id))
+      if (!existing) {
+        const err = new Error('Payment not found') as Error & { status?: number }
+        err.status = 404
+        throw err
+      }
+      if (existing.status !== 'pending') {
+        const err = new Error('Payment has already been processed') as Error & { status?: number }
+        err.status = 400
+        throw err
+      }
+
+      const [enrollment] = await tx.select().from(enrollments).where(eq(enrollments.id, existing.enrollmentId))
+
+      if (status === 'verified') {
+        if (!enrollment) {
+          const err = new Error('Enrollment not found for payment') as Error & { status?: number }
+          err.status = 400
+          throw err
+        }
+        const paymentCheck = validatePaymentAmount(existing.amount, Math.max(0, enrollment.dueAmount))
+        if (!paymentCheck.ok) {
+          const err = new Error(paymentCheck.error) as Error & { status?: number }
+          err.status = 400
+          throw err
+        }
+      }
+
       const [updated] = await tx
         .update(payments)
         .set({
@@ -106,14 +98,17 @@ export async function PUT(
           verifiedAt: new Date(),
           updatedAt: new Date(),
         })
-        .where(eq(payments.id, id))
+        .where(and(eq(payments.id, id), eq(payments.status, 'pending')))
         .returning()
 
+      if (!updated) {
+        const err = new Error('Conflict: payment status changed') as Error & { status?: number }
+        err.status = 409
+        throw err
+      }
+
       if (status === 'verified' && enrollment) {
-        const [invoice] = await tx
-          .select()
-          .from(invoices)
-          .where(eq(invoices.enrollmentId, existing.enrollmentId))
+        const [invoice] = await tx.select().from(invoices).where(eq(invoices.enrollmentId, existing.enrollmentId))
 
         const totals = calculatePaymentUpdate(
           enrollment.paidAmount,
@@ -150,9 +145,9 @@ export async function PUT(
 
     if (status === 'verified' || status === 'rejected') {
       void notifyPaymentUpdate({
-        userId: existing.userId,
-        amount: existing.amount,
-        method: existing.method,
+        userId: result.userId,
+        amount: result.amount,
+        method: result.method,
         status,
       })
     }
@@ -173,7 +168,11 @@ export async function PUT(
     )
 
     return NextResponse.json(result)
-  } catch {
+  } catch (e: unknown) {
+    const err = e as Error & { status?: number }
+    if (err.status === 404) return NextResponse.json({ error: err.message }, { status: 404 })
+    if (err.status === 400) return NextResponse.json({ error: err.message }, { status: 400 })
+    if (err.status === 409) return NextResponse.json({ error: err.message }, { status: 409 })
     return NextResponse.json(
       { error: 'Failed to update payment' },
       { status: 500 },

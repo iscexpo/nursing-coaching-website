@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { exams, questions } from '@/lib/db/schema'
+import { auditLogs, exams, questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getSession, requireAdmin } from '@/lib/core/permissions'
-import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { buildAuditEntry } from '@/lib/audit'
 import { z } from 'zod/v3'
 
 const cloneExamSchema = z.object({
@@ -32,11 +32,13 @@ export async function POST(
       )
     }
 
-    const [source] = await db.select().from(exams).where(eq(exams.id, id))
-    if (!source) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+    const ipAddress = request.headers.get('x-forwarded-for') ?? undefined
+    const txResult = await db.transaction(async (tx) => {
+      const [source] = await tx.select().from(exams).where(eq(exams.id, id))
+      if (!source) return null
 
-    const sourceQuestions = await db.select().from(questions).where(eq(questions.examId, id))
-    const cloned = await db.transaction(async (tx) => {
+      const sourceQuestions = await tx.select().from(questions).where(eq(questions.examId, id))
+
       const cloneId = randomUUID()
       const [created] = await tx
         .insert(exams)
@@ -60,23 +62,35 @@ export async function POST(
           })),
         )
       }
-      return created
-    })
 
-    void writeAudit(
-      buildAuditEntry(
+      const auditEntry = buildAuditEntry(
         {
           resourceType: 'exam',
-          resourceId: cloned.id,
+          resourceId: cloneId,
           action: 'clone',
           details: { sourceExamId: id, questionCount: sourceQuestions.length },
         },
         session,
-        request.headers.get('x-forwarded-for') ?? undefined,
-      ),
-    )
+        ipAddress,
+      )
+      await tx.insert(auditLogs).values({
+        id: randomUUID(),
+        actorId: auditEntry.actorId ?? null,
+        actorEmail: auditEntry.actorEmail ?? null,
+        actorRole: auditEntry.actorRole ?? null,
+        resourceType: auditEntry.resourceType,
+        resourceId: auditEntry.resourceId ?? null,
+        action: auditEntry.action,
+        details: auditEntry.details ?? {},
+        ipAddress: auditEntry.ipAddress ?? null,
+      })
 
-    return NextResponse.json({ ...cloned, questionCount: sourceQuestions.length }, { status: 201 })
+      return { cloned: created, questionCount: sourceQuestions.length }
+    })
+
+    if (!txResult) return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+
+    return NextResponse.json({ ...txResult.cloned, questionCount: txResult.questionCount }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Failed to clone exam' }, { status: 500 })
   }

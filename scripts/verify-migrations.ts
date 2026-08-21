@@ -9,10 +9,15 @@ async function main() {
   const migrationsDir = resolve(process.cwd(), 'lib/db/migrations')
   const metaPath = resolve(migrationsDir, 'meta/_journal.json')
   const journal = JSON.parse(await readFile(metaPath, 'utf8')) as Journal
-  const files = (await readdir(migrationsDir)).filter((file) => /^\d{4}_.+\.sql$/.test(file)).sort()
+  const allFiles = await readdir(migrationsDir)
+  const sqlFiles = allFiles.filter((file) => file.endsWith('.sql'))
+  const errors: string[] = []
+  for (const file of sqlFiles) {
+    if (!/^\d{4}_.+\.sql$/.test(file)) errors.push(`invalid migration filename: ${file}`)
+  }
+  const files = sqlFiles.filter((file) => /^\d{4}_.+\.sql$/.test(file)).sort()
   const fileTags = files.map((file) => file.replace(/\.sql$/, ''))
   const journalTags = journal.entries.map((entry) => entry.tag)
-  const errors: string[] = []
 
   if (new Set(fileTags).size !== fileTags.length) errors.push('duplicate migration filenames detected')
   if (new Set(journalTags).size !== journalTags.length) errors.push('duplicate migration journal tags detected')
@@ -25,6 +30,7 @@ async function main() {
   }
   for (let index = 0; index < journal.entries.length; index += 1) {
     if (journal.entries[index].idx !== index) errors.push(`journal index mismatch at ${journal.entries[index].tag}`)
+    if (journalTags[index] !== fileTags[index]) errors.push(`journal order mismatch at index ${index}: expected ${fileTags[index] ?? 'none'}, got ${journalTags[index]}`)
   }
 
   if (errors.length) {
