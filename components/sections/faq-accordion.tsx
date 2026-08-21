@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import { FadeIn } from '@/components/ui/fade-in'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 type FaqItem = { question: string; answer: string }
 

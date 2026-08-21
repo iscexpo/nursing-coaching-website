@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { Button } from '@/components/ui/button'
-import { getCmsContent } from '@/lib/content-server'
+import { getCmsContent } from '@/lib/cms/server'
 
 export async function Hero() {
   const t = await getTranslations('hero')

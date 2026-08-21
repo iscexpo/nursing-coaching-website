@@ -1,17 +1,18 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, badRequest, ok, conflict, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
-import { getSession, isAdmin } from '@/lib/permissions'
-import { submitExamSchema, paginationSchema } from '@/lib/validations'
-import { calculateExamScore, calculateGrade } from '@/lib/lms-logic'
+import { getSession, isAdmin } from '@/lib/core/permissions'
+import { submitExamSchema, paginationSchema } from '@/lib/core/validations'
+import { calculateExamScore, calculateGrade } from '@/lib/core/lms-logic'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -39,13 +40,10 @@ export async function GET(request: NextRequest) {
       .from(examSubmissions)
       .where(where)
 
-    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
+    return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch submissions' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch submissions')
   }
 }
 
@@ -53,24 +51,21 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = submitExamSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { examId, answers, timeTaken } = parsed.data
 
     const [exam] = await db.select().from(exams).where(eq(exams.id, examId))
     if (!exam)
-      return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+      return notFound('Exam not found')
     if (!exam.isActive)
-      return NextResponse.json({ error: 'Exam is not active' }, { status: 400 })
+      return badRequest('Exam is not active')
 
     // Prevent multiple attempts for the same exam by the same user.
     const existing = await db
@@ -84,10 +79,7 @@ export async function POST(request: NextRequest) {
       )
       .limit(1)
     if (existing.length > 0) {
-      return NextResponse.json(
-        { error: 'এই পরীক্ষাটি ইতিমধ্যে জমা দেওয়া হয়েছে' },
-        { status: 409 },
-      )
+      return conflict('এই পরীক্ষাটি ইতিমধ্যে জমা দেওয়া হয়েছে')
     }
 
     const examQuestions = await db
@@ -98,16 +90,13 @@ export async function POST(request: NextRequest) {
       .from(questions)
       .where(eq(questions.examId, examId))
     if (examQuestions.length === 0) {
-      return NextResponse.json(
-        { error: 'No questions found for this exam' },
-        { status: 400 },
-      )
+      return badRequest('No questions found for this exam')
     }
 
     const scoring = calculateExamScore(
       answers,
       examQuestions,
-      false, // TODO: read from exam.negativeMarking when column is added
+      exam.negativeMarking ?? false,
     )
     const grade = calculateGrade(scoring.score, scoring.total)
 
@@ -124,7 +113,7 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(
+    return ok(
       {
         ...submission,
         total: scoring.total,
@@ -134,14 +123,9 @@ export async function POST(request: NextRequest) {
           wrong: scoring.wrong,
           skipped: scoring.skipped,
         },
-      },
-      { status: 201 },
-    )
+      }, 201)
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to submit exam' },
-      { status: 500 },
-    )
+    return serverError('Failed to submit exam')
   }
 }

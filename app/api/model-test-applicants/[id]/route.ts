@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { modelTestApplicants } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { updateModelTestApplicantSchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { updateModelTestApplicantSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(
@@ -16,24 +17,18 @@ export async function GET(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [applicant] = await db
       .select()
       .from(modelTestApplicants)
       .where(eq(modelTestApplicants.id, id))
     if (!applicant)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
-    return NextResponse.json(applicant)
+    return ok(applicant)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch applicant' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch applicant')
   }
 }
 
@@ -47,18 +42,12 @@ export async function PATCH(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateModelTestApplicantSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        {
-          error: 'Invalid input',
-          details: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors,)
     }
 
     const [existing] = await db
@@ -66,10 +55,7 @@ export async function PATCH(
       .from(modelTestApplicants)
       .where(eq(modelTestApplicants.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
     const [updated] = await db
       .update(modelTestApplicants)
@@ -77,10 +63,7 @@ export async function PATCH(
       .where(eq(modelTestApplicants.id, id))
       .returning()
     if (!updated)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
     void writeAudit(
       buildAuditEntry(
@@ -97,12 +80,9 @@ export async function PATCH(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update applicant' },
-      { status: 500 },
-    )
+    return serverError('Failed to update applicant')
   }
 }
 
@@ -116,17 +96,14 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [existing] = await db
       .select()
       .from(modelTestApplicants)
       .where(eq(modelTestApplicants.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Applicant not found' },
-        { status: 404 },
-      )
+      return notFound('Applicant not found')
 
     await db.delete(modelTestApplicants).where(eq(modelTestApplicants.id, id))
 
@@ -145,11 +122,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete applicant' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete applicant')
   }
 }

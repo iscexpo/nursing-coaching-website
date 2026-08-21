@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { defaultCmsContent, type CmsContent } from '@/lib/content-cms'
+import { defaultCmsContent, type CmsContent } from '@/lib/cms'
 
 type SiteData = CmsContent['site']
 

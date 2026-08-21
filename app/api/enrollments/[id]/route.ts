@@ -1,16 +1,17 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, badRequest, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { updateEnrollmentSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { updateEnrollmentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 import {
   getEnrollmentTransitionError,
   getLifecycleTimestamp,
-} from '@/lib/lms-logic'
+} from '@/lib/core/lms-logic'
 import { notifyEnrollmentStatusChange } from '@/lib/notifications'
 
 export async function GET(
@@ -21,28 +22,22 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [enrollment] = await db
       .select()
       .from(enrollments)
       .where(eq(enrollments.id, id))
     if (!enrollment)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
+      return notFound('Enrollment not found')
 
     if (!isAdmin(session.user.role) && enrollment.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
-    return NextResponse.json(enrollment)
+    return ok(enrollment)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch enrollment' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch enrollment')
   }
 }
 
@@ -56,15 +51,12 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateEnrollmentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db
@@ -72,10 +64,7 @@ export async function PUT(
       .from(enrollments)
       .where(eq(enrollments.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
+      return notFound('Enrollment not found')
 
     if (parsed.data.status && parsed.data.status !== existing.status) {
       const transitionError = getEnrollmentTransitionError(
@@ -83,7 +72,7 @@ export async function PUT(
         parsed.data.status,
       )
       if (transitionError) {
-        return NextResponse.json({ error: transitionError }, { status: 400 })
+        return badRequest(transitionError)
       }
     }
 
@@ -175,16 +164,10 @@ export async function PUT(
     )
 
     if (!updated)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
-    return NextResponse.json(updated)
+      return notFound('Enrollment not found')
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update enrollment' },
-      { status: 500 },
-    )
+    return serverError('Failed to update enrollment')
   }
 }
 
@@ -198,23 +181,17 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [existing] = await db
       .select()
       .from(enrollments)
       .where(eq(enrollments.id, id))
     if (!existing)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
+      return notFound('Enrollment not found')
 
     if (existing.status === 'cancelled') {
-      return NextResponse.json(
-        { error: 'এনরোলমেন্ট ইতিমধ্যে বাতিল হয়েছে' },
-        { status: 400 },
-      )
+      return badRequest('এনরোলমেন্ট ইতিমধ্যে বাতিল হয়েছে')
     }
 
     const previousStatus = existing.status
@@ -266,11 +243,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to cancel enrollment' },
-      { status: 500 },
-    )
+    return serverError('Failed to cancel enrollment')
   }
 }

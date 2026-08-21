@@ -1,11 +1,12 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { exams, questions } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { createExamSchema, paginationSchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { createExamSchema, paginationSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { ok, unauthorized, serverError, validationError } from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,13 +52,16 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset((page - 1) * limit)
 
-    return NextResponse.json({ data, page, limit })
+    const countWhere = subject ? eq(exams.subject, subject) : undefined
+    const [totalRow] = await db
+      .select({ count: count() })
+      .from(exams)
+      .where(countWhere)
+
+    return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch exams' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch exams')
   }
 }
 
@@ -66,16 +70,12 @@ export async function POST(request: NextRequest) {
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = createExamSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [exam] = await db
@@ -101,12 +101,9 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(exam, { status: 201 })
+    return ok(exam, 201)
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to create exam' },
-      { status: 500 },
-    )
+    return serverError('Failed to create exam')
   }
 }

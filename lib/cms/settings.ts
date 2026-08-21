@@ -1,0 +1,171 @@
+import { db } from '@/lib/db'
+import { settings } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+import {
+  defaultCmsContent,
+  mergeCmsContent,
+  type CmsContent,
+  type CmsContentInput,
+} from '@/lib/cms'
+
+export type SystemSettings = {
+  id: string
+  siteName: string
+  siteTagline: string
+  smsProvider: string
+  smsApiKey: string
+  smsSenderId: string
+  smsEmail: string
+  smsPassword: string
+  paymentGateway: string
+  paymentGatewayApiKey: string
+  paymentGatewaySecret: string
+  paymentGatewayWebhookSecret: string
+  cmsContent: CmsContent | null
+  updatedAt: Date | null
+}
+
+type SmsExtras = { smsEmail?: string; smsPassword?: string }
+
+function extractSmsExtras(cms: CmsContent | null | undefined): SmsExtras {
+  if (!cms || typeof cms !== 'object') return {}
+  const raw = (cms as Record<string, unknown>).smsExtras
+  if (raw && typeof raw === 'object') return raw as SmsExtras
+  return {}
+}
+
+function createDefaultSystemSettings(): SystemSettings {
+  return {
+    id: 'primary',
+    siteName:
+      process.env.NEXT_PUBLIC_SITE_NAME ||
+      'ISC Expo - Icon Skill & Career Expo',
+    siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
+    smsProvider: 'none',
+    smsApiKey: '',
+    smsSenderId: '',
+    smsEmail: '',
+    smsPassword: '',
+    paymentGateway: 'none',
+    paymentGatewayApiKey: '',
+    paymentGatewaySecret: '',
+    paymentGatewayWebhookSecret: '',
+    cmsContent: mergeCmsContent(),
+    updatedAt: null,
+  }
+}
+
+function rowToSettings(row: Record<string, unknown>): SystemSettings {
+  const cms = mergeCmsContent(
+    (row.cmsContent as CmsContent | null) || undefined,
+  )
+  const extras = extractSmsExtras(cms)
+  const { smsExtras: _removed, ...cmsWithoutSmsExtras } = (cms || {}) as Record<
+    string,
+    unknown
+  >
+  return {
+    id: row.id as string,
+    siteName: row.siteName as string,
+    siteTagline: row.siteTagline as string,
+    smsProvider: row.smsProvider as string,
+    smsApiKey: row.smsApiKey as string,
+    smsSenderId: row.smsSenderId as string,
+    smsEmail: extras.smsEmail || '',
+    smsPassword: extras.smsPassword || '',
+    paymentGateway: row.paymentGateway as string,
+    paymentGatewayApiKey: row.paymentGatewayApiKey as string,
+    paymentGatewaySecret: row.paymentGatewaySecret as string,
+    paymentGatewayWebhookSecret: row.paymentGatewayWebhookSecret as string,
+    cmsContent: cmsWithoutSmsExtras as unknown as CmsContent,
+    updatedAt: row.updatedAt as Date | null,
+  }
+}
+
+export async function getSystemSettings(): Promise<SystemSettings> {
+  // During `next build` (phase-production-build) Vercel may not inject
+  // DATABASE_URL / BETTER_AUTH_SECRET. Pages prerender via `getCmsContent()`
+  // -> `getSystemSettings()` -> `db` -> `validateEnv()` would otherwise throw
+  // and log noisy warnings ("Unable to load system settings, using defaults:
+  // Invalid environment variables...") for every static route. Bypass DB entirely
+  // during build and when DB env is missing.
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build'
+  const hasDbUrl = !!(
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL_NON_POOLING
+  )
+  const hasSecret = !!process.env.BETTER_AUTH_SECRET
+  if (isBuildPhase || !hasDbUrl || !hasSecret) {
+    return createDefaultSystemSettings()
+  }
+
+  try {
+    const [setting] = await db
+      .select()
+      .from(settings)
+      .where(eq(settings.id, 'primary'))
+    if (setting) {
+      return rowToSettings(setting as unknown as Record<string, unknown>)
+    }
+
+    const [created] = await db
+      .insert(settings)
+      .values({
+        id: 'primary',
+        siteName:
+          process.env.NEXT_PUBLIC_SITE_NAME ||
+          'ISC Expo - Icon Skill & Career Expo',
+        siteTagline: 'সাফল্যের জন্য প্রস্তুতি',
+        smsProvider: 'none',
+        smsApiKey: '',
+        smsSenderId: '',
+        paymentGateway: 'none',
+        paymentGatewayApiKey: '',
+        paymentGatewaySecret: '',
+        paymentGatewayWebhookSecret: '',
+        cmsContent: defaultCmsContent,
+      })
+      .returning()
+
+    if (created) {
+      return rowToSettings(created as unknown as Record<string, unknown>)
+    }
+  } catch (error) {
+    // Only log at runtime — during build this is expected and handled silently above
+    if (!isBuildPhase) {
+      console.warn('Unable to load system settings, using defaults:', error)
+    }
+  }
+
+  return createDefaultSystemSettings()
+}
+
+export type SystemSettingsUpdate = Partial<
+  Omit<SystemSettings, 'cmsContent'>
+> & {
+  cmsContent?: CmsContentInput
+}
+
+export async function saveSystemSettings(input: SystemSettingsUpdate) {
+  const { smsEmail, smsPassword, ...rest } = input
+  const nextCmsContent = mergeCmsContent(rest.cmsContent || undefined)
+
+  const cmsWithExtras = {
+    ...nextCmsContent,
+    smsExtras: { smsEmail: smsEmail || '', smsPassword: smsPassword || '' },
+  }
+
+  const [updated] = await db
+    .update(settings)
+    .set({
+      ...rest,
+      cmsContent: cmsWithExtras,
+      updatedAt: new Date(),
+    })
+    .where(eq(settings.id, 'primary'))
+    .returning()
+
+  return rowToSettings(updated as unknown as Record<string, unknown>)
+}

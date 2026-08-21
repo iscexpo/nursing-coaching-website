@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {notFound, ok, conflict, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { subjects } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { updateSubjectSchema } from '@/lib/validations'
+import { requireAdmin } from '@/lib/core/permissions'
+import { updateSubjectSchema } from '@/lib/core/validations'
 
 export async function PUT(
   request: NextRequest,
@@ -17,10 +18,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateSubjectSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db
@@ -29,7 +27,7 @@ export async function PUT(
       .where(eq(subjects.id, id))
       .limit(1)
     if (!existing)
-      return NextResponse.json({ error: 'Subject not found' }, { status: 404 })
+      return notFound('Subject not found')
 
     if (parsed.data.name && parsed.data.name !== existing.name) {
       const duplicate = await db
@@ -38,10 +36,7 @@ export async function PUT(
         .where(eq(subjects.name, parsed.data.name))
         .limit(1)
       if (duplicate.length > 0) {
-        return NextResponse.json(
-          { error: 'এই বিষয় ইতিমধ্যে বিদ্যমান' },
-          { status: 409 },
-        )
+        return conflict('এই বিষয় ইতিমধ্যে বিদ্যমান')
       }
     }
 
@@ -53,12 +48,9 @@ export async function PUT(
       .where(eq(subjects.id, id))
       .returning()
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update subject' },
-      { status: 500 },
-    )
+    return serverError('Failed to update subject')
   }
 }
 
@@ -77,14 +69,11 @@ export async function DELETE(
       .where(eq(subjects.id, id))
       .limit(1)
     if (!existing)
-      return NextResponse.json({ error: 'Subject not found' }, { status: 404 })
+      return notFound('Subject not found')
 
     await db.delete(subjects).where(eq(subjects.id, id))
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete subject' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete subject')
   }
 }

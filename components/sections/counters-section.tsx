@@ -1,4 +1,4 @@
-import { getCmsContent } from '@/lib/content-server'
+import { getCmsContent } from '@/lib/cms/server'
 import { AnimatedCounter } from './counters'
 
 export async function Counters() {

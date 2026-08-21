@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, notFound, conflict, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { courseCategories } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { updateCourseCategorySchema } from '@/lib/validations'
+import { requireAdmin } from '@/lib/core/permissions'
+import { updateCourseCategorySchema } from '@/lib/core/validations'
 
 export async function PUT(
   request: NextRequest,
@@ -17,10 +18,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateCourseCategorySchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db
@@ -29,10 +27,7 @@ export async function PUT(
       .where(eq(courseCategories.id, id))
       .limit(1)
     if (!existing)
-      return NextResponse.json(
-        { error: 'Course category not found' },
-        { status: 404 },
-      )
+      return notFound('Course category not found')
 
     if (parsed.data.name && parsed.data.name !== existing.name) {
       const duplicate = await db
@@ -41,10 +36,7 @@ export async function PUT(
         .where(eq(courseCategories.name, parsed.data.name))
         .limit(1)
       if (duplicate.length > 0) {
-        return NextResponse.json(
-          { error: 'এই ক্যাটাগরি ইতিমধ্যে বিদ্যমান' },
-          { status: 409 },
-        )
+        return conflict('এই ক্যাটাগরি ইতিমধ্যে বিদ্যমান')
       }
     }
 
@@ -55,10 +47,7 @@ export async function PUT(
         .where(eq(courseCategories.slug, parsed.data.slug))
         .limit(1)
       if (slugExists.length > 0) {
-        return NextResponse.json(
-          { error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হচ্ছে' },
-          { status: 409 },
-        )
+        return conflict('এই স্লাগ ইতিমধ্যে ব্যবহৃত হচ্ছে')
       }
     }
 
@@ -71,13 +60,10 @@ export async function PUT(
       .where(eq(courseCategories.id, id))
       .returning()
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch (error) {
     console.error('Failed to update course category:', error)
-    return NextResponse.json(
-      { error: 'Failed to update course category' },
-      { status: 500 },
-    )
+    return serverError('Failed to update course category')
   }
 }
 
@@ -96,18 +82,12 @@ export async function DELETE(
       .where(eq(courseCategories.id, id))
       .limit(1)
     if (!existing)
-      return NextResponse.json(
-        { error: 'Course category not found' },
-        { status: 404 },
-      )
+      return notFound('Course category not found')
 
     await db.delete(courseCategories).where(eq(courseCategories.id, id))
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch (error) {
     console.error('Failed to delete course category:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete course category' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete course category')
   }
 }

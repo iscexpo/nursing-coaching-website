@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getSiteData } from '@/lib/content-server'
+import { getSiteData } from '@/lib/cms/server'
+import { serverError } from '@/lib/api/response'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,9 +13,6 @@ export async function GET() {
       },
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to load site data' },
-      { status: 500 },
-    )
+    return serverError('Failed to load site data')
   }
 }

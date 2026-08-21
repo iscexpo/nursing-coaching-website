@@ -1,9 +1,10 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
 import { eq, and, gte, lte } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { z } from 'zod/v3'
 
 const batchMarkSchema = z.object({
@@ -23,15 +24,12 @@ export async function POST(request: NextRequest) {
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = batchMarkSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { date, entries } = parsed.data
@@ -90,11 +88,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ created, updated, skipped, errors })
+    return ok({ created, updated, skipped, errors })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to batch mark attendance' },
-      { status: 500 },
-    )
+    return serverError('Failed to batch mark attendance')
   }
 }

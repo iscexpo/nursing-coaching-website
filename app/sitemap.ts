@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 import { db } from '@/lib/db'
 import { courses, notices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'

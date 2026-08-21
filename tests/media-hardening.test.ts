@@ -3,7 +3,7 @@ import {
   matchesSignature,
   hasAllowedExtension,
   MIME_SIGNATURES,
-} from '../lib/media-validation'
+} from '../lib/media/validation'
 
 describe('media upload hardening', () => {
   it('accepts a real PNG by content signature', () => {

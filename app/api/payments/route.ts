@@ -1,18 +1,18 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
-import { getSession, isAdmin } from '@/lib/permissions'
-import { createPaymentSchema, paginationSchema } from '@/lib/validations'
-import { rateLimit } from '@/lib/rate-limit'
+import { getSession, isAdmin } from '@/lib/core/permissions'
+import { createPaymentSchema, paginationSchema } from '@/lib/core/validations'
+import { rateLimit } from '@/lib/core/rate-limit'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { ok, unauthorized, forbidden, notFound, badRequest, serverError, validationError } from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -40,13 +40,10 @@ export async function GET(request: NextRequest) {
       .from(payments)
       .where(where)
 
-    return NextResponse.json({ data, page, limit, total: totalRow?.count ?? 0 })
+    return ok({ data, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch payments' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch payments')
   }
 }
 
@@ -60,16 +57,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const session = await getSession()
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = createPaymentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { enrollmentId, amount, method, transactionId, senderNumber, notes } =
@@ -79,32 +72,20 @@ export async function POST(request: NextRequest) {
       .select()
       .from(enrollments)
       .where(eq(enrollments.id, enrollmentId))
-    if (!enrollment)
-      return NextResponse.json(
-        { error: 'Enrollment not found' },
-        { status: 404 },
-      )
+    if (!enrollment) return notFound('Enrollment not found')
 
     if (!isAdmin(session.user.role) && enrollment.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
     if (enrollment.status !== 'active' && enrollment.status !== 'approved') {
-      return NextResponse.json(
-        {
-          error:
-            'Cannot make payment for enrollment with status: ' +
-            enrollment.status,
-        },
-        { status: 400 },
+      return badRequest(
+        'Cannot make payment for enrollment with status: ' + enrollment.status,
       )
     }
 
     if (amount > enrollment.dueAmount) {
-      return NextResponse.json(
-        { error: 'Payment amount exceeds due amount' },
-        { status: 400 },
-      )
+      return badRequest('Payment amount exceeds due amount')
     }
 
     const isCashPayment = method === 'cash'
@@ -174,12 +155,9 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(result, { status: 201 })
+    return ok(result, 201)
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to create payment' },
-      { status: 500 },
-    )
+    return serverError('Failed to create payment')
   }
 }

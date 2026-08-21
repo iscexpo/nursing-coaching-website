@@ -10,7 +10,7 @@ import {
   calculatePaymentUpdate,
   shuffleArray,
   calculateCompletionPercentage,
-} from '@/lib/lms-logic'
+} from '@/lib/core/lms-logic'
 
 describe('Enrollment Status Transitions', () => {
   it('allows pending → approved', () => {

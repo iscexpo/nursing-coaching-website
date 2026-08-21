@@ -542,6 +542,11 @@
     },
     "common": {
       "addNew": "নতুন যোগ করুন",
+      "dbHealthWarning": "ডেটাবেস স্কিমা সিঙ্কের বাইরে",
+      "dbMissingTable": "অনুপস্থিত টেবিল:",
+      "dbMissingColumn": "অনুপস্থিত কলাম:",
+      "dbHealthCheckFailed": "ডেটাবেস হেলথ এন্ডপয়েন্টে পৌঁছানো যায়নি",
+      "dbHealthUnknown": "অজানা ডেটাবেস সমস্যা — পরীক্ষা চালিয়ে দেখুন",
       "selectAll": "সব নির্বাচন করুন",
       "selected": "নির্বাচিত",
       "bulkUpdate": "বাল্ক আপডেট",
@@ -612,6 +617,8 @@
       "bulkPartialSuccess": "টি আপডেট হয়েছে, টি ব্যর্থ",
       "bulkPartialDelete": "টি বাতিল হয়েছে, টি ব্যর্থ",
       "bulkFailed": "বাল্ক অপারেশন ব্যর্থ",
+      "partialSuccess": "আপডেট হয়েছে, ব্যর্থ হয়েছে",
+      "partialDelete": "বাতিল হয়েছে, ব্যর্থ হয়েছে",
       "tableHeaders": {
         "student": "শিক্ষার্থী",
         "phone": "ফোন",
@@ -636,16 +643,14 @@
         "active": "সক্রিয়",
         "completed": "সম্পন্ন",
         "rejected": "প্রত্যাখ্যাত",
-        "cancelled": "বাতিল"
+        "cancelled": "বাতিল",
+        "suspended": "স্থগিত"
       },
       "enrollmentCreated": "এনরোলমেন্ট তৈরি হয়েছে",
       "enrollmentUpdated": "এনরোলমেন্ট আপডেট হয়েছে",
       "enrollmentDeleted": "এনরোলমেন্ট মুছে ফেলা হয়েছে",
       "bulkUpdated": "এনরোলমেন্ট আপডেট করা হয়েছে",
-      "bulkDeleted": "এনরোলমেন্ট বাতিল করা হয়েছে",
-      "bulkFailedOp": "বাল্ক অপারেশন ব্যর্থ",
-      "partialSuccessOp": "টি আপডেট হয়েছে, টি ব্যর্থ",
-      "partialDeleteOp": "টি বাতিল হয়েছে, টি ব্যর্থ"
+      "bulkDeleted": "এনরোলমেন্ট বাতিল করা হয়েছে"
     },
     "courses": {
       "management": "কোর্স ব্যবস্থাপনা",
@@ -798,6 +803,8 @@
       "statusInactive": "নিষ্ক্রিয়",
       "minutes": "মিনিট",
       "seconds": "সে.",
+      "shuffleLabel": "প্রশ্ন এলোমেলো করুন",
+      "negativeMarkingLabel": "নেগেটিভ মার্কিং",
       "tableHeaders": {
         "exam": "পরীক্ষা",
         "subject": "বিষয়",
@@ -966,7 +973,7 @@
         "subject": "বিষয়",
         "phone": "ফোন",
         "status": "অবস্থা",
-        "actions": ""
+        "actions": "কার্যক্রম"
       }
     },
     "notices": {
@@ -974,6 +981,7 @@
       "newNotice": "নতুন নোটিশ",
       "addTitle": "নতুন নোটিশ",
       "editTitle": "নোটিশ সম্পাদনা",
+      "bodyLabel": "বিষয়বস্তু",
       "titleLabel": "শিরোনাম",
       "tagLabel": "ট্যাগ",
       "noticeLabel": "নোটিশ",
@@ -1050,7 +1058,7 @@
       "addTitle": "নতুন নোটিফিকেশন",
       "sendNotification": "নোটিফিকেশন পাঠান",
       "titleLabel": "শিরোনাম",
-      "bodyLabel": "বার্তা",
+      "bodyLabel": "বিষয়বস্তু",
       "typeLabel": "ধরন",
       "sendBtn": "পাঠান",
       "latestNotifications": "সর্বশেষ নোটিফিকেশন",
@@ -1060,7 +1068,37 @@
       "titlePlaceholder": "নোটিফিকেশনের শিরোনাম",
       "messagePlaceholder": "নোটিফিকেশনের বিবরণ",
       "notificationCreated": "নোটিফিকেশন তৈরি হয়েছে",
-      "notificationSent": "নোটিফিকেশন পাঠানো হয়েছে"
+      "notificationSent": "নোটিফিকেশন পাঠানো হয়েছে",
+      "templatesTitle": "নোটিফিকেশন টেমপ্লেট",
+      "templateNameLabel": "টেমপ্লেটের নাম",
+      "templateSubjectLabel": "বিষয়",
+      "templateBodyLabel": "বিষয়বস্তু",
+      "templateChannelLabel": "চ্যানেল",
+      "templateChannelInApp": "ইন-অ্যাপ",
+      "templateChannelSms": "এসএমএস",
+      "templateActiveLabel": "সক্রিয়",
+      "createTemplateBtn": "টেমপ্লেট তৈরি করুন",
+      "templateCreated": "টেমপ্লেট তৈরি হয়েছে",
+      "templatesEmpty": "এখনো কোনো টেমপ্লেট নেই",
+      "deleteTemplate": "মুছুন",
+      "scheduledTitle": "নির্ধারিত নোটিফিকেশন",
+      "scheduleTitleLabel": "শিরোনাম",
+      "scheduleMessageLabel": "বিষয়বস্তু",
+      "scheduleDateLabel": "নির্ধারিত তারিখ ও সময়",
+      "scheduleRoleLabel": "টার্গেট ভূমিকা",
+      "scheduleRoleAll": "সকল ব্যবহারকারী",
+      "scheduleRoleSuperAdmin": "সুপার অ্যাডমিন",
+      "scheduleRoleAdmin": "অ্যাডমিন",
+      "scheduleRoleTeacher": "শিক্ষক",
+      "scheduleRoleStudent": "শিক্ষার্থী",
+      "scheduleBtn": "নির্ধারণ করুন",
+      "scheduledCreated": "নির্ধারিত হয়েছে",
+      "scheduledEmpty": "কোনো নির্ধারিত নোটিফিকেশন নেই",
+      "processNow": "এখন প্রক্রিয়া করুন",
+      "processedCount": "{count}টি নির্ধারিত নোটিফিকেশন প্রক্রিয়া হয়েছে",
+      "scheduledStatus": "অবস্থা",
+      "scheduledAt": "নির্ধারিত সময়",
+      "sentAt": "পাঠানোর সময়"
     },
     "settings": {
       "siteName": "সাইটের নাম",
@@ -1378,7 +1416,7 @@
       "maxSize": "সর্বোচ্চ সাইজ: 5MB",
       "accessNote": "আপলোড করার পর ফাইলটি public/media থেকে সরাসরি অ্যাক্সেসible হবে",
       "uploadBtn": "আপলোড করুন",
-      "uploading": "আপলোড হচ্ছে...",
+      "dragDrop": "ফাইল টেনে আনুন অথবা আপলোড করতে ক্লিক করুন",
       "uploadSuccess": "মিডিয়া ফাইল সফলভাবে আপলোড হয়েছে",
       "uploadFailed": "ফাইল আপলোড ব্যর্থ হয়েছে",
       "filesTitle": "মিডিয়া ফাইলসমূহ",

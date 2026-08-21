@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, notFound, serverError, ok, badRequest, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user, account } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -7,8 +8,8 @@ import {
   requireAdmin,
   isAdmin,
   isSuperAdmin,
-} from '@/lib/permissions'
-import { updateStudentSchema } from '@/lib/validations'
+} from '@/lib/core/permissions'
+import { updateStudentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { hashPassword } from 'better-auth/crypto'
 
@@ -20,26 +21,23 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     if (
       session.user.role !== 'admin' &&
       session.user.role !== 'super-admin' &&
       session.user.id !== id
     ) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+      return forbidden('Access denied')
     }
 
     const [found] = await db.select().from(user).where(eq(user.id, id))
     if (!found)
-      return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+      return notFound('Student not found')
 
-    return NextResponse.json(found)
+    return ok(found)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch student' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch student')
   }
 }
 
@@ -53,28 +51,22 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateStudentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [existing] = await db.select().from(user).where(eq(user.id, id))
     if (!existing)
-      return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+      return notFound('Student not found')
 
     const { role, password, ...safeData } = parsed.data
 
     if (role && !isSuperAdmin(session.user.role)) {
-      return NextResponse.json(
-        { error: 'শুধুমাত্র সুপার-অ্যাডমিন ভূমিকা পরিবর্তন করতে পারেন' },
-        { status: 403 },
-      )
+      return forbidden('শুধুমাত্র সুপার-অ্যাডমিন ভূমিকা পরিবর্তন করতে পারেন')
     }
 
     if (password) {
@@ -112,11 +104,11 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to update student'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return serverError(message)
   }
 }
 
@@ -130,18 +122,15 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     if (id === session.user.id) {
-      return NextResponse.json(
-        { error: 'নিজের অ্যাকাউন্ট মুছে ফেলা যাবে না' },
-        { status: 400 },
-      )
+      return badRequest('নিজের অ্যাকাউন্ট মুছে ফেলা যাবে না')
     }
 
     const [existing] = await db.select().from(user).where(eq(user.id, id))
     if (!existing)
-      return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+      return notFound('Student not found')
 
     await db.delete(user).where(eq(user.id, id))
 
@@ -160,10 +149,10 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to delete student'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return serverError(message)
   }
 }

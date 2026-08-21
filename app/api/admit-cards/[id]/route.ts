@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, ok, notFound, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { updateAdmitCardSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { updateAdmitCardSchema } from '@/lib/core/validations'
 
 export async function GET(
   request: NextRequest,
@@ -13,28 +14,22 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [card] = await db
       .select()
       .from(admitCards)
       .where(eq(admitCards.id, id))
     if (!card)
-      return NextResponse.json(
-        { error: 'Admit card not found' },
-        { status: 404 },
-      )
+      return notFound('Admit card not found')
 
     if (!isAdmin(session.user.role) && card.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
-    return NextResponse.json(card)
+    return ok(card)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch admit card' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch admit card')
   }
 }
 
@@ -48,15 +43,12 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateAdmitCardSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -69,16 +61,10 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json(
-        { error: 'Admit card not found' },
-        { status: 404 },
-      )
-    return NextResponse.json(updated)
+      return notFound('Admit card not found')
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update admit card' },
-      { status: 500 },
-    )
+    return serverError('Failed to update admit card')
   }
 }
 
@@ -92,23 +78,17 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [deleted] = await db
       .delete(admitCards)
       .where(eq(admitCards.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json(
-        { error: 'Admit card not found' },
-        { status: 404 },
-      )
+      return notFound('Admit card not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete admit card' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete admit card')
   }
 }

@@ -14,7 +14,7 @@ import { Gallery } from '@/components/sections/gallery'
 import { Faq } from '@/components/sections/faq'
 import { Contact } from '@/components/sections/contact'
 import { JsonLd } from '@/components/json-ld'
-import { getCmsContent } from '@/lib/content-server'
+import { getCmsContent } from '@/lib/cms/server'
 import { routing } from '@/i18n/routing'
 
 export function generateStaticParams() {

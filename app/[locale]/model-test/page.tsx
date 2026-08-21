@@ -6,7 +6,7 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
 import {
   CalendarDays,

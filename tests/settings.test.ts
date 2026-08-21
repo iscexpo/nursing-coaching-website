@@ -10,7 +10,7 @@ vi.mock('@/lib/db', () => ({
   },
 }))
 
-import { getSystemSettings } from '@/lib/settings'
+import { getSystemSettings } from '@/lib/cms/settings'
 
 describe('getSystemSettings', () => {
   beforeEach(() => {

@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { updateCourseSchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { updateCourseSchema } from '@/lib/core/validations'
 
 export async function GET(
   request: NextRequest,
@@ -13,19 +14,16 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [course] = await db.select().from(courses).where(eq(courses.id, id))
     if (!course)
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      return notFound('Course not found')
 
-    return NextResponse.json(course)
+    return ok(course)
   } catch (error) {
     console.error('Failed to fetch course:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch course' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch course')
   }
 }
 
@@ -41,10 +39,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateCourseSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -57,24 +52,19 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
-    return NextResponse.json(updated)
+      return notFound('Course not found')
+    return ok(updated)
   } catch (error) {
     console.error('Failed to update course:', error)
     const code = (error as { code?: string })?.code
     if (code === '23505') {
-      return NextResponse.json(
+      return ok(
         {
           error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হয়েছে',
           details: { slug: ['Slug already exists'] },
-        },
-        { status: 409 },
-      )
+        }, 409)
     }
-    return NextResponse.json(
-      { error: 'Failed to update course' },
-      { status: 500 },
-    )
+    return serverError('Failed to update course')
   }
 }
 
@@ -92,14 +82,11 @@ export async function DELETE(
       .where(eq(courses.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      return notFound('Course not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch (error) {
     console.error('Failed to delete course:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete course' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete course')
   }
 }

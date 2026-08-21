@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, notFound, badRequest, conflict, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { verifyPaymentSchema } from '@/lib/validations'
+import { and, eq } from 'drizzle-orm'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { verifyPaymentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { notifyPaymentUpdate } from '@/lib/notifications'
+import { calculatePaymentUpdate, validatePaymentAmount } from '@/lib/core/lms-logic'
 
 export async function GET(
   request: NextRequest,
@@ -15,25 +17,22 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [payment] = await db
       .select()
       .from(payments)
       .where(eq(payments.id, id))
     if (!payment)
-      return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
+      return notFound('Payment not found')
 
     if (!isAdmin(session.user.role) && payment.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
-    return NextResponse.json(payment)
+    return ok(payment)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch payment' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch payment')
   }
 }
 
@@ -47,34 +46,45 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = verifyPaymentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { status } = parsed.data
 
-    const [existing] = await db
-      .select()
-      .from(payments)
-      .where(eq(payments.id, id))
-    if (!existing)
-      return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
-
-    if (existing.status !== 'pending') {
-      return NextResponse.json(
-        { error: 'Payment has already been processed' },
-        { status: 400 },
-      )
-    }
-
     const result = await db.transaction(async (tx) => {
+      const [existing] = await tx.select().from(payments).where(eq(payments.id, id))
+      if (!existing) {
+        const err = new Error('Payment not found') as Error & { status?: number }
+        err.status = 404
+        throw err
+      }
+      if (existing.status !== 'pending') {
+        const err = new Error('Payment has already been processed') as Error & { status?: number }
+        err.status = 400
+        throw err
+      }
+
+      const [enrollment] = await tx.select().from(enrollments).where(eq(enrollments.id, existing.enrollmentId))
+
+      if (status === 'verified') {
+        if (!enrollment) {
+          const err = new Error('Enrollment not found for payment') as Error & { status?: number }
+          err.status = 400
+          throw err
+        }
+        const paymentCheck = validatePaymentAmount(existing.amount, Math.max(0, enrollment.dueAmount))
+        if (!paymentCheck.ok) {
+          const err = new Error(paymentCheck.error) as Error & { status?: number }
+          err.status = 400
+          throw err
+        }
+      }
+
       const [updated] = await tx
         .update(payments)
         .set({
@@ -83,41 +93,45 @@ export async function PUT(
           verifiedAt: new Date(),
           updatedAt: new Date(),
         })
-        .where(eq(payments.id, id))
+        .where(and(eq(payments.id, id), eq(payments.status, 'pending')))
         .returning()
 
-      if (status === 'verified') {
-        const [enrollment] = await tx
-          .select()
-          .from(enrollments)
+      if (!updated) {
+        const err = new Error('Conflict: payment status changed') as Error & { status?: number }
+        err.status = 409
+        throw err
+      }
+
+      if (status === 'verified' && enrollment) {
+        const [invoice] = await tx.select().from(invoices).where(eq(invoices.enrollmentId, existing.enrollmentId))
+
+        const totals = calculatePaymentUpdate(
+          enrollment.paidAmount,
+          enrollment.dueAmount,
+          invoice?.paidAmount ?? 0,
+          invoice?.dueAmount ?? enrollment.dueAmount,
+          existing.amount,
+        )
+
+        await tx
+          .update(enrollments)
+          .set({
+            paidAmount: totals.enrollmentPaid,
+            dueAmount: totals.enrollmentDue,
+            updatedAt: new Date(),
+          })
           .where(eq(enrollments.id, existing.enrollmentId))
-        if (enrollment) {
+
+        if (invoice) {
           await tx
-            .update(enrollments)
+            .update(invoices)
             .set({
-              paidAmount: enrollment.paidAmount + existing.amount,
-              dueAmount: enrollment.dueAmount - existing.amount,
+              paidAmount: totals.invoicePaid,
+              dueAmount: totals.invoiceDue,
+              status: totals.invoiceStatus as 'paid' | 'partial',
               updatedAt: new Date(),
             })
-            .where(eq(enrollments.id, existing.enrollmentId))
-
-          const [invoice] = await tx
-            .select()
-            .from(invoices)
-            .where(eq(invoices.enrollmentId, existing.enrollmentId))
-          if (invoice) {
-            const newPaidAmount = invoice.paidAmount + existing.amount
-            const newDueAmount = invoice.dueAmount - existing.amount
-            await tx
-              .update(invoices)
-              .set({
-                paidAmount: newPaidAmount,
-                dueAmount: newDueAmount,
-                status: newDueAmount <= 0 ? 'paid' : 'partial',
-                updatedAt: new Date(),
-              })
-              .where(eq(invoices.id, invoice.id))
-          }
+            .where(eq(invoices.id, invoice.id))
         }
       }
 
@@ -126,9 +140,9 @@ export async function PUT(
 
     if (status === 'verified' || status === 'rejected') {
       void notifyPaymentUpdate({
-        userId: existing.userId,
-        amount: existing.amount,
-        method: existing.method,
+        userId: result.userId,
+        amount: result.amount,
+        method: result.method,
         status,
       })
     }
@@ -148,12 +162,13 @@ export async function PUT(
       ),
     )
 
-    return NextResponse.json(result)
-  } catch {
-    return NextResponse.json(
-      { error: 'Failed to update payment' },
-      { status: 500 },
-    )
+    return ok(result)
+  } catch (e: unknown) {
+    const err = e as Error & { status?: number }
+    if (err.status === 404) return notFound(err.message)
+    if (err.status === 400) return badRequest(err.message)
+    if (err.status === 409) return conflict(err.message)
+    return serverError('Failed to update payment')
   }
 }
 
@@ -167,20 +182,17 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [existing] = await db
       .select()
       .from(payments)
       .where(eq(payments.id, id))
     if (!existing)
-      return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
+      return notFound('Payment not found')
 
     if (existing.status !== 'pending') {
-      return NextResponse.json(
-        { error: 'Can only delete pending payments' },
-        { status: 400 },
-      )
+      return badRequest('Can only delete pending payments')
     }
 
     await db.delete(payments).where(eq(payments.id, id))
@@ -200,11 +212,8 @@ export async function DELETE(
       ),
     )
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete payment' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete payment')
   }
 }

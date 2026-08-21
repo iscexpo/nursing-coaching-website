@@ -1,16 +1,16 @@
 import { randomUUID } from 'node:crypto'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { questions } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { createQuestionSchema, paginationSchema } from '@/lib/validations'
+import { eq, count } from 'drizzle-orm'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { createQuestionSchema, paginationSchema } from '@/lib/core/validations'
+import { ok, unauthorized, badRequest, serverError, validationError } from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const { searchParams } = new URL(request.url)
     const parsed = paginationSchema.safeParse({
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const examId = searchParams.get('examId')
 
     if (!examId) {
-      return NextResponse.json({ error: 'examId is required' }, { status: 400 })
+      return badRequest('examId is required')
     }
 
     const admin = isAdmin(session.user.role)
@@ -43,13 +43,15 @@ export async function GET(request: NextRequest) {
       return q
     })
 
-    return NextResponse.json({ data: sanitized, page, limit })
+    const [totalRow] = await db
+      .select({ count: count() })
+      .from(questions)
+      .where(eq(questions.examId, examId))
+
+    return ok({ data: sanitized, page, limit, total: totalRow?.count ?? 0 })
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to fetch questions' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch questions')
   }
 }
 
@@ -58,16 +60,12 @@ export async function POST(request: NextRequest) {
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = createQuestionSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [question] = await db
@@ -78,12 +76,9 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(question, { status: 201 })
+    return ok(question, 201)
   } catch (error) {
     console.error("Error:", error)
-    return NextResponse.json(
-      { error: 'Failed to create question' },
-      { status: 500 },
-    )
+    return serverError('Failed to create question')
   }
 }

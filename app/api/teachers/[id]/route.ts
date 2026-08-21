@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {notFound, ok, badRequest, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requirePermission } from '@/lib/permissions'
-import { updateTeacherSchema } from '@/lib/validations'
+import { requirePermission } from '@/lib/core/permissions'
+import { updateTeacherSchema } from '@/lib/core/validations'
 import type { InferInsertModel } from 'drizzle-orm'
 
 export async function GET(
@@ -20,14 +21,11 @@ export async function GET(
       .from(teachers)
       .where(eq(teachers.id, id))
     if (!teacher)
-      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+      return notFound('Teacher not found')
 
-    return NextResponse.json(teacher)
+    return ok(teacher)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch teacher' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch teacher')
   }
 }
 
@@ -43,10 +41,7 @@ export async function PUT(
     const body = await request.json()
     const parsed = updateTeacherSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const d = parsed.data
@@ -62,10 +57,7 @@ export async function PUT(
     set.updatedAt = new Date()
 
     if (Object.keys(set).length <= 1) {
-      return NextResponse.json(
-        { error: 'No fields to update' },
-        { status: 400 },
-      )
+      return badRequest('No fields to update')
     }
 
     const [updated] = await db
@@ -75,13 +67,10 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
-    return NextResponse.json(updated)
+      return notFound('Teacher not found')
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update teacher' },
-      { status: 500 },
-    )
+    return serverError('Failed to update teacher')
   }
 }
 
@@ -99,13 +88,10 @@ export async function DELETE(
       .where(eq(teachers.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Teacher not found' }, { status: 404 })
+      return notFound('Teacher not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete teacher' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete teacher')
   }
 }

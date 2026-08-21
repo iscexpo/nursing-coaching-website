@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, notFound, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { contactInquiries } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { updateContactInquirySchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { updateContactInquirySchema } from '@/lib/core/validations'
 
 export async function GET(
   request: NextRequest,
@@ -15,21 +16,18 @@ export async function GET(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [inquiry] = await db
       .select()
       .from(contactInquiries)
       .where(eq(contactInquiries.id, id))
     if (!inquiry)
-      return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+      return notFound('Inquiry not found')
 
-    return NextResponse.json(inquiry)
+    return ok(inquiry)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch inquiry' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch inquiry')
   }
 }
 
@@ -43,15 +41,12 @@ export async function PATCH(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = updateContactInquirySchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const updateData: Record<string, unknown> = { ...parsed.data }
@@ -66,14 +61,11 @@ export async function PATCH(
       .where(eq(contactInquiries.id, id))
       .returning()
     if (!updated)
-      return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+      return notFound('Inquiry not found')
 
-    return NextResponse.json(updated)
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update inquiry' },
-      { status: 500 },
-    )
+    return serverError('Failed to update inquiry')
   }
 }
 
@@ -87,20 +79,17 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [deleted] = await db
       .delete(contactInquiries)
       .where(eq(contactInquiries.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+      return notFound('Inquiry not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete inquiry' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete inquiry')
   }
 }

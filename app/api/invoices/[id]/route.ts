@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {unauthorized, forbidden, notFound, ok, serverError, validationError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { createInvoiceSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { createInvoiceSchema } from '@/lib/core/validations'
 
 export async function GET(
   request: NextRequest,
@@ -13,25 +14,22 @@ export async function GET(
     const { id } = await params
     const session = await getSession()
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [invoice] = await db
       .select()
       .from(invoices)
       .where(eq(invoices.id, id))
     if (!invoice)
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      return notFound('Invoice not found')
 
     if (!isAdmin(session.user.role) && invoice.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
-    return NextResponse.json(invoice)
+    return ok(invoice)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch invoice' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch invoice')
   }
 }
 
@@ -45,15 +43,12 @@ export async function PUT(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const body = await request.json()
     const parsed = createInvoiceSchema.partial().safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const [updated] = await db
@@ -66,13 +61,10 @@ export async function PUT(
       .returning()
 
     if (!updated)
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
-    return NextResponse.json(updated)
+      return notFound('Invoice not found')
+    return ok(updated)
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to update invoice' },
-      { status: 500 },
-    )
+    return serverError('Failed to update invoice')
   }
 }
 
@@ -86,20 +78,17 @@ export async function DELETE(
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
     if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
 
     const [deleted] = await db
       .delete(invoices)
       .where(eq(invoices.id, id))
       .returning()
     if (!deleted)
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      return notFound('Invoice not found')
 
-    return NextResponse.json({ success: true })
+    return ok({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to delete invoice' },
-      { status: 500 },
-    )
+    return serverError('Failed to delete invoice')
   }
 }

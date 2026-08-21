@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, badRequest, serverError} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { sql, desc, and, gte, lte, count, eq, avg } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { calculateGrade } from '@/lib/lms-logic'
+import { requireAdmin } from '@/lib/core/permissions'
+import { calculateGrade } from '@/lib/core/lms-logic'
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,10 +17,7 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate')
 
     if (!startDate || !endDate) {
-      return NextResponse.json(
-        { error: 'startDate and endDate query params are required' },
-        { status: 400 },
-      )
+      return badRequest('startDate and endDate query params are required')
     }
 
     const start = new Date(startDate)
@@ -117,7 +115,7 @@ export async function GET(request: NextRequest) {
       .map(([grade, count]) => ({ grade, count }))
       .sort((a, b) => a.grade.localeCompare(b.grade))
 
-    return NextResponse.json({
+    return ok({
       summary: {
         totalSubmissions: summaryRow.totalSubmissions,
         avgScore: summaryRow.avgScore,
@@ -131,9 +129,6 @@ export async function GET(request: NextRequest) {
       gradeDistribution,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to generate exam performance report' },
-      { status: 500 },
-    )
+    return serverError('Failed to generate exam performance report')
   }
 }

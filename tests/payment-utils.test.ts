@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { getPaymentValidationErrors } from '../lib/payment-utils'
+import { getPaymentValidationErrors } from '../lib/payment'
+import { calculatePaymentUpdate, validatePaymentAmount } from '../lib/core/lms-logic'
 
 describe('getPaymentValidationErrors', () => {
   it('accepts a valid cash payment without transaction details', () => {
@@ -43,5 +44,22 @@ describe('getPaymentValidationErrors', () => {
 
     expect(errors.transactionId).toContain('ট্রানজেকশন')
     expect(errors.senderNumber).toContain('প্রেরক')
+  })
+
+  it('rejects an amount above the server-authoritative due amount', () => {
+    expect(validatePaymentAmount(0, 1000).ok).toBe(false)
+    expect(validatePaymentAmount(-1, 1000).ok).toBe(false)
+    expect(validatePaymentAmount(1001, 1000).ok).toBe(false)
+    expect(validatePaymentAmount(1000, 1000).ok).toBe(true)
+  })
+
+  it('keeps invoice and enrollment totals synchronized', () => {
+    expect(calculatePaymentUpdate(2000, 3000, 2000, 3000, 1000)).toEqual({
+      enrollmentPaid: 3000,
+      enrollmentDue: 2000,
+      invoicePaid: 3000,
+      invoiceDue: 2000,
+      invoiceStatus: 'partial',
+    })
   })
 })

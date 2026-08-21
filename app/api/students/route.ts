@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq, desc, like, or, count } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { createStudentSchema, paginationSchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { createStudentSchema, paginationSchema } from '@/lib/core/validations'
 import { auth } from '@/lib/auth'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
+import { ok, unauthorized, badRequest, conflict, serverError, validationError } from '@/lib/api/response'
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,17 +46,14 @@ export async function GET(request: NextRequest) {
       .from(user)
       .where(where)
 
-    return NextResponse.json({
+    return ok({
       data: users,
       page,
       limit,
       total: totalRow?.count ?? 0,
     })
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch students' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch students')
   }
 }
 
@@ -71,16 +69,12 @@ export async function POST(request: NextRequest) {
     const session = await getSession()
     const authz = await requireAdmin()
     if (!authz.ok) return authz.response
-    if (!session)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = createStudentSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const { password, ...profileData } = parsed.data
@@ -90,10 +84,7 @@ export async function POST(request: NextRequest) {
       .from(user)
       .where(eq(user.email, parsed.data.email))
     if (existingEmail.length > 0) {
-      return NextResponse.json(
-        { error: 'এই ইমেইল ইতিমধ্যে ব্যবহৃত হয়েছে' },
-        { status: 400 },
-      )
+      return conflict('এই ইমেইল ইতিমধ্যে ব্যবহৃত হয়েছে')
     }
 
     const result = await auth.api.signUpEmail({
@@ -152,16 +143,13 @@ export async function POST(request: NextRequest) {
       ),
     )
 
-    return NextResponse.json(created, { status: 201 })
+    return ok(created, 201)
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to create student'
     if (message.includes('already') || message.includes('Unique')) {
-      return NextResponse.json(
-        { error: 'এই ইমেইল ইতিমধ্যে ব্যবহৃত হয়েছে' },
-        { status: 400 },
-      )
+      return conflict('এই ইমেইল ইতিমধ্যে ব্যবহৃত হয়েছে')
     }
-    return NextResponse.json({ error: message }, { status: 500 })
+    return serverError(message)
   }
 }

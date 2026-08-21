@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
 import { Lightbox } from '@/components/ui/lightbox'
-import { getCmsContent } from '@/lib/content-server'
-import { cn } from '@/lib/utils'
+import { getCmsContent } from '@/lib/cms/server'
+import { cn } from '@/lib/core/utils'
 
 interface GalleryImage {
   id: string

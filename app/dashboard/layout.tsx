@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getSession } from '@/lib/permissions'
+import { getSession } from '@/lib/core/permissions'
 
 export default async function DashboardLayout({
   children,

@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {ok, conflict, serverError, validationError} from '@/lib/api/response'
 import { randomUUID } from 'node:crypto'
 import { db } from '@/lib/db'
 import { courseCategories } from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { createCourseCategorySchema } from '@/lib/validations'
+import { requireAdmin } from '@/lib/core/permissions'
+import { createCourseCategorySchema } from '@/lib/core/validations'
 
 export async function GET() {
   try {
@@ -12,13 +13,10 @@ export async function GET() {
       .select()
       .from(courseCategories)
       .orderBy(asc(courseCategories.sortOrder), asc(courseCategories.name))
-    return NextResponse.json({ data })
+    return ok({ data })
   } catch (error) {
     console.error('Failed to fetch course categories:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch course categories' },
-      { status: 500 },
-    )
+    return serverError('Failed to fetch course categories')
   }
 }
 
@@ -30,10 +28,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createCourseCategorySchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.flatten().fieldErrors },
-        { status: 400 },
-      )
+      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
     }
 
     const existing = await db
@@ -42,10 +37,7 @@ export async function POST(request: NextRequest) {
       .where(eq(courseCategories.name, parsed.data.name))
       .limit(1)
     if (existing.length > 0) {
-      return NextResponse.json(
-        { error: 'এই ক্যাটাগরি ইতিমধ্যে বিদ্যমান' },
-        { status: 409 },
-      )
+      return conflict('এই ক্যাটাগরি ইতিমধ্যে বিদ্যমান')
     }
 
     const slugExists = await db
@@ -54,10 +46,7 @@ export async function POST(request: NextRequest) {
       .where(eq(courseCategories.slug, parsed.data.slug))
       .limit(1)
     if (slugExists.length > 0) {
-      return NextResponse.json(
-        { error: 'এই স্লাগ ইতিমধ্যে ব্যবহৃত হচ্ছে' },
-        { status: 409 },
-      )
+      return conflict('এই স্লাগ ইতিমধ্যে ব্যবহৃত হচ্ছে')
     }
 
     const [created] = await db
@@ -68,12 +57,9 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(created, { status: 201 })
+    return ok(created, 201)
   } catch (error) {
     console.error('Failed to create course category:', error)
-    return NextResponse.json(
-      { error: 'Failed to create course category' },
-      { status: 500 },
-    )
+    return serverError('Failed to create course category')
   }
 }
