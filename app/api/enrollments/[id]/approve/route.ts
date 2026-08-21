@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { enrollments, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requirePermission, getSession } from '@/lib/permissions'
-import { getEnrollmentTransitionError } from '@/lib/lms-logic'
+import { requirePermission, getSession } from '@/lib/core/permissions'
+import { getEnrollmentTransitionError } from '@/lib/core/lms-logic'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

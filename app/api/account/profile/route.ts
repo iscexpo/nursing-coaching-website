@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
-import { updateProfileSchema } from '@/lib/validations'
+import { getSession } from '@/lib/core/permissions'
+import { updateProfileSchema } from '@/lib/core/validations'
 
 function sanitizeProfile(profile: Record<string, unknown>) {
   const { emailVerified, phoneNumberVerified, createdAt, updatedAt, ...safe } =

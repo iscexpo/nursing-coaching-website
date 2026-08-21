@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { attendance } from '@/lib/db/schema'
 import { eq, and, gte, lte } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { z } from 'zod/v3'
 
 const batchMarkSchema = z.object({

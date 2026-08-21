@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod/v3'
-import { requireAdmin } from '@/lib/permissions'
+import { requireAdmin } from '@/lib/core/permissions'
 import { sendBroadcastSms } from '@/lib/sms'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 const broadcastSchema = z.object({
   title: z.string().min(1).max(200),

@@ -2,13 +2,14 @@ import {
   pgTable,
   text,
   timestamp,
+  date,
   boolean,
   jsonb,
   integer,
   index,
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
-import { defaultCmsContent, type CmsContent } from '@/lib/content-cms'
+import { defaultCmsContent, type CmsContent } from '@/lib/cms'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -76,6 +77,7 @@ export const session = pgTable(
     token: text('token').notNull().unique(),
     ipAddress: text('ip_address'),
     userAgent: text('user_agent'),
+    lastActiveAt: timestamp('last_active_at'),
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
@@ -257,7 +259,7 @@ export const payments = pgTable(
     transactionId: text('transaction_id'),
     senderNumber: text('sender_number'),
     status: text('status')
-      .$type<'pending' | 'verified' | 'rejected'>()
+      .$type<'pending' | 'verified' | 'rejected' | 'refunded'>()
       .default('pending')
       .notNull(),
     notes: text('notes'),
@@ -328,6 +330,9 @@ export const settings = pgTable('settings', {
   cmsContent: jsonb('cms_content')
     .$type<CmsContent>()
     .default(defaultCmsContent),
+  contentVersion: integer('content_version').notNull().default(1),
+  contentDraft: jsonb('content_draft').$type<CmsContent>(),
+  publishedAt: timestamp('published_at'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
@@ -654,5 +659,111 @@ export const admitCards = pgTable(
     index('admit_cards_user_id_idx').on(table.userId),
     index('admit_cards_exam_id_idx').on(table.examId),
     uniqueIndex('admit_cards_user_exam_unique').on(table.userId, table.examId),
+  ],
+)
+
+export const notificationTemplates = pgTable(
+  'notification_templates',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').unique().notNull(),
+    subject: text('subject').notNull(),
+    body: text('body').notNull(),
+    channel: text('channel')
+      .$type<'in_app' | 'sms'>()
+      .notNull()
+      .default('in_app'),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [index('notification_templates_is_active_idx').on(table.isActive)],
+)
+
+export const scheduledNotifications = pgTable(
+  'scheduled_notifications',
+  {
+    id: text('id').primaryKey(),
+    templateId: text('template_id').references(() => notificationTemplates.id, {
+      onDelete: 'set null',
+    }),
+    title: text('title').notNull(),
+    message: text('message').notNull(),
+    type: text('type')
+      .$type<'info' | 'success' | 'warning' | 'payment' | 'enrollment'>()
+      .notNull()
+      .default('info'),
+    scheduledAt: timestamp('scheduled_at').notNull(),
+    targetRole: text('target_role'),
+    targetCourseId: text('target_course_id').references(() => courses.id, {
+      onDelete: 'set null',
+    }),
+    status: text('status')
+      .$type<'pending' | 'sending' | 'sent' | 'failed'>()
+      .notNull()
+      .default('pending'),
+    sentAt: timestamp('sent_at'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [
+    index('scheduled_notifications_scheduled_at_idx').on(table.scheduledAt),
+    index('scheduled_notifications_status_idx').on(table.status),
+    index('scheduled_notifications_template_id_idx').on(table.templateId),
+  ],
+)
+
+export const leaveRequests = pgTable(
+  'leave_requests',
+  {
+    id: text('id').primaryKey(),
+    studentId: text('student_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    courseId: text('course_id')
+      .notNull()
+      .references(() => courses.id, { onDelete: 'cascade' }),
+    date: date('date').notNull(),
+    reason: text('reason').notNull(),
+    status: text('status')
+      .$type<'pending' | 'approved' | 'rejected'>()
+      .notNull()
+      .default('pending'),
+    approvedBy: text('approved_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    approvedAt: timestamp('approved_at'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [
+    index('leave_requests_student_id_idx').on(table.studentId),
+    index('leave_requests_course_id_idx').on(table.courseId),
+    index('leave_requests_status_idx').on(table.status),
+  ],
+)
+
+export const courseRatings = pgTable(
+  'course_ratings',
+  {
+    id: text('id').primaryKey(),
+    studentId: text('student_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    courseId: text('course_id')
+      .notNull()
+      .references(() => courses.id, { onDelete: 'cascade' }),
+    rating: integer('rating').notNull(),
+    review: text('review'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [
+    index('course_ratings_course_id_idx').on(table.courseId),
+    index('course_ratings_student_id_idx').on(table.studentId),
+    uniqueIndex('course_ratings_student_course_unique').on(
+      table.studentId,
+      table.courseId,
+    ),
   ],
 )

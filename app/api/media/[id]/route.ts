@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { deleteFromStorage } from '@/lib/storage'
+import { deleteFromStorage } from '@/lib/media/storage'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
+import { requireAdmin } from '@/lib/core/permissions'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function DELETE(

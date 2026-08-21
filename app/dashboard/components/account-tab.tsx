@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useMemo } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import {
   CheckCircle2,
@@ -191,10 +192,12 @@ function EduEditSection({
         </button>
         {value.photoUrl && (
           <div className="flex items-center gap-2">
-            <img
+            <Image
               src={value.photoUrl}
               alt=""
-              className="h-10 w-10 rounded object-cover border border-border"
+              width={40}
+              height={40}
+              className="rounded object-cover border border-border"
             />
             <button
               type="button"
@@ -241,10 +244,12 @@ function EduViewSection({
         ))}
       </div>
       {value.photoUrl && (
-        <img
+        <Image
           src={value.photoUrl}
           alt={`${label} certificate`}
-          className="h-16 w-16 rounded object-cover border border-border"
+          width={64}
+          height={64}
+          className="rounded object-cover border border-border"
         />
       )}
     </div>

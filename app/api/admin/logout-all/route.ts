@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { session } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 /**

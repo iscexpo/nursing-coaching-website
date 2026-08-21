@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { exams, questions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { updateExamSchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { updateExamSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 export async function GET(

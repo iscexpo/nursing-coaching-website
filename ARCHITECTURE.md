@@ -6,6 +6,14 @@
 - `components/` owns reusable UI and layout primitives.
 - `lib/<feature>/` owns feature-domain rules, validation, and formatting.
 - `lib/db/` owns the Drizzle schema, database client, and migrations.
+- `lib/auth/` owns Better Auth wiring, the typed client, and CSRF helpers.
+- `lib/sms/` owns the SMS facade and per-provider adapters (gp/sas/sheet/shiram).
+- `lib/media/` owns upload validation and blob storage helpers.
+- `lib/cms/` owns content-CMS merge logic, the content server, settings, and site data.
+- `lib/core/` owns cross-cutting rules: env, domain, utils, rate limiting, permissions,
+  validations, and pure LMS business logic.
+- `lib/payment/` owns payment calculation helpers and CSV export.
+- `lib/audit/` and `lib/notifications/` own audit logging and notification helpers.
 - `i18n/` owns locale metadata, routing, request loading, and locale helpers.
 - `messages/` owns the English reference catalog and Bengali translation catalog.
 - `scripts/` owns operational checks and database utilities.

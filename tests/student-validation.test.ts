@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createStudentSchema } from '../lib/validations'
+import { createStudentSchema } from '../lib/core/validations'
 
 describe('createStudentSchema', () => {
   it('accepts a student photo url', () => {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { studentLifecycleEvents } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
+import { getSession } from '@/lib/core/permissions'
 
 export async function GET(request: NextRequest) {
   try {

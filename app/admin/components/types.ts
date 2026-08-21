@@ -250,6 +250,31 @@ export interface NotificationRecord {
   createdAt: string
 }
 
+export interface NotificationTemplate {
+  id: string
+  name: string
+  subject: string
+  body: string
+  channel: 'in_app' | 'sms'
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ScheduledNotification {
+  id: string
+  templateId: string | null
+  title: string
+  message: string
+  type: 'info' | 'success' | 'warning' | 'payment' | 'enrollment'
+  scheduledAt: string
+  targetRole: string | null
+  targetCourseId: string | null
+  status: 'pending' | 'sending' | 'sent' | 'failed'
+  sentAt: string | null
+  createdAt: string
+}
+
 export interface CourseCategory {
   id: string
   name: string

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
-import { requirePermission } from '@/lib/permissions'
+import { requirePermission } from '@/lib/core/permissions'
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authz = await requirePermission('exam.manage')

@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { SectionHeading } from '@/components/section-heading'
 import { FadeIn } from '@/components/ui/fade-in'
-import { getCmsContent } from '@/lib/content-server'
+import { getCmsContent } from '@/lib/cms/server'
 import { FaqAccordion } from './faq-accordion'
 
 export async function Faq() {

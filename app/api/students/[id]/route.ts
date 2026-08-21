@@ -7,8 +7,8 @@ import {
   requireAdmin,
   isAdmin,
   isSuperAdmin,
-} from '@/lib/permissions'
-import { updateStudentSchema } from '@/lib/validations'
+} from '@/lib/core/permissions'
+import { updateStudentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { hashPassword } from 'better-auth/crypto'
 

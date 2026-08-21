@@ -2,7 +2,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 import {
   JsonLd,
   organizationJsonLd,

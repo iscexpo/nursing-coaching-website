@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import NextImage from 'next/image'
 import { Plus, Trash2, Loader2, Image, FileText } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import type { MediaFile } from './types'
@@ -201,12 +202,13 @@ export function MediaPanel({
               key={media.id}
               className="rounded-2xl border border-border bg-background p-4 shadow-sm"
             >
-              <div className="mb-3 h-40 overflow-hidden rounded-xl bg-muted">
+              <div className="relative mb-3 h-40 overflow-hidden rounded-xl bg-muted">
                 {media.contentType.startsWith('image/') ? (
-                  <img
+                  <NextImage
                     src={media.url}
                     alt={media.altText || media.originalFilename}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-muted-foreground">

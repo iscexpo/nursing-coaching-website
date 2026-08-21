@@ -2,19 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
 import { join, extname } from 'path'
 import { z } from 'zod/v3'
-import { uploadToStorage } from '@/lib/storage'
+import { uploadToStorage } from '@/lib/media/storage'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { rateLimit } from '@/lib/rate-limit'
+import { requireAdmin } from '@/lib/core/permissions'
+import { rateLimit } from '@/lib/core/rate-limit'
 import {
   hasAllowedExtension,
   isAllowedMime,
   matchesSignature,
   validateImageDimensions,
   isValidLogoSize,
-} from '@/lib/media-validation'
+} from '@/lib/media/validation'
 
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
 

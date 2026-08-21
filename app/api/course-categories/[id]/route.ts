@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { courseCategories } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { updateCourseCategorySchema } from '@/lib/validations'
+import { requireAdmin } from '@/lib/core/permissions'
+import { updateCourseCategorySchema } from '@/lib/core/validations'
 
 export async function PUT(
   request: NextRequest,

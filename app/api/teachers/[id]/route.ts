@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requirePermission } from '@/lib/permissions'
-import { updateTeacherSchema } from '@/lib/validations'
+import { requirePermission } from '@/lib/core/permissions'
+import { updateTeacherSchema } from '@/lib/core/validations'
 import type { InferInsertModel } from 'drizzle-orm'
 
 export async function GET(

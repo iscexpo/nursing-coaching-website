@@ -3,7 +3,7 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 const MIGRATION_FILES = [
   '0000_curly_trish_tilby.sql',

@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { exams, modelTestApplicants } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { createModelTestApplicantSchema } from '@/lib/validations'
+import { createModelTestApplicantSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 export async function POST(request: NextRequest) {
   const limiter = await rateLimit(request, {

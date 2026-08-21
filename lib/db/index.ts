@@ -1,7 +1,7 @@
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from './schema'
-import { validateEnv } from '@/lib/env'
+import { validateEnv } from '@/lib/core/env'
 
 let _db: PostgresJsDatabase<typeof schema> | null = null
 

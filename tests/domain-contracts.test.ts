@@ -5,7 +5,7 @@ import {
   createPaymentSchema,
   paginationSchema,
   submitExamSchema,
-} from '@/lib/validations'
+} from '@/lib/core/validations'
 
 describe('domain validation contracts', () => {
   it('requires a course when creating an enrollment', () => {

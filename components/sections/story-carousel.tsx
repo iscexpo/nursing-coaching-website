@@ -20,22 +20,28 @@ export function StoryCarousel({ stories }: { stories: Story[] }) {
   const touchStart = useRef<number | null>(null)
   const t = useTranslations('common')
 
-  const go = (dir: number) => {
-    setIndex((i) => (i + dir + stories.length) % stories.length)
-  }
+  const go = useCallback(
+    (dir: number) => {
+      setIndex((i) => (i + dir + stories.length) % stories.length)
+    },
+    [stories.length],
+  )
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     touchStart.current = e.touches[0].clientX
   }, [])
 
-  const onTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (touchStart.current === null) return
-    const diff = touchStart.current - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 50) {
-      go(diff > 0 ? 1 : -1)
-    }
-    touchStart.current = null
-  }, [])
+  const onTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStart.current === null) return
+      const diff = touchStart.current - e.changedTouches[0].clientX
+      if (Math.abs(diff) > 50) {
+        go(diff > 0 ? 1 : -1)
+      }
+      touchStart.current = null
+    },
+    [go],
+  )
 
   return (
     <div

@@ -3,14 +3,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { enrollments, courses, studentLifecycleEvents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { updateEnrollmentSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { updateEnrollmentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 import {
   getEnrollmentTransitionError,
   getLifecycleTimestamp,
-} from '@/lib/lms-logic'
+} from '@/lib/core/lms-logic'
 import { notifyEnrollmentStatusChange } from '@/lib/notifications'
 
 export async function GET(

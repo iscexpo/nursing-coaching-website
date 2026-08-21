@@ -1,7 +1,7 @@
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
 import { NextResponse, type NextRequest } from 'next/server'
-import { csrfMiddleware, ensureCsrfCookie } from './lib/csrf'
+import { csrfMiddleware, ensureCsrfCookie } from './lib/auth/csrf'
 
 const handleI18nRouting = createMiddleware(routing)
 

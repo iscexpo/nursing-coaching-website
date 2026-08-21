@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { teachers } from '@/lib/db/schema'
 import { desc } from 'drizzle-orm'
-import { requirePermission } from '@/lib/permissions'
-import { createTeacherSchema } from '@/lib/validations'
+import { requirePermission } from '@/lib/core/permissions'
+import { createTeacherSchema } from '@/lib/core/validations'
 
 export async function GET() {
   try {

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useSiteData } from '@/hooks/use-site-data'
 
@@ -16,10 +17,11 @@ export function SiteFooter() {
           {/* Brand section */}
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
-              <img
+              <Image
                 src={site.logo || '/logo.png'}
                 alt={site.nameBn}
                 width={140}
+                height={56}
                 className="h-auto object-contain"
               />
             </Link>

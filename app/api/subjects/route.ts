@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto'
 import { db } from '@/lib/db'
 import { subjects } from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { createSubjectSchema } from '@/lib/validations'
+import { requireAdmin } from '@/lib/core/permissions'
+import { createSubjectSchema } from '@/lib/core/validations'
 
 export async function GET() {
   try {

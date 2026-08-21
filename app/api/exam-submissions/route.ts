@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
-import { getSession, isAdmin } from '@/lib/permissions'
-import { submitExamSchema, paginationSchema } from '@/lib/validations'
-import { calculateExamScore, calculateGrade } from '@/lib/lms-logic'
+import { getSession, isAdmin } from '@/lib/core/permissions'
+import { submitExamSchema, paginationSchema } from '@/lib/core/validations'
+import { calculateExamScore, calculateGrade } from '@/lib/core/lms-logic'
 
 export async function GET(request: NextRequest) {
   try {
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     const scoring = calculateExamScore(
       answers,
       examQuestions,
-      false, // TODO: read from exam.negativeMarking when column is added
+      exam.negativeMarking ?? false,
     )
     const grade = calculateGrade(scoring.score, scoring.total)
 

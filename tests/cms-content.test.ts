@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defaultCmsContent, mergeCmsContent } from '../lib/content-cms'
+import { defaultCmsContent, mergeCmsContent } from '../lib/cms'
 
 describe('mergeCmsContent', () => {
   it('merges custom hero content over the defaults', () => {

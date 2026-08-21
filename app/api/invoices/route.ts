@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { invoices } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { createInvoiceSchema, paginationSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { createInvoiceSchema, paginationSchema } from '@/lib/core/validations'
 
 function generateInvoiceNumber(): string {
   const now = Date.now()

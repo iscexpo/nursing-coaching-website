@@ -2,7 +2,7 @@
 
 import { Moon, Sun, Monitor } from 'lucide-react'
 import { useTheme } from './theme-provider'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 export function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme()

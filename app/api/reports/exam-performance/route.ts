@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { examSubmissions, exams, questions } from '@/lib/db/schema'
 import { sql, desc, and, gte, lte, count, eq, avg } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
-import { calculateGrade } from '@/lib/lms-logic'
+import { requireAdmin } from '@/lib/core/permissions'
+import { calculateGrade } from '@/lib/core/lms-logic'
 
 export async function GET(request: NextRequest) {
   try {

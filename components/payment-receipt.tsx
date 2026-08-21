@@ -2,7 +2,7 @@
 
 import { QrCode } from 'lucide-react'
 import { Button } from './ui/button'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 
 interface PaymentReceiptProps {
   receiptNumber: string

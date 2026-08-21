@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useMemo } from 'react'
+import NextImage from 'next/image'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import type { Course } from './types'
@@ -386,10 +387,12 @@ export function CoursesPanel({
               </div>
               {form.image && (
                 <div className="mt-2 flex items-center gap-3">
-                  <img
+                  <NextImage
                     src={form.image}
                     alt=""
-                    className="h-20 w-32 rounded-lg object-cover border border-border"
+                    width={128}
+                    height={80}
+                    className="rounded-lg object-cover border border-border"
                   />
                   <button
                     type="button"
@@ -567,10 +570,12 @@ export function CoursesPanel({
                     </td>
                     <td className="px-4 py-3 text-center">
                       {c.image ? (
-                        <img
+                        <NextImage
                           src={c.image}
                           alt=""
-                          className="mx-auto h-10 w-16 rounded object-cover border border-border"
+                          width={64}
+                          height={40}
+                          className="mx-auto rounded object-cover border border-border"
                         />
                       ) : (
                         <span className="text-xs text-muted-foreground">

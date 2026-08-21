@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/lib/permissions'
+import { getSession } from '@/lib/core/permissions'
 import { auth } from '@/lib/auth'
 import { z } from 'zod/v3'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),

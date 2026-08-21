@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { otp, account, user } from '@/lib/db/schema'
 import { eq, and, gt } from 'drizzle-orm'
 import bcrypt from 'bcrypt'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 export async function POST(request: NextRequest) {
   const limiter = await rateLimit(request, {

@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { user, account } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 export async function POST(request: NextRequest) {
   const limiter = await rateLimit(request, {

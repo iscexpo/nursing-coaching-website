@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, enrollments, invoices } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { verifyPaymentSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { verifyPaymentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 import { notifyPaymentUpdate } from '@/lib/notifications'
-import { calculatePaymentUpdate, validatePaymentAmount } from '@/lib/lms-logic'
+import { calculatePaymentUpdate, validatePaymentAmount } from '@/lib/core/lms-logic'
 
 export async function GET(
   request: NextRequest,

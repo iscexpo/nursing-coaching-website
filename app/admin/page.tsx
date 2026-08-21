@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/client'
 import { useSiteData } from '@/hooks/use-site-data'
 import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react'
 import { ErrorBoundary } from '@/components/error-boundary'
@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 
 import { PanelLayout } from '@/components/ui/panel-layout'
+import { DatabaseHealthBanner } from './components/database-health-banner'
 import { OverviewPanel } from './components/overview-tab'
 import type {
   Course,
@@ -423,7 +424,7 @@ export default function AdminPage() {
         setLoading(false)
       }
     },
-    [tab],
+    [tab, t],
   )
 
   useEffect(() => {
@@ -523,6 +524,7 @@ export default function AdminPage() {
       onTabChange={(id) => setTab(id as TabId)}
       onSignOut={handleSignOut}
     >
+      <DatabaseHealthBanner />
       {tab === 'overview' && (
         <OverviewPanel
           courses={courses}

@@ -9,7 +9,7 @@ import { Alert } from '@/components/ui/alert'
 import {
   getPaymentValidationErrors,
   type PaymentFormValues,
-} from '@/lib/payment-utils'
+} from '@/lib/payment'
 import type { Enrollment, Payment, Student } from './types'
 
 export function PaymentsPanel({

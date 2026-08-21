@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { admissions, courses } from '@/lib/db/schema'
 import { and, eq } from 'drizzle-orm'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 export async function GET(request: NextRequest) {
   const limiter = await rateLimit(request, {

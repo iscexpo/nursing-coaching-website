@@ -4,10 +4,10 @@ import { db } from '@/lib/db'
 import { admissions, user } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { updateAdmissionSchema } from '@/lib/validations'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { updateAdmissionSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { deriveStudentEmail } from '@/lib/domain'
+import { deriveStudentEmail } from '@/lib/core/domain'
 
 async function generateNextStudentId(): Promise<string> {
   const rows = await db

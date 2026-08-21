@@ -11,7 +11,7 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { JsonLd } from '@/components/json-ld'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 
 type Props = { params: Promise<{ slug: string }> }
 

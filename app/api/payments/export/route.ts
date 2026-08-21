@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { payments, user } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/permissions'
+import { requireAdmin } from '@/lib/core/permissions'
 import * as XLSX from 'xlsx'
 
 export async function GET() {

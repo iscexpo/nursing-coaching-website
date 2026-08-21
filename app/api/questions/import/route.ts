@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { exams, questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requirePermission } from '@/lib/permissions'
+import { requirePermission } from '@/lib/core/permissions'
 
 const questionSchema = z.object({ question: z.string().min(1).max(2000), options: z.array(z.string().min(1).max(500)).length(4), correctIndex: z.number().int().min(0).max(3), difficulty: z.enum(['easy', 'medium', 'hard']).optional(), points: z.number().int().min(1).max(100).optional(), explanation: z.string().max(2000).optional() })
 const importSchema = z.object({ examId: z.string().min(1), questions: z.array(questionSchema).min(1).max(500) })

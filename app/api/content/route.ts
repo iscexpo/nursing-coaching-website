@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession, requireAdmin } from '@/lib/permissions'
-import { getSystemSettings, saveSystemSettings } from '@/lib/settings'
-import { settingsSchema } from '@/lib/validations'
-import { mergeCmsContent } from '@/lib/content-cms'
+import { getSession, requireAdmin } from '@/lib/core/permissions'
+import { getSystemSettings, saveSystemSettings } from '@/lib/cms/settings'
+import { settingsSchema } from '@/lib/core/validations'
+import { mergeCmsContent } from '@/lib/cms'
 
 const SENSITIVE_KEYS = [
   'paymentGatewayApiKey',

@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { admitCards } from '@/lib/db/schema'
 import { eq, desc, count } from 'drizzle-orm'
-import { getSession, requireAdmin, isAdmin } from '@/lib/permissions'
-import { createAdmitCardSchema, paginationSchema } from '@/lib/validations'
+import { getSession, requireAdmin, isAdmin } from '@/lib/core/permissions'
+import { createAdmitCardSchema, paginationSchema } from '@/lib/core/validations'
 
 export async function GET(request: NextRequest) {
   try {

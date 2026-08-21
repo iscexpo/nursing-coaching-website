@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/site-header'
@@ -40,6 +40,11 @@ export default function ExamPage() {
   const [timeLeft, setTimeLeft] = useState(15 * 60)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const timeLeftRef = useRef(timeLeft)
+
+  useEffect(() => {
+    timeLeftRef.current = timeLeft
+  })
 
   useEffect(() => {
     async function loadExam() {
@@ -67,20 +72,6 @@ export default function ExamPage() {
     loadExam()
   }, [examId])
 
-  useEffect(() => {
-    if (submitting || questions.length === 0) return
-    const timer = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          handleSubmit()
-          return 0
-        }
-        return t - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [submitting, questions.length])
-
   const handleSubmit = useCallback(async () => {
     if (submitting) return
     setSubmitting(true)
@@ -92,7 +83,7 @@ export default function ExamPage() {
         body: JSON.stringify({
           examId,
           answers,
-          timeTaken: (exam?.duration || 15) * 60 - timeLeft,
+          timeTaken: (exam?.duration || 15) * 60 - timeLeftRef.current,
         }),
       })
 
@@ -122,7 +113,21 @@ export default function ExamPage() {
       setError('Network error. Please try again.')
       setSubmitting(false)
     }
-  }, [submitting, answers, questions, examId, exam, timeLeft, router])
+  }, [submitting, answers, examId, exam, router])
+
+  useEffect(() => {
+    if (submitting || questions.length === 0) return
+    const timer = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          handleSubmit()
+          return 0
+        }
+        return t - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [submitting, questions.length, handleSubmit])
 
   if (loading) {
     return (
