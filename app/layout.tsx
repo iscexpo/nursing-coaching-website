@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Hind_Siliguri, Inter } from 'next/font/google'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ToastProvider } from '@/components/ui/toast'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
@@ -37,6 +38,7 @@ export default async function RootLayout({
             <ToastProvider>{children}</ToastProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
