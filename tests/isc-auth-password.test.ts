@@ -12,12 +12,19 @@ const scryptAsync = promisify(nodeScrypt)
 
 async function legacyBetterAuthHash(password: string): Promise<string> {
   const salt = randomBytes(16).toString('hex')
-  const key = (await scryptAsync(
-    password.normalize('NFKC'),
-    salt,
-    64,
-    { N: 16384, r: 16, p: 1, maxmem: 128 * 16384 * 16 * 2 },
-  )) as Buffer
+  const key = (await (
+    scryptAsync as unknown as (
+      pw: string,
+      salt: string,
+      keylen: number,
+      opts: { N: number; r: number; p: number; maxmem: number },
+    ) => Promise<Buffer>
+  )(password.normalize('NFKC'), salt, 64, {
+    N: 16384,
+    r: 16,
+    p: 1,
+    maxmem: 128 * 16384 * 16 * 2,
+  })) as Buffer
   return `${salt}:${key.toString('hex')}`
 }
 
