@@ -1,5 +1,5 @@
 import { randomBytes, scrypt as nodeScrypt } from 'node:crypto'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 const BCRYPT_ROUNDS = 10
 
