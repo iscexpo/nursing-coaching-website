@@ -1,9 +1,5 @@
 import { db } from '../db'
-import {
-  user,
-  account,
-  verification,
-} from '../db/schema'
+import { user, account, verification } from '../db/schema'
 import { eq, and } from 'drizzle-orm'
 import {
   generateToken,
@@ -105,15 +101,14 @@ async function getCredentialAccount(userId: string) {
   const rows = await db
     .select()
     .from(account)
-    .where(and(eq(account.userId, userId), eq(account.providerId, 'credential')))
+    .where(
+      and(eq(account.userId, userId), eq(account.providerId, 'credential')),
+    )
     .limit(1)
   return rows[0] ?? null
 }
 
-async function setPassword(
-  userId: string,
-  hashed: string,
-): Promise<void> {
+async function setPassword(userId: string, hashed: string): Promise<void> {
   const existing = await getCredentialAccount(userId)
   if (existing) {
     await db
@@ -158,7 +153,11 @@ async function writeVerification(
   if (existing) {
     await db
       .update(verification)
-      .set({ value, expiresAt: new Date(Date.now() + ttlSeconds * 1000), updatedAt: new Date() })
+      .set({
+        value,
+        expiresAt: new Date(Date.now() + ttlSeconds * 1000),
+        updatedAt: new Date(),
+      })
       .where(eq(verification.id, existing.id))
   } else {
     await db.insert(verification).values({
@@ -193,7 +192,11 @@ async function verifyStoredCode(
     throw new AuthError(403, 'Too many attempts', 'TOO_MANY_ATTEMPTS')
   }
   if (storedCode !== code.trim()) {
-    await writeVerification(identifier, `${storedCode}:${attempts + 1}`, Math.max(1, Math.floor((row.expiresAt.getTime() - Date.now()) / 1000)))
+    await writeVerification(
+      identifier,
+      `${storedCode}:${attempts + 1}`,
+      Math.max(1, Math.floor((row.expiresAt.getTime() - Date.now()) / 1000)),
+    )
     throw new AuthError(400, 'Invalid OTP', 'INVALID_OTP')
   }
   await consumeVerification(identifier)
@@ -212,8 +215,7 @@ async function authenticateWithPassword(
     )
   }
   const cred = await getCredentialAccount(lookupUser.id)
-  const ok =
-    !!cred && (await verifyPassword(password, cred.password))
+  const ok = !!cred && (await verifyPassword(password, cred.password))
   if (!ok) {
     throw new AuthError(
       401,
@@ -228,9 +230,11 @@ async function authenticateWithPassword(
 export type ApiResult<T> = T & { token?: string; expiresAt?: Date }
 
 export const api = {
-  async getSession({ headers }: { headers: HeaderLike }): Promise<
-    SessionData | null
-  > {
+  async getSession({
+    headers,
+  }: {
+    headers: HeaderLike
+  }): Promise<SessionData | null> {
     return getSessionFromHeaders(headers)
   },
 
@@ -352,7 +356,11 @@ export const api = {
       throw new AuthError(400, 'Phone number is required', 'PHONE_REQUIRED')
     }
     const code = generateOtp(6)
-    await writeVerification(`${phoneNumber}-verify`, `${code}:0`, OTP_EXPIRES_IN)
+    await writeVerification(
+      `${phoneNumber}-verify`,
+      `${code}:0`,
+      OTP_EXPIRES_IN,
+    )
     await sendSupabaseSMS(phoneNumber, code)
     return { status: true }
   },
@@ -369,7 +377,11 @@ export const api = {
     const code = typeof body.code === 'string' ? body.code : ''
     const disableSession = body.disableSession === true
     if (!phoneNumber || !code) {
-      throw new AuthError(400, 'Phone number and code are required', 'INVALID_BODY')
+      throw new AuthError(
+        400,
+        'Phone number and code are required',
+        'INVALID_BODY',
+      )
     }
     await verifyStoredCode(`${phoneNumber}-verify`, code)
 
@@ -388,7 +400,9 @@ export const api = {
       const { token, expiresAt } = await issueSession(found.id, headers)
       return { status: true, user: toSessionUser(found), token, expiresAt }
     }
-    return found ? { status: true, user: toSessionUser(found) } : { status: true }
+    return found
+      ? { status: true, user: toSessionUser(found) }
+      : { status: true }
   },
 
   async requestPasswordResetPhone({
@@ -470,7 +484,11 @@ export const api = {
     const row = await readVerification(`reset-password-${token}`)
     if (!row || row.expiresAt < new Date()) {
       if (row) await consumeVerification(`reset-password-${token}`)
-      throw new AuthError(400, 'Invalid or expired reset token', 'INVALID_TOKEN')
+      throw new AuthError(
+        400,
+        'Invalid or expired reset token',
+        'INVALID_TOKEN',
+      )
     }
     const users = await db
       .select()
@@ -512,7 +530,11 @@ export const api = {
     return { status: true }
   },
 
-  async signOut({ headers }: { headers: HeaderLike }): Promise<{ status: true }> {
+  async signOut({
+    headers,
+  }: {
+    headers: HeaderLike
+  }): Promise<{ status: true }> {
     await destroyCurrentSession(headers)
     return { status: true }
   },
