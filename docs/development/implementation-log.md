@@ -89,7 +89,7 @@
 ### 1.10 Demo Admin User ✅
 
 - Confirmed `scripts/seed-demo-admin.ts` exists
-- Admin credentials: `admin@khulnasoft.com` / `Admin123!`
+- Admin credentials: `admin@iscexpo.edu.bd` / `Admin123!`
 
 ---
 

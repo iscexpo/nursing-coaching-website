@@ -48,7 +48,7 @@ async function main() {
   await client.end()
 
   // Step 2: Create admin via the auth API (handles password hashing correctly)
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@khulnasoft.com'
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@iscexpo.edu.bd'
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!'
   const adminName = process.env.ADMIN_NAME || 'Demo Admin'
   const adminPhone = process.env.ADMIN_PHONE || '+8801784176442'
