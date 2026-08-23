@@ -6,7 +6,8 @@
 - `components/` owns reusable UI and layout primitives.
 - `lib/<feature>/` owns feature-domain rules, validation, and formatting.
 - `lib/db/` owns the Drizzle schema, database client, and migrations.
-- `lib/auth/` owns Better Auth wiring, the typed client, and CSRF helpers.
+- `lib/auth/` owns the ISC Auth compatibility shims and CSRF helpers; `lib/isc-auth/`
+  owns the in-house auth core (passwords, sessions, endpoints, React client).
 - `lib/sms/` owns the SMS facade and per-provider adapters (gp/sas/sheet/shiram).
 - `lib/media/` owns upload validation and blob storage helpers.
 - `lib/cms/` owns content-CMS merge logic, the content server, settings, and site data.

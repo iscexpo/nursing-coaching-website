@@ -54,7 +54,7 @@
 - **নগদ** — অ্যাডমিন থেকে সরাসরি যাচাইকরণ
 - স্বয়ংক্রিয় ব্যালেন্স আপডেট
 
-### Authentication (Better Auth)
+### Authentication (ISC Auth)
 
 - ইমেইল + পাসওয়ার্ড দিয়ে সাইন ইন/সাইন আপ
 - ফোন নম্বর + OTP যাচাইকরণ
@@ -65,7 +65,7 @@
 
 - **Framework:** Next.js 16 (App Router, Turbopack)
 - **Styling:** Tailwind CSS v4, shadcn/ui (base-nova)
-- **Auth:** Better Auth + Phone Number plugin (email/password)
+- **Auth:** ISC Auth (in-house: email/password, phone OTP, DB sessions)
 - **Database:** Supabase (PostgreSQL) + Drizzle ORM
 - **Language:** TypeScript 5.7
 - **Validation:** Zod v4
@@ -96,7 +96,7 @@ pnpm install --no-frozen-lockfile
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your DATABASE_URL and BETTER_AUTH_SECRET
+# Edit .env.local with your DATABASE_URL and BETTER_AUTH_SECRET (used by isc-auth)
 
 # Run development server
 pnpm dev
@@ -224,7 +224,7 @@ app/
 │       ├── admit-cards-tab.tsx  # Admit card management
 │       └── students-tab.tsx     # Student list
 └── api/
-    ├── auth/[...all]/           # Better Auth API handler
+    ├── auth/[...all]/           # ISC Auth API handler
     ├── courses/                 # Course CRUD API
     ├── enrollments/             # Enrollment API
     ├── payments/                # Payment API
@@ -253,8 +253,9 @@ components/
 
 lib/
 ├── site-data.ts                 # Static site data
-├── auth.ts                      # Better Auth server config
-├── auth-client.ts               # Better Auth client
+├── auth/                        # ISC Auth shims + CSRF helpers
+│   ├── index.ts                 # Server core re-exports (lib/isc-auth)
+│   └── client.ts                # Client re-exports
 ├── permissions.ts               # Role helpers
 ├── validations.ts               # Zod schemas for API validation
 └── db/
