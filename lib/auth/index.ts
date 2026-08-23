@@ -112,13 +112,54 @@ function createAuth() {
     },
     emailAndPassword: {
       enabled: true,
+      revokeSessionsOnPasswordReset: true,
       sendResetPassword: async ({ user, url }) => {
-        console.log(`[Reset Password] Reset link for ${user.email}: ${url}`)
+        const apiKey = process.env.RESEND_API_KEY
+
+        if (!apiKey) {
+          if (process.env.NODE_ENV === 'production') {
+            console.error(
+              `[Reset Password] RESEND_API_KEY is not configured — reset email for ${user.email} was NOT delivered.`,
+            )
+          } else {
+            console.log(`[Reset Password] Reset link for ${user.email}: ${url}`)
+          }
+          return
+        }
+
+        try {
+          const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: process.env.EMAIL_FROM || 'ISC Expo <onboarding@resend.dev>',
+              to: [user.email],
+              subject: 'Reset your password',
+              html: `<p>Click the link below to reset your password:</p><p><a href="${url}">${url}</a></p><p>If you did not request this, you can safely ignore this email.</p>`,
+            }),
+          })
+
+          if (!res.ok) {
+            console.error(
+              '[Reset Password] Email provider failed:',
+              res.status,
+              await res.text(),
+            )
+          }
+        } catch (error) {
+          console.error('[Reset Password] Failed to send reset email:', error)
+        }
       },
     },
     plugins: [
       phoneNumber({
         sendOTP: ({ phoneNumber: phone, code }) => {
+          sendSupabaseSMS(phone, code)
+        },
+        sendPasswordResetOTP: ({ phoneNumber: phone, code }) => {
           sendSupabaseSMS(phone, code)
         },
         otpLength: 6,

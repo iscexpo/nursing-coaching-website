@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { authClient } from '@/lib/auth/client'
 import { useSiteData } from '@/hooks/use-site-data'
 import {
   Phone,
@@ -38,11 +37,14 @@ export default function ForgotPasswordPage() {
     setError('')
     setLoading(true)
     try {
-      const { error: otpError } = await authClient.phoneNumber.sendOtp({
-        phoneNumber,
+      const res = await fetch('/api/auth/phone-number/request-password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber }),
       })
-      if (otpError) {
-        setError(otpError.message || t('otpSendFailed'))
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.message || data.error || t('otpSendFailed'))
         return
       }
       setStep('verify-phone')
@@ -57,14 +59,14 @@ export default function ForgotPasswordPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/reset-password-phone', {
+      const res = await fetch('/api/auth/phone-number/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber, code: otpCode, newPassword }),
+        body: JSON.stringify({ phoneNumber, otp: otpCode, newPassword }),
       })
-      const data = await res.json()
       if (!res.ok) {
-        setError(data.error || t('resetFailed'))
+        const data = await res.json()
+        setError(data.message || data.error || t('resetFailed'))
         return
       }
       setStep('done')

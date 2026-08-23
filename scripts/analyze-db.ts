@@ -33,9 +33,9 @@ async function main() {
     await sql`SELECT COUNT(*) as cnt FROM "user" WHERE email LIKE '%test%' OR email LIKE '%example%'`
   console.log(`  Test/example users: ${testUsers.cnt}`)
 
-  const [expiredOtps] =
-    await sql`SELECT COUNT(*) as cnt FROM otp WHERE expires_at < NOW()`
-  console.log(`  Expired OTPs: ${expiredOtps.cnt}`)
+  const [expiredVerifications] =
+    await sql`SELECT COUNT(*) as cnt FROM verification WHERE expires_at < NOW()`
+  console.log(`  Expired verifications: ${expiredVerifications.cnt}`)
 
   const [orphanedSessions] = await sql`
     SELECT COUNT(*) as cnt FROM session s

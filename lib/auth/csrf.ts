@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
- * CSRF protection for state-changing API requests.
+ * CSRF protection for state-changing requests that flow through proxy.ts.
  *
  * Strategy: double-submit cookie pattern.
  * 1. On first GET, set a random CSRF token in a cookie.
@@ -12,12 +12,18 @@ import { NextRequest, NextResponse } from 'next/server'
  * Why this works without server-side state:
  *   An attacker on a different origin cannot read cookies or set
  *   custom headers, so they can't satisfy both constraints.
+ *
+ * Scope note: the proxy matcher currently excludes `/api`, so API
+ * mutations are NOT covered by this check. API safety relies on
+ * SameSite=Lax session cookies (cross-site POSTs don't carry them)
+ * plus Better Auth's internal CSRF handling on /api/auth/* routes.
  */
 
 const CSRF_COOKIE = 'csrf-token'
 const CSRF_HEADER = 'x-csrf-token'
 const CSRF_TOKEN_LENGTH = 32
 
+// Routes exempt from a future /api rollout of the double-submit check.
 const SKIP_ROUTES = [
   '/api/auth/', // Better Auth handles its own CSRF
   '/api/admissions', // Public submission endpoint

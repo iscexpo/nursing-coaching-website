@@ -32,7 +32,6 @@ async function main() {
       enrollments,
       media_files,
       notices,
-      otp,
       verification,
       account,
       session,

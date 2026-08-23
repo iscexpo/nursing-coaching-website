@@ -118,21 +118,6 @@ export const verification = pgTable('verification', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
-export const otp = pgTable(
-  'otp',
-  {
-    id: text('id').primaryKey(),
-    phoneNumber: text('phone_number').notNull(),
-    code: text('code').notNull(),
-    expiresAt: timestamp('expires_at').notNull(),
-    attempts: jsonb('attempts')
-      .$type<{ count: number; lastAttempt: Date }>()
-      .default({ count: 0, lastAttempt: new Date() }),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-  },
-  (table) => [index('otp_phone_number_idx').on(table.phoneNumber)],
-)
-
 export const courses = pgTable('courses', {
   id: text('id').primaryKey(),
   slug: text('slug').unique().notNull(),
