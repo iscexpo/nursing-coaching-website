@@ -1,10 +1,11 @@
-import { createAuthClient } from 'better-auth/react'
-import {
-  phoneNumberClient,
-  inferAdditionalFields,
-} from 'better-auth/client/plugins'
-import type { auth } from './index'
+'use client'
 
-export const authClient = createAuthClient({
-  plugins: [phoneNumberClient(), inferAdditionalFields<typeof auth>()],
-})
+'use client'
+
+export { authClient, useSession, refreshSession } from '../isc-auth/client'
+export type {
+  AuthUser,
+  SessionPayload,
+  AuthErrorShape,
+  SignUpEmailInput,
+} from '../isc-auth/client'

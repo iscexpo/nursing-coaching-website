@@ -5,6 +5,27 @@
 
 ## Implementation log
 
+### 2026-08-23 (later same day): Better Auth replaced by in-house `isc-auth`
+
+Per product decision, Better Auth was removed entirely and replaced by a
+self-written `lib/isc-auth/` module reusing the existing Drizzle tables
+(`user`, `session`, `account`, `verification`) — zero schema changes.
+
+| Layer | File | Notes |
+|---|---|---|
+| Passwords | `lib/isc-auth/password.ts` | bcrypt (new canonical) + verbatim legacy BA scrypt verifier (`N=16384,r=16,p=1,dkLen=64`) so existing accounts keep working |
+| Sessions | `lib/isc-auth/session.ts` | DB sessions, 7-day expiry, httpOnly SameSite=Lax cookie renamed to `isc-auth.session_token` / `__Secure-isc-auth.session_token` |
+| API core | `lib/isc-auth/api.ts` | Typed `AuthError`; sign-in/up email+phone, phone OTP send/verify, phone+email password reset, change-password, sign-out, get-session; min password length now 6 (matches UI, was 8 under BA) |
+| HTTP | `lib/isc-auth/handler.ts` | Origin/trusted-origin check on POSTs; same endpoint paths as before (`/api/auth/sign-in/email`, ...) so client pages & shell scripts are unchanged |
+| Client | `lib/isc-auth/client.tsx` | Own `useSession` store (listener-based), `authClient` surface identical to previous consumer call shapes |
+| Shims | `lib/auth/index.ts` / `client.ts` | Re-export from `lib/isc-auth/*` — ~50 permission consumers untouched |
+
+Consequences: all users are logged out once (cookie rename); `better-auth`
+dependency removed from package.json; proxy.ts updated to sniff new cookies;
+6 new unit tests cover bcrypt + legacy-scrypt verification.
+
+## Implementation log
+
 | Phase | Result |
 |---|---|
 | 0 Baseline | typecheck ✅ · tests 146/146 ✅ · lint: 95 pre-existing errors elsewhere, touched files clean |

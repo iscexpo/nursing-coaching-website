@@ -1,27 +1,27 @@
 import { getAuth } from '@/lib/auth'
-import { toNextJsHandler } from 'better-auth/next-js'
 import { rateLimit } from '@/lib/core/rate-limit'
+import type { NextRequest } from 'next/server'
 
 function getHandler() {
-  return toNextJsHandler(getAuth())
+  return getAuth().handler
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const limiter = await rateLimit(request, {
     windowMs: 60_000,
     max: 10,
     prefix: 'auth',
   })
   if (limiter) return limiter
-  return getHandler().POST(request)
+  return getHandler()(request)
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const limiter = await rateLimit(request, {
     windowMs: 60_000,
     max: 20,
     prefix: 'auth',
   })
   if (limiter) return limiter
-  return getHandler().GET(request)
+  return getHandler()(request)
 }

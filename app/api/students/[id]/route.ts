@@ -19,7 +19,7 @@ import {
 } from '@/lib/core/permissions'
 import { updateStudentSchema } from '@/lib/core/validations'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
-import { hashPassword } from 'better-auth/crypto'
+import { hashPassword } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,

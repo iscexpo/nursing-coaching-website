@@ -13,8 +13,8 @@ export default async function proxy(request: NextRequest) {
   if (csrfResponse) return csrfResponse
 
   const sessionToken =
-    request.cookies.get('__Secure-better-auth.session_token')?.value ||
-    request.cookies.get('better-auth.session_token')?.value
+    request.cookies.get('__Secure-isc-auth.session_token')?.value ||
+    request.cookies.get('isc-auth.session_token')?.value
 
   const isDashboard =
     pathname.startsWith('/dashboard') || pathname.includes('/dashboard')
