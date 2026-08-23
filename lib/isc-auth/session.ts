@@ -21,7 +21,7 @@ export function getSessionCookieName(): string {
 export function getTrustedOrigins(): string[] {
   const env = validateEnv()
   const configured =
-    env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',')
+    env.ISC_AUTH_TRUSTED_ORIGINS?.split(',')
       .map((o) => o.trim())
       .filter(Boolean) ?? []
   const defaults = [
@@ -34,7 +34,7 @@ export function getTrustedOrigins(): string[] {
   for (const origin of [
     ...configured,
     ...defaults,
-    (env.BETTER_AUTH_URL || '').trim().replace(/\/$/, ''),
+    (env.ISC_AUTH_URL || '').trim().replace(/\/$/, ''),
   ]) {
     if (origin) all.add(origin)
   }

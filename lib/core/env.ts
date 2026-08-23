@@ -5,11 +5,11 @@ const envSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
-  BETTER_AUTH_SECRET: z
+  ISC_AUTH_SECRET: z
     .string()
-    .min(32, 'BETTER_AUTH_SECRET must be at least 32 characters long'),
-  BETTER_AUTH_URL: z.string().optional(),
-  BETTER_AUTH_TRUSTED_ORIGINS: z.string().optional(),
+    .min(32, 'ISC_AUTH_SECRET must be at least 32 characters long'),
+  ISC_AUTH_URL: z.string().optional(),
+  ISC_AUTH_TRUSTED_ORIGINS: z.string().optional(),
   SUPABASE_URL: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   ADMIN_SEED_KEY: z.string().optional(),
@@ -49,7 +49,8 @@ export function validateEnv(): Env {
     DATABASE_URL: getDatabaseUrl(),
     // Provide a dummy secret during build so static generation doesn't fail
     // when env vars aren't injected (Vercel build without env or local next build).
-    BETTER_AUTH_SECRET:
+    ISC_AUTH_SECRET:
+      process.env.ISC_AUTH_SECRET ||
       process.env.BETTER_AUTH_SECRET ||
       (buildPhase
         ? 'build-time-placeholder-secret-32-chars-minimum-xxxxxxxxxxxx'
@@ -67,11 +68,11 @@ export function validateEnv(): Env {
         NODE_ENV: (process.env.NODE_ENV as Env['NODE_ENV']) || 'production',
         DATABASE_URL:
           rawEnv.DATABASE_URL || 'postgres://user:pass@localhost:5432/postgres',
-        BETTER_AUTH_SECRET:
-          rawEnv.BETTER_AUTH_SECRET ||
+        ISC_AUTH_SECRET:
+          rawEnv.ISC_AUTH_SECRET ||
           'build-time-placeholder-secret-32-chars-minimum-xxxxxxxxxxxx',
-        BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-        BETTER_AUTH_TRUSTED_ORIGINS: process.env.BETTER_AUTH_TRUSTED_ORIGINS,
+        ISC_AUTH_URL: process.env.ISC_AUTH_URL,
+        ISC_AUTH_TRUSTED_ORIGINS: process.env.ISC_AUTH_TRUSTED_ORIGINS,
         SUPABASE_URL: process.env.SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         ADMIN_SEED_KEY: process.env.ADMIN_SEED_KEY,

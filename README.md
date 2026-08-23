@@ -96,7 +96,7 @@ pnpm install --no-frozen-lockfile
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your DATABASE_URL and BETTER_AUTH_SECRET (used by isc-auth)
+# Edit .env.local with your DATABASE_URL and ISC_AUTH_SECRET (used by isc-auth)
 
 # Run development server
 pnpm dev

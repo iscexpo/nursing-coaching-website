@@ -38,7 +38,7 @@ jobs:
         run: pnpm build
         env:
           DATABASE_URL: postgres://test:test@localhost:5432/test
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-placeholder-secret-minimum-thirty-two-chars' }}
+          ISC_AUTH_SECRET: ${{ secrets.ISC_AUTH_SECRET || secrets.BETTER_AUTH_SECRET || 'ci-placeholder-secret-minimum-thirty-two-chars' }}
           NODE_ENV: production
 
   storybook:

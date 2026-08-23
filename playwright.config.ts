@@ -33,7 +33,7 @@ export default defineConfig({
       NODE_ENV: 'test',
       NEXT_PHASE: 'test',
       DATABASE_URL: 'postgres://user:password@localhost:5432/db',
-      BETTER_AUTH_SECRET: 'test_secret_key_for_testing_purposes',
+      ISC_AUTH_SECRET: 'test_secret_key_for_testing_purposes',
     },
   },
   projects: [

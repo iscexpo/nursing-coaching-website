@@ -13,7 +13,7 @@ cp .env.example .env.local
 At minimum, set:
 
 - `DATABASE_URL` — Postgres connection string
-- `BETTER_AUTH_SECRET` — secret for Better Auth
+- `ISC_AUTH_SECRET` — secret for isc-auth sessions
 - `ADMIN_SEED_KEY` — seed auth token for migration/seed endpoints
 - `ADMIN_EMAIL` — admin user email
 - `ADMIN_PASSWORD` — admin user password
@@ -22,7 +22,7 @@ At minimum, set:
 
 Optional values:
 
-- `BETTER_AUTH_URL` — defaults to `http://localhost:3000`
+- `ISC_AUTH_URL` — defaults to `http://localhost:3000`
 - `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` — for OTP/Supabase integration
 
 ## How the DB is wired

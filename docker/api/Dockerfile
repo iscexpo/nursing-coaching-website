@@ -19,7 +19,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Next.js collects build-time env; provide dummy for standalone
 ENV DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
-ENV BETTER_AUTH_SECRET=ci-placeholder-secret-minimum-thirty-two-chars
+ENV ISC_AUTH_SECRET=ci-placeholder-secret-minimum-thirty-two-chars
 ENV NODE_ENV=production
 RUN pnpm build
 

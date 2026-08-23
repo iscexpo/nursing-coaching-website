@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-process.env.BETTER_AUTH_SECRET =
+process.env.ISC_AUTH_SECRET =
   'test_secret_key_for_isc_auth_unit_tests_0123456789'
 ;(process.env as { NODE_ENV?: string }).NODE_ENV = 'test'
 process.env.DATABASE_URL = 'postgres://test:test@localhost:5432/test'
-process.env.BETTER_AUTH_URL = 'https://iscexpo.edu.bd'
+process.env.ISC_AUTH_URL = 'https://iscexpo.edu.bd'
 
 type Row = Record<string, unknown>
 

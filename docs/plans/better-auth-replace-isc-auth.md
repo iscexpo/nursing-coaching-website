@@ -5,7 +5,25 @@
 
 ## Implementation log
 
-### 2026-08-23 (later same day): Better Auth replaced by in-house `isc-auth`
+### 2026-08-23 (latest): env vars renamed `BETTER_AUTH_*` → `ISC_AUTH_*`
+
+Canonical names are now `ISC_AUTH_SECRET`, `ISC_AUTH_URL`,
+`ISC_AUTH_TRUSTED_ORIGINS`. Legacy `BETTER_AUTH_*` names remain accepted as
+fallbacks (env validation, cms settings probe, seed script, CI secret) so
+existing deployments keep working until renamed in their dashboards.
+
+Touched: `lib/core/env.ts`, `lib/isc-auth/{api,session}.ts`,
+`lib/cms/settings.ts`, `.env.example`, `docker/{docker-compose.yml,
+docker-compose.e2e.yml, api/Dockerfile}`, `.github/workflows/ci.yml`,
+`playwright.config.ts`, `scripts/{validate-env,seed-demo-admin}.ts`,
+`tests/isc-auth-api.test.ts`, README/SECURITY/db-setup docs.
+New `tests/env.test.ts` (6 cases) locks in the rename: new names accepted,
+legacy fallback, precedence, min-length rejection, build-phase placeholder,
+Vercel Postgres coalescing.
+Verified: typecheck ✅ · tests 173/173 ✅ · lint 0 errors ✅ · build ✅ ·
+validate-env legacy-fallback path exercised manually ✅
+
+### 2026-08-23: Better Auth replaced by in-house `isc-auth`
 
 Per product decision, Better Auth was removed entirely and replaced by a
 self-written `lib/isc-auth/` module reusing the existing Drizzle tables

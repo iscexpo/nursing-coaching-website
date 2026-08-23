@@ -42,7 +42,7 @@ const RESET_TOKEN_EXPIRES_IN = 60 * 60
 
 function baseUrl(): string {
   const env = validateEnv()
-  return (env.BETTER_AUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+  return (env.ISC_AUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
 }
 
 function toSessionUser(row: typeof user.$inferSelect): SessionUser {

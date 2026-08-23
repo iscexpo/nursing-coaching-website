@@ -23,4 +23,4 @@ We will acknowledge within 48h and coordinate a fix before public disclosure.
 - Secrets are never committed (`.gitignore` covers `.env*`, `e2e/auth.json`).
 - Enable `commit.gpgsign` locally for signed commits (already set for `v0` agent).
 - Dependencies are scanned via Dependabot (`.github/dependabot.yml`).
-- CI does not log secrets; `BETTER_AUTH_SECRET` and `DATABASE_URL` are from GitHub Secrets.
+- CI does not log secrets; `ISC_AUTH_SECRET` and `DATABASE_URL` are from GitHub Secrets.

@@ -23,9 +23,9 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
-      BETTER_AUTH_SECRET: supersecret-supersecret-supersecret-supersecret
-      BETTER_AUTH_URL: http://app:3000
-      BETTER_AUTH_TRUSTED_ORIGINS: http://app:3000
+      ISC_AUTH_SECRET: supersecret-supersecret-supersecret-supersecret
+      ISC_AUTH_URL: http://app:3000
+      ISC_AUTH_TRUSTED_ORIGINS: http://app:3000
       ADMIN_SEED_KEY: seed-admin-2024
     depends_on:
       db:
@@ -59,4 +59,4 @@ services:
       BASE_URL: http://app:3000
       CI: '1'
       DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
-      BETTER_AUTH_SECRET: supersecret-supersecret-supersecret-supersecret
+      ISC_AUTH_SECRET: supersecret-supersecret-supersecret-supersecret

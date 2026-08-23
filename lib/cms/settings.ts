@@ -84,7 +84,7 @@ function rowToSettings(row: Record<string, unknown>): SystemSettings {
 
 export async function getSystemSettings(): Promise<SystemSettings> {
   // During `next build` (phase-production-build) Vercel may not inject
-  // DATABASE_URL / BETTER_AUTH_SECRET. Pages prerender via `getCmsContent()`
+  // DATABASE_URL / ISC_AUTH_SECRET. Pages prerender via `getCmsContent()`
   // -> `getSystemSettings()` -> `db` -> `validateEnv()` would otherwise throw
   // and log noisy warnings ("Unable to load system settings, using defaults:
   // Invalid environment variables...") for every static route. Bypass DB entirely
@@ -98,7 +98,9 @@ export async function getSystemSettings(): Promise<SystemSettings> {
     process.env.POSTGRES_PRISMA_URL ||
     process.env.POSTGRES_URL_NON_POOLING
   )
-  const hasSecret = !!process.env.BETTER_AUTH_SECRET
+  const hasSecret = !!(
+    process.env.ISC_AUTH_SECRET || process.env.BETTER_AUTH_SECRET
+  )
   if (!isTest && (isBuildPhase || !hasDbUrl || !hasSecret)) {
     return createDefaultSystemSettings()
   }

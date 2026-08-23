@@ -12,11 +12,11 @@ const envSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
-  BETTER_AUTH_SECRET: z
+  ISC_AUTH_SECRET: z
     .string()
-    .min(32, 'BETTER_AUTH_SECRET must be at least 32 characters long'),
-  BETTER_AUTH_URL: z.string().optional(),
-  BETTER_AUTH_TRUSTED_ORIGINS: z.string().optional(),
+    .min(32, 'ISC_AUTH_SECRET must be at least 32 characters long'),
+  ISC_AUTH_URL: z.string().optional(),
+  ISC_AUTH_TRUSTED_ORIGINS: z.string().optional(),
   SUPABASE_URL: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   ADMIN_SEED_KEY: z.string().optional(),
@@ -26,7 +26,12 @@ const envSchema = z.object({
   ADMIN_NAME: z.string().optional(),
 })
 
-const parsed = envSchema.safeParse(process.env)
+// ISC_AUTH_SECRET falls back to the legacy BETTER_AUTH_SECRET name so
+// environments provisioned before the isc-auth rename keep validating.
+const parsed = envSchema.safeParse({
+  ...process.env,
+  ISC_AUTH_SECRET: process.env.ISC_AUTH_SECRET || process.env.BETTER_AUTH_SECRET,
+})
 
 if (!parsed.success) {
   console.error('\n❌ Environment validation failed:\n')

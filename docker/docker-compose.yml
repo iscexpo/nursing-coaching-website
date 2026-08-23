@@ -41,9 +41,9 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-supersecret-supersecret-supersecret-supersecret}
-      BETTER_AUTH_URL: http://localhost:3000
-      BETTER_AUTH_TRUSTED_ORIGINS: http://localhost:3000
+      ISC_AUTH_SECRET: ${ISC_AUTH_SECRET:-supersecret-supersecret-supersecret-supersecret}
+      ISC_AUTH_URL: http://localhost:3000
+      ISC_AUTH_TRUSTED_ORIGINS: http://localhost:3000
       ADMIN_SEED_KEY: ${ADMIN_SEED_KEY:-seed-admin-2024}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@khulnasoft.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin123!}

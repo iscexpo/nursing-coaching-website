@@ -47,13 +47,16 @@ async function main() {
 
   await client.end()
 
-  // Step 2: Create admin via Better Auth API (handles password hashing correctly)
+  // Step 2: Create admin via the auth API (handles password hashing correctly)
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@khulnasoft.com'
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!'
   const adminName = process.env.ADMIN_NAME || 'Demo Admin'
   const adminPhone = process.env.ADMIN_PHONE || '+8801784176442'
 
-  const baseUrl = process.env.BETTER_AUTH_URL || 'http://localhost:3000'
+  const baseUrl =
+    process.env.ISC_AUTH_URL ||
+    process.env.BETTER_AUTH_URL ||
+    'http://localhost:3000'
 
   console.log('\nSeeding admin via API...')
 
