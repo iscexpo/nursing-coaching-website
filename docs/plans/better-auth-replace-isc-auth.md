@@ -5,7 +5,17 @@
 
 ## Implementation log
 
-### 2026-08-23 (latest): env vars renamed `BETTER_AUTH_*` → `ISC_AUTH_*`
+### 2026-08-23 (latest): legacy `otp` table dropped
+
+Deferred follow-up completed: append-only migration
+`0021_drop_otp_table.sql` + journal entry (`db:verify` ✅, 22/22). Applied
+against the provisioned DB after confirming 0 rows — table gone ✅.
+Gates: tests 173/173 ✅ · typecheck ✅ · lint 0 errors ✅.
+
+Still deferred: e2e phone reset-path coverage; optional client-side CSRF
+wiring for non-auth API mutations.
+
+### 2026-08-23: env vars renamed `BETTER_AUTH_*` → `ISC_AUTH_*`
 
 Canonical names are now `ISC_AUTH_SECRET`, `ISC_AUTH_URL`,
 `ISC_AUTH_TRUSTED_ORIGINS`. Legacy `BETTER_AUTH_*` names remain accepted as
