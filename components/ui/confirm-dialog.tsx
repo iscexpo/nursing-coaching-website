@@ -59,7 +59,10 @@ export function ConfirmDialog({
           ) : null}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isConfirming || isLoading} onClick={onCancel}>
+          <AlertDialogCancel
+            disabled={isConfirming || isLoading}
+            onClick={onCancel}
+          >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction

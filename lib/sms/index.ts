@@ -303,11 +303,18 @@ export async function getSmsDeliveryReport(ids: string[]) {
   return shiramGetSmsReport(shiramConfig, ids)
 }
 
-export async function rechargeShiramAccount(amount: number, rechargeEmail: string) {
+export async function rechargeShiramAccount(
+  amount: number,
+  rechargeEmail: string,
+) {
   const settings = await getSystemSettings()
 
   if (settings.smsProvider !== 'shiram') {
-    return { success: false, errorCode: 13, message: 'Recharge only for Shiram' }
+    return {
+      success: false,
+      errorCode: 13,
+      message: 'Recharge only for Shiram',
+    }
   }
 
   const shiramConfig: ShiramSmsConfig = {
@@ -326,11 +333,15 @@ export async function sendMultiSmsToRecipients(
 
   if (settings.smsProvider !== 'shiram') {
     // For non-Shiram, fall back to sending each individually via facade
-    const results: Array<{ phone: string; success: boolean; error?: string }> = []
+    const results: Array<{ phone: string; success: boolean; error?: string }> =
+      []
     for (const e of entries) {
       const r = await sendSmsToRecipients([e.phone], e.message)
-      const detail = (r as { results?: Array<{ phone: string; success: boolean; error?: string }> })
-        .results?.[0]
+      const detail = (
+        r as {
+          results?: Array<{ phone: string; success: boolean; error?: string }>
+        }
+      ).results?.[0]
       results.push(
         detail ?? {
           phone: e.phone,

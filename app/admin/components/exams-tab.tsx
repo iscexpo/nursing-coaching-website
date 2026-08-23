@@ -28,7 +28,8 @@ export function ExamsPanel({
     subject: '',
     duration: 15,
     difficulty: 'medium' as 'easy' | 'medium' | 'hard',
-    examType: 'model_test' as 'model_test' | 'practice_quiz' | 'final_exam' | 'subject_test',
+    examType: 'model_test' as
+      'model_test' | 'practice_quiz' | 'final_exam' | 'subject_test',
     negativeMarking: false,
     shuffleQuestions: true,
     shuffleOptions: true,
@@ -173,7 +174,11 @@ export function ExamsPanel({
                     ))}
                   </select>
                 </FormField>
-                <FormField id="exam-duration" label={t('formLabels.duration')} required>
+                <FormField
+                  id="exam-duration"
+                  label={t('formLabels.duration')}
+                  required
+                >
                   <Input
                     id="exam-duration"
                     type="number"
@@ -187,7 +192,10 @@ export function ExamsPanel({
                     aria-required="true"
                   />
                 </FormField>
-                <FormField id="exam-difficulty" label={t('formLabels.difficulty')}>
+                <FormField
+                  id="exam-difficulty"
+                  label={t('formLabels.difficulty')}
+                >
                   <select
                     id="exam-difficulty"
                     value={examForm.difficulty}
@@ -212,7 +220,11 @@ export function ExamsPanel({
                     onChange={(e) =>
                       setExamForm({
                         ...examForm,
-                        examType: e.target.value as 'model_test' | 'practice_quiz' | 'final_exam' | 'subject_test',
+                        examType: e.target.value as
+                          | 'model_test'
+                          | 'practice_quiz'
+                          | 'final_exam'
+                          | 'subject_test',
                       })
                     }
                     className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
@@ -229,7 +241,12 @@ export function ExamsPanel({
                   <input
                     type="checkbox"
                     checked={examForm.negativeMarking}
-                    onChange={(e) => setExamForm({ ...examForm, negativeMarking: e.target.checked })}
+                    onChange={(e) =>
+                      setExamForm({
+                        ...examForm,
+                        negativeMarking: e.target.checked,
+                      })
+                    }
                     className="size-4 rounded border-border text-brand"
                   />
                   Negative marking (0.25)
@@ -238,7 +255,12 @@ export function ExamsPanel({
                   <input
                     type="checkbox"
                     checked={examForm.shuffleQuestions}
-                    onChange={(e) => setExamForm({ ...examForm, shuffleQuestions: e.target.checked })}
+                    onChange={(e) =>
+                      setExamForm({
+                        ...examForm,
+                        shuffleQuestions: e.target.checked,
+                      })
+                    }
                     className="size-4 rounded border-border text-brand"
                   />
                   Shuffle questions
@@ -247,7 +269,12 @@ export function ExamsPanel({
                   <input
                     type="checkbox"
                     checked={examForm.shuffleOptions}
-                    onChange={(e) => setExamForm({ ...examForm, shuffleOptions: e.target.checked })}
+                    onChange={(e) =>
+                      setExamForm({
+                        ...examForm,
+                        shuffleOptions: e.target.checked,
+                      })
+                    }
                     className="size-4 rounded border-border text-brand"
                   />
                   Shuffle options
@@ -256,7 +283,12 @@ export function ExamsPanel({
                   <input
                     type="checkbox"
                     checked={examForm.allowReview}
-                    onChange={(e) => setExamForm({ ...examForm, allowReview: e.target.checked })}
+                    onChange={(e) =>
+                      setExamForm({
+                        ...examForm,
+                        allowReview: e.target.checked,
+                      })
+                    }
                     className="size-4 rounded border-border text-brand"
                   />
                   Allow review

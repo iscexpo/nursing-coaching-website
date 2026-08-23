@@ -308,7 +308,9 @@ export function StudentForm({
         </button>
       </div>
       <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-        {formError && <Alert variant="error" message={formError} dismissible={false} />}
+        {formError && (
+          <Alert variant="error" message={formError} dismissible={false} />
+        )}
 
         {/* Personal info */}
         <div>
@@ -326,7 +328,11 @@ export function StudentForm({
                 aria-required="true"
               />
             </FormField>
-            <FormField id="student-email" label={t('formLabels.email')} required>
+            <FormField
+              id="student-email"
+              label={t('formLabels.email')}
+              required
+            >
               <Input
                 id="student-email"
                 type="email"
@@ -388,7 +394,11 @@ export function StudentForm({
               />
             </FormField>
           </div>
-          <FormField id="student-image" label={t('formLabels.image')} className="mt-3">
+          <FormField
+            id="student-image"
+            label={t('formLabels.image')}
+            className="mt-3"
+          >
             <div className="flex items-center gap-3">
               <StudentPhotoUpload
                 value={form.image}
@@ -424,7 +434,10 @@ export function StudentForm({
                 placeholder={t('formLabels.postPlaceholder')}
               />
             </FormField>
-            <FormField id="student-policeStation" label={t('formLabels.policeStation')}>
+            <FormField
+              id="student-policeStation"
+              label={t('formLabels.policeStation')}
+            >
               <Input
                 id="student-policeStation"
                 type="text"
@@ -468,7 +481,10 @@ export function StudentForm({
             {t('formLabels.guardianSection')}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <FormField id="student-guardianName" label={t('formLabels.guardianName')}>
+            <FormField
+              id="student-guardianName"
+              label={t('formLabels.guardianName')}
+            >
               <Input
                 id="student-guardianName"
                 type="text"
@@ -479,7 +495,10 @@ export function StudentForm({
                 placeholder={t('formLabels.guardianNamePlaceholder')}
               />
             </FormField>
-            <FormField id="student-guardianPhone" label={t('formLabels.guardianPhone')}>
+            <FormField
+              id="student-guardianPhone"
+              label={t('formLabels.guardianPhone')}
+            >
               <Input
                 id="student-guardianPhone"
                 type="text"

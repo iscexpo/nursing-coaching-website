@@ -22,11 +22,19 @@ export function FormField({
       {label && (
         <label htmlFor={id} className="text-sm font-medium text-foreground">
           {label}
-          {required && <span aria-hidden="true" className="ml-1 text-destructive">*</span>}
+          {required && (
+            <span aria-hidden="true" className="ml-1 text-destructive">
+              *
+            </span>
+          )}
         </label>
       )}
       <div className="flex-1">{children}</div>
-      {error && <p className="text-sm font-medium text-destructive" role="alert">{error}</p>}
+      {error && (
+        <p className="text-sm font-medium text-destructive" role="alert">
+          {error}
+        </p>
+      )}
       {helpText && !error && (
         <p className="text-sm text-muted-foreground">{helpText}</p>
       )}

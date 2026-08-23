@@ -11,7 +11,12 @@ import type { Enrollment, AttendanceRecord } from './types'
 
 const CalendarView = dynamic(
   () => import('@/components/ui/calendar-view').then((m) => m.CalendarView),
-  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" /> },
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 animate-pulse rounded-2xl bg-secondary/50" />
+    ),
+  },
 )
 
 export function AttendancePanel({

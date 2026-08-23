@@ -51,7 +51,9 @@ export function EditEnrollmentForm({
         </button>
       </div>
       <div className="space-y-4">
-        {editError && <Alert variant="error" message={editError} dismissible={false} />}
+        {editError && (
+          <Alert variant="error" message={editError} dismissible={false} />
+        )}
         <div className="grid gap-3 sm:grid-cols-2">
           <FormField id="edit-status" label="অবস্থা">
             <select
@@ -102,7 +104,9 @@ export function EditEnrollmentForm({
             id="edit-endDate"
             label="শেষের তারিখ"
             error={
-              editForm.startDate && editForm.endDate && editForm.endDate < editForm.startDate
+              editForm.startDate &&
+              editForm.endDate &&
+              editForm.endDate < editForm.startDate
                 ? 'শেষের তারিখ শুরুর তারিখের পরে হতে হবে'
                 : undefined
             }
@@ -116,7 +120,11 @@ export function EditEnrollmentForm({
                 setEditForm({ ...editForm, endDate: e.target.value })
               }
               aria-invalid={
-                !!(editForm.startDate && editForm.endDate && editForm.endDate < editForm.startDate)
+                !!(
+                  editForm.startDate &&
+                  editForm.endDate &&
+                  editForm.endDate < editForm.startDate
+                )
               }
             />
           </FormField>

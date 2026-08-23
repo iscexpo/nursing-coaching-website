@@ -3,7 +3,10 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Save, X, GripVertical, Loader2 } from 'lucide-react'
-import { translateSubject, useCurriculumTranslations } from '@/lib/i18n/curriculum'
+import {
+  translateSubject,
+  useCurriculumTranslations,
+} from '@/lib/i18n/curriculum'
 import { FormField } from '@/components/ui/form-field'
 import { Input } from '@/components/ui/input'
 
@@ -135,7 +138,12 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
             </button>
           </div>
           <div className="flex items-end gap-3">
-            <FormField id="subject-name" label={t('nameLabel')} required className="flex-1">
+            <FormField
+              id="subject-name"
+              label={t('nameLabel')}
+              required
+              className="flex-1"
+            >
               <Input
                 id="subject-name"
                 type="text"

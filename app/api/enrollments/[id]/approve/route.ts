@@ -11,7 +11,10 @@ import { db } from '@/lib/db'
 import { enrollments, invoices, studentLifecycleEvents } from '@/lib/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { requirePermission, getSession } from '@/lib/core/permissions'
-import { getEnrollmentTransitionError, calculateExpiryDate } from '@/lib/core/lms-logic'
+import {
+  getEnrollmentTransitionError,
+  calculateExpiryDate,
+} from '@/lib/core/lms-logic'
 import { buildAuditEntry, writeAudit } from '@/lib/audit'
 
 function generateInvoiceNumber(): string {

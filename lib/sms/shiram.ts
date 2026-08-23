@@ -229,7 +229,10 @@ export async function checkBalance(
   config: ShiramSmsConfig,
 ): Promise<ShiramBalanceResult> {
   if (!config.email || !config.password) {
-    return { balance: null, error: 'Missing Shiram credentials (email/password)' }
+    return {
+      balance: null,
+      error: 'Missing Shiram credentials (email/password)',
+    }
   }
   try {
     const data = (await postForm({
@@ -293,9 +296,7 @@ async function sendSingleSms(
       phone,
       success,
       messageId,
-      error: success
-        ? undefined
-        : resolveErrorMessage(data, 'Send failed'),
+      error: success ? undefined : resolveErrorMessage(data, 'Send failed'),
     }
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error'
@@ -354,13 +355,21 @@ async function sendSmsBatch(
 
     const errorMsg = resolveErrorMessage(data, 'Batch send failed')
     return [
-      ...validPairs.map((p) => ({ phone: p.original, success: false, error: errorMsg })),
+      ...validPairs.map((p) => ({
+        phone: p.original,
+        success: false,
+        error: errorMsg,
+      })),
       ...invalid,
     ]
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error'
     return [
-      ...validPairs.map((p) => ({ phone: p.original, success: false, error: msg })),
+      ...validPairs.map((p) => ({
+        phone: p.original,
+        success: false,
+        error: msg,
+      })),
       ...invalid,
     ]
   }
@@ -398,10 +407,16 @@ export async function sendMultiSms(
     if (validEntries.length === 0) continue
 
     // If all messages are identical, use send_sms for efficiency
-    const allSameMessage = validEntries.every((e) => e.sms === validEntries[0].sms)
+    const allSameMessage = validEntries.every(
+      (e) => e.sms === validEntries[0].sms,
+    )
     if (allSameMessage) {
       const phones = validEntries.map((e) => e.mobile)
-      const batchResults = await sendSmsBatch(config, phones, validEntries[0].sms)
+      const batchResults = await sendSmsBatch(
+        config,
+        phones,
+        validEntries[0].sms,
+      )
       results.push(...batchResults)
       continue
     }
@@ -605,7 +620,11 @@ export async function accountRecharge(
   rechargeEmail: string,
 ): Promise<ShiramRechargeResult> {
   if (!config.email || !config.password) {
-    return { success: false, errorCode: 12, message: 'Missing Shiram credentials' }
+    return {
+      success: false,
+      errorCode: 12,
+      message: 'Missing Shiram credentials',
+    }
   }
 
   if (!Number.isFinite(amount)) {
@@ -634,7 +653,9 @@ export async function accountRecharge(
     return {
       success,
       errorCode: data.error_code,
-      message: success ? data.message || 'Success' : resolveErrorMessage(data, 'Recharge failed'),
+      message: success
+        ? data.message || 'Success'
+        : resolveErrorMessage(data, 'Recharge failed'),
     }
   } catch (error) {
     return {

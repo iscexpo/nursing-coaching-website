@@ -4,7 +4,10 @@ import { useState, useRef, useMemo } from 'react'
 import NextImage from 'next/image'
 import { Plus, Trash2, Pencil, Save, X, Loader2, Upload } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { translateCategory, useCurriculumTranslations } from '@/lib/i18n/curriculum'
+import {
+  translateCategory,
+  useCurriculumTranslations,
+} from '@/lib/i18n/curriculum'
 import type { Course } from './types'
 import { useToast } from '@/components/ui/toast'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -297,7 +300,11 @@ export function CoursesPanel({
               <Alert variant="error" message={formError} dismissible={false} />
             )}
             <div className="grid gap-4 sm:grid-cols-3">
-              <FormField id="course-title" label={t('formLabels.name')} required>
+              <FormField
+                id="course-title"
+                label={t('formLabels.name')}
+                required
+              >
                 <Input
                   id="course-title"
                   type="text"
@@ -330,8 +337,12 @@ export function CoursesPanel({
                   }
                   className={inputCls}
                 >
-                  <option value="icon">{translateCategory(tCurriculum, 'icon')}</option>
-                  <option value="isc">{translateCategory(tCurriculum, 'isc')}</option>
+                  <option value="icon">
+                    {translateCategory(tCurriculum, 'icon')}
+                  </option>
+                  <option value="isc">
+                    {translateCategory(tCurriculum, 'isc')}
+                  </option>
                 </select>
               </FormField>
               <FormField id="course-slug" label={t('formLabels.slug')} required>
@@ -432,7 +443,11 @@ export function CoursesPanel({
             </FormField>
             <Separator />
             <div className="grid gap-4 sm:grid-cols-3">
-              <FormField id="course-duration" label={t('formLabels.duration')} required>
+              <FormField
+                id="course-duration"
+                label={t('formLabels.duration')}
+                required
+              >
                 <Input
                   id="course-duration"
                   type="text"
@@ -455,7 +470,10 @@ export function CoursesPanel({
                   aria-required="true"
                 />
               </FormField>
-              <FormField id="course-discount-fee" label={t('formLabels.discountFee')}>
+              <FormField
+                id="course-discount-fee"
+                label={t('formLabels.discountFee')}
+              >
                 <Input
                   id="course-discount-fee"
                   type="number"
@@ -467,7 +485,10 @@ export function CoursesPanel({
               </FormField>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField id="course-max-students" label={t('formLabels.maxStudents')}>
+              <FormField
+                id="course-max-students"
+                label={t('formLabels.maxStudents')}
+              >
                 <Input
                   id="course-max-students"
                   type="number"

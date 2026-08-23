@@ -387,7 +387,11 @@ export function NotificationsPanel({
 
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-2">
-            <FormField id="sched-title" label={t('scheduleTitleLabel')} required>
+            <FormField
+              id="sched-title"
+              label={t('scheduleTitleLabel')}
+              required
+            >
               <Input
                 id="sched-title"
                 type="text"
@@ -433,7 +437,11 @@ export function NotificationsPanel({
                 aria-required="true"
               />
             </FormField>
-            <FormField id="sched-message" label={t('scheduleMessageLabel')} required>
+            <FormField
+              id="sched-message"
+              label={t('scheduleMessageLabel')}
+              required
+            >
               <textarea
                 id="sched-message"
                 value={scheduleForm.message}

@@ -23,7 +23,10 @@ export function useCurriculumTranslations() {
 
 type CurriculumT = ReturnType<typeof useTranslations>
 
-export function translateSubject(t: CurriculumT, name: CurriculumSubjectName | string): string {
+export function translateSubject(
+  t: CurriculumT,
+  name: CurriculumSubjectName | string,
+): string {
   try {
     // next-intl will fallback to key if missing; we catch and return raw
     return t(getCurriculumSubjectKey(name as CurriculumSubjectName))

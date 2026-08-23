@@ -29,8 +29,12 @@ describe('Enrollment expired handling (design 3.1)', () => {
     expect(expiry.getFullYear()).toBe(2025)
   })
   it('updateEnrollmentSchema accepts expired', () => {
-    expect(updateEnrollmentSchema.safeParse({ status: 'expired' }).success).toBe(true)
-    expect(updateEnrollmentSchema.safeParse({ status: 'cancelled' }).success).toBe(true)
+    expect(
+      updateEnrollmentSchema.safeParse({ status: 'expired' }).success,
+    ).toBe(true)
+    expect(
+      updateEnrollmentSchema.safeParse({ status: 'cancelled' }).success,
+    ).toBe(true)
   })
 })
 
@@ -54,11 +58,18 @@ describe('Exam system enhancements (design 3.3)', () => {
     }
   })
   it('defaults are optional', () => {
-    const parsed = createExamSchema.safeParse({ title: 'Quiz', subject: 'Physiology' })
+    const parsed = createExamSchema.safeParse({
+      title: 'Quiz',
+      subject: 'Physiology',
+    })
     expect(parsed.success).toBe(true)
   })
   it('rejects invalid examType', () => {
-    const parsed = createExamSchema.safeParse({ title: 'X', subject: 'Y', examType: 'invalid' })
+    const parsed = createExamSchema.safeParse({
+      title: 'X',
+      subject: 'Y',
+      examType: 'invalid',
+    })
     expect(parsed.success).toBe(false)
   })
   it('question accepts difficulty/points/explanation', () => {

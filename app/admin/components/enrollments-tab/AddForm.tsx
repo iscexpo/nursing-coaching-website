@@ -61,7 +61,9 @@ export function AddEnrollmentForm({
         </button>
       </div>
       <div className="space-y-4">
-        {addError && <Alert variant="error" message={addError} dismissible={false} />}
+        {addError && (
+          <Alert variant="error" message={addError} dismissible={false} />
+        )}
 
         <FormField id="enroll-student" label={t('studentLabel')} required>
           <select
@@ -178,7 +180,9 @@ export function AddEnrollmentForm({
                 id="enroll-discount"
                 label={t('discountLabel')}
                 error={
-                  addDiscountNum > addMaxDiscount ? t('discountExceedsFee') : undefined
+                  addDiscountNum > addMaxDiscount
+                    ? t('discountExceedsFee')
+                    : undefined
                 }
               >
                 <Input

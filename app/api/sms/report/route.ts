@@ -24,7 +24,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = reportSchema.safeParse(body)
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const result = await getSmsDeliveryReport(parsed.data.ids)
@@ -60,7 +63,10 @@ export async function GET(request: NextRequest) {
 
     const parsed = reportSchema.safeParse({ ids })
     if (!parsed.success) {
-      return validationError('Invalid input', parsed.error.flatten().fieldErrors)
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const result = await getSmsDeliveryReport(parsed.data.ids)

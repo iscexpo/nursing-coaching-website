@@ -57,7 +57,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
       question: q.question,
       options: [...q.options] as [string, string, string, string],
       correctIndex: q.correctIndex,
-      difficulty: (q as unknown as { difficulty?: string }).difficulty as 'easy' | 'medium' | 'hard' || 'medium',
+      difficulty:
+        ((q as unknown as { difficulty?: string }).difficulty as
+          'easy' | 'medium' | 'hard') || 'medium',
       points: (q as unknown as { points?: number }).points || 1,
       explanation: (q as unknown as { explanation?: string }).explanation || '',
     })
@@ -101,7 +103,14 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
           }),
         })
       }
-      setForm({ question: '', options: ['', '', '', ''], correctIndex: 0, difficulty: 'medium', points: 1, explanation: '' })
+      setForm({
+        question: '',
+        options: ['', '', '', ''],
+        correctIndex: 0,
+        difficulty: 'medium',
+        points: 1,
+        explanation: '',
+      })
       setEditing(null)
       setShowForm(false)
       fetchQuestions(selectedExamId)
@@ -237,7 +246,9 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                       aria-label={`${t('correctLabel')} ${String.fromCharCode(65 + i)}`}
                     />
                     <span className="text-xs text-muted-foreground">
-                      {i === form.correctIndex ? t('correctLabel') : t('answerLabel')}
+                      {i === form.correctIndex
+                        ? t('correctLabel')
+                        : t('answerLabel')}
                     </span>
                   </div>
                   <Input
@@ -265,7 +276,12 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                 <select
                   id="q-difficulty"
                   value={form.difficulty}
-                  onChange={(e) => setForm({ ...form, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      difficulty: e.target.value as 'easy' | 'medium' | 'hard',
+                    })
+                  }
                   className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 >
                   <option value="easy">Easy</option>
@@ -280,15 +296,22 @@ export function QuestionsPanel({ exams }: { exams: Exam[] }) {
                   min="1"
                   max="10"
                   value={String(form.points)}
-                  onChange={(e) => setForm({ ...form, points: Number(e.target.value) || 1 })}
+                  onChange={(e) =>
+                    setForm({ ...form, points: Number(e.target.value) || 1 })
+                  }
                 />
               </FormField>
-              <FormField id="q-explanation" label="Explanation (shown after submit)">
+              <FormField
+                id="q-explanation"
+                label="Explanation (shown after submit)"
+              >
                 <Input
                   id="q-explanation"
                   type="text"
                   value={form.explanation}
-                  onChange={(e) => setForm({ ...form, explanation: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, explanation: e.target.value })
+                  }
                   placeholder="Why this answer is correct"
                 />
               </FormField>

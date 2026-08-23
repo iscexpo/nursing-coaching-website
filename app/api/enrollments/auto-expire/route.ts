@@ -36,7 +36,9 @@ export async function POST(request: Request) {
       )
 
     // Double-check with pure logic (handles edge)
-    const toExpire = candidates.filter((e) => shouldAutoExpire(e.status, e.expiresAt, now))
+    const toExpire = candidates.filter((e) =>
+      shouldAutoExpire(e.status, e.expiresAt, now),
+    )
 
     if (toExpire.length === 0) {
       return ok({ processed: 0, expired: [] })
@@ -49,7 +51,12 @@ export async function POST(request: Request) {
         const [updated] = await tx
           .update(enrollments)
           .set({ status: 'expired', updatedAt: now })
-          .where(and(eq(enrollments.id, enrollment.id), eq(enrollments.status, 'active')))
+          .where(
+            and(
+              eq(enrollments.id, enrollment.id),
+              eq(enrollments.status, 'active'),
+            ),
+          )
           .returning()
         if (!updated) return null
         await tx.insert(studentLifecycleEvents).values({
@@ -57,7 +64,11 @@ export async function POST(request: Request) {
           studentId: enrollment.userId,
           enrollmentId: enrollment.id,
           eventType: 'enrollment.expired',
-          details: { previousStatus: 'active', autoExpired: true, expiresAt: enrollment.expiresAt },
+          details: {
+            previousStatus: 'active',
+            autoExpired: true,
+            expiresAt: enrollment.expiresAt,
+          },
         })
         return updated
       })
@@ -82,7 +93,11 @@ export async function POST(request: Request) {
       console.error('Failed to write audit log for auto-expire', auditError)
     }
 
-    return ok({ processed: toExpire.length, expired: expiredIds, count: expiredIds.length })
+    return ok({
+      processed: toExpire.length,
+      expired: expiredIds,
+      count: expiredIds.length,
+    })
   } catch {
     return serverError('Failed to auto-expire enrollments')
   }

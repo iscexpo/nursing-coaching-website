@@ -12,7 +12,10 @@ Curriculum-specific translations extracted from monolithic `messages/{en,bn}.jso
 Usage:
 
 ```tsx
-import { useCurriculumTranslations, translateSubject } from '@/lib/i18n/curriculum'
+import {
+  useCurriculumTranslations,
+  translateSubject,
+} from '@/lib/i18n/curriculum'
 
 function SubjectBadge({ name }: { name: string }) {
   const t = useCurriculumTranslations()

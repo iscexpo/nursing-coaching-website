@@ -39,17 +39,27 @@ export const curriculumTeacherSubjects = [
 ] as const
 
 export type CurriculumMessages = {
-  categories: Record<CurriculumCategorySlug, { name: string; description: string }>
+  categories: Record<
+    CurriculumCategorySlug,
+    { name: string; description: string }
+  >
   subjects: Record<CurriculumSubjectName, string>
-  courses: Record<CurriculumCourseSlug, { title: string; shortDescription: string; description: string }>
+  courses: Record<
+    CurriculumCourseSlug,
+    { title: string; shortDescription: string; description: string }
+  >
   teachers: Record<string, string>
 }
 
-export function isCurriculumCategorySlug(value: string): value is CurriculumCategorySlug {
+export function isCurriculumCategorySlug(
+  value: string,
+): value is CurriculumCategorySlug {
   return (curriculumCategorySlugs as readonly string[]).includes(value)
 }
 
-export function isCurriculumSubjectName(value: string): value is CurriculumSubjectName {
+export function isCurriculumSubjectName(
+  value: string,
+): value is CurriculumSubjectName {
   return (curriculumSubjectNames as readonly string[]).includes(value)
 }
 
