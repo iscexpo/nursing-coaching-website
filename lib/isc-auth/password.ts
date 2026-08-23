@@ -1,5 +1,5 @@
 import { randomBytes, scrypt as nodeScrypt } from 'node:crypto'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 const BCRYPT_ROUNDS = 10
 
@@ -11,13 +11,9 @@ const LEGACY_SCRYPT = {
 }
 
 const BCRYPT_PREFIX = /^\$2[aby]\$/
-const LEGACY_BA_SCRYPT =
-  /^[0-9a-f]{32}:[0-9a-f]{128}$/i
+const LEGACY_BA_SCRYPT = /^[0-9a-f]{32}:[0-9a-f]{128}$/i
 
-function deriveLegacyScrypt(
-  password: string,
-  salt: string,
-): Promise<Buffer> {
+function deriveLegacyScrypt(password: string, salt: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     nodeScrypt(
       password.normalize('NFKC'),

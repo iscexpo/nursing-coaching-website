@@ -12,7 +12,9 @@ const selectQueue: Row[][] = []
 const insertedUsers: Row[] = []
 let lastUpdate: { table?: string } | null = null
 
-function makeThenable<T>(value: T): Promise<T> & { returning: () => Promise<T[]> } {
+function makeThenable<T>(
+  value: T,
+): Promise<T> & { returning: () => Promise<T[]> } {
   const p = Promise.resolve(value) as Promise<T> & {
     returning: () => Promise<T[]>
   }
@@ -276,7 +278,9 @@ describe('api.changePassword', () => {
 
 describe('handleAuthRequest HTTP semantics', () => {
   it('returns 404 JSON for unknown paths', async () => {
-    const res = await handleAuthRequest(req('/does-not-exist', { method: 'POST' }))
+    const res = await handleAuthRequest(
+      req('/does-not-exist', { method: 'POST' }),
+    )
     expect(res.status).toBe(404)
     const body = await res.json()
     expect(body.code).toBe('NOT_FOUND')
@@ -302,7 +306,10 @@ describe('handleAuthRequest HTTP semantics', () => {
           Origin: 'https://iscexpo.edu.bd',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: 'ghost@example.com', password: 'nope123' }),
+        body: JSON.stringify({
+          email: 'ghost@example.com',
+          password: 'nope123',
+        }),
       }),
     )
     expect(res.status).toBe(401)

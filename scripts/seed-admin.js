@@ -1,6 +1,6 @@
 const postgres = require('postgres')
 const crypto = require('crypto')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 async function seedAdmin() {
   const sql = postgres(process.env.POSTGRES_URL_NON_POOLING)

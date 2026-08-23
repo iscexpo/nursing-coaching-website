@@ -30,7 +30,8 @@ const envSchema = z.object({
 // environments provisioned before the isc-auth rename keep validating.
 const parsed = envSchema.safeParse({
   ...process.env,
-  ISC_AUTH_SECRET: process.env.ISC_AUTH_SECRET || process.env.BETTER_AUTH_SECRET,
+  ISC_AUTH_SECRET:
+    process.env.ISC_AUTH_SECRET || process.env.BETTER_AUTH_SECRET,
 })
 
 if (!parsed.success) {

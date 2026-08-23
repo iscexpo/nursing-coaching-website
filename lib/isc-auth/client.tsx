@@ -57,12 +57,14 @@ async function fetchSession(): Promise<SessionPayload> {
 
 export async function refreshSession(): Promise<void> {
   if (!pendingFetch) {
-    pendingFetch = fetchSession().then((data) => {
-      cache = data
-      loaded = true
-    }).finally(() => {
-      pendingFetch = null
-    })
+    pendingFetch = fetchSession()
+      .then((data) => {
+        cache = data
+        loaded = true
+      })
+      .finally(() => {
+        pendingFetch = null
+      })
   }
   await pendingFetch
   for (const fn of listeners) fn()

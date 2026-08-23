@@ -1,6 +1,6 @@
 import postgres from 'postgres'
 import { randomUUID } from 'crypto'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { config } from 'dotenv'
 
 config({ path: '.env' })

@@ -89,8 +89,7 @@ export async function createSession(
     token,
     userId,
     expiresAt,
-    ipAddress:
-      headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
+    ipAddress: headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
     userAgent: headers.get('user-agent') || null,
     lastActiveAt: new Date(),
   })

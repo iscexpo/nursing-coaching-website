@@ -47,7 +47,9 @@ function assertOrigin(request: NextRequest): void {
   }
 }
 
-async function readBody(request: NextRequest): Promise<Record<string, unknown>> {
+async function readBody(
+  request: NextRequest,
+): Promise<Record<string, unknown>> {
   try {
     const data = await request.json()
     return typeof data === 'object' && data !== null
@@ -58,7 +60,11 @@ async function readBody(request: NextRequest): Promise<Record<string, unknown>> 
   }
 }
 
-type RouteResult = { body: unknown; session?: { token: string; expiresAt: Date }; clearsSession?: boolean }
+type RouteResult = {
+  body: unknown
+  session?: { token: string; expiresAt: Date }
+  clearsSession?: boolean
+}
 
 async function route(
   method: string,
@@ -114,7 +120,9 @@ async function route(
       }
     }
     case '/phone-number/send-otp':
-      return { body: await api.sendPhoneNumberOtp({ body: await readBody(request) }) }
+      return {
+        body: await api.sendPhoneNumberOtp({ body: await readBody(request) }),
+      }
     case '/phone-number/verify': {
       const result = await api.verifyPhoneNumber({
         body: await readBody(request),
@@ -130,14 +138,22 @@ async function route(
     }
     case '/phone-number/request-password-reset':
       return {
-        body: await api.requestPasswordResetPhone({ body: await readBody(request) }),
+        body: await api.requestPasswordResetPhone({
+          body: await readBody(request),
+        }),
       }
     case '/phone-number/reset-password':
-      return { body: await api.resetPasswordPhone({ body: await readBody(request) }) }
+      return {
+        body: await api.resetPasswordPhone({ body: await readBody(request) }),
+      }
     case '/request-password-reset':
-      return { body: await api.requestPasswordReset({ body: await readBody(request) }) }
+      return {
+        body: await api.requestPasswordReset({ body: await readBody(request) }),
+      }
     case '/reset-password':
-      return { body: await api.resetPassword({ body: await readBody(request) }) }
+      return {
+        body: await api.resetPassword({ body: await readBody(request) }),
+      }
     case '/change-password':
       return {
         body: await api.changePassword({
@@ -153,7 +169,9 @@ async function route(
   }
 }
 
-export async function handleAuthRequest(request: NextRequest): Promise<NextResponse> {
+export async function handleAuthRequest(
+  request: NextRequest,
+): Promise<NextResponse> {
   const { pathname } = request.nextUrl
   const basePath = pathname.replace(/^\/api\/auth/, '') || '/'
   const method = request.method.toUpperCase()
@@ -165,7 +183,11 @@ export async function handleAuthRequest(request: NextRequest): Promise<NextRespo
     const result = await route(method, basePath, request)
     const response = json(result.body)
     if (result.session) {
-      await setSessionCookie(response, result.session.token, result.session.expiresAt)
+      await setSessionCookie(
+        response,
+        result.session.token,
+        result.session.expiresAt,
+      )
     }
     if (result.clearsSession) {
       clearSessionCookie(response)
