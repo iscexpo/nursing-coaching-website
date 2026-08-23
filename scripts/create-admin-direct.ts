@@ -15,7 +15,7 @@ if (!DATABASE_URL) {
 const sql = postgres(DATABASE_URL)
 
 async function main() {
-  const email = process.env.ADMIN_EMAIL || 'admin@khulnasoft.com'
+  const email = process.env.ADMIN_EMAIL || 'admin@iscexpo.edu.bd'
   const password = process.env.ADMIN_PASSWORD || 'Sulaiman202520$'
   const phone = process.env.ADMIN_PHONE || '+8801784176442'
   const name = process.env.ADMIN_NAME || 'Admin'

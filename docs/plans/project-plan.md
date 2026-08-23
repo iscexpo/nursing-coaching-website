@@ -32,7 +32,7 @@ Everything below is a **hard prerequisite** for all other phases.
 | 1.7  | Run typecheck (`pnpm typecheck`)                            | —                                                           | Zero errors                                                                 | 🟢     |
 | 1.8  | Run lint (`pnpm lint`)                                      | —                                                           | Zero errors and warnings                                                    | 🟢     |
 | 1.9  | Add React error boundaries to admin tab panels              | `app/admin/components/*.tsx`                                | Each tab wrapped in `<ErrorBoundary>` with retry UI                         | 🟢     |
-| 1.10 | Seed demo admin user                                        | `scripts/seed-demo-admin.ts`                                | `admin@khulnasoft.com` can log in and see all 22 tabs                       | 🟢     |
+| 1.10 | Seed demo admin user                                        | `scripts/seed-demo-admin.ts`                                | `admin@iscexpo.edu.bd` can log in and see all 22 tabs                       | 🟢     |
 
 ---
 

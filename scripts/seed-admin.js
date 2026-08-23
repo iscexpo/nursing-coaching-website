@@ -10,8 +10,8 @@ async function seedAdmin() {
 
   await sql`
     INSERT INTO "user" (id, name, email, email_verified, phone_number, phone_number_verified, role)
-    VALUES (${id}, 'Admin', 'admin@khulnasoft.com', true, '+8801784176442', true, 'admin')
-    ON CONFLICT (phone_number) DO UPDATE SET role = 'admin', email = 'admin@khulnasoft.com', email_verified = true, phone_number_verified = true
+    VALUES (${id}, 'Admin', 'admin@iscexpo.edu.bd', true, '+8801784176442', true, 'admin')
+    ON CONFLICT (phone_number) DO UPDATE SET role = 'admin', email = 'admin@iscexpo.edu.bd', email_verified = true, phone_number_verified = true
   `
 
   // Get the actual user id (might be the existing one)
@@ -22,12 +22,12 @@ async function seedAdmin() {
   const accountId = crypto.randomUUID()
   await sql`
     INSERT INTO account (id, account_id, provider_id, user_id, password)
-    VALUES (${accountId}, 'admin@khulnasoft.com', 'email', ${userId}, ${hashedPassword})
+    VALUES (${accountId}, 'admin@iscexpo.edu.bd', 'email', ${userId}, ${hashedPassword})
     ON CONFLICT DO NOTHING
   `
 
   console.log('Admin seeded successfully!')
-  console.log('Email: admin@khulnasoft.com')
+  console.log('Email: admin@iscexpo.edu.bd')
   console.log('Phone: +8801784176442')
   console.log('Password: 1a2s3d4f!@#$')
   await sql.end()

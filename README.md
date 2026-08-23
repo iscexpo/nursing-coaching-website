@@ -176,7 +176,7 @@ npx tsx scripts/seed-demo-admin.ts
 
 | Field    | Value                  |
 | -------- | ---------------------- |
-| Email    | `admin@khulnasoft.com` |
+| Email    | `admin@iscexpo.edu.bd` |
 | Password | `Admin123!`            |
 | Phone    | `+8801784176442`       |
 
