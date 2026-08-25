@@ -1,5 +1,5 @@
 import postgres from 'postgres'
-import { readFileSync } from 'fs'
+import { readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { config } from 'dotenv'
 
@@ -18,13 +18,9 @@ async function main() {
   // Step 1: Run migrations
   console.log('Running migrations...')
   const migrationsDir = join(process.cwd(), 'lib', 'db', 'migrations')
-  const migrationFiles = [
-    '0000_curly_trish_tilby.sql',
-    '0001_windy_nomad.sql',
-    '0002_add_attendance_admit_cards.sql',
-    '0003_add_student_address_education.sql',
-    '0004_teachers.sql',
-  ]
+  const migrationFiles = readdirSync(migrationsDir)
+    .filter((f) => /^\d{4}_.+\.sql$/.test(f))
+    .sort()
 
   for (const fileName of migrationFiles) {
     const content = readFileSync(join(migrationsDir, fileName), 'utf-8')
