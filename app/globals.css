@@ -63,28 +63,28 @@
 
 :root {
   color-scheme: light;
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
-  --background: #fafafa;
-  --foreground: #171717;
+  --background: #f7fafc;
+  --foreground: #102a43;
 
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #102a43;
 
   --popover: #ffffff;
   --popover-foreground: #171717;
 
-  --primary: #0070f3;
+  --primary: #0b6e69;
   --primary-foreground: #ffffff;
 
-  --secondary: #f5f5f5;
-  --secondary-foreground: #171717;
+  --secondary: #e6f4f1;
+  --secondary-foreground: #155e59;
 
-  --muted: #f5f5f5;
-  --muted-foreground: #666666;
+  --muted: #eef4f5;
+  --muted-foreground: #526777;
 
-  --accent: #f5f5f5;
-  --accent-foreground: #171717;
+  --accent: #f2c14e;
+  --accent-foreground: #473606;
 
   --destructive: #ef4444;
 
@@ -92,12 +92,12 @@
   --input: #eaeaea;
   --ring: #0070f3;
 
-  --brand: #0070f3;
+  --brand: #0b6e69;
   --brand-foreground: #ffffff;
-  --green: #0070f3;
+  --green: #2a9d8f;
   --green-foreground: #ffffff;
-  --gold: #0070f3;
-  --gold-foreground: #ffffff;
+  --gold: #f2c14e;
+  --gold-foreground: #473606;
 
   --chart-1: #0070f3;
   --chart-2: #50e3c2;
