@@ -16,4 +16,12 @@ export default defineConfig([
       'react/no-unescaped-entities': 'warn',
     },
   },
+  {
+    // Playwright fixtures use a callback param named `use`; not React.
+    files: ['e2e/**/*.{ts,js}'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
 ])
