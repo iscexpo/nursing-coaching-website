@@ -18,7 +18,7 @@ export function SiteHeader() {
   const { open, setOpen } = useMobileMenu()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2.5">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
