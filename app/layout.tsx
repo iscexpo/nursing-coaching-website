@@ -3,7 +3,13 @@ import { getLocale, getMessages } from 'next-intl/server'
 import { Hind_Siliguri, Inter } from 'next/font/google'
 import { ToastProvider } from '@/components/ui/toast'
 import { ThemeProvider } from '@/components/theme-provider'
+import type { Metadata } from 'next'
+import { SITE } from '@/lib/cms/site-data'
 import './globals.css'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
+}
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ['bengali', 'latin'],

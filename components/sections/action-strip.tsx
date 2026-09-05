@@ -1,5 +1,10 @@
 import Link from 'next/link'
-import { ArrowUpRight, BookOpenCheck, ClipboardList, Headphones } from 'lucide-react'
+import {
+  ArrowUpRight,
+  BookOpenCheck,
+  ClipboardList,
+  Headphones,
+} from 'lucide-react'
 
 const actions = [
   {
@@ -39,12 +44,16 @@ export function ActionStrip() {
               <Icon className="size-5" />
             </span>
             <span className="min-w-0">
-              <span className="block text-xs font-semibold uppercase tracking-wider text-brand">{eyebrow}</span>
+              <span className="block text-xs font-semibold uppercase tracking-wider text-brand">
+                {eyebrow}
+              </span>
               <span className="mt-1 flex items-center gap-1 font-heading text-base font-bold text-foreground">
                 {title}
                 <ArrowUpRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
               </span>
-              <span className="mt-1 block text-sm leading-6 text-muted-foreground">{text}</span>
+              <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+                {text}
+              </span>
             </span>
           </Link>
         ))}
