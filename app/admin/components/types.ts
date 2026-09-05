@@ -43,6 +43,7 @@ export interface Result {
 export interface Course {
   id: string
   slug: string
+  courseCode: string | null
   title: string
   description: string
   shortDescription: string | null
@@ -51,6 +52,7 @@ export interface Course {
   discountFee: number | null
   image: string | null
   features: string[] | null
+  category: 'icon' | 'isc'
   isActive: boolean
   maxStudents: number | null
   currentStudents: number
@@ -63,7 +65,10 @@ export interface Enrollment {
   courseId: string
   status: string
   enrolledAt: string
+  startDate: string | null
+  endDate: string | null
   totalFee: number
+  discount: number
   paidAmount: number
   dueAmount: number
   notes: string | null
@@ -120,9 +125,34 @@ export interface Student {
   guardianName: string | null
   guardianPhone: string | null
   institution: string | null
-  ssc: { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string } | null
-  hsc: { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string } | null
-  honors: { result: string; institution: string; year: string; roll: string; registrationNo: string; board: string; photoUrl: string } | null
+  ssc: {
+    result: string
+    institution: string
+    year: string
+    roll: string
+    registrationNo: string
+    board: string
+    photoUrl: string
+  } | null
+  hsc: {
+    result: string
+    institution: string
+    year: string
+    roll: string
+    registrationNo: string
+    board: string
+    photoUrl: string
+  } | null
+  honors: {
+    result: string
+    institution: string
+    year: string
+    roll: string
+    registrationNo: string
+    board: string
+    photoUrl: string
+  } | null
+  admissionId: string | null
   createdAt: string
   updatedAt: string
 }
@@ -202,6 +232,7 @@ export interface MediaFile {
   size: number
   altText: string | null
   description: string | null
+  category: 'general' | 'gallery'
   uploadedBy: string | null
   createdAt: string
   updatedAt: string
@@ -219,10 +250,144 @@ export interface NotificationRecord {
   createdAt: string
 }
 
+export interface NotificationTemplate {
+  id: string
+  name: string
+  subject: string
+  body: string
+  channel: 'in_app' | 'sms'
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ScheduledNotification {
+  id: string
+  templateId: string | null
+  title: string
+  message: string
+  type: 'info' | 'success' | 'warning' | 'payment' | 'enrollment'
+  scheduledAt: string
+  targetRole: string | null
+  targetCourseId: string | null
+  status: 'pending' | 'sending' | 'sent' | 'failed'
+  sentAt: string | null
+  createdAt: string
+}
+
+export interface CourseCategory {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  sortOrder: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Subject {
   id: string
   name: string
   sortOrder: number
   isActive: boolean
   createdAt: string
+}
+
+export type AdmissionStatus =
+  'pending' | 'received' | 'processing' | 'approved' | 'rejected'
+
+export interface EducationDetail {
+  result: string
+  institution: string
+  year: string
+  roll: string
+  registrationNo: string
+  board: string
+}
+
+export interface Admission {
+  id: string
+  reference: string
+  name: string
+  phone: string
+  courseId: string
+  courseTitle: string
+  message: string | null
+  ssc: EducationDetail | null
+  hsc: EducationDetail | null
+  honors: EducationDetail | null
+  status: AdmissionStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export type ModelTestApplicantStatus =
+  'pending' | 'contacted' | 'registered' | 'rejected'
+
+export interface ModelTestApplicant {
+  id: string
+  reference: string
+  name: string
+  phone: string
+  examId: string | null
+  examTitle: string | null
+  preferredSubject: string | null
+  message: string | null
+  status: ModelTestApplicantStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface EnrollmentTrend {
+  period: string
+  count: number
+}
+
+export interface RevenueReport {
+  period: string
+  verified: number
+  pending: number
+  total: number
+}
+
+export interface AttendanceStats {
+  studentId: string
+  studentName: string
+  present: number
+  late: number
+  absent: number
+  total: number
+  percentage: number
+}
+
+export interface CourseAnalytics {
+  courseId: string
+  courseTitle: string
+  totalEnrollments: number
+  activeStudents: number
+  completedStudents: number
+  totalRevenue: number
+  averageAttendance: number
+}
+
+export interface FeeCollectionReport {
+  studentId: string
+  studentName: string
+  studentPhone: string
+  courseTitle: string
+  totalFee: number
+  paidAmount: number
+  dueAmount: number
+  status: string
+  lastPaymentDate: string | null
+}
+
+export interface StudentPerformance {
+  studentId: string
+  studentName: string
+  examsAttempted: number
+  averageScore: number
+  highestScore: number
+  lowestScore: number
 }

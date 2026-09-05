@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { ok, serverError, validationError } from '@/lib/api/response'
 import { z } from 'zod/v3'
-import { requireAdmin } from '@/lib/permissions'
+import { requireAdmin } from '@/lib/core/permissions'
 import { sendBroadcastSms } from '@/lib/sms'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 const broadcastSchema = z.object({
   title: z.string().min(1).max(200),
@@ -12,7 +13,11 @@ const broadcastSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'sms.broadcast' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 3,
+    prefix: 'sms.broadcast',
+  })
   if (limiter) return limiter
 
   try {
@@ -22,12 +27,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = broadcastSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const result = await sendBroadcastSms(parsed.data)
-    return NextResponse.json(result)
+    return ok(result)
   } catch {
-    return NextResponse.json({ error: 'Failed to send SMS broadcast' }, { status: 500 })
+    return serverError('Failed to send SMS broadcast')
   }
 }

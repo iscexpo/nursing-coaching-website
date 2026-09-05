@@ -1,15 +1,10 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 export function Skeleton({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn('skeleton rounded-xl', className)}
-      {...props}
-    />
-  )
+  return <div className={cn('skeleton rounded-xl', className)} {...props} />
 }
 
 export function StatCardSkeleton() {

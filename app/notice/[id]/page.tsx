@@ -9,12 +9,12 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { JsonLd } from '@/components/json-ld'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 
 type Props = { params: Promise<{ id: string }> }
 
 function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString('bn-BD', {
+  return new Date(date).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -25,23 +25,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   let notice: typeof notices.$inferSelect | null = null
   try {
-    const rows = await db.select().from(notices).where(eq(notices.id, id)).limit(1)
+    const rows = await db
+      .select()
+      .from(notices)
+      .where(eq(notices.id, id))
+      .limit(1)
     notice = rows[0] ?? null
   } catch {
     notice = null
   }
 
   if (!notice) {
-    return { title: 'নোটিশ পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo', robots: { index: false } }
+    return {
+      title: `Notice not found | ${SITE.name}`,
+      robots: { index: false },
+    }
   }
 
-  const title = `${notice.title} | ISC Expo - Icon Skill & Career Expo`
+  const title = `${notice.title} | ${SITE.name}`
   const description = (notice.content || '').slice(0, 160)
   return {
     title,
     description,
     alternates: { canonical: `/notice/${id}` },
-    openGraph: { type: 'article', title, description, url: `${SITE.url}/notice/${id}` },
+    openGraph: {
+      type: 'article',
+      title,
+      description,
+      url: `${SITE.url}/notice/${id}`,
+    },
   }
 }
 
@@ -49,7 +61,11 @@ export default async function NoticeDetailPage({ params }: Props) {
   const { id } = await params
   let notice: typeof notices.$inferSelect | null = null
   try {
-    const rows = await db.select().from(notices).where(eq(notices.id, id)).limit(1)
+    const rows = await db
+      .select()
+      .from(notices)
+      .where(eq(notices.id, id))
+      .limit(1)
     notice = rows[0] ?? null
   } catch {
     notice = null
@@ -74,16 +90,25 @@ export default async function NoticeDetailPage({ params }: Props) {
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-10 md:py-14">
           <div className="mx-auto max-w-3xl px-4">
-            <Breadcrumb items={[{ label: 'নোটিশ', href: '/notice' }, { label: notice.title }]} />
-            <SectionHeading eyebrow="নোটিশ" title={notice.title} />
-            <p className="mt-2 text-sm text-muted-foreground">{formatDate(notice.createdAt)}</p>
+            <Breadcrumb
+              items={[
+                { label: 'Notice', href: '/notice' },
+                { label: notice.title },
+              ]}
+            />
+            <SectionHeading eyebrow="Notice" title={notice.title} />
+            <p className="mt-2 text-sm text-muted-foreground">
+              {formatDate(notice.createdAt)}
+            </p>
           </div>
         </section>
 
         <section className="py-10 md:py-14">
           <div className="mx-auto max-w-3xl px-4">
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
-              <p className="whitespace-pre-line leading-relaxed text-foreground">{notice.content}</p>
+              <p className="whitespace-pre-line leading-relaxed text-foreground">
+                {notice.content}
+              </p>
             </div>
           </div>
         </section>

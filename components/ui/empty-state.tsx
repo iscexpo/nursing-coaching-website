@@ -1,13 +1,18 @@
 import { Inbox } from 'lucide-react'
+import { Button } from './button'
 
 export function EmptyState({
   icon: Icon = Inbox,
   title,
   description,
+  actionLabel,
+  onAction,
 }: {
   icon?: React.ElementType
   title: string
   description?: string
+  actionLabel?: string
+  onAction?: () => void
 }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-12 text-center">
@@ -17,6 +22,11 @@ export function EmptyState({
       <p className="mt-3 text-sm font-medium text-foreground">{title}</p>
       {description && (
         <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+      )}
+      {actionLabel && onAction && (
+        <Button variant="outline" size="sm" className="mt-4" onClick={onAction}>
+          {actionLabel}
+        </Button>
       )}
     </div>
   )

@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { ArrowUp } from 'lucide-react'
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false)
+  const t = useTranslations('common')
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400)
@@ -17,7 +19,7 @@ export function BackToTop() {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      aria-label="উপরে যান"
+      aria-label={t('backToTop')}
       className="fixed bottom-5 left-5 z-50 flex size-10 items-center justify-center rounded-full border border-border bg-card/95 text-muted-foreground shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/30 hover:text-brand hover:shadow-xl"
     >
       <ArrowUp className="size-5" />

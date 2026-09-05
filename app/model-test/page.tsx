@@ -3,30 +3,54 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 import { Breadcrumb } from '@/components/breadcrumb'
-import { CalendarDays, Clock, Users, FileCheck, BookOpen, Play, Filter } from 'lucide-react'
+import {
+  CalendarDays,
+  Clock,
+  Users,
+  FileCheck,
+  BookOpen,
+  Play,
+  Filter,
+} from 'lucide-react'
 import { FadeIn } from '@/components/ui/fade-in'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'মডেল টেস্ট | ISC Expo - Icon Skill & Career Expo',
-  description: 'ISC Expo - Icon Skill & Career Expo-এর সাপ্তাহিক মডেল টেস্টে অংশ নিন। BNMC ভর্তি পরীক্ষার প্রস্তুতি নিন।',
+  title: `Model Test | ${SITE.name}`,
+  description: `Participate in weekly model tests at ${SITE.name}. Prepare for BNMC admission exams.`,
   alternates: { canonical: '/model-test' },
 }
 
 const FEATURES = [
-  { icon: FileCheck, label: 'MCQ ভিত্তিক পরীক্ষা', desc: 'BNMC প্যাটার্ন অনুযায়ী প্রশ্ন' },
-  { icon: Clock, label: 'টাইমড পরীক্ষা', desc: 'বাস্তব পরীক্ষার পরিবেশে পরীক্ষা' },
-  { icon: Users, label: 'তাৎক্ষণিক ফলাফল', desc: 'সাবমিট করার সাথে সাথে ফলাফল' },
-  { icon: CalendarDays, label: 'সাপ্তাহিক আপডেট', desc: 'নিয়মিত নতুন পরীক্ষা যোগ হয়' },
+  {
+    icon: FileCheck,
+    label: 'MCQ Based Exams',
+    desc: 'Questions following BNMC pattern',
+  },
+  {
+    icon: Clock,
+    label: 'Timed Exams',
+    desc: 'Take exams in a real exam environment',
+  },
+  {
+    icon: Users,
+    label: 'Instant Results',
+    desc: 'Results available immediately after submission',
+  },
+  {
+    icon: CalendarDays,
+    label: 'Weekly Updates',
+    desc: 'New exams added regularly',
+  },
 ]
 
 const DIFFICULTY_LABEL: Record<string, { label: string; cls: string }> = {
-  easy: { label: 'সহজ', cls: 'bg-green/10 text-green' },
-  medium: { label: 'মাঝারি', cls: 'bg-brand/10 text-brand' },
-  hard: { label: 'কঠিন', cls: 'bg-destructive/10 text-destructive' },
+  easy: { label: 'Easy', cls: 'bg-green/10 text-green' },
+  medium: { label: 'Medium', cls: 'bg-brand/10 text-brand' },
+  hard: { label: 'Hard', cls: 'bg-destructive/10 text-destructive' },
 }
 
 type ExamRow = {
@@ -60,7 +84,15 @@ async function getExams(): Promise<ExamRow[]> {
       .from(exams)
       .leftJoin(questions, eq(exams.id, questions.examId))
       .where(eq(exams.isActive, true))
-      .groupBy(exams.id, exams.title, exams.subject, exams.duration, exams.difficulty, exams.isActive, exams.createdAt)
+      .groupBy(
+        exams.id,
+        exams.title,
+        exams.subject,
+        exams.duration,
+        exams.difficulty,
+        exams.isActive,
+        exams.createdAt,
+      )
       .orderBy(desc(exams.createdAt))
 
     return data
@@ -82,15 +114,14 @@ export default async function ModelTestPage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'মডেল টেস্ট' }]} />
-
         {/* Hero */}
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'Model Test' }]} />
             <SectionHeading
-              eyebrow="মডেল টেস্ট"
-              title="সাপ্তাহিক মডেল টেস্ট"
-              description="BNMC ভর্তি পরীক্ষার আদলে আমাদের সাপ্তাহিক মডেল টেস্টে অংশ নিন এবং নিজেকে যাচাই করুন।"
+              eyebrow="Model Test"
+              title="Weekly Model Tests"
+              description="Take our weekly model tests modeled after BNMC admission exams and test yourself."
             />
           </div>
         </section>
@@ -100,9 +131,14 @@ export default async function ModelTestPage() {
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {FEATURES.map((f) => (
-                <div key={f.label} className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <div
+                  key={f.label}
+                  className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+                >
                   <f.icon className="size-8 text-brand" />
-                  <h3 className="mt-3 font-heading font-semibold text-foreground">{f.label}</h3>
+                  <h3 className="mt-3 font-heading font-semibold text-foreground">
+                    {f.label}
+                  </h3>
                   <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
                 </div>
               ))}
@@ -114,7 +150,7 @@ export default async function ModelTestPage() {
         <section className="bg-secondary/30 py-12 md:py-16">
           <div className="mx-auto max-w-7xl px-4">
             <h2 className="mb-8 text-center font-heading text-2xl font-bold text-foreground">
-              উপলব্ধ পরীক্ষাসমূহ
+              Available Exams
             </h2>
 
             {exams.length === 0 ? (
@@ -122,10 +158,10 @@ export default async function ModelTestPage() {
                 <div className="rounded-2xl border border-border bg-card p-12 text-center shadow-sm">
                   <BookOpen className="mx-auto size-12 text-muted-foreground" />
                   <h3 className="mt-4 font-heading text-lg font-bold text-foreground">
-                    কোনো পরীক্ষা পাওয়া যায়নি
+                    No exams found
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    শীঘ্রই নতুন পরীক্ষা যোগ করা হবে। আমাদের WhatsApp-এ যোগাযোগ করুন।
+                    New exams will be added soon. Contact us on WhatsApp.
                   </p>
                   <a
                     href={SITE.whatsapp}
@@ -133,7 +169,7 @@ export default async function ModelTestPage() {
                     rel="noopener noreferrer"
                     className="mt-6 inline-flex items-center gap-2 rounded-lg bg-green px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green/90"
                   >
-                    WhatsApp-এ যোগাযোগ
+                    Contact on WhatsApp
                   </a>
                 </div>
               </FadeIn>
@@ -146,11 +182,15 @@ export default async function ModelTestPage() {
                         <span className="rounded-full bg-brand/10 px-3 py-1 text-sm font-bold text-brand">
                           {group.subject}
                         </span>
-                        <span className="text-xs text-muted-foreground">{group.exams.length} টি পরীক্ষা</span>
+                        <span className="text-xs text-muted-foreground">
+                          {group.exams.length} exams
+                        </span>
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {group.exams.map((exam) => {
-                          const diff = DIFFICULTY_LABEL[exam.difficulty] || DIFFICULTY_LABEL.medium
+                          const diff =
+                            DIFFICULTY_LABEL[exam.difficulty] ||
+                            DIFFICULTY_LABEL.medium
                           return (
                             <div
                               key={exam.id}
@@ -160,7 +200,9 @@ export default async function ModelTestPage() {
                                 <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10">
                                   <BookOpen className="size-5 text-brand" />
                                 </div>
-                                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${diff.cls}`}>
+                                <span
+                                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${diff.cls}`}
+                                >
                                   {diff.label}
                                 </span>
                               </div>
@@ -170,11 +212,11 @@ export default async function ModelTestPage() {
                               <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
                                 <span className="flex items-center gap-1">
                                   <FileCheck className="size-3" />
-                                  {exam.questionCount} টি প্রশ্ন
+                                  {exam.questionCount} questions
                                 </span>
                                 <span className="flex items-center gap-1">
                                   <Clock className="size-3" />
-                                  {exam.duration} মিনিট
+                                  {exam.duration} minutes
                                 </span>
                               </div>
                               <Link
@@ -182,7 +224,7 @@ export default async function ModelTestPage() {
                                 className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
                               >
                                 <Play className="size-4" />
-                                শুরু করুন
+                                Start
                               </Link>
                             </div>
                           )
@@ -200,10 +242,11 @@ export default async function ModelTestPage() {
         <section className="py-12 md:py-16">
           <div className="mx-auto max-w-3xl px-4 text-center">
             <h2 className="font-heading text-2xl font-bold text-foreground">
-              মডেল টেস্টে যোগ দিন
+              Join Model Tests
             </h2>
             <p className="mt-3 text-muted-foreground">
-              মডেল টেস্টে অংশ নিতে আমাদের অফিসে এসে নিবন্ধন করুন অথবা WhatsApp-এ যোগাযোগ করুন।
+              To participate in model tests, visit our office to register or
+              contact us on WhatsApp.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
               <a
@@ -212,13 +255,13 @@ export default async function ModelTestPage() {
                 rel="noopener noreferrer"
                 className="rounded-lg bg-green px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green/90"
               >
-                WhatsApp-এ যোগাযোগ
+                Contact on WhatsApp
               </a>
               <a
                 href={SITE.phoneHref}
                 className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
               >
-                ফোনে কল করুন
+                Call Us
               </a>
             </div>
           </div>

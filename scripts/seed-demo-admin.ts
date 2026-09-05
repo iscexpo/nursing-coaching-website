@@ -18,14 +18,20 @@ async function main() {
   // Step 1: Run migrations
   console.log('Running migrations...')
   const migrationsDir = join(process.cwd(), 'lib', 'db', 'migrations')
-  const migrationFiles = ['0000_curly_trish_tilby.sql', '0001_windy_nomad.sql', '0002_add_attendance_admit_cards.sql', '0003_add_student_address_education.sql', '0004_teachers.sql']
+  const migrationFiles = [
+    '0000_curly_trish_tilby.sql',
+    '0001_windy_nomad.sql',
+    '0002_add_attendance_admit_cards.sql',
+    '0003_add_student_address_education.sql',
+    '0004_teachers.sql',
+  ]
 
   for (const fileName of migrationFiles) {
     const content = readFileSync(join(migrationsDir, fileName), 'utf-8')
     const statements = content
       .split('--> statement-breakpoint')
-      .map(s => s.trim())
-      .filter(s => s.length > 0)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
 
     for (const stmt of statements) {
       try {
@@ -41,20 +47,23 @@ async function main() {
 
   await client.end()
 
-  // Step 2: Create admin via Better Auth API (handles password hashing correctly)
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@cornia.co'
+  // Step 2: Create admin via the auth API (handles password hashing correctly)
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@iscexpo.edu.bd'
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!'
   const adminName = process.env.ADMIN_NAME || 'Demo Admin'
   const adminPhone = process.env.ADMIN_PHONE || '+8801784176442'
 
-  const baseUrl = process.env.BETTER_AUTH_URL || 'http://localhost:3000'
+  const baseUrl =
+    process.env.ISC_AUTH_URL ||
+    process.env.BETTER_AUTH_URL ||
+    'http://localhost:3000'
 
   console.log('\nSeeding admin via API...')
 
   const response = await fetch(`${baseUrl}/api/admin/seed`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.ADMIN_SEED_KEY || 'seed-admin-2024'}`,
+      Authorization: `Bearer ${process.env.ADMIN_SEED_KEY || 'seed-admin-2024'}`,
       'Content-Type': 'application/json',
     },
   })

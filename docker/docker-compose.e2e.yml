@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/api/Dockerfile
+      target: runner
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+      ISC_AUTH_SECRET: supersecret-supersecret-supersecret-supersecret
+      ISC_AUTH_URL: http://app:3000
+      ISC_AUTH_TRUSTED_ORIGINS: http://app:3000
+      ADMIN_SEED_KEY: seed-admin-2024
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://127.0.0.1:3000/api/health || wget -qO- http://127.0.0.1:3000/ || exit 1',
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.61.1-jammy
+    depends_on:
+      app:
+        condition: service_healthy
+    working_dir: /work
+    volumes:
+      - ..:/work
+      - /work/node_modules
+      - /work/.next
+      - /work/playwright-report
+      - /work/test-results
+    command: >
+      sh -c "corepack enable && corepack prepare pnpm@10.34.3 --activate && pnpm install --frozen-lockfile && pnpm test:e2e"
+    environment:
+      BASE_URL: http://app:3000
+      CI: '1'
+      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+      ISC_AUTH_SECRET: supersecret-supersecret-supersecret-supersecret

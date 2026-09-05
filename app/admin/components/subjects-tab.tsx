@@ -1,7 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Save, X, GripVertical, Loader2 } from 'lucide-react'
+import {
+  translateSubject,
+  useCurriculumTranslations,
+} from '@/lib/i18n/curriculum'
+import { FormField } from '@/components/ui/form-field'
+import { Input } from '@/components/ui/input'
 
 interface Subject {
   id: string
@@ -17,6 +24,9 @@ interface SubjectsPanelProps {
 }
 
 export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
+  const t = useTranslations('admin.subjects')
+  const tc = useTranslations('common')
+  const tCurriculum = useCurriculumTranslations()
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
@@ -94,13 +104,19 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-heading text-lg font-bold text-foreground">বিষয় ব্যবস্থাপনা</h3>
+        <h3 className="font-heading text-lg font-bold text-foreground">
+          {t('title')}
+        </h3>
         <button
-          onClick={() => { setShowForm(!showForm); setEditing(null); setName('') }}
+          onClick={() => {
+            setShowForm(!showForm)
+            setEditing(null)
+            setName('')
+          }}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Plus className="size-4" />
-          নতুন বিষয়
+          {t('addNew')}
         </button>
       </div>
 
@@ -108,21 +124,33 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-heading font-semibold text-foreground">
-              {editing ? 'বিষয় সম্পাদনা' : 'নতুন বিষয় যোগ করুন'}
+              {editing ? t('editTitle') : t('addTitle')}
             </h4>
-            <button onClick={() => { setShowForm(false); setEditing(null); setName('') }} className="text-muted-foreground hover:text-foreground">
+            <button
+              onClick={() => {
+                setShowForm(false)
+                setEditing(null)
+                setName('')
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <X className="size-5" />
             </button>
           </div>
           <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-foreground">বিষয়ের নাম</label>
-              <input
+            <FormField
+              id="subject-name"
+              label={t('nameLabel')}
+              required
+              className="flex-1"
+            >
+              <Input
+                id="subject-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="যেমন: বাংলা, ইংরেজি, পদার্থবিজ্ঞান"
-                className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                placeholder={t('namePlaceholder')}
+                aria-required="true"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
@@ -130,14 +158,18 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                   }
                 }}
               />
-            </div>
+            </FormField>
             <button
               onClick={editing ? handleSaveEdit : handleCreate}
               disabled={saving || !name.trim()}
               className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90 disabled:opacity-50"
             >
-              {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-              {editing ? 'সংরক্ষণ' : 'যোগ করুন'}
+              {saving ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Save className="size-4" />
+              )}
+              {editing ? t('saveBtn') : t('addBtn')}
             </button>
           </div>
         </div>
@@ -148,18 +180,29 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
-                <th className="px-4 py-3 text-left font-semibold text-foreground">বিষয়ের নাম</th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">অবস্থা</th>
-                <th className="px-4 py-3 text-center font-semibold text-foreground">কার্যক্রম</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground">
+                  {t('nameLabel')}
+                </th>
+                <th className="px-4 py-3 text-center font-semibold text-foreground">
+                  {t('statusLabel')}
+                </th>
+                <th className="px-4 py-3 text-center font-semibold text-foreground">
+                  {t('actionsLabel')}
+                </th>
               </tr>
             </thead>
             <tbody>
               {subjects.map((s) => (
-                <tr key={s.id} className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
+                <tr
+                  key={s.id}
+                  className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50"
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <GripVertical className="size-4 text-muted-foreground" />
-                      <span className="font-medium text-foreground">{s.name}</span>
+                      <span className="font-medium text-foreground">
+                        {translateSubject(tCurriculum, s.name)}
+                      </span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -167,7 +210,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                       onClick={() => handleToggleActive(s.id, s.isActive)}
                       className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold cursor-pointer transition-colors ${s.isActive ? 'bg-green/10 text-green' : 'bg-secondary text-muted-foreground'}`}
                     >
-                      {s.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                      {s.isActive ? t('active') : t('inactive')}
                     </button>
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -176,7 +219,7 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
                         onClick={() => handleUpdate(s)}
                         className="rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
                       >
-                        সম্পাদনা
+                        {t('editBtn')}
                       </button>
                       <button
                         onClick={() => handleDelete(s.id)}
@@ -190,8 +233,11 @@ export function SubjectsPanel({ subjects, onRefresh }: SubjectsPanelProps) {
               ))}
               {subjects.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    কোনো বিষয় নেই। উপরে &ldquo;নতুন বিষয়&rdquo; বোতামে ক্লিক করুন।
+                  <td
+                    colSpan={3}
+                    className="px-4 py-8 text-center text-sm text-muted-foreground"
+                  >
+                    {t('noSubjects')}
                   </td>
                 </tr>
               )}

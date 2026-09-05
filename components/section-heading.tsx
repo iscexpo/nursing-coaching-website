@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 export function SectionHeading({
   eyebrow,
@@ -22,15 +22,15 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? (
-        <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-brand">
+        <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           {eyebrow}
         </span>
       ) : null}
-      <h2 className="mt-3 font-heading text-2xl font-bold text-balance text-foreground sm:text-3xl md:text-4xl">
+      <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
         {title}
       </h2>
       {description ? (
-        <p className="mt-3 text-base leading-relaxed text-muted-foreground text-pretty">
+        <p className="mt-3 text-base leading-relaxed text-muted-foreground">
           {description}
         </p>
       ) : null}

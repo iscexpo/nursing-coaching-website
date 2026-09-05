@@ -1,0 +1,165 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Foundations/Animations" />
+
+# Animations
+
+Source: `app/globals.css:171` + `DESIGN_REFERENCE.md:45`.
+
+## Duration & easing
+
+| Purpose          | Duration             | Easing        |
+| ---------------- | -------------------- | ------------- |
+| Hover feedback   | 200–300ms            | `ease-in-out` |
+| Section entrance | 600–700ms            | `ease-out`    |
+| Scroll reveal    | 400–600ms            | `ease-out`    |
+| Float / blob     | 6000–7000ms infinite | `ease-in-out` |
+
+Per `DESIGN_REFERENCE.md:46`.
+
+## Keyframes
+
+### fade-in-up (`app/globals.css:171`)
+
+```css
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out both;
+}
+```
+
+<div className="animate-fade-in-up rounded-xl border bg-card p-6">
+  fade-in-up (0.4s)
+</div>
+
+### fade-in
+
+```css
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out both;
+}
+```
+
+<div className="animate-fade-in rounded-xl border bg-card p-6">
+  fade-in (0.3s)
+</div>
+
+### float — 6s (`app/globals.css:231`)
+
+```css
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-20px) rotate(1deg);
+  }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+```
+
+<div className="flex p-8 gap-4">
+  <div className="animate-float h-20 w-20 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground text-xs">
+    float
+  </div>
+</div>
+
+### blob — 7s (`app/globals.css:218`)
+
+```css
+@keyframes blob { 0%,100% {translate(0,0) scale(1)} 33% {translate(30px,-50px) scale(1.1)} 66% {translate(-20px,20px) scale(0.9)} }
+.animate-blob { animation: blob 7s infinite; }
+```
+
+<div className="relative p-8 h-40 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900">
+  <div className="animate-blob absolute h-24 w-24 rounded-full bg-blue-500/30 blur-xl left-1/3 top-1/3" />
+  <div className="animate-blob animation-delay-2000 absolute h-24 w-24 rounded-full bg-purple-500/30 blur-xl left-1/2 top-1/4" />
+  <div className="animate-blob animation-delay-4000 absolute h-24 w-24 rounded-full bg-amber-500/30 blur-xl left-1/4 top-1/2" />
+</div>
+
+### slide-up (`app/globals.css:241`) + shimmer
+
+```css
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--muted-foreground) / 10 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+```
+
+<div className="animate-slide-up rounded-xl border bg-card p-6 mb-4">
+  slide-up (0.6s)
+</div>
+<div className="skeleton h-8 w-48 mb-2" />
+<div className="skeleton h-4 w-32" />
+
+## Staggered entrance
+
+Pattern from `DESIGN_REFERENCE.md:148`:
+
+```tsx
+delay={i * 80}
+style={{ transitionDelay: `${delay}ms` }}
+```
+
+For performance: animate only `transform` + `opacity` (GPU-accelerated), avoid `width/height`. Use `will-change` sparingly. Respect `prefers-reduced-motion` (`app/globals.css:199` disables animations).
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .skeleton {
+    animation: none !important;
+  }
+}
+```
+
+### Utility classes
+
+| Class                       | Effect         |
+| --------------------------- | -------------- |
+| `animate-fade-in`           | 0.3s fade      |
+| `animate-fade-in-up`        | 0.4s fade+16px |
+| `animate-slide-up`          | 0.6s slide     |
+| `animate-float`             | 6s floating    |
+| `animate-blob`              | 7s blob        |
+| `animation-delay-2000/4000` | stagger        |

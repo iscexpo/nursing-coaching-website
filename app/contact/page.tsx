@@ -30,36 +30,46 @@ export default function ContactPage() {
 
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error || 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।')
+        setError(data.error || 'Something went wrong. Please try again.')
         return
       }
 
       setSubmitted(true)
     } catch {
-      setError('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।')
+      setError('Network error. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
   const infoItems = [
-    { icon: MapPin, label: 'ঠিকানা', value: site.addressBn },
-    { icon: Phone, label: 'ফোন', value: site.phone, href: site.phoneHref },
-    { icon: Mail, label: 'ইমেইল', value: site.email, href: `mailto:${site.email}` },
-    { icon: MessageCircle, label: 'WhatsApp', value: 'চ্যাট করুন', href: site.whatsapp },
+    { icon: MapPin, label: 'Address', value: site.addressBn },
+    { icon: Phone, label: 'Phone', value: site.phone, href: site.phoneHref },
+    {
+      icon: Mail,
+      label: 'Email',
+      value: site.email,
+      href: `mailto:${site.email}`,
+    },
+    {
+      icon: MessageCircle,
+      label: 'WhatsApp',
+      value: 'Chat Now',
+      href: site.whatsapp,
+    },
   ]
 
   return (
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'যোগাযোগ' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'Contact' }]} />
             <SectionHeading
-              eyebrow="যোগাযোগ"
-              title="আমাদের সাথে যোগাযোগ করুন"
-              description="যেকোনো প্রশ্ন বা তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।"
+              eyebrow="Contact"
+              title="Contact Us"
+              description="Get in touch with us for any questions or information."
             />
           </div>
         </section>
@@ -69,7 +79,7 @@ export default function ContactPage() {
             <div className="grid gap-8 lg:grid-cols-2">
               <div className="space-y-6">
                 <h3 className="font-heading text-lg font-bold text-foreground">
-                  যোগাযোগের তথ্য
+                  Contact Information
                 </h3>
                 <div className="space-y-4">
                   {infoItems.map((item) => (
@@ -78,18 +88,30 @@ export default function ContactPage() {
                         <item.icon className="size-5 text-brand" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">{item.label}</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {item.label}
+                        </p>
                         {item.href ? (
                           <a
                             href={item.href}
-                            target={item.href.startsWith('http') ? '_blank' : undefined}
-                            rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            target={
+                              item.href.startsWith('http')
+                                ? '_blank'
+                                : undefined
+                            }
+                            rel={
+                              item.href.startsWith('http')
+                                ? 'noopener noreferrer'
+                                : undefined
+                            }
                             className="text-sm text-muted-foreground hover:text-brand"
                           >
                             {item.value}
                           </a>
                         ) : (
-                          <p className="text-sm text-muted-foreground">{item.value}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.value}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -98,11 +120,11 @@ export default function ContactPage() {
 
                 <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
                   <h4 className="font-heading text-sm font-semibold text-foreground">
-                    অফিস সময়
+                    Office Hours
                   </h4>
                   <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-                    <p>শনি—বৃহস্পতি: সকাল ৯:০০ — রাত ৮:০০</p>
-                    <p>শুক্রবার: বন্ধ</p>
+                    <p>Sat—Thu: 9:00 AM — 8:00 PM</p>
+                    <p>Friday: Closed</p>
                   </div>
                 </div>
               </div>
@@ -111,21 +133,34 @@ export default function ContactPage() {
                 {submitted ? (
                   <div className="rounded-2xl border border-green/30 bg-green/5 p-8 text-center">
                     <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-green/10">
-                      <svg className="size-8 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="size-8 text-green"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
                     <h3 className="font-heading text-xl font-bold text-foreground">
-                      বার্তা পাঠানো হয়েছে!
+                      Message Sent!
                     </h3>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।
+                      We will contact you soon.
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
+                  >
                     <h3 className="font-heading text-lg font-bold text-foreground">
-                      বার্তা পাঠান
+                      Send a Message
                     </h3>
 
                     {error && (
@@ -135,43 +170,58 @@ export default function ContactPage() {
                     )}
 
                     <div>
-                      <label htmlFor="c-name" className="block text-sm font-medium text-foreground">
-                        নাম
+                      <label
+                        htmlFor="c-name"
+                        className="block text-sm font-medium text-foreground"
+                      >
+                        Name
                       </label>
                       <input
                         id="c-name"
                         type="text"
                         value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        placeholder="আপনার নাম"
+                        onChange={(e) =>
+                          setForm({ ...form, name: e.target.value })
+                        }
+                        placeholder="Your name"
                         required
                         className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                       />
                     </div>
                     <div>
-                      <label htmlFor="c-phone" className="block text-sm font-medium text-foreground">
-                        ফোন নম্বর
+                      <label
+                        htmlFor="c-phone"
+                        className="block text-sm font-medium text-foreground"
+                      >
+                        Phone Number
                       </label>
                       <input
                         id="c-phone"
                         type="tel"
                         value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, phone: e.target.value })
+                        }
                         placeholder="01XXXXXXXXX"
                         required
                         className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                       />
                     </div>
                     <div>
-                      <label htmlFor="c-msg" className="block text-sm font-medium text-foreground">
-                        বার্তা
+                      <label
+                        htmlFor="c-msg"
+                        className="block text-sm font-medium text-foreground"
+                      >
+                        Message
                       </label>
                       <textarea
                         id="c-msg"
                         value={form.message}
-                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, message: e.target.value })
+                        }
                         rows={4}
-                        placeholder="আপনার বার্তা লিখুন"
+                        placeholder="Write your message"
                         required
                         className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                       />
@@ -182,7 +232,7 @@ export default function ContactPage() {
                       className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90 disabled:opacity-50"
                     >
                       {loading && <Loader2 className="size-4 animate-spin" />}
-                      {loading ? 'পাঠানো হচ্ছে...' : 'বার্তা পাঠান'}
+                      {loading ? 'Sending...' : 'Send Message'}
                     </button>
                   </form>
                 )}

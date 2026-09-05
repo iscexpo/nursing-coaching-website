@@ -11,13 +11,17 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { SectionHeading } from '@/components/section-heading'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { JsonLd } from '@/components/json-ld'
-import { SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/cms/site-data'
 
 type Props = { params: Promise<{ slug: string }> }
 
 async function getCourse(slug: string) {
   try {
-    const rows = await db.select().from(courses).where(eq(courses.slug, slug)).limit(1)
+    const rows = await db
+      .select()
+      .from(courses)
+      .where(eq(courses.slug, slug))
+      .limit(1)
     return rows[0] ?? null
   } catch {
     return null
@@ -30,12 +34,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!course) {
     return {
-      title: 'কোর্স পাওয়া যায়নি | ISC Expo - Icon Skill & Career Expo',
+      title: `Course not found | ${SITE.name}`,
       robots: { index: false },
     }
   }
 
-  const title = `${course.title} | ISC Expo - Icon Skill & Career Expo`
+  const title = `${course.title} | ${SITE.name}`
   const description = course.shortDescription || course.description
   return {
     title,
@@ -84,8 +88,17 @@ export default async function CourseDetailPage({ params }: Props) {
       <main>
         <section className="bg-gradient-to-b from-brand/5 to-background py-10 md:py-14">
           <div className="mx-auto max-w-4xl px-4">
-            <Breadcrumb items={[{ label: 'কোর্স', href: '/courses' }, { label: course.title }]} />
-            <SectionHeading eyebrow="কোর্স বিবরণ" title={course.title} description={course.shortDescription || ''} />
+            <Breadcrumb
+              items={[
+                { label: 'Courses', href: '/courses' },
+                { label: course.title },
+              ]}
+            />
+            <SectionHeading
+              eyebrow="Course Details"
+              title={course.title}
+              description={course.shortDescription || ''}
+            />
           </div>
         </section>
 
@@ -94,29 +107,42 @@ export default async function CourseDetailPage({ params }: Props) {
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
               {course.image && (
                 <div className="relative mb-6 aspect-[16/9] overflow-hidden rounded-xl">
-                  <Image src={course.image} alt={course.title} fill className="object-cover" />
+                  <Image
+                    src={course.image}
+                    alt={course.title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               )}
-              <p className="whitespace-pre-line leading-relaxed text-foreground">{course.description}</p>
+              <p className="whitespace-pre-line leading-relaxed text-foreground">
+                {course.description}
+              </p>
 
               <dl className="mt-6 grid gap-4 sm:grid-cols-2">
                 {course.duration && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">সময়কাল</dt>
-                    <dd className="mt-1 font-semibold text-foreground">{course.duration}</dd>
+                    <dt className="text-xs text-muted-foreground">Duration</dt>
+                    <dd className="mt-1 font-semibold text-foreground">
+                      {course.duration}
+                    </dd>
                   </div>
                 )}
                 <div className="rounded-lg bg-secondary/40 p-4">
-                  <dt className="text-xs text-muted-foreground">ফি</dt>
+                  <dt className="text-xs text-muted-foreground">Fee</dt>
                   <dd className="mt-1 font-semibold text-foreground">
                     ৳{course.fee.toLocaleString()}
-                    {course.discountFee ? ` (ছাড়: ৳${course.discountFee.toLocaleString()})` : ''}
+                    {course.discountFee
+                      ? ` (Discount: ৳${course.discountFee.toLocaleString()})`
+                      : ''}
                   </dd>
                 </div>
                 {course.schedule && (
                   <div className="rounded-lg bg-secondary/40 p-4">
-                    <dt className="text-xs text-muted-foreground">সময়সূচি</dt>
-                    <dd className="mt-1 font-semibold text-foreground">{course.schedule}</dd>
+                    <dt className="text-xs text-muted-foreground">Schedule</dt>
+                    <dd className="mt-1 font-semibold text-foreground">
+                      {course.schedule}
+                    </dd>
                   </div>
                 )}
               </dl>
@@ -126,7 +152,7 @@ export default async function CourseDetailPage({ params }: Props) {
                   href={`/admission?course=${course.slug}`}
                   className="inline-flex rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
                 >
-                  এই কোর্সে ভর্তি নিন
+                  Enroll in this course
                 </Link>
               </div>
             </div>

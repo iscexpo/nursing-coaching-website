@@ -5,6 +5,7 @@
 ## Features
 
 ### Public Pages
+
 - **হোম** — Hero, কোর্স, সাফল্য, শিক্ষক, গ্যালারি, যোগাযোগ, FAQ
 - **কোর্স** — কোর্সের বিস্তারিত (ফি, সময়কাল, বিবরণ) — DB থেকে ডায়নামিক
 - **ভর্তি** — অনলাইন ভর্তি ফরম + যোগাযোগ তথ্য — DB থেকে কোর্স ড্রপডাউন
@@ -14,6 +15,7 @@
 - **যোগাযোগ** — যোগাযোগ ফরম + অফিস তথ্য
 
 ### Student Dashboard (`/dashboard`)
+
 - **ওভারভিউ** — পরিসংখ্যান, সর্বশেষ ফলাফল/উপস্থিতি, এনরোলমেন্ট
 - **আমার কোর্স** — কোর্স ব্রাউজ, এনরোলমেন্ট, এনরোলড কোর্স দেখুন
 - **বিলিং ও পেমেন্ট** — bKash/Nagad দিয়ে পেমেন্ট, পেমেন্ট ইতিহাস, ইনভয়েস
@@ -23,6 +25,7 @@
 - **উপস্থিতি** — উপস্থিত/বিলম্বিত/অনুপস্থিত হিসাব
 
 ### Admin Dashboard (`/admin`)
+
 - **ওভারভিউ** — পরিসংখ্যান, অপেক্ষমান এনরোলমেন্ট/পেমেন্ট
 - **কোর্স** — কোর্স CRUD, ফি, ছাড়, সময়সূচি, সক্রিয়/নিষ্ক্রিয় টগল
 - **এনরোলমেন্ট** — অনুমোদন/প্রত্যাখ্যান/সক্রিয়করণ, স্ট্যাটাস ফিল্টার
@@ -38,18 +41,21 @@
 - **শিক্ষার্থী** — সার্চযোগ্য শিক্ষার্থী তালিকা
 
 ### Online Exam System (`/exam`)
+
 - বিষয়ভিত্তিক মডেল টেস্ট (বাংলা, ইংরেজি, পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান, সাধারণ জ্ঞান)
 - ১৫ মিনিট টাইমার, অটো-সাবমিট
 - প্রশ্ন নেভিগেশন গ্রিড
 - ফলাফল: গ্রেড, স্কোর বার, উত্তর পর্যালোচনা
 
 ### Payment Gateway
+
 - **bKash** — সেন্ড মানি, ট্রানজেকশন ID ভেরিফিকেশন
 - **Nagad** — সেন্ড মানি, ট্রানজেকশন ID ভেরিফিকেশন
 - **নগদ** — অ্যাডমিন থেকে সরাসরি যাচাইকরণ
 - স্বয়ংক্রিয় ব্যালেন্স আপডেট
 
-### Authentication (Better Auth)
+### Authentication (ISC Auth)
+
 - ইমেইল + পাসওয়ার্ড দিয়ে সাইন ইন/সাইন আপ
 - ফোন নম্বর + OTP যাচাইকরণ
 - Role-based access (student / admin)
@@ -59,11 +65,24 @@
 
 - **Framework:** Next.js 16 (App Router, Turbopack)
 - **Styling:** Tailwind CSS v4, shadcn/ui (base-nova)
-- **Auth:** Better Auth + Phone Number plugin (email/password)
+- **Auth:** ISC Auth (in-house: email/password, phone OTP, DB sessions)
 - **Database:** Supabase (PostgreSQL) + Drizzle ORM
 - **Language:** TypeScript 5.7
 - **Validation:** Zod v4
 - **Deployment:** Vercel
+
+## Documentation
+
+| Guide              | Path                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| Architecture       | [`ARCHITECTURE.md`](./ARCHITECTURE.md)                                               |
+| Components         | [`docs/guides/components.md`](./docs/guides/components.md)                           |
+| Design System      | [`docs/design/reference.md`](./docs/design/reference.md)                             |
+| Project Plan       | [`docs/plans/project-plan.md`](./docs/plans/project-plan.md)                         |
+| Implementation Log | [`docs/development/implementation-log.md`](./docs/development/implementation-log.md) |
+| Full index         | [`docs/README.md`](./docs/README.md)                                                 |
+
+Storybook (Design System): `pnpm storybook` → http://localhost:6006 · `pnpm storybook:build`
 
 ## Getting Started
 
@@ -77,7 +96,7 @@ pnpm install --no-frozen-lockfile
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your DATABASE_URL and BETTER_AUTH_SECRET
+# Edit .env.local with your DATABASE_URL and ISC_AUTH_SECRET (used by isc-auth)
 
 # Run development server
 pnpm dev
@@ -87,19 +106,42 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ### Docker
 
-This repository includes a `Dockerfile` and `docker-compose.yml` for local development.
+Standard layout: `docker/` + `.devcontainer/` (see [`docs/plans/docker-structure.md`](./docs/plans/docker-structure.md)).
+
+**Dev (hot reload, `docker/docker-compose.yml`):**
 
 ```bash
+docker compose -f docker/docker-compose.yml up --build
+# or via root symlink (backward compat):
 docker compose up --build
 ```
 
-Then open `http://localhost:3000`.
+Then open `http://localhost:3000`. Logs: `docker compose -f docker/docker-compose.yml logs -f`.
 
-Stop containers with:
+Stop:
 
 ```bash
-docker compose down
+docker compose -f docker/docker-compose.yml down -v
 ```
+
+**E2E (isolated `postgres` + `app` + `playwright`, `docker/docker-compose.e2e.yml`):**
+
+```bash
+docker compose -f docker/docker-compose.e2e.yml up --build --exit-code-from playwright
+# artifacts: playwright-report/, test-results/
+```
+
+**Prod build (`docker/api/Dockerfile` `runner`, standalone):**
+
+```bash
+docker build -f docker/api/Dockerfile --target runner -t iscexpo:prod .
+docker run -p 3000:3000 --env-file .env iscexpo:prod
+# healthcheck: wget http://127.0.0.1:3000/api/health
+```
+
+**Dev Container:** VS Code → “Reopen in Container” (`.devcontainer/devcontainer.json`: Node 24 + pnpm 10.34.3 + Postgres, `forwardPorts: [3000,5432]`).
+
+Root `Dockerfile` / `docker-compose.yml` are symlinks to `docker/` for backward compat and will be removed after 1 release.
 
 ### Installation Guide
 
@@ -108,6 +150,7 @@ See `docs/installation.md` for the recommended local install workflow and CI com
 ### GitHub Actions CI
 
 This repo uses `.github/workflows/ci.yml` to run:
+
 - Node 24
 - `pnpm approve-builds --all`
 - `pnpm install --no-frozen-lockfile`
@@ -131,11 +174,11 @@ npx tsx scripts/seed-demo-admin.ts
 
 ### Demo Admin Credentials
 
-| Field    | Value              |
-|----------|--------------------|
-| Email    | `admin@cornia.co`  |
-| Password | `Admin123!`        |
-| Phone    | `+8801784176442`   |
+| Field    | Value                  |
+| -------- | ---------------------- |
+| Email    | `admin@iscexpo.edu.bd` |
+| Password | `Admin123!`            |
+| Phone    | `+8801784176442`       |
 
 ## Project Structure
 
@@ -181,7 +224,7 @@ app/
 │       ├── admit-cards-tab.tsx  # Admit card management
 │       └── students-tab.tsx     # Student list
 └── api/
-    ├── auth/[...all]/           # Better Auth API handler
+    ├── auth/[...all]/           # ISC Auth API handler
     ├── courses/                 # Course CRUD API
     ├── enrollments/             # Enrollment API
     ├── payments/                # Payment API
@@ -210,8 +253,9 @@ components/
 
 lib/
 ├── site-data.ts                 # Static site data
-├── auth.ts                      # Better Auth server config
-├── auth-client.ts               # Better Auth client
+├── auth/                        # ISC Auth shims + CSRF helpers
+│   ├── index.ts                 # Server core re-exports (lib/isc-auth)
+│   └── client.ts                # Client re-exports
 ├── permissions.ts               # Role helpers
 ├── validations.ts               # Zod schemas for API validation
 └── db/
@@ -225,25 +269,25 @@ scripts/
 
 ## Database Schema
 
-| Table | Description |
-|-------|-------------|
-| `user` | Users with role, studentId, phone, profile fields |
-| `session` | Auth sessions (7-day expiry) |
-| `account` | Auth accounts (credentials) |
-| `verification` | Email/phone verification tokens |
-| `otp` | OTP codes for phone verification |
-| `courses` | Course catalog (CRUD) |
-| `enrollments` | Student-course enrollments |
-| `payments` | Payment records (bKash/Nagad/cash/bank) |
-| `invoices` | Invoice tracking |
-| `notifications` | User notifications |
-| `notices` | Notice board entries |
-| `exams` | Model test exams |
-| `questions` | MCQ question bank (6 subjects) |
-| `exam_submissions` | Student exam attempts & scores |
-| `contact_inquiries` | Contact form submissions |
-| `attendance` | Student attendance records |
-| `admit_cards` | Exam admit cards |
+| Table               | Description                                       |
+| ------------------- | ------------------------------------------------- |
+| `user`              | Users with role, studentId, phone, profile fields |
+| `session`           | Auth sessions (7-day expiry)                      |
+| `account`           | Auth accounts (credentials)                       |
+| `verification`      | Email/phone verification tokens                   |
+| `otp`               | OTP codes for phone verification                  |
+| `courses`           | Course catalog (CRUD)                             |
+| `enrollments`       | Student-course enrollments                        |
+| `payments`          | Payment records (bKash/Nagad/cash/bank)           |
+| `invoices`          | Invoice tracking                                  |
+| `notifications`     | User notifications                                |
+| `notices`           | Notice board entries                              |
+| `exams`             | Model test exams                                  |
+| `questions`         | MCQ question bank (6 subjects)                    |
+| `exam_submissions`  | Student exam attempts & scores                    |
+| `contact_inquiries` | Contact form submissions                          |
+| `attendance`        | Student attendance records                        |
+| `admit_cards`       | Exam admit cards                                  |
 
 ## License
 

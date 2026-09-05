@@ -10,27 +10,40 @@ import { SectionHeading } from '@/components/section-heading'
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { SITE } from '@/lib/cms/site-data'
 
 export const metadata = {
-  title: 'কোর্স সমূহ | ISC Expo - Icon Skill & Career Expo',
-  description: 'ISC Expo - Icon Skill & Career Expo-এর সকল কোর্স — নার্সিং ভর্তি, কাউন্সিল, B.Sc Nursing, Post Basic, চাকরি প্রস্তুতি ও অনলাইন ব্যাচ।',
+  title: `Courses | ${SITE.name}`,
+  description: `All courses at ${SITE.name} — nursing admission, council, B.Sc Nursing, Post Basic, job preparation and online batches.`,
   alternates: { canonical: '/courses' },
 }
 
 export default async function CoursesPage() {
-  let data: { id: string; slug: string; title: string; description: string; shortDescription: string | null; duration: string; fee: number; discountFee: number | null; image: string | null }[] = []
+  let data: {
+    id: string
+    slug: string
+    title: string
+    description: string
+    shortDescription: string | null
+    duration: string
+    fee: number
+    discountFee: number | null
+    image: string | null
+  }[] = []
   try {
-    data = await db.select({
-      id: courses.id,
-      slug: courses.slug,
-      title: courses.title,
-      description: courses.description,
-      shortDescription: courses.shortDescription,
-      duration: courses.duration,
-      fee: courses.fee,
-      discountFee: courses.discountFee,
-      image: courses.image,
-    }).from(courses)
+    data = await db
+      .select({
+        id: courses.id,
+        slug: courses.slug,
+        title: courses.title,
+        description: courses.description,
+        shortDescription: courses.shortDescription,
+        duration: courses.duration,
+        fee: courses.fee,
+        discountFee: courses.discountFee,
+        image: courses.image,
+      })
+      .from(courses)
       .where(eq(courses.isActive, true))
   } catch {
     // fallback to empty
@@ -40,13 +53,13 @@ export default async function CoursesPage() {
     <>
       <SiteHeader />
       <main>
-        <Breadcrumb items={[{ label: 'কোর্স' }]} />
         <section className="bg-gradient-to-b from-brand/5 to-background py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4">
+            <Breadcrumb items={[{ label: 'Courses' }]} />
             <SectionHeading
-              eyebrow="আমাদের কোর্স"
-              title="সকল কোর্স সমূহ"
-              description="BNMC ভর্তি পরীক্ষা থেকে চাকরি প্রস্তুতি — প্রতিটি কোর্সে অভিজ্ঞ শিক্ষক ও আধুনিক পাঠদান পদ্ধতি।"
+              eyebrow="Our Courses"
+              title="All Courses"
+              description="From BNMC admission exams to job preparation — experienced teachers and modern teaching methods in every course."
             />
           </div>
         </section>
@@ -54,7 +67,9 @@ export default async function CoursesPage() {
         <section className="py-12 md:py-16">
           <div className="mx-auto max-w-7xl px-4">
             {data.length === 0 ? (
-              <p className="text-center text-sm text-muted-foreground">কোনো কোর্স পাওয়া যায়নি</p>
+              <p className="text-center text-sm text-muted-foreground">
+                No courses found
+              </p>
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {data.map((c) => (
@@ -72,7 +87,9 @@ export default async function CoursesPage() {
                           className="object-cover transition-transform group-hover:scale-105"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground">কোনো ছবি নেই</div>
+                        <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground">
+                          No image
+                        </div>
                       )}
                     </div>
                     <div className="p-5">
@@ -88,9 +105,11 @@ export default async function CoursesPage() {
                         {c.shortDescription || c.description?.slice(0, 100)}
                       </p>
                       <div className="mt-4 flex items-center justify-between">
-                        <span className="text-lg font-bold text-green">৳{c.fee.toLocaleString()}</span>
+                        <span className="text-lg font-bold text-green">
+                          ৳{c.fee.toLocaleString()}
+                        </span>
                         <span className="text-sm font-medium text-brand group-hover:underline">
-                          ভর্তি হোন →
+                          Enroll →
                         </span>
                       </div>
                     </div>

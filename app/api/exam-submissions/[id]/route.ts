@@ -1,28 +1,48 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {
+  unauthorized,
+  forbidden,
+  ok,
+  notFound,
+  serverError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { examSubmissions, questions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession, isAdmin } from '@/lib/permissions'
+import { getSession, isAdmin } from '@/lib/core/permissions'
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const { id } = await params
     const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
-    const [submission] = await db.select().from(examSubmissions).where(eq(examSubmissions.id, id))
-    if (!submission) return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
+    const [submission] = await db
+      .select()
+      .from(examSubmissions)
+      .where(eq(examSubmissions.id, id))
+    if (!submission) return notFound('Submission not found')
 
     const admin = isAdmin(session.user.role)
 
     if (!admin && submission.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return forbidden()
     }
 
-    const examQuestions = await db.select().from(questions).where(eq(questions.examId, submission.examId))
+    const examQuestions = await db
+      .select()
+      .from(questions)
+      .where(eq(questions.examId, submission.examId))
 
     const questionsForResponse = examQuestions.map((q) => {
-      const base: Record<string, unknown> = { id: q.id, question: q.question, options: q.options }
+      const base: Record<string, unknown> = {
+        id: q.id,
+        question: q.question,
+        options: q.options,
+      }
       if (admin) {
         base.correctIndex = q.correctIndex
       }
@@ -30,11 +50,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return base
     })
 
-    return NextResponse.json({
+    return ok({
       ...submission,
       questions: questionsForResponse,
     })
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch submission' }, { status: 500 })
+    return serverError('Failed to fetch submission')
   }
 }

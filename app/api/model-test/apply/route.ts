@@ -1,0 +1,78 @@
+import { randomUUID } from 'node:crypto'
+import { NextRequest } from 'next/server'
+import { notFound, ok, serverError, validationError } from '@/lib/api/response'
+import { db } from '@/lib/db'
+import { exams, modelTestApplicants } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+import { createModelTestApplicantSchema } from '@/lib/core/validations'
+import { buildAuditEntry, writeAudit } from '@/lib/audit'
+import { rateLimit } from '@/lib/core/rate-limit'
+
+export async function POST(request: NextRequest) {
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 5,
+    prefix: 'model-test.apply',
+  })
+  if (limiter) return limiter
+
+  try {
+    const body = await request.json()
+    const parsed = createModelTestApplicantSchema.safeParse(body)
+    if (!parsed.success) {
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
+    }
+
+    const { name, phone, examId, preferredSubject, message } = parsed.data
+
+    if (examId) {
+      const [exam] = await db.select().from(exams).where(eq(exams.id, examId))
+      if (!exam) return notFound('Exam not found')
+    }
+
+    const reference = `MT-${randomUUID().slice(0, 8).toUpperCase()}`
+
+    const [created] = await db
+      .insert(modelTestApplicants)
+      .values({
+        id: randomUUID(),
+        reference,
+        name,
+        phone,
+        examId: examId || null,
+        preferredSubject: preferredSubject || null,
+        message: message || null,
+        status: 'pending',
+      })
+      .returning()
+
+    void writeAudit(
+      buildAuditEntry(
+        {
+          resourceType: 'model_test_applicant',
+          action: 'model_test_applicant.submit',
+          details: { name, phone, examId },
+        },
+        null,
+        request.headers.get('x-forwarded-for') ??
+          request.headers.get('x-real-ip') ??
+          undefined,
+      ),
+    )
+
+    return ok(
+      {
+        success: true,
+        message:
+          'আপনার মডেল টেস্টে আবেদন গ্রহণ করা হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।',
+        reference,
+      },
+      201,
+    )
+  } catch {
+    return serverError('Failed to submit model test application')
+  }
+}

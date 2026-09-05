@@ -10,7 +10,11 @@ vi.mock('@/lib/db', () => ({
   },
 }))
 
-import { buildBroadcastMessage, normalizePhoneNumbers, sendSmsToRecipients } from '../lib/sms'
+import {
+  buildBroadcastMessage,
+  normalizePhoneNumbers,
+  sendSmsToRecipients,
+} from '../lib/sms'
 
 describe('sms helpers', () => {
   it('builds a concise broadcast message from notice content', () => {
@@ -21,7 +25,12 @@ describe('sms helpers', () => {
   })
 
   it('keeps only valid local phone numbers', () => {
-    const numbers = normalizePhoneNumbers(['01711111111', 'abc', '+8801812345678', '01522222222'])
+    const numbers = normalizePhoneNumbers([
+      '01711111111',
+      'abc',
+      '+8801812345678',
+      '01522222222',
+    ])
 
     expect(numbers).toEqual(['01711111111', '01522222222', '+8801812345678'])
   })
@@ -41,19 +50,24 @@ describe('GP SMS integration', () => {
   it('sends SMS to recipients via Grameenphone API when configured', async () => {
     selectMock.mockReturnValue({
       from: vi.fn().mockReturnValue({
-        where: vi.fn().mockResolvedValue([{
-          id: 'primary',
-          smsProvider: 'grameenphone',
-          smsApiKey: 'test-api-key',
-          smsSenderId: 'CORNIA',
-        }]),
+        where: vi.fn().mockResolvedValue([
+          {
+            id: 'primary',
+            smsProvider: 'grameenphone',
+            smsApiKey: 'test-api-key',
+            smsSenderId: 'CORNIA',
+          },
+        ]),
       }),
     })
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      text: () => Promise.resolve(JSON.stringify({ status: 'success', message_id: 'msg-123' })),
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({ status: 'success', message_id: 'msg-123' }),
+        ),
     })
     globalThis.fetch = mockFetch
 
@@ -67,12 +81,14 @@ describe('GP SMS integration', () => {
   it('returns skipped when provider is none', async () => {
     selectMock.mockReturnValue({
       from: vi.fn().mockReturnValue({
-        where: vi.fn().mockResolvedValue([{
-          id: 'primary',
-          smsProvider: 'none',
-          smsApiKey: '',
-          smsSenderId: '',
-        }]),
+        where: vi.fn().mockResolvedValue([
+          {
+            id: 'primary',
+            smsProvider: 'none',
+            smsApiKey: '',
+            smsSenderId: '',
+          },
+        ]),
       }),
     })
 

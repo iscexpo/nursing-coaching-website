@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { authClient } from '@/lib/auth-client'
+import { useTranslations } from 'next-intl'
+import { authClient } from '@/lib/auth/client'
 import { useSiteData } from '@/hooks/use-site-data'
 import {
   LayoutDashboard,
@@ -22,16 +23,26 @@ import { AccountSection } from './components/account-tab'
 import { AdmitCardSection } from './components/admit-card-tab'
 import { ResultsTable } from './components/results-tab'
 import { AttendanceView } from './components/attendance-tab'
-import type { Course, Enrollment, Payment, Invoice, UserProfile, ExamSubmission, AttendanceRecord, AdmitCard, LifecycleEvent } from './components/types'
+import type {
+  Course,
+  Enrollment,
+  Payment,
+  Invoice,
+  UserProfile,
+  ExamSubmission,
+  AttendanceRecord,
+  AdmitCard,
+  LifecycleEvent,
+} from './components/types'
 
 const TABS = [
-  { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
-  { id: 'courses', label: 'আমার কোর্স', icon: GraduationCap },
-  { id: 'billing', label: 'বিলিং ও পেমেন্ট', icon: Receipt },
-  { id: 'account', label: 'অ্যাকাউন্ট', icon: UserCog },
-  { id: 'admit-card', label: 'এডমিট কার্ড', icon: CreditCard },
-  { id: 'results', label: 'ফলাফল', icon: BarChart3 },
-  { id: 'attendance', label: 'উপস্থিতি', icon: CalendarCheck },
+  { id: 'overview', icon: LayoutDashboard },
+  { id: 'courses', icon: GraduationCap },
+  { id: 'billing', icon: Receipt },
+  { id: 'account', icon: UserCog },
+  { id: 'admit-card', icon: CreditCard },
+  { id: 'results', icon: BarChart3 },
+  { id: 'attendance', icon: CalendarCheck },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -40,6 +51,8 @@ export default function DashboardPage() {
   const router = useRouter()
   const session = authClient.useSession()
   const site = useSiteData()
+  const t = useTranslations('dashboard')
+  const tc = useTranslations('common')
   const [tab, setTab] = useState<TabId>('overview')
   const [courses, setCourses] = useState<Course[]>([])
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
@@ -54,7 +67,17 @@ export default function DashboardPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [coursesRes, enrollmentsRes, paymentsRes, invoicesRes, profileRes, submissionsRes, attendanceRes, admitCardsRes, lifecycleRes] = await Promise.all([
+      const [
+        coursesRes,
+        enrollmentsRes,
+        paymentsRes,
+        invoicesRes,
+        profileRes,
+        submissionsRes,
+        attendanceRes,
+        admitCardsRes,
+        lifecycleRes,
+      ] = await Promise.all([
         fetch('/api/courses'),
         fetch('/api/enrollments'),
         fetch('/api/payments'),
@@ -123,7 +146,7 @@ export default function DashboardPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="size-8 animate-spin text-brand" />
-          <p className="text-muted-foreground">লোড হচ্ছে...</p>
+          <p className="text-muted-foreground">{tc('loading')}</p>
         </div>
       </div>
     )
@@ -134,21 +157,38 @@ export default function DashboardPage() {
     return null
   }
 
-  const user = session.data.user
+  const user = session.data.user as Record<string, unknown> & {
+    name: string
+    phoneNumber?: string | null
+  }
   const totalDue = enrollments.reduce((s, e) => s + e.dueAmount, 0)
   const totalPaid = enrollments.reduce((s, e) => s + e.paidAmount, 0)
 
-  const welcomeParts = user.phoneNumber ? [`ফোন: ${user.phoneNumber}`] : []
+  const welcomeParts = user.phoneNumber
+    ? [`${tc('phone')}: ${user.phoneNumber}`]
+    : []
   if (user.studentId) welcomeParts.push(`ID: ${user.studentId}`)
-  if (totalDue > 0) welcomeParts.push(`বকেয়: ৳${totalDue.toLocaleString()}`)
+  if (totalDue > 0)
+    welcomeParts.push(
+      `${t('overview.dueLabel')}: ৳${totalDue.toLocaleString()}`,
+    )
 
   return (
     <PanelLayout
       siteName={site.nameBn}
-      panelTitle="শিক্ষার্থী প্যানেল"
+      panelTitle={t('panelTitle')}
       userName={user.name}
       welcomeMessage={welcomeParts.join(' | ')}
-      tabs={TABS as unknown as { id: string; label: string; icon: React.ElementType }[]}
+      tabs={
+        TABS.map((tabItem) => ({
+          ...tabItem,
+          label: t(`tabs.${tabItem.id}`),
+        })) as {
+          id: string
+          label: string
+          icon: React.ElementType
+        }[]
+      }
       activeTab={tab}
       onTabChange={(id) => setTab(id as TabId)}
       onSignOut={handleSignOut}
@@ -163,10 +203,31 @@ export default function DashboardPage() {
           totalPaid={totalPaid}
         />
       )}
-      {tab === 'courses' && <CourseSection courses={courses} enrollments={enrollments} onRefresh={fetchData} />}
-      {tab === 'billing' && <BillingSection enrollments={enrollments} payments={payments} invoices={invoices} onRefresh={fetchData} />}
-      {tab === 'account' && <AccountSection profile={profile} onRefresh={fetchData} />}
-      {tab === 'admit-card' && <AdmitCardSection user={user} enrollments={enrollments} admitCards={admitCards} />}
+      {tab === 'courses' && (
+        <CourseSection
+          courses={courses}
+          enrollments={enrollments}
+          onRefresh={fetchData}
+        />
+      )}
+      {tab === 'billing' && (
+        <BillingSection
+          enrollments={enrollments}
+          payments={payments}
+          invoices={invoices}
+          onRefresh={fetchData}
+        />
+      )}
+      {tab === 'account' && (
+        <AccountSection profile={profile} onRefresh={fetchData} />
+      )}
+      {tab === 'admit-card' && (
+        <AdmitCardSection
+          user={user}
+          enrollments={enrollments}
+          admitCards={admitCards}
+        />
+      )}
       {tab === 'results' && <ResultsTable examSubmissions={examSubmissions} />}
       {tab === 'attendance' && <AttendanceView attendance={attendance} />}
     </PanelLayout>

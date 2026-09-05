@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { defaultCmsContent, type CmsContent } from '@/lib/content-cms'
+import { defaultCmsContent, type CmsContent } from '@/lib/cms'
 
 type SiteData = CmsContent['site']
 
@@ -18,7 +18,9 @@ export function useSiteData(): SiteData {
         if (!cancelled && data && !data.error) setSite(data)
       })
       .catch(() => {})
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return site

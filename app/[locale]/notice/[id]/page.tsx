@@ -1,0 +1,118 @@
+export const revalidate = 3600
+
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { setRequestLocale } from 'next-intl/server'
+import { cache } from 'react'
+import { db } from '@/lib/db'
+import { notices } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+import { SiteHeader } from '@/components/site-header'
+import { SiteFooter } from '@/components/site-footer'
+import { FloatingWhatsApp } from '@/components/floating-whatsapp'
+import { SectionHeading } from '@/components/section-heading'
+import { Breadcrumb } from '@/components/breadcrumb'
+import { JsonLd } from '@/components/json-ld'
+import { SITE } from '@/lib/cms/site-data'
+
+type Props = { params: Promise<{ locale: string; id: string }> }
+
+function formatDate(date: Date) {
+  return new Date(date).toLocaleDateString('bn-BD', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+const getNotice = cache(async (id: string) => {
+  try {
+    const rows = await db
+      .select()
+      .from(notices)
+      .where(eq(notices.id, id))
+      .limit(1)
+    return rows[0] ?? null
+  } catch {
+    return null
+  }
+})
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  const notice = await getNotice(id)
+
+  if (!notice) {
+    return {
+      title: `নোটিশ পাওয়া যায়নি | ${SITE.name}`,
+      robots: { index: false },
+    }
+  }
+
+  const title = `${notice.title} | ${SITE.name}`
+  const description = (notice.content || '').slice(0, 160)
+  return {
+    title,
+    description,
+    alternates: { canonical: `${SITE.url}/notice/${id}` },
+    openGraph: {
+      type: 'article',
+      title,
+      description,
+      url: `${SITE.url}/notice/${id}`,
+    },
+  }
+}
+
+export default async function NoticeDetailPage({ params }: Props) {
+  const { locale, id } = await params
+  setRequestLocale(locale)
+  const notice = await getNotice(id)
+
+  if (!notice) notFound()
+
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: notice.title,
+    articleBody: notice.content || '',
+    datePublished: new Date(notice.createdAt).toISOString(),
+    dateModified: new Date(notice.updatedAt).toISOString(),
+    publisher: { '@type': 'Organization', name: SITE.nameBn, sameAs: SITE.url },
+  }
+
+  return (
+    <>
+      <JsonLd data={articleJsonLd} />
+      <SiteHeader />
+      <main>
+        <section className="bg-gradient-to-b from-brand/5 to-background py-10 md:py-14">
+          <div className="mx-auto max-w-3xl px-4">
+            <Breadcrumb
+              items={[
+                { label: 'নোটিশ', href: '/notice' },
+                { label: notice.title },
+              ]}
+            />
+            <SectionHeading eyebrow="নোটিশ" title={notice.title} />
+            <p className="mt-2 text-sm text-muted-foreground">
+              {formatDate(notice.createdAt)}
+            </p>
+          </div>
+        </section>
+
+        <section className="py-10 md:py-14">
+          <div className="mx-auto max-w-3xl px-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+              <p className="whitespace-pre-line leading-relaxed text-foreground">
+                {notice.content}
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+      <FloatingWhatsApp />
+      <SiteFooter />
+    </>
+  )
+}

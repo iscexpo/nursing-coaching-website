@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
-import { authClient } from '@/lib/auth-client'
+import { useTranslations } from 'next-intl'
+import { authClient } from '@/lib/auth/client'
 import { useSiteData } from '@/hooks/use-site-data'
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react'
+import { ErrorBoundary } from '@/components/error-boundary'
 import {
   LayoutDashboard,
   GraduationCap,
@@ -21,49 +23,157 @@ import {
   CreditCard,
   Presentation,
   Image,
+  MessageSquare,
+  LineChart,
 } from 'lucide-react'
 
 import { PanelLayout } from '@/components/ui/panel-layout'
+import { DatabaseHealthBanner } from './components/database-health-banner'
 import { OverviewPanel } from './components/overview-tab'
-import type { Course, Enrollment, Payment, Invoice, Notice, Exam, ContactInquiry, NotificationRecord, ExamSubmission, AttendanceRecord, AdmitCard, Student, Teacher, MediaFile, Subject } from './components/types'
+import type {
+  Course,
+  Enrollment,
+  Payment,
+  Invoice,
+  Notice,
+  Exam,
+  ContactInquiry,
+  NotificationRecord,
+  ExamSubmission,
+  AttendanceRecord,
+  AdmitCard,
+  Student,
+  Teacher,
+  MediaFile,
+  Subject,
+  Admission,
+  ModelTestApplicant,
+  CourseCategory,
+} from './components/types'
 
-const CoursesPanel = lazy(() => import('./components/courses-tab').then((m) => ({ default: m.CoursesPanel })))
-const EnrollmentsPanel = lazy(() => import('./components/enrollments-tab').then((m) => ({ default: m.EnrollmentsPanel })))
-const PaymentsPanel = lazy(() => import('./components/payments-tab').then((m) => ({ default: m.PaymentsPanel })))
-const InvoicesPanel = lazy(() => import('./components/invoices-tab').then((m) => ({ default: m.InvoicesPanel })))
-const NoticesPanel = lazy(() => import('./components/notices-tab').then((m) => ({ default: m.NoticesPanel })))
-const MediaPanel = lazy(() => import('./components/media-tab').then((m) => ({ default: m.MediaPanel })))
-const ExamsPanel = lazy(() => import('./components/exams-tab').then((m) => ({ default: m.ExamsPanel })))
-const QuestionsPanel = lazy(() => import('./components/questions-tab').then((m) => ({ default: m.QuestionsPanel })))
-const ResultsPanel = lazy(() => import('./components/results-tab').then((m) => ({ default: m.ResultsPanel })))
-const StudentsPanel = lazy(() => import('./components/students-tab').then((m) => ({ default: m.StudentsPanel })))
-const TeachersPanel = lazy(() => import('./components/teachers-tab').then((m) => ({ default: m.TeachersPanel })))
-const AttendancePanel = lazy(() => import('./components/attendance-tab').then((m) => ({ default: m.AttendancePanel })))
-const AdmitCardsPanel = lazy(() => import('./components/admit-cards-tab').then((m) => ({ default: m.AdmitCardsPanel })))
-const ContactsPanel = lazy(() => import('./components/contacts-tab').then((m) => ({ default: m.ContactsPanel })))
-const NotificationsPanel = lazy(() => import('./components/notifications-tab').then((m) => ({ default: m.NotificationsPanel })))
-const SettingsPanel = lazy(() => import('./components/settings-tab').then((m) => ({ default: m.SettingsPanel })))
-const SubjectsPanel = lazy(() => import('./components/subjects-tab').then((m) => ({ default: m.SubjectsPanel })))
+const CoursesPanel = lazy(() =>
+  import('./components/courses-tab').then((m) => ({ default: m.CoursesPanel })),
+)
+const EnrollmentsPanel = lazy(() =>
+  import('./components/enrollments-tab').then((m) => ({
+    default: m.EnrollmentsPanel,
+  })),
+)
+const PaymentsPanel = lazy(() =>
+  import('./components/payments-tab').then((m) => ({
+    default: m.PaymentsPanel,
+  })),
+)
+const InvoicesPanel = lazy(() =>
+  import('./components/invoices-tab').then((m) => ({
+    default: m.InvoicesPanel,
+  })),
+)
+const NoticesPanel = lazy(() =>
+  import('./components/notices-tab').then((m) => ({ default: m.NoticesPanel })),
+)
+const MediaPanel = lazy(() =>
+  import('./components/media-tab').then((m) => ({ default: m.MediaPanel })),
+)
+const ExamsPanel = lazy(() =>
+  import('./components/exams-tab').then((m) => ({ default: m.ExamsPanel })),
+)
+const QuestionsPanel = lazy(() =>
+  import('./components/questions-tab').then((m) => ({
+    default: m.QuestionsPanel,
+  })),
+)
+const ResultsPanel = lazy(() =>
+  import('./components/results-tab').then((m) => ({ default: m.ResultsPanel })),
+)
+const StudentsPanel = lazy(() =>
+  import('./components/students-tab').then((m) => ({
+    default: m.StudentsPanel,
+  })),
+)
+const TeachersPanel = lazy(() =>
+  import('./components/teachers-tab').then((m) => ({
+    default: m.TeachersPanel,
+  })),
+)
+const AttendancePanel = lazy(() =>
+  import('./components/attendance-tab').then((m) => ({
+    default: m.AttendancePanel,
+  })),
+)
+const AdmitCardsPanel = lazy(() =>
+  import('./components/admit-cards-tab').then((m) => ({
+    default: m.AdmitCardsPanel,
+  })),
+)
+const ContactsPanel = lazy(() =>
+  import('./components/contacts-tab').then((m) => ({
+    default: m.ContactsPanel,
+  })),
+)
+const AdmissionsPanel = lazy(() =>
+  import('./components/admissions-tab').then((m) => ({
+    default: m.AdmissionsPanel,
+  })),
+)
+const ModelTestApplicantsPanel = lazy(() =>
+  import('./components/model-test-applicants-tab').then((m) => ({
+    default: m.ModelTestApplicantsPanel,
+  })),
+)
+const NotificationsPanel = lazy(() =>
+  import('./components/notifications-tab').then((m) => ({
+    default: m.NotificationsPanel,
+  })),
+)
+const SettingsPanel = lazy(() =>
+  import('./components/settings-tab').then((m) => ({
+    default: m.SettingsPanel,
+  })),
+)
+const ReportsPanel = lazy(() =>
+  import('./components/reports-tab').then((m) => ({
+    default: m.ReportsPanel,
+  })),
+)
+const SubjectsPanel = lazy(() =>
+  import('./components/subjects-tab').then((m) => ({
+    default: m.SubjectsPanel,
+  })),
+)
+const CourseCategoriesPanel = lazy(() =>
+  import('./components/course-categories-tab').then((m) => ({
+    default: m.CourseCategoriesPanel,
+  })),
+)
+const SmsPanel = lazy(() =>
+  import('./components/sms-tab').then((m) => ({ default: m.SmsPanel })),
+)
 
 const TABS = [
-  { id: 'overview', label: 'ওভারভিউ', icon: LayoutDashboard },
-  { id: 'courses', label: 'কোর্স', icon: GraduationCap },
-  { id: 'enrollments', label: 'এনরোলমেন্ট', icon: BookOpen },
-  { id: 'payments', label: 'পেমেন্ট', icon: Wallet },
-  { id: 'invoices', label: 'ইনভয়েস', icon: Receipt },
-  { id: 'notices', label: 'নোটিশ', icon: Megaphone },
-  { id: 'media', label: 'মিডিয়া', icon: Image },
-  { id: 'exams', label: 'পরীক্ষা', icon: FileText },
-  { id: 'subjects', label: 'বিষয়', icon: BookOpen },
-  { id: 'questions', label: 'প্রশ্নব্যাংক', icon: HelpCircle },
-  { id: 'results', label: 'ফলাফল', icon: BarChart3 },
-  { id: 'teachers', label: 'শিক্ষক', icon: Presentation },
-  { id: 'students', label: 'শিক্ষার্থী', icon: Users },
-  { id: 'attendance', label: 'উপস্থিতি', icon: CalendarCheck },
-  { id: 'admit-cards', label: 'এডমিট কার্ড', icon: CreditCard },
-  { id: 'contacts', label: 'যোগাযোগ', icon: Users },
-  { id: 'notifications', label: 'নোটিফিকেশন', icon: Bell },
-  { id: 'settings', label: 'সেটিংস', icon: BarChart3 },
+  { id: 'overview', icon: LayoutDashboard },
+  { id: 'courses', icon: GraduationCap, group: 'academics' },
+  { id: 'enrollments', icon: BookOpen, group: 'students' },
+  { id: 'payments', icon: Wallet, group: 'finance' },
+  { id: 'invoices', icon: Receipt, group: 'finance' },
+  { id: 'notices', icon: Megaphone, group: 'communications' },
+  { id: 'sms', icon: MessageSquare, group: 'communications' },
+  { id: 'media', icon: Image, group: 'system' },
+  { id: 'exams', icon: FileText, group: 'academics' },
+  { id: 'subjects', icon: BookOpen, group: 'academics' },
+  { id: 'course-categories', icon: BookOpen, group: 'academics' },
+  { id: 'questions', icon: HelpCircle, group: 'academics' },
+  { id: 'results', icon: BarChart3, group: 'academics' },
+  { id: 'teachers', icon: Presentation, group: 'academics' },
+  { id: 'students', icon: Users, group: 'students' },
+  { id: 'attendance', icon: CalendarCheck, group: 'students' },
+  { id: 'admit-cards', icon: CreditCard, group: 'students' },
+  { id: 'contacts', icon: Users, group: 'communications' },
+  { id: 'admissions', icon: FileText, group: 'admissions' },
+  { id: 'model-test', icon: FileText, group: 'admissions' },
+  { id: 'notifications', icon: Bell, group: 'communications' },
+  { id: 'reports', icon: LineChart, group: 'finance' },
+  { id: 'settings', icon: BarChart3, group: 'system' },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -75,6 +185,7 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   payments: ['payments', 'enrollments', 'students'],
   invoices: ['invoices', 'enrollments'],
   notices: ['notices'],
+  sms: [],
   media: ['media'],
   exams: ['exams', 'submissions'],
   questions: ['exams'],
@@ -84,16 +195,44 @@ const TAB_FETCH_MAP: Record<string, string[]> = {
   attendance: ['enrollments', 'attendance'],
   'admit-cards': ['enrollments', 'exams', 'admitCards'],
   contacts: ['contacts'],
+  admissions: ['admissions'],
+  'model-test': ['modelTestApplicants'],
   notifications: ['notifications'],
   settings: [],
   subjects: ['subjects'],
+  'course-categories': ['courseCategories'],
+  reports: [
+    'courses',
+    'enrollments',
+    'payments',
+    'students',
+    'attendance',
+    'exams',
+    'submissions',
+  ],
 }
 
 function TabSkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
-      <div className="h-8 w-48 rounded-lg bg-secondary" />
-      <div className="h-64 rounded-2xl bg-secondary/50" />
+      <div className="flex items-center justify-between">
+        <div className="h-7 w-40 rounded-lg bg-secondary" />
+        <div className="h-8 w-32 rounded-lg bg-secondary" />
+      </div>
+      <div className="flex gap-2">
+        <div className="h-10 w-64 rounded-lg bg-secondary" />
+        <div className="h-10 w-32 rounded-lg bg-secondary" />
+      </div>
+      <div className="rounded-2xl border border-border bg-card p-1">
+        <div className="space-y-2 p-4">
+          <div className="h-4 w-full rounded bg-secondary" />
+          <div className="h-4 w-3/4 rounded bg-secondary" />
+          <div className="h-4 w-1/2 rounded bg-secondary" />
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-12 w-full rounded-lg bg-secondary/50" />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -102,6 +241,8 @@ export default function AdminPage() {
   const router = useRouter()
   const session = authClient.useSession()
   const site = useSiteData()
+  const t = useTranslations('admin')
+  const tc = useTranslations('admin.common')
   const [tab, setTab] = useState<TabId>('overview')
   const [courses, setCourses] = useState<Course[]>([])
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
@@ -118,66 +259,173 @@ export default function AdminPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [subjectsList, setSubjectsList] = useState<Subject[]>([])
+  const [courseCategories, setCourseCategories] = useState<CourseCategory[]>([])
+  const [admissions, setAdmissions] = useState<Admission[]>([])
+  const [modelTestApplicants, setModelTestApplicants] = useState<
+    ModelTestApplicant[]
+  >([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
 
-  const fetchData = useCallback(async (tabId?: string) => {
-    try {
-      const activeTab = tabId || tab
+  const fetchData = useCallback(
+    async (tabId?: string) => {
+      try {
+        setFetchError(null)
+        const activeTab = tabId || tab
 
-      const fetches: Promise<Response>[] = []
-      const fetchKeys: string[] = []
+        const fetches: Promise<Response>[] = []
+        const fetchKeys: string[] = []
 
-      const needed = TAB_FETCH_MAP[activeTab] || ['overview']
+        const needed = TAB_FETCH_MAP[activeTab] || ['overview']
 
-      if (needed.includes('courses')) { fetches.push(fetch('/api/courses')); fetchKeys.push('courses') }
-      if (needed.includes('enrollments')) { fetches.push(fetch('/api/enrollments')); fetchKeys.push('enrollments') }
-      if (needed.includes('payments')) { fetches.push(fetch('/api/payments')); fetchKeys.push('payments') }
-      if (needed.includes('invoices')) { fetches.push(fetch('/api/invoices')); fetchKeys.push('invoices') }
-      if (needed.includes('notices')) { fetches.push(fetch('/api/notices')); fetchKeys.push('notices') }
-      if (needed.includes('media')) { fetches.push(fetch('/api/media')); fetchKeys.push('media') }
-      if (needed.includes('exams')) { fetches.push(fetch('/api/exams')); fetchKeys.push('exams') }
-      if (needed.includes('contacts')) { fetches.push(fetch('/api/contact')); fetchKeys.push('contacts') }
-      if (needed.includes('notifications')) { fetches.push(fetch('/api/notifications')); fetchKeys.push('notifications') }
-      if (needed.includes('submissions')) { fetches.push(fetch('/api/exam-submissions')); fetchKeys.push('submissions') }
-      if (needed.includes('attendance')) { fetches.push(fetch('/api/attendance')); fetchKeys.push('attendance') }
-      if (needed.includes('admitCards')) { fetches.push(fetch('/api/admit-cards')); fetchKeys.push('admitCards') }
-      if (needed.includes('students')) { fetches.push(fetch('/api/students')); fetchKeys.push('students') }
-      if (needed.includes('teachers')) { fetches.push(fetch('/api/teachers')); fetchKeys.push('teachers') }
-      if (needed.includes('subjects')) { fetches.push(fetch('/api/subjects')); fetchKeys.push('subjects') }
+        if (needed.includes('courses')) {
+          fetches.push(fetch('/api/courses'))
+          fetchKeys.push('courses')
+        }
+        if (needed.includes('enrollments')) {
+          fetches.push(fetch('/api/enrollments'))
+          fetchKeys.push('enrollments')
+        }
+        if (needed.includes('payments')) {
+          fetches.push(fetch('/api/payments'))
+          fetchKeys.push('payments')
+        }
+        if (needed.includes('invoices')) {
+          fetches.push(fetch('/api/invoices'))
+          fetchKeys.push('invoices')
+        }
+        if (needed.includes('notices')) {
+          fetches.push(fetch('/api/notices'))
+          fetchKeys.push('notices')
+        }
+        if (needed.includes('media')) {
+          fetches.push(fetch('/api/media'))
+          fetchKeys.push('media')
+        }
+        if (needed.includes('exams')) {
+          fetches.push(fetch('/api/exams'))
+          fetchKeys.push('exams')
+        }
+        if (needed.includes('contacts')) {
+          fetches.push(fetch('/api/contact'))
+          fetchKeys.push('contacts')
+        }
+        if (needed.includes('notifications')) {
+          fetches.push(fetch('/api/notifications'))
+          fetchKeys.push('notifications')
+        }
+        if (needed.includes('submissions')) {
+          fetches.push(fetch('/api/exam-submissions'))
+          fetchKeys.push('submissions')
+        }
+        if (needed.includes('attendance')) {
+          fetches.push(fetch('/api/attendance'))
+          fetchKeys.push('attendance')
+        }
+        if (needed.includes('admitCards')) {
+          fetches.push(fetch('/api/admit-cards'))
+          fetchKeys.push('admitCards')
+        }
+        if (needed.includes('students')) {
+          fetches.push(fetch('/api/students'))
+          fetchKeys.push('students')
+        }
+        if (needed.includes('teachers')) {
+          fetches.push(fetch('/api/teachers'))
+          fetchKeys.push('teachers')
+        }
+        if (needed.includes('subjects')) {
+          fetches.push(fetch('/api/subjects'))
+          fetchKeys.push('subjects')
+        }
+        if (needed.includes('courseCategories')) {
+          fetches.push(fetch('/api/course-categories'))
+          fetchKeys.push('courseCategories')
+        }
+        if (needed.includes('admissions')) {
+          fetches.push(fetch('/api/admissions'))
+          fetchKeys.push('admissions')
+        }
+        if (needed.includes('modelTestApplicants')) {
+          fetches.push(fetch('/api/model-test-applicants'))
+          fetchKeys.push('modelTestApplicants')
+        }
 
-      const responses = await Promise.all(fetches)
+        const responses = await Promise.all(fetches)
 
-      for (let i = 0; i < responses.length; i++) {
-        const res = responses[i]
-        const key = fetchKeys[i]
-        if (res.ok) {
-          const d = await res.json()
-          const data = d.data || d
-          switch (key) {
-            case 'courses': setCourses(data); break
-            case 'enrollments': setEnrollments(data); break
-            case 'payments': setPayments(data); break
-            case 'invoices': setInvoices(data); break
-            case 'notices': setNotices(data); break
-            case 'media': setMediaFiles(data); break
-            case 'exams': setExams(data); break
-            case 'contacts': setContacts(data); break
-            case 'notifications': setNotifications(data); break
-            case 'submissions': setExamSubmissions(data); break
-            case 'attendance': setAttendance(data); break
-            case 'admitCards': setAdmitCards(data); break
-            case 'students': setStudents(data); break
-            case 'teachers': setTeachers(data); break
-            case 'subjects': setSubjectsList(data); break
+        for (let i = 0; i < responses.length; i++) {
+          const res = responses[i]
+          const key = fetchKeys[i]
+          if (res.ok) {
+            const d = await res.json()
+            const data = d.data || d
+            switch (key) {
+              case 'courses':
+                setCourses(data)
+                break
+              case 'enrollments':
+                setEnrollments(data)
+                break
+              case 'payments':
+                setPayments(data)
+                break
+              case 'invoices':
+                setInvoices(data)
+                break
+              case 'notices':
+                setNotices(data)
+                break
+              case 'media':
+                setMediaFiles(data)
+                break
+              case 'exams':
+                setExams(data)
+                break
+              case 'contacts':
+                setContacts(data)
+                break
+              case 'notifications':
+                setNotifications(data)
+                break
+              case 'submissions':
+                setExamSubmissions(data)
+                break
+              case 'attendance':
+                setAttendance(data)
+                break
+              case 'admitCards':
+                setAdmitCards(data)
+                break
+              case 'students':
+                setStudents(data)
+                break
+              case 'teachers':
+                setTeachers(data)
+                break
+              case 'subjects':
+                setSubjectsList(data)
+                break
+              case 'courseCategories':
+                setCourseCategories(data)
+                break
+              case 'admissions':
+                setAdmissions(data)
+                break
+              case 'modelTestApplicants':
+                setModelTestApplicants(data)
+                break
+            }
           }
         }
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+        setFetchError(t('dataLoadError'))
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('Failed to fetch data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [tab])
+    },
+    [tab, t],
+  )
 
   useEffect(() => {
     if (session.data) fetchData(tab)
@@ -191,10 +439,36 @@ export default function AdminPage() {
 
   if (session.isPending || loading) {
     return (
+      <div className="min-h-screen p-6">
+        <div className="space-y-4 animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="h-8 w-48 rounded-lg bg-secondary" />
+            <div className="h-8 w-24 rounded-lg bg-secondary" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 rounded-2xl bg-secondary/50" />
+            ))}
+          </div>
+          <div className="h-96 rounded-2xl bg-secondary/50" />
+        </div>
+      </div>
+    )
+  }
+
+  if (fetchError && !loading) {
+    return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="size-8 animate-spin text-brand" />
-          <p className="text-muted-foreground">লোড হচ্ছে...</p>
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <AlertTriangle className="size-10 text-destructive" />
+          <p className="text-center text-foreground">{fetchError}</p>
+          <button
+            onClick={() => fetchData(tab)}
+            className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
+          >
+            <RefreshCw className="size-4" />
+            {tc('retry')}
+          </button>
         </div>
       </div>
     )
@@ -205,51 +479,214 @@ export default function AdminPage() {
     return null
   }
 
-  if (session.data.user.role !== 'admin' && session.data.user.role !== 'super-admin') {
+  if (
+    (session.data.user as Record<string, unknown>).role !== 'admin' &&
+    (session.data.user as Record<string, unknown>).role !== 'super-admin'
+  ) {
     router.push('/dashboard')
     return null
   }
 
-  const pendingEnrollments = enrollments.filter((e) => e.status === 'pending').length
+  const pendingEnrollments = enrollments.filter(
+    (e) => e.status === 'pending',
+  ).length
   const pendingPayments = payments.filter((p) => p.status === 'pending').length
+  const pendingAdmissions = admissions.filter(
+    (a) => a.status === 'pending',
+  ).length
+  const pendingModelTest = modelTestApplicants.filter(
+    (a) => a.status === 'pending',
+  ).length
 
-  const tabsWithBadges = TABS.map((t) => ({
-    ...t,
-    badge: t.id === 'enrollments' ? pendingEnrollments : t.id === 'payments' ? pendingPayments : undefined,
+  const tabsWithBadges = TABS.map((tabItem) => ({
+    ...tabItem,
+    label: t(`tabs.${tabItem.id}`),
+    badge:
+      tabItem.id === 'enrollments'
+        ? pendingEnrollments
+        : tabItem.id === 'payments'
+          ? pendingPayments
+          : tabItem.id === 'admissions'
+            ? pendingAdmissions
+            : tabItem.id === 'model-test'
+              ? pendingModelTest
+              : undefined,
   }))
 
   return (
     <PanelLayout
       siteName={site.nameBn}
-      panelTitle="অ্যাডমিন প্যানেল"
+      panelTitle={t('panelTitle')}
       userName={session.data.user.name}
-      welcomeMessage="অ্যাডমিন হিসেবে লগইন করেছেন"
+      welcomeMessage={t('welcomeMessage')}
       tabs={tabsWithBadges}
       activeTab={tab}
       onTabChange={(id) => setTab(id as TabId)}
       onSignOut={handleSignOut}
     >
+      <DatabaseHealthBanner />
       {tab === 'overview' && (
-        <OverviewPanel courses={courses} enrollments={enrollments} payments={payments} />
+        <OverviewPanel
+          courses={courses}
+          enrollments={enrollments}
+          payments={payments}
+        />
       )}
       <Suspense fallback={<TabSkeleton />}>
-        {tab === 'courses' && <CoursesPanel courses={courses} onRefresh={fetchData} />}
-        {tab === 'enrollments' && <EnrollmentsPanel enrollments={enrollments} onRefresh={fetchData} />}
-        {tab === 'payments' && <PaymentsPanel payments={payments} enrollments={enrollments} students={students} onRefresh={fetchData} />}
-        {tab === 'invoices' && <InvoicesPanel invoices={invoices} enrollments={enrollments} onRefresh={fetchData} />}
-        {tab === 'notices' && <NoticesPanel notices={notices} onRefresh={fetchData} />}
-        {tab === 'media' && <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />}
-        {tab === 'exams' && <ExamsPanel exams={exams} submissions={examSubmissions} onRefresh={fetchData} />}
-        {tab === 'questions' && <QuestionsPanel exams={exams} />}
-        {tab === 'subjects' && <SubjectsPanel subjects={subjectsList} onRefresh={fetchData} />}
-        {tab === 'results' && <ResultsPanel exams={exams} submissions={examSubmissions} />}
-        {tab === 'students' && <StudentsPanel students={students} onRefresh={fetchData} />}
-        {tab === 'teachers' && <TeachersPanel teachers={teachers} onRefresh={fetchData} />}
-        {tab === 'attendance' && <AttendancePanel enrollments={enrollments} attendance={attendance} onRefresh={fetchData} />}
-        {tab === 'admit-cards' && <AdmitCardsPanel enrollments={enrollments} exams={exams} admitCards={admitCards} onRefresh={fetchData} />}
-        {tab === 'contacts' && <ContactsPanel contacts={contacts} onRefresh={fetchData} />}
-        {tab === 'notifications' && <NotificationsPanel notifications={notifications} onRefresh={fetchData} />}
-        {tab === 'settings' && <SettingsPanel onRefresh={fetchData} />}
+        {tab === 'courses' && (
+          <ErrorBoundary>
+            <CoursesPanel courses={courses} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'enrollments' && (
+          <ErrorBoundary>
+            <EnrollmentsPanel
+              enrollments={enrollments}
+              courses={courses}
+              students={students}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'payments' && (
+          <ErrorBoundary>
+            <PaymentsPanel
+              payments={payments}
+              enrollments={enrollments}
+              students={students}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'invoices' && (
+          <ErrorBoundary>
+            <InvoicesPanel
+              invoices={invoices}
+              enrollments={enrollments}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'notices' && (
+          <ErrorBoundary>
+            <NoticesPanel notices={notices} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'sms' && (
+          <ErrorBoundary>
+            <SmsPanel />
+          </ErrorBoundary>
+        )}
+        {tab === 'media' && (
+          <ErrorBoundary>
+            <MediaPanel mediaFiles={mediaFiles} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'exams' && (
+          <ErrorBoundary>
+            <ExamsPanel
+              exams={exams}
+              submissions={examSubmissions}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'questions' && (
+          <ErrorBoundary>
+            <QuestionsPanel exams={exams} />
+          </ErrorBoundary>
+        )}
+        {tab === 'subjects' && (
+          <ErrorBoundary>
+            <SubjectsPanel subjects={subjectsList} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'course-categories' && (
+          <ErrorBoundary>
+            <CourseCategoriesPanel
+              categories={courseCategories}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'results' && (
+          <ErrorBoundary>
+            <ResultsPanel exams={exams} submissions={examSubmissions} />
+          </ErrorBoundary>
+        )}
+        {tab === 'students' && (
+          <ErrorBoundary>
+            <StudentsPanel students={students} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'teachers' && (
+          <ErrorBoundary>
+            <TeachersPanel teachers={teachers} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'attendance' && (
+          <ErrorBoundary>
+            <AttendancePanel
+              enrollments={enrollments}
+              attendance={attendance}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'admit-cards' && (
+          <ErrorBoundary>
+            <AdmitCardsPanel
+              enrollments={enrollments}
+              exams={exams}
+              admitCards={admitCards}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'contacts' && (
+          <ErrorBoundary>
+            <ContactsPanel contacts={contacts} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'admissions' && (
+          <ErrorBoundary>
+            <AdmissionsPanel admissions={admissions} onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
+        {tab === 'model-test' && (
+          <ErrorBoundary>
+            <ModelTestApplicantsPanel
+              applicants={modelTestApplicants}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'notifications' && (
+          <ErrorBoundary>
+            <NotificationsPanel
+              notifications={notifications}
+              onRefresh={fetchData}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'reports' && (
+          <ErrorBoundary>
+            <ReportsPanel
+              enrollments={enrollments}
+              payments={payments}
+              courses={courses}
+              students={students}
+              attendance={attendance}
+              examSubmissions={examSubmissions}
+              exams={exams}
+            />
+          </ErrorBoundary>
+        )}
+        {tab === 'settings' && (
+          <ErrorBoundary>
+            <SettingsPanel onRefresh={fetchData} />
+          </ErrorBoundary>
+        )}
       </Suspense>
     </PanelLayout>
   )

@@ -1,15 +1,18 @@
 # Admit Card Full Functionality Plan
 
 ## Goal
+
 Implement a complete admit-card workflow for the nursing coaching website, covering admin management, student access, and export/sharing.
 
 ## Scope
+
 - Admin can create, view, update, delete, and search admit cards.
 - Students can view their own admit card securely.
 - Admit cards can be exported/printed in a clean, printable format.
 - The workflow is validated, resilient, and consistent with the existing admin dashboard.
 
 ## Phase 1 — Core CRUD Reliability
+
 1. Harden the existing admit-card API and UI.
    - Add clear success/error feedback for create/update/delete.
    - Validate required fields before submission.
@@ -23,6 +26,7 @@ Implement a complete admit-card workflow for the nursing coaching website, cover
    - Handle failed requests gracefully.
 
 ## Phase 2 — Student-Facing Access
+
 1. Create a student-only admit-card page.
    - Route: `/dashboard/admit-card` or `/student/admit-card`.
    - Show the logged-in student’s admit card only.
@@ -32,6 +36,7 @@ Implement a complete admit-card workflow for the nursing coaching website, cover
    - Link the admit card from the student dashboard.
 
 ## Phase 3 — Export and Sharing
+
 1. Add printable admit-card view.
    - Use a dedicated printable layout with student info, exam info, center, and seat number.
 2. Add export options.
@@ -41,6 +46,7 @@ Implement a complete admit-card workflow for the nursing coaching website, cover
    - Generate a shareable link for the student’s admit card.
 
 ## Phase 4 — Notifications and Automation
+
 1. Notify students when an admit card is issued.
    - Trigger a notification entry in the existing notification system.
    - Optionally send WhatsApp or SMS integration if available.
@@ -48,6 +54,7 @@ Implement a complete admit-card workflow for the nursing coaching website, cover
    - Log who created or updated the admit card.
 
 ## Phase 5 — Quality and Rollout
+
 1. Add tests.
    - API tests for create/update/delete permissions.
    - UI tests for form validation and card rendering.
@@ -59,6 +66,7 @@ Implement a complete admit-card workflow for the nursing coaching website, cover
    - Card prints correctly.
 
 ## Implementation Order
+
 1. API and validation hardening
 2. Admin CRUD UX improvements
 3. Student admit-card page
@@ -67,6 +75,7 @@ Implement a complete admit-card workflow for the nursing coaching website, cover
 6. Tests and polish
 
 ## Acceptance Criteria
+
 - Admins can create and manage admit cards without errors.
 - Students can view only their own admit card.
 - Admit cards are printable and readable.

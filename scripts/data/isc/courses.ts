@@ -1,0 +1,82 @@
+export const ISC_COURSES = [
+  {
+    id: 'course_hsc_science_2026',
+    slug: 'hsc-science-2026',
+    courseCode: 'ISC-HSC-2026',
+    title: 'HSC Science Regular — 2026 Batch',
+    shortDescription:
+      'Physics/Chemistry/Biology/Math + Bangla/English/ICT — full HSC preparation',
+    description:
+      'Complete HSC Science curriculum with weekly model tests, lab classes, and BNMC bridging for ISC students.',
+    duration: '12 months',
+    fee: 24000,
+    discountFee: 18000,
+    image: 'https://placehold.co/600x400/png?text=HSC+Science',
+    features: [
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Higher Math',
+      'English',
+      'Bangla',
+      'ICT',
+    ],
+    category: 'isc' as const,
+    maxStudents: 120,
+    schedule: 'Sat–Thu 8am–11am',
+    isActive: true,
+  },
+  {
+    id: 'course_isc_second_timer',
+    slug: 'isc-second-timer-intensive',
+    courseCode: 'ISC-2ND-2026',
+    title: 'ISC Second Timer Intensive',
+    shortDescription: 'Focused repeater batch for HSC improvers — mock-heavy',
+    description:
+      'Intensive second-timer program with daily MCQ bank, full syllabus mocks, and individual mentoring.',
+    duration: '6 months',
+    fee: 18000,
+    discountFee: 14000,
+    image: 'https://placehold.co/600x400/png?text=Second+Timer',
+    features: [
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Higher Math',
+      'English',
+      'General Knowledge',
+    ],
+    category: 'isc' as const,
+    maxStudents: 80,
+    schedule: 'Sat–Thu 2pm–5pm',
+    isActive: true,
+  },
+  {
+    id: 'course_bnmc_bridge_isc',
+    slug: 'bnmc-bridge-isc',
+    courseCode: 'ISC-BNMC-2026',
+    title: 'BNMC Admission — ISC Stream',
+    shortDescription:
+      'BNMC nursing admission preparation tailored for ISC science background',
+    description:
+      'BNMC-focused curriculum leveraging ISC science base: Biology, Chemistry, Physics + English/Bangla/GK with nursing-specific model tests.',
+    duration: '6 months',
+    fee: 20000,
+    discountFee: 15000,
+    image: 'https://placehold.co/600x400/png?text=BNMC+Bridge',
+    features: [
+      'Biology',
+      'Chemistry',
+      'Physics',
+      'English',
+      'Bangla',
+      'General Knowledge',
+    ],
+    category: 'isc' as const,
+    maxStudents: 100,
+    schedule: 'Sat–Wed 4pm–7pm',
+    isActive: true,
+  },
+] as const
+
+export type IscCourseSeed = (typeof ISC_COURSES)[number]

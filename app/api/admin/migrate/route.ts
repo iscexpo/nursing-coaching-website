@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { unauthorized, notFound, ok, serverError } from '@/lib/api/response'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/core/rate-limit'
 
 const MIGRATION_FILES = [
   '0000_curly_trish_tilby.sql',
@@ -11,20 +12,39 @@ const MIGRATION_FILES = [
   '0002_add_attendance_admit_cards.sql',
   '0003_add_student_address_education.sql',
   '0004_teachers.sql',
+  '0005_audit_logs.sql',
+  '0006_student_lifecycle_events.sql',
+  '0007_admissions.sql',
+  '0008_media_files.sql',
+  '0009_subjects.sql',
+  '0010_admissions_education.sql',
+  '0011_enrollment_discount.sql',
+  '0012_add_course_code.sql',
+  '0013_add_user_admission_link.sql',
+  '0014_add_model_test_applicants.sql',
 ]
 
 export async function POST(request: NextRequest) {
-  const limiter = await rateLimit(request, { windowMs: 60_000, max: 3, prefix: 'admin.migrate' })
+  const limiter = await rateLimit(request, {
+    windowMs: 60_000,
+    max: 3,
+    prefix: 'admin.migrate',
+  })
   if (limiter) return limiter
 
   try {
     if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      return notFound()
+    }
+
+    const seedKey = process.env.ADMIN_SEED_KEY
+    if (!seedKey) {
+      return notFound()
     }
 
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.ADMIN_SEED_KEY}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (authHeader !== `Bearer ${seedKey}`) {
+      return unauthorized()
     }
 
     const migrationsDir = join(process.cwd(), 'lib', 'db', 'migrations')
@@ -44,7 +64,11 @@ export async function POST(request: NextRequest) {
           await db.execute(sql.raw(statement))
         } catch (e: unknown) {
           const msg = e instanceof Error ? e.message : String(e)
-          if (msg.includes('already exists') || msg.includes('does not exist') || msg.includes('column') && msg.includes('already')) {
+          if (
+            msg.includes('already exists') ||
+            msg.includes('does not exist') ||
+            (msg.includes('column') && msg.includes('already'))
+          ) {
             continue
           }
           errors.push(msg.substring(0, 100))
@@ -54,11 +78,8 @@ export async function POST(request: NextRequest) {
       results.push({ file: fileName, statements: statements.length, errors })
     }
 
-    return NextResponse.json({ success: true, migrations: results })
+    return ok({ success: true, migrations: results })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Migration failed', details: String(error) },
-      { status: 500 }
-    )
+    return serverError(String(error) || 'Migration failed')
   }
 }

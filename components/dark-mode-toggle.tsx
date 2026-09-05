@@ -1,17 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Moon, Sun } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 export function DarkModeToggle({ className }: { className?: string }) {
   const [dark, setDark] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const t = useTranslations('common')
 
   useEffect(() => {
     setMounted(true)
     const stored = localStorage.getItem('theme')
-    const prefersDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const prefersDark =
+      stored === 'dark' ||
+      (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
     setDark(prefersDark)
     document.documentElement.classList.toggle('dark', prefersDark)
   }, [])
@@ -29,12 +33,16 @@ export function DarkModeToggle({ className }: { className?: string }) {
     <button
       onClick={toggle}
       className={cn(
-        'flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground',
+        'flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground',
         className,
       )}
-      aria-label={dark ? 'লাইট মোড' : 'ডার্ক মোড'}
+      aria-label={dark ? t('lightMode') : t('darkMode')}
     >
-      {dark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
+      {dark ? (
+        <Sun className="size-[18px]" />
+      ) : (
+        <Moon className="size-[18px]" />
+      )}
     </button>
   )
 }

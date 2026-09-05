@@ -39,14 +39,16 @@ export default function ExamListPage() {
         const res = await fetch('/api/exams?limit=50')
         const data = await res.json()
         if (res.ok && data.data) {
-          setExams(data.data.map((e: ExamDef & { questionCount: number }) => ({
-            id: e.id,
-            title: e.title,
-            subject: e.subject,
-            questionCount: e.questionCount,
-            duration: e.duration,
-            difficulty: e.difficulty,
-          })))
+          setExams(
+            data.data.map((e: ExamDef & { questionCount: number }) => ({
+              id: e.id,
+              title: e.title,
+              subject: e.subject,
+              questionCount: e.questionCount,
+              duration: e.duration,
+              difficulty: e.difficulty,
+            })),
+          )
         }
       } catch {
         // fallback to empty
@@ -58,7 +60,8 @@ export default function ExamListPage() {
   }, [])
 
   const subjects = [...new Set(exams.map((e) => e.subject))]
-  const filtered = filter === 'all' ? exams : exams.filter((e) => e.subject === filter)
+  const filtered =
+    filter === 'all' ? exams : exams.filter((e) => e.subject === filter)
 
   return (
     <>
@@ -100,7 +103,9 @@ export default function ExamListPage() {
                 <button
                   onClick={() => setFilter('all')}
                   className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-                    filter === 'all' ? 'bg-brand text-brand-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'
+                    filter === 'all'
+                      ? 'bg-brand text-brand-foreground'
+                      : 'bg-secondary text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   সকল বিষয়
@@ -110,7 +115,9 @@ export default function ExamListPage() {
                     key={s}
                     onClick={() => setFilter(s)}
                     className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-                      filter === s ? 'bg-brand text-brand-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'
+                      filter === s
+                        ? 'bg-brand text-brand-foreground'
+                        : 'bg-secondary text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     {s}
@@ -120,19 +127,32 @@ export default function ExamListPage() {
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {filtered.map((exam) => (
-                  <div key={exam.id} className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <div
+                    key={exam.id}
+                    className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10">
                         <BookOpen className="size-5 text-brand" />
                       </div>
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${difficultyColor[exam.difficulty]}`}>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${difficultyColor[exam.difficulty]}`}
+                      >
                         {difficultyLabel[exam.difficulty]}
                       </span>
                     </div>
-                    <h3 className="mt-3 font-heading text-base font-bold text-foreground">{exam.title}</h3>
+                    <h3 className="mt-3 font-heading text-base font-bold text-foreground">
+                      {exam.title}
+                    </h3>
                     <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><BookOpen className="size-3" />{exam.questionCount} টি প্রশ্ন</span>
-                      <span className="flex items-center gap-1"><Clock className="size-3" />{exam.duration} মিনিট</span>
+                      <span className="flex items-center gap-1">
+                        <BookOpen className="size-3" />
+                        {exam.questionCount} টি প্রশ্ন
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="size-3" />
+                        {exam.duration} মিনিট
+                      </span>
                     </div>
                     <Link
                       href={`/exam/${exam.id}`}

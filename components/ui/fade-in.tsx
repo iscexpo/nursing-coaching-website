@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/core/utils'
 
 type Direction = 'up' | 'down' | 'left' | 'right' | 'none'
 

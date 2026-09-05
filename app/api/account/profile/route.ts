@@ -1,38 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import {
+  unauthorized,
+  notFound,
+  ok,
+  serverError,
+  validationError,
+} from '@/lib/api/response'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { getSession } from '@/lib/permissions'
-import { updateProfileSchema } from '@/lib/validations'
+import { getSession } from '@/lib/core/permissions'
+import { updateProfileSchema } from '@/lib/core/validations'
 
 function sanitizeProfile(profile: Record<string, unknown>) {
-  const { emailVerified, phoneNumberVerified, createdAt, updatedAt, ...safe } = profile
+  const { emailVerified, phoneNumberVerified, createdAt, updatedAt, ...safe } =
+    profile
   return safe
 }
 
 export async function GET() {
   try {
     const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
-    const [profile] = await db.select().from(user).where(eq(user.id, session.user.id))
-    if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const [profile] = await db
+      .select()
+      .from(user)
+      .where(eq(user.id, session.user.id))
+    if (!profile) return notFound('User not found')
 
-    return NextResponse.json(sanitizeProfile(profile as Record<string, unknown>))
+    return ok(sanitizeProfile(profile as Record<string, unknown>))
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 })
+    return serverError('Failed to fetch profile')
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const session = await getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session) return unauthorized()
 
     const body = await request.json()
     const parsed = updateProfileSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+      return validationError(
+        'Invalid input',
+        parsed.error.flatten().fieldErrors,
+      )
     }
 
     const data = { ...parsed.data }
@@ -53,11 +67,15 @@ export async function PUT(request: NextRequest) {
     }
 
     const setData: Record<string, unknown> = { ...data, updatedAt: new Date() }
-    const [updated] = await db.update(user).set(setData).where(eq(user.id, session.user.id)).returning()
+    const [updated] = await db
+      .update(user)
+      .set(setData)
+      .where(eq(user.id, session.user.id))
+      .returning()
 
-    if (!updated) return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    return NextResponse.json(sanitizeProfile(updated as Record<string, unknown>))
+    if (!updated) return notFound('User not found')
+    return ok(sanitizeProfile(updated as Record<string, unknown>))
   } catch {
-    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
+    return serverError('Failed to update profile')
   }
 }
