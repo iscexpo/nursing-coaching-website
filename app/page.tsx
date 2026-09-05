@@ -5,6 +5,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { BackToTop } from '@/components/back-to-top'
 import { Hero } from '@/components/sections/hero'
+import { ActionStrip } from '@/components/sections/action-strip'
 import { WhyUs } from '@/components/sections/why-us'
 import { Courses } from '@/components/sections/courses'
 import { Counters } from '@/components/sections/counters-section'
@@ -38,6 +39,7 @@ export default async function HomePage() {
       <SiteHeader />
       <main>
         <Hero />
+        <ActionStrip />
         <WhyUs />
         <Courses />
         <Counters />
