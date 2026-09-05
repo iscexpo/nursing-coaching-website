@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { unlink } from 'fs/promises'
-import { join } from 'path'
+import { join, basename } from 'path'
 import { db } from '@/lib/db'
 import { mediaFiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -19,7 +19,10 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     await db.delete(mediaFiles).where(eq(mediaFiles.id, id))
 
-    const filePath = join(process.cwd(), 'public', 'media', existing[0].filename)
+    // Only ever delete a file inside the managed media directory, even if a legacy
+    // database row contains an unexpected filename.
+    const mediaDir = join(process.cwd(), 'public', 'media')
+    const filePath = join(mediaDir, basename(existing[0].filename))
     await unlink(filePath).catch(() => {})
 
     return NextResponse.json({ success: true })
