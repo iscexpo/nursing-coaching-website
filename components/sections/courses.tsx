@@ -77,7 +77,10 @@ export async function Courses() {
                   )}
                   {/* Duration badge */}
                   <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-lg bg-card/95 px-3 py-1 text-xs font-semibold text-foreground shadow-sm">
-                    <Clock3 className="size-3.5 text-primary" aria-hidden="true" />
+                    <Clock3
+                      className="size-3.5 text-primary"
+                      aria-hidden="true"
+                    />
                     {course.duration}
                   </span>
                   {/* Discount badge */}

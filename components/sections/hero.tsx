@@ -4,7 +4,12 @@ import { ArrowRight, Check, PlayCircle, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getCmsContent } from '@/lib/content-server'
 
-const features = ['ভর্তি কোচিং', 'B.Sc. Nursing', 'কাউন্সিল পরীক্ষা', 'চাকরি প্রস্তুতি']
+const features = [
+  'ভর্তি কোচিং',
+  'B.Sc. Nursing',
+  'কাউন্সিল পরীক্ষা',
+  'চাকরি প্রস্তুতি',
+]
 
 export async function Hero() {
   const content = await getCmsContent()
@@ -23,7 +28,9 @@ export async function Hero() {
           </div>
           <h1 className="mt-6 max-w-2xl font-heading text-4xl font-extrabold leading-[1.12] tracking-tight text-balance sm:text-5xl md:text-6xl">
             {hero.title.split(' ').slice(0, -3).join(' ')}{' '}
-            <span className="text-gold">{hero.title.split(' ').slice(-3).join(' ')}</span>
+            <span className="text-gold">
+              {hero.title.split(' ').slice(-3).join(' ')}
+            </span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-brand-foreground/80 sm:text-lg">
             {hero.subtitle}
@@ -31,7 +38,10 @@ export async function Hero() {
 
           <div className="mt-7 flex flex-wrap gap-x-5 gap-y-3">
             {features.map((feature) => (
-              <span key={feature} className="flex items-center gap-2 text-sm text-brand-foreground/90">
+              <span
+                key={feature}
+                className="flex items-center gap-2 text-sm text-brand-foreground/90"
+              >
                 <span className="flex size-5 items-center justify-center rounded-full bg-gold/20">
                   <Check className="size-3.5 text-gold" />
                 </span>
@@ -62,7 +72,9 @@ export async function Hero() {
 
           <div className="mt-10 flex items-center gap-6 border-t border-brand-foreground/15 pt-6">
             <div>
-              <p className="font-heading text-2xl font-bold text-gold">৫,০০০+</p>
+              <p className="font-heading text-2xl font-bold text-gold">
+                ৫,০০০+
+              </p>
               <p className="text-xs text-brand-foreground/65">সফল শিক্ষার্থী</p>
             </div>
             <div className="h-9 w-px bg-brand-foreground/20" />
@@ -91,8 +103,12 @@ export async function Hero() {
             <div className="absolute inset-0 bg-gradient-to-t from-brand/70 via-transparent to-transparent" />
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-brand-foreground">
               <div>
-                <p className="text-sm text-brand-foreground/75">আপনার স্বপ্নের ক্যারিয়ার</p>
-                <p className="mt-1 font-heading text-xl font-bold">নার্সিংয়ে সফলতার যাত্রা</p>
+                <p className="text-sm text-brand-foreground/75">
+                  আপনার স্বপ্নের ক্যারিয়ার
+                </p>
+                <p className="mt-1 font-heading text-xl font-bold">
+                  নার্সিংয়ে সফলতার যাত্রা
+                </p>
               </div>
               <div className="flex size-12 items-center justify-center rounded-full bg-gold text-gold-foreground shadow-lg">
                 <ArrowRight className="size-5" />
