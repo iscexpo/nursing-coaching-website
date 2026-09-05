@@ -36,8 +36,10 @@ services:
     ports:
       - 3000:3000
     env_file:
-      - ../.env.development.local
-      - ../.env
+      - path: ../.env.development.local
+        required: false
+      - path: ../.env
+        required: false
     environment:
       NODE_ENV: development
       DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
